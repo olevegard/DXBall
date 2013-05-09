@@ -39,6 +39,7 @@ int main( int argc, char* args[] )
 				{
 					case SDLK_RIGHT:
 						gamePiece->posX += 20;
+						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:
 						quit = true;
@@ -48,6 +49,7 @@ int main( int argc, char* args[] )
 				}
 			}
 		}
+
 		renderer.Render( );
 
 		gamePiece->posY += 20;
