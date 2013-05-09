@@ -5,8 +5,10 @@
 #include <SDL/SDL_image.h>
 
 #include "Renderer.h"
+#include "Timer.h"
 
 Renderer renderer;
+Timer timer;
 
 struct GamePiece;
 int main( int argc, char* args[] )
@@ -27,6 +29,9 @@ int main( int argc, char* args[] )
 	SDL_Event event;
 	
 	int size = renderer.GetTileSize();
+
+	float delta = 0;
+
 	while ( !quit )
 	{
 		while ( SDL_PollEvent( &event ) )
@@ -55,11 +60,15 @@ int main( int argc, char* args[] )
 		}
 
 		renderer.Render( );
+		timer.GetDelta( delta );
 
-		//gamePiece->posY += 20;
+		if ( timer.IsUpdateTime() )
+		{
+			gamePiece->posY += size;
 
-		if ( gamePiece->posY > 540 )
-			gamePiece->posY = 0;
-		SDL_Delay( 10 );
+			if ( gamePiece->posY > 540 )
+				gamePiece->posY = 0;
+		}
+
 	}
 }
