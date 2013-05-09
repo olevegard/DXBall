@@ -40,6 +40,7 @@ int main( int argc, char* args[] )
 					case SDLK_RIGHT:
 						gamePiece->posX += 20;
 						break;
+					case SDLK_q:
 					case SDLK_ESCAPE:
 						quit = true;
 						break;
