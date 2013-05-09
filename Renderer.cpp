@@ -1,8 +1,8 @@
 #include "Renderer.h"
 
 Renderer::Renderer()
-	:	SCREEN_WIDTH( 640 )
-	,	SCREEN_HEIGHT( 480 )
+	:	SCREEN_WIDTH( 1920 / 2 )
+	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
 
 	,	message(  NULL )
@@ -87,7 +87,7 @@ void Renderer::SetColorKey( SDL_Surface* source, int r, int g, int b )
 	}
 }
 
-void FillSurface( SDL_Surface* source, int r, int g, int b )
+void Renderer::FillSurface( SDL_Surface* source, int r, int g, int b )
 {
 
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 0 ) );
@@ -110,12 +110,12 @@ void Renderer::LoadAllTextures( )
 {
 	//message = LoadImage( "hello.bmp" );
 	message = LoadImage( "media/tiles/blue.png" );
-	background= LoadImage( "background.bmp" );
+	background= LoadImage( "media/background.bmp" );
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
 
-	gameArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH / 3, SCREEN_HEIGHT, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
-	FillSurface ( gameArea, 0x66, 0x66, 0x66, 0);
+	gameArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH / 3, SCREEN_HEIGHT - 100, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
+	FillSurface ( gameArea, 0x66, 0x66, 0x66);
 	//Uint32 colorKey = SDL_MapRGB( gameArea->format, 0x77, 0x77, 0x77 );
 	//SDL_SetColorKey( gameArea, SDL_SRCCOLORKEY, colorKey );
 
@@ -140,8 +140,8 @@ void Renderer::BlitForeground()
 		ApplySurface( gp->posX, gp->posY, message, gameArea );
 	}
 
-	ApplySurface( 0, 0, gameArea, screen );
+	ApplySurface( 50, 50, gameArea, screen );
 
 	// Clear background. TODO : replace with pic.
-	FillSurface ( gameArea, 0x66, 0x66, 0x66, 0);
+	FillSurface ( gameArea, 0x66, 0x66, 0x66 );
 }

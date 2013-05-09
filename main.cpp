@@ -23,15 +23,38 @@ int main( int argc, char* args[] )
 
 	renderer.AddObject( gamePiece );
 
-	for  ( int i = 0; i < 5; ++i )
+	bool quit = false;
+	SDL_Event event;
+
+	while ( !quit )
 	{
-		//renderer.AddObject( i * 5,  5) ;
-		//renderer.AddObject( i * 5,  60 );
-		gamePiece->posY += 20;
+		while ( SDL_PollEvent( &event ) )
+		{
+			if ( event.type == SDL_QUIT )
+				quit = true;
+
+			if ( event.type == SDL_KEYDOWN )
+			{
+				switch  ( event.key.keysym.sym )
+				{
+					case SDLK_RIGHT:
+						gamePiece->posX += 20;
+						break;
+					case SDLK_ESCAPE:
+						quit = true;
+						break;
+					default:
+						break;
+				}
+			}
+
+		}
 		renderer.Render( );
 
-		std::cout << "count : " << i << std::endl;
+		gamePiece->posY += 20;
+
+		if ( gamePiece->posY > 540 )
+			gamePiece->posY = 0;
 		SDL_Delay( 1000 );
 	}
-
 }
