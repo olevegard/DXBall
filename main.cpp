@@ -25,7 +25,8 @@ int main( int argc, char* args[] )
 
 	bool quit = false;
 	SDL_Event event;
-
+	
+	int size = renderer.GetTileSize();
 	while ( !quit )
 	{
 		while ( SDL_PollEvent( &event ) )
@@ -38,7 +39,10 @@ int main( int argc, char* args[] )
 				switch  ( event.key.keysym.sym )
 				{
 					case SDLK_RIGHT:
-						gamePiece->posX += 20;
+						gamePiece->posX += size;
+						break;
+					case SDLK_LEFT:
+						gamePiece->posX -= size;
 						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:
@@ -52,7 +56,7 @@ int main( int argc, char* args[] )
 
 		renderer.Render( );
 
-		gamePiece->posY += 20;
+		//gamePiece->posY += 20;
 
 		if ( gamePiece->posY > 540 )
 			gamePiece->posY = 0;

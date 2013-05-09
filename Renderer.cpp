@@ -5,12 +5,13 @@ Renderer::Renderer()
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
 
-	,	message(  NULL )
+	,	tile(  NULL )
 	,	backgroundArea(  NULL )
 	,	background(  NULL )
 	,	gameArea( NULL )
 	,	screen(  NULL )
 	,	gamePieceList( { } )
+	,	tileSize( 0 )
 {
 
 }
@@ -66,6 +67,7 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename )
 	// If the image loaded
 	if ( loadedImage != NULL )
 	{
+		//
 		// Create an optimized image
 		optimizedImage = SDL_DisplayFormat( loadedImage );
 
@@ -108,13 +110,16 @@ void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* des
 
 void Renderer::LoadAllTextures( )
 {
-	//message = LoadImage( "hello.bmp" );
-	message = LoadImage( "media/tiles/blue.png" );
+	//tile = LoadImage( "hello.bmp" );
+	tile = LoadImage( "media/tiles/blue_30x30.png" );
 	background= LoadImage( "media/background.bmp" );
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
 
-	gameArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH / 3, SCREEN_HEIGHT - 100, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
+	tileSize = tile->clip_rect.h;
+
+	// Create game area surfae. ( Set to size of 10 * tile width, 30 * tile height )
+	gameArea = SDL_CreateRGBSurface( 0, tileSize * 10, tileSize * 20, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
 	FillSurface ( gameArea, 0x66, 0x66, 0x66);
 	//Uint32 colorKey = SDL_MapRGB( gameArea->format, 0x77, 0x77, 0x77 );
 	//SDL_SetColorKey( gameArea, SDL_SRCCOLORKEY, colorKey );
@@ -137,9 +142,10 @@ void Renderer::BlitForeground()
 	for ( std::shared_ptr< GamePiece > gp : gamePieceList )
 	{
 
-		ApplySurface( gp->posX, gp->posY, message, gameArea );
+		ApplySurface( gp->posX, gp->posY, tile, gameArea );
 	}
 
+	// Apply game area ( with tiles ) to screen.
 	ApplySurface( 50, 50, gameArea, screen );
 
 	// Clear background. TODO : replace with pic.
