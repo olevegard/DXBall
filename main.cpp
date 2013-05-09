@@ -39,7 +39,6 @@ int main( int argc, char* args[] )
 				{
 					case SDLK_RIGHT:
 						gamePiece->posX += 20;
-						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:
 						quit = true;
@@ -48,7 +47,6 @@ int main( int argc, char* args[] )
 						break;
 				}
 			}
-
 		}
 		renderer.Render( );
 
@@ -56,6 +54,6 @@ int main( int argc, char* args[] )
 
 		if ( gamePiece->posY > 540 )
 			gamePiece->posY = 0;
-		SDL_Delay( 1000 );
+		SDL_Delay( 10 );
 	}
 }
