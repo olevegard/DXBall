@@ -28,10 +28,14 @@ int main( int argc, char* args[] )
 	bool quit = false;
 	SDL_Event event;
 	
-	int size = renderer.GetTileSize();
+	SDL_Rect tileSize = renderer.GetTileSize();
+	int windowWidth = renderer.GetWindowWidth();
 
 	float delta = 0;
 
+	SDL_WM_GrabInput( SDL_GRAB_FULLSCREEN );
+	SDL_MouseMotionEvent prevMotion;
+	int halfTileWidth = tileSize.w / 2;
 	while ( !quit )
 	{
 		while ( SDL_PollEvent( &event ) )
@@ -43,11 +47,11 @@ int main( int argc, char* args[] )
 			{
 				switch  ( event.key.keysym.sym )
 				{
-					case SDLK_RIGHT:
-						gamePiece->posX += size;
+					case SDLK_RIGHT: 
+						gamePiece->posX += tileSize.w;
 						break;
 					case SDLK_LEFT:
-						gamePiece->posX -= size;
+						gamePiece->posX -= tileSize.w;
 						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:
@@ -57,6 +61,17 @@ int main( int argc, char* args[] )
 						break;
 				}
 			}
+
+			if ( event.motion.x != 0 && event.motion.y != 0 )
+				gamePiece->posX = event.motion.x - halfTileWidth;
+
+			if ( ( gamePiece->posX + tileSize.w) > windowWidth )
+				gamePiece->posX = windowWidth - tileSize.w;
+
+			if ( gamePiece->posX  <= 0  )
+				gamePiece->posX = 0;
+
+			prevMotion = event.motion;
 		}
 
 		renderer.Render( );
@@ -64,10 +79,9 @@ int main( int argc, char* args[] )
 
 		if ( timer.IsUpdateTime() )
 		{
-			gamePiece->posY += size;
+			//gamePiece->posY += tileSize;
 
-			if ( gamePiece->posY > 540 )
-				gamePiece->posY = 0;
+			//if ( gamePiece->posY > 540 )	gamePiece->posY = 0;
 		}
 
 	}

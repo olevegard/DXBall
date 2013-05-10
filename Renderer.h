@@ -20,9 +20,13 @@ public:
 	bool Render( );
 	void AddObject( std::shared_ptr< GamePiece >  &gamePiece );
 
-	int GetTileSize()
+	SDL_Rect GetTileSize()
 	{
 		return tileSize;
+	}
+	int GetWindowWidth()
+	{
+		return SCREEN_WIDTH;
 	}
 private:
 
@@ -54,6 +58,6 @@ private:
 	SDL_Surface *screen;
 	
 	std::vector< std::shared_ptr< GamePiece >  > gamePieceList;
-	
-	int tileSize;
+
+	SDL_Rect tileSize;
 };

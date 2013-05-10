@@ -11,7 +11,7 @@ Renderer::Renderer()
 	,	gameArea( NULL )
 	,	screen(  NULL )
 	,	gamePieceList( { } )
-	,	tileSize( 0 )
+	,	tileSize(  )
 {
 
 }
@@ -111,15 +111,16 @@ void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* des
 void Renderer::LoadAllTextures( )
 {
 	//tile = LoadImage( "hello.bmp" );
-	tile = LoadImage( "media/tiles/blue_30x30.png" );
-	background= LoadImage( "media/background.bmp" );
+	tile = LoadImage( "media/paddles/paddle30x120.png" );
+	SetColorKey( tile, 0xff,0xff,0xff );
+	tileSize = tile->clip_rect;
+
+	background= LoadImage( "media/background.png" );
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
 
-	tileSize = tile->clip_rect.h;
-
 	// Create game area surfae. ( Set to size of 10 * tile width, 30 * tile height )
-	gameArea = SDL_CreateRGBSurface( 0, tileSize * 10, tileSize * 20, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
+	gameArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, tileSize.h, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
 	FillSurface ( gameArea, 0x66, 0x66, 0x66);
 	//Uint32 colorKey = SDL_MapRGB( gameArea->format, 0x77, 0x77, 0x77 );
 	//SDL_SetColorKey( gameArea, SDL_SRCCOLORKEY, colorKey );
@@ -130,9 +131,6 @@ void Renderer::LoadAllTextures( )
 void Renderer::BlitBackground()
 {
 	ApplySurface( 0, 0, background, backgroundArea );
-	ApplySurface( 320, 0, background, backgroundArea );
-	ApplySurface( 0, 240, background, backgroundArea );
-	ApplySurface( 320, 240, background, backgroundArea );
 
 	ApplySurface( 0, 0, backgroundArea, screen );
 }
@@ -141,12 +139,11 @@ void Renderer::BlitForeground()
 {
 	for ( std::shared_ptr< GamePiece > gp : gamePieceList )
 	{
-
 		ApplySurface( gp->posX, gp->posY, tile, gameArea );
 	}
 
 	// Apply game area ( with tiles ) to screen.
-	ApplySurface( 50, 50, gameArea, screen );
+	ApplySurface( 0, SCREEN_HEIGHT - gameArea->h, gameArea, screen );
 
 	// Clear background. TODO : replace with pic.
 	FillSurface ( gameArea, 0x66, 0x66, 0x66 );
