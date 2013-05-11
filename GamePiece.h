@@ -1,20 +1,20 @@
+#pragma once
+
 struct GamePiece
 {
 	GamePiece()
-		:	posX( 0 )
-		,	posY( 0 )
+		:	rect( )
 		,	textureType( 0 )
 	{
 
 	}
 
-	~GamePiece()
+	virtual ~GamePiece()
 	{
 
 	}
 
-	int posX;
-	int posY;
+	SDL_Rect rect;
 
 	int textureType;
 

@@ -6,14 +6,19 @@ Renderer::Renderer()
 	,	SCREEN_BPP ( 32 )
 
 	,	tile(  NULL )
+	,	ball( NULL )
 	,	backgroundArea(  NULL )
 	,	background(  NULL )
 	,	gameArea( NULL )
 	,	screen(  NULL )
 	,	gamePieceList( { } )
 	,	tileSize(  )
+	,	screenSize()
 {
-
+	screenSize.x = 0;
+	screenSize.y = 0;
+	screenSize.w = 1920 / 2;
+	screenSize.h = 1280 / 2;
 }
 
 Renderer::~Renderer()
@@ -29,9 +34,8 @@ bool Renderer::Init()
 		return false;
 
 	// Set window title
-	SDL_WM_SetCaption( "Hello World", NULL );
-
 	LoadAllTextures();
+
 	BlitBackground();
 
 	return true;
@@ -42,6 +46,8 @@ bool Renderer::Render( )
 	BlitBackground();
 	BlitForeground();
 
+	ApplySurface( 0, 0, backgroundArea, screen );
+
 	if ( SDL_Flip( screen ) == -1 )
 		return false;
 	else
@@ -49,8 +55,10 @@ bool Renderer::Render( )
 }
 
 void Renderer::AddObject( std::shared_ptr< GamePiece >  &gamePiece )
+
 {
 	gamePieceList.push_back( gamePiece );
+
 }
 
 SDL_Surface* Renderer::LoadImage( const std::string &filename )
@@ -115,6 +123,9 @@ void Renderer::LoadAllTextures( )
 	SetColorKey( tile, 0xff,0xff,0xff );
 	tileSize = tile->clip_rect;
 
+	ball = LoadImage( "media/ball.png" );
+	SetColorKey( ball, 0xff,0xff,0xff );
+
 	background= LoadImage( "media/background.png" );
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
@@ -130,21 +141,28 @@ void Renderer::LoadAllTextures( )
 
 void Renderer::BlitBackground()
 {
+	FillSurface ( backgroundArea, 0x66, 0x66, 0x66 );
 	ApplySurface( 0, 0, background, backgroundArea );
-
-	ApplySurface( 0, 0, backgroundArea, screen );
 }
 
 void Renderer::BlitForeground()
 {
 	for ( std::shared_ptr< GamePiece > gp : gamePieceList )
 	{
-		ApplySurface( gp->posX, gp->posY, tile, gameArea );
+		if ( gp->textureType != 0 )
+		{
+			ApplySurface( gp->rect.x, gp->rect.y, tile, backgroundArea );
+		}
+		else
+		{
+			ApplySurface( gp->rect.x, gp->rect.y, ball, backgroundArea );
+		}
+
 	}
 
 	// Apply game area ( with tiles ) to screen.
-	ApplySurface( 0, SCREEN_HEIGHT - gameArea->h, gameArea, screen );
+	//ApplySurface( 0, SCREEN_HEIGHT - gameArea->h, gameArea, screen );
 
 	// Clear background. TODO : replace with pic.
-	FillSurface ( gameArea, 0x66, 0x66, 0x66 );
+	//FillSurface ( gameArea, 0x66, 0x66, 0x66 );
 }

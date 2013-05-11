@@ -1,4 +1,5 @@
 #include "Timer.h"
+#include <iostream>
 
 #include <sys/stat.h>
 
@@ -24,13 +25,18 @@ void Timer::Restart()
 }
 
 // Time since last frame ( for framerate calculation )
-void Timer::GetDelta( float &deltaMSec )
+float Timer::GetDelta( )
 {
+
+	// Get diff ms
 	unsigned long long deltaCurrent = GetCurrentTime();
 	unsigned long long diff = deltaCurrent - delta;
-	deltaMSec = static_cast< float > ( diff / 1000000.0f );
+	float deltaMSec = static_cast< float > ( diff / 1000000.0f );
 
+	// Reset delta
 	delta = deltaCurrent;
+
+	return deltaMSec;
 }
 
 // Elapsed time since last reset ( used for regular updates and elapsed game time )

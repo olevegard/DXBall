@@ -24,9 +24,9 @@ public:
 	{
 		return tileSize;
 	}
-	int GetWindowWidth()
+	SDL_Rect GetWindowSize()
 	{
-		return SCREEN_WIDTH;
+		return screenSize;
 	}
 private:
 
@@ -49,6 +49,7 @@ private:
 	const int SCREEN_BPP;
 
 	SDL_Surface *tile;
+	SDL_Surface *ball;
 
 	SDL_Surface *backgroundArea;
 	SDL_Surface *background;
@@ -60,4 +61,5 @@ private:
 	std::vector< std::shared_ptr< GamePiece >  > gamePieceList;
 
 	SDL_Rect tileSize;
+	SDL_Rect screenSize;
 };
