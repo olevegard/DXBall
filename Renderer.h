@@ -7,6 +7,7 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
 
 #include "GamePiece.h"
 
@@ -20,6 +21,13 @@ public:
 	bool Render( );
 	void AddObject( std::shared_ptr< GamePiece >  &gamePiece );
 
+	void RenderText( const std::string &textToRender )
+	{
+		//.r = 123;
+		textColor.g = 123;
+		textColor.b = 123;
+		text = TTF_RenderText_Solid( font, textToRender.c_str(), textColor );
+	}
 	SDL_Rect GetTileSize()
 	{
 		return tileSize;
@@ -39,7 +47,7 @@ private:
 
 	void ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination );
 
-	void LoadAllTextures( );
+	bool LoadAllFiles( );
 
 	void BlitBackground();
 	void BlitForeground();
@@ -48,7 +56,7 @@ private:
 	const int SCREEN_HEIGHT;
 	const int SCREEN_BPP;
 
-	SDL_Surface *tile;
+	SDL_Surface *paddle;
 	SDL_Surface *ball;
 
 	SDL_Surface *backgroundArea;
@@ -57,9 +65,13 @@ private:
 	SDL_Surface *gameArea;
 
 	SDL_Surface *screen;
-	
+
 	std::vector< std::shared_ptr< GamePiece >  > gamePieceList;
 
 	SDL_Rect tileSize;
 	SDL_Rect screenSize;
+
+	TTF_Font* font;
+	SDL_Surface* text;
+	SDL_Color textColor;
 };

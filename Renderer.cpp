@@ -5,7 +5,7 @@ Renderer::Renderer()
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
 
-	,	tile(  NULL )
+	,	paddle(  NULL )
 	,	ball( NULL )
 	,	backgroundArea(  NULL )
 	,	background(  NULL )
@@ -14,6 +14,9 @@ Renderer::Renderer()
 	,	gamePieceList( { } )
 	,	tileSize(  )
 	,	screenSize()
+	,	font()
+	,	text()
+	,	textColor( { 0, 0, 0 } )
 {
 	screenSize.x = 0;
 	screenSize.y = 0;
@@ -33,8 +36,12 @@ bool Renderer::Init()
 	if ( screen == NULL )
 		return false;
 
+	if ( TTF_Init( ) == -1 )
+		return false;
+
 	// Set window title
-	LoadAllTextures();
+ 	if ( !LoadAllFiles() )
+		return false;
 
 	BlitBackground();
 
@@ -47,6 +54,9 @@ bool Renderer::Render( )
 	BlitForeground();
 
 	ApplySurface( 0, 0, backgroundArea, screen );
+
+	if ( text )
+		ApplySurface( 0, 0, text, screen );
 
 	if ( SDL_Flip( screen ) == -1 )
 		return false;
@@ -116,12 +126,11 @@ void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* des
 	SDL_BlitSurface( source, NULL, destination, &offset );
 }
 
-void Renderer::LoadAllTextures( )
+bool Renderer::LoadAllFiles( )
 {
-	//tile = LoadImage( "hello.bmp" );
-	tile = LoadImage( "media/paddles/paddle30x120.png" );
-	SetColorKey( tile, 0xff,0xff,0xff );
-	tileSize = tile->clip_rect;
+	paddle = LoadImage( "media/paddles/paddle30x120.png" );
+	SetColorKey( paddle, 0xff,0xff,0xff );
+	tileSize = paddle->clip_rect;
 
 	ball = LoadImage( "media/ball.png" );
 	SetColorKey( ball, 0xff,0xff,0xff );
@@ -130,13 +139,16 @@ void Renderer::LoadAllTextures( )
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
 
-	// Create game area surfae. ( Set to size of 10 * tile width, 30 * tile height )
+	// Create game area surfae. ( Set to size of 10 * paddle width, 30 * paddle height )
 	gameArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, tileSize.h, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
 	FillSurface ( gameArea, 0x66, 0x66, 0x66);
-	//Uint32 colorKey = SDL_MapRGB( gameArea->format, 0x77, 0x77, 0x77 );
-	//SDL_SetColorKey( gameArea, SDL_SRCCOLORKEY, colorKey );
 
-	//SDL_SetAlpha( gameArea, SDL_SRCALPHA, 0 );
+	font = TTF_OpenFont( "lazy.ttf", 28 );
+
+	if ( font == NULL )
+		return false;
+
+	return true;
 }
 
 void Renderer::BlitBackground()
@@ -151,7 +163,7 @@ void Renderer::BlitForeground()
 	{
 		if ( gp->textureType != 0 )
 		{
-			ApplySurface( gp->rect.x, gp->rect.y, tile, backgroundArea );
+			ApplySurface( gp->rect.x, gp->rect.y, paddle, backgroundArea );
 		}
 		else
 		{

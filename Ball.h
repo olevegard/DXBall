@@ -6,28 +6,35 @@ struct Ball : GamePiece
 {
 	Ball()
 		:	speed( 0.7f )
-		,	dirX( 0.83205 )
+		,	dirX( -0.83205 )
 		,	dirY( 0.5547 )
 		,	stop( false )
 	{
 		rect.w = 20;
 		rect.h = 20;
-		NormalizeDirection();
+		Reset();
 	}
 
 	virtual ~Ball()
 	{
 	}
 
+	void Reset()
+	{
+		speed = 0.7f;
+		dirX = -0.83205;
+		dirY =  0.5547;
+		rect.x = 300;
+		rect.y = 10;
+		NormalizeDirection();
+	}
 	void NormalizeDirection()
 	{
 		float length = sqrt( ( dirX * dirX ) + ( dirY * dirY ) );
 		dirX /= length;
 		dirY /= length;
-		std::cout << "dir X " << dirX << std::endl;
-		std::cout << "dir Y " << dirY << std::endl;
-
 	}
+
 	void update( float tick )
 	{ 
 		int deltaMovement = static_cast<int>( tick * speed + 0.5f );
@@ -59,7 +66,7 @@ struct Ball : GamePiece
 			return true;
 		}
 
-		if ( ( rect.y + rect.h ) > bottom || rect.y < top )
+		if ( rect.y < top )
 		{
 			dirY *= -1.0f;
 			return true;
@@ -67,7 +74,20 @@ struct Ball : GamePiece
 
 		return false;
 	}
+	bool DeathCheck( const SDL_Rect &boundsRect )
+	{
+		int bottom = boundsRect.y + boundsRect.h;
 
+		if (  ( rect.y + rect.h ) > bottom  )
+		{
+			std::cout << "Death!\n";
+			Reset();
+			dirY *= -1.0f;
+			return true;
+		}
+
+		return false;
+	}
 	bool PaddleCheck( const SDL_Rect &paddleRect )
 	{
 		int left = paddleRect.x;
@@ -86,18 +106,17 @@ struct Ball : GamePiece
 				<< "bottom : " << bottom << std::endl
 				<< "top    : " << top << std::endl;
 
-		//if  ( ( rect.x > left  ) && ( ( rect.x + rect.w ) < right ) && ( ( rect.y + rect.h ) < bottom ) && ( rect.y > top ) )
 		if ( ( left < ( rect.x + rect.w ) ) && ( right > rect.x ) && ( top < ( rect.y + rect.h  )  ) )
 		{
-			std::cout << "Hit\n";
-			dirX *= -1.0f;
-			dirY *= -1.0f;
-			return true;
-		} else
-			std::cout << "Miss\n";
+			// Make ball go left of right depending where on the paddle it hits
+			int ballMidpoint = rect.x + ( rect.w / 2 );
+			int paddleMidpoint = paddleRect.x + ( paddleRect.w / 2 );
 
-		if ( false )
-		{
+			dirX = static_cast<float> ( ballMidpoint - paddleMidpoint ) / 70.0f;
+			dirY = -1.0f;
+			NormalizeDirection();
+			speed *= 1.05f;
+			return true;
 		}
 
 		return false;
@@ -110,3 +129,4 @@ struct Ball : GamePiece
 	float dirY;
 	bool stop;
 };
+

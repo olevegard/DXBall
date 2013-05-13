@@ -15,6 +15,7 @@ struct GamePiece;
 int main( int argc, char* args[] )
 {
 
+	timer.Restart();
 
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
 		return 1;
@@ -22,6 +23,7 @@ int main( int argc, char* args[] )
 	if ( !renderer.Init() )
 		return 1;
 
+	renderer.RenderText( "DX Ball" );
 	std::shared_ptr< GamePiece > gamePiece( new GamePiece() );
 	gamePiece->textureType = 1;
 	gamePiece->rect.y = 610;
@@ -33,8 +35,6 @@ int main( int argc, char* args[] )
 
 	std::shared_ptr< GamePiece > ball( new Ball() );
 	ball->textureType = 0;
-	ball->rect.x = 10;
-	ball->rect.y = 10;
 	renderer.AddObject( ball );
 
 	Ball* pBall = dynamic_cast< Ball* > (ball.get() );
@@ -48,7 +48,7 @@ int main( int argc, char* args[] )
 	SDL_WM_GrabInput( SDL_GRAB_FULLSCREEN );
 	SDL_MouseMotionEvent prevMotion;
 	int halfTileWidth = tileSize.w / 2;
-	timer.GetDelta();
+	int deathCounter = 0;
 	while ( !quit )
 	{
 		while ( SDL_PollEvent( &event ) )
@@ -90,13 +90,11 @@ int main( int argc, char* args[] )
 		pBall->update( timer.GetDelta( ));
 		pBall->BoundCheck( windowSize );
 		pBall->PaddleCheck( gamePiece->rect );
-		renderer.Render( );
 
-		if ( timer.IsUpdateTime() )
+		if ( pBall->DeathCheck( windowSize ) )
 		{
-			//gamePiece->posY += tileSize;
-
-			//if ( gamePiece->posY > 540 )	gamePiece->posY = 0;
+			std::cout << "Death : " << ++deathCounter << std::endl;
 		}
+		renderer.Render( );
 	}
 }
