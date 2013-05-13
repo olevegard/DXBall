@@ -5,9 +5,9 @@
 struct Ball : GamePiece
 {
 	Ball()
-		:	speed( 0.7f )
+		:	speed( 0.0705 )
 		,	dirX( -0.83205 )
-		,	dirY( 0.5547 )
+		,	dirY(-0.5547 )
 		,	stop( false )
 	{
 		rect.w = 20;
@@ -23,9 +23,9 @@ struct Ball : GamePiece
 	{
 		speed = 0.7f;
 		dirX = -0.83205;
-		dirY =  0.5547;
+		dirY =  -0.87;
 		rect.x = 300;
-		rect.y = 10;
+		rect.y = 110;
 		NormalizeDirection();
 	}
 	void NormalizeDirection()
@@ -60,14 +60,23 @@ struct Ball : GamePiece
 				<< "bottom : " << bottom << std::endl
 				<< "top    : " << top << std::endl;
 
-		if ( rect.x < left || ( rect.x + rect.w ) > right )
+		if ( rect.x < left )
 		{
+			rect.x = left;
+			dirX *= -1.0f;
+			return true;
+		}
+
+		if ( ( rect.x + rect.w ) > right )
+		{
+			rect.x = ( right - rect.w );
 			dirX *= -1.0f;
 			return true;
 		}
 
 		if ( rect.y < top )
 		{
+			rect.y = top;
 			dirY *= -1.0f;
 			return true;
 		}

@@ -48,7 +48,9 @@ int main( int argc, char* args[] )
 	SDL_WM_GrabInput( SDL_GRAB_FULLSCREEN );
 	SDL_MouseMotionEvent prevMotion;
 	int halfTileWidth = tileSize.w / 2;
-	int deathCounter = 0;
+	int lives = 5;
+	renderer.RenderLives( lives );
+	renderer.RenderPoints( 123 );
 	while ( !quit )
 	{
 		while ( SDL_PollEvent( &event ) )
@@ -93,7 +95,7 @@ int main( int argc, char* args[] )
 
 		if ( pBall->DeathCheck( windowSize ) )
 		{
-			std::cout << "Death : " << ++deathCounter << std::endl;
+			renderer.RenderLives( --lives );
 		}
 		renderer.Render( );
 	}

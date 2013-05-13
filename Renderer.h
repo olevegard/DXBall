@@ -10,6 +10,7 @@
 #include <SDL/SDL_ttf.h>
 
 #include "GamePiece.h"
+#include <sstream>
 
 class Renderer
 {
@@ -27,6 +28,28 @@ public:
 		textColor.g = 123;
 		textColor.b = 123;
 		text = TTF_RenderText_Solid( font, textToRender.c_str(), textColor );
+	}
+	
+	void RenderLives( unsigned short lifeCount )
+	{
+		textColor.r = 123;
+		textColor.g = 123;
+		textColor.b = 123;
+
+		std::stringstream ss;
+		ss << "Lives : " << lifeCount;
+		lives = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
+	}
+	
+	void RenderPoints( unsigned short pointCount )
+	{
+		textColor.r = 123;
+		textColor.g = 123;
+		textColor.b = 123;
+
+		std::stringstream ss;
+		ss << "Points : " << pointCount;
+		points = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
 	}
 	SDL_Rect GetTileSize()
 	{
@@ -51,6 +74,7 @@ private:
 
 	void BlitBackground();
 	void BlitForeground();
+	void BlitText();
 
 	const int SCREEN_WIDTH;
 	const int SCREEN_HEIGHT;
@@ -60,7 +84,7 @@ private:
 	SDL_Surface *ball;
 
 	SDL_Surface *backgroundArea;
-	SDL_Surface *background;
+	SDL_Surface *backgroundImage;
 
 	SDL_Surface *gameArea;
 
@@ -73,5 +97,7 @@ private:
 
 	TTF_Font* font;
 	SDL_Surface* text;
+	SDL_Surface* lives;
+	SDL_Surface* points;
 	SDL_Color textColor;
 };

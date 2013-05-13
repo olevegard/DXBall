@@ -8,7 +8,7 @@ Renderer::Renderer()
 	,	paddle(  NULL )
 	,	ball( NULL )
 	,	backgroundArea(  NULL )
-	,	background(  NULL )
+	,	backgroundImage(  NULL )
 	,	gameArea( NULL )
 	,	screen(  NULL )
 	,	gamePieceList( { } )
@@ -16,6 +16,8 @@ Renderer::Renderer()
 	,	screenSize()
 	,	font()
 	,	text()
+	,	lives()
+	,	points()
 	,	textColor( { 0, 0, 0 } )
 {
 	screenSize.x = 0;
@@ -48,27 +50,10 @@ bool Renderer::Init()
 	return true;
 }
 
-bool Renderer::Render( )
-{
-	BlitBackground();
-	BlitForeground();
-
-	ApplySurface( 0, 0, backgroundArea, screen );
-
-	if ( text )
-		ApplySurface( 0, 0, text, screen );
-
-	if ( SDL_Flip( screen ) == -1 )
-		return false;
-	else
-		return true;
-}
-
 void Renderer::AddObject( std::shared_ptr< GamePiece >  &gamePiece )
 
 {
 	gamePieceList.push_back( gamePiece );
-
 }
 
 SDL_Surface* Renderer::LoadImage( const std::string &filename )
@@ -135,7 +120,7 @@ bool Renderer::LoadAllFiles( )
 	ball = LoadImage( "media/ball.png" );
 	SetColorKey( ball, 0xff,0xff,0xff );
 
-	background= LoadImage( "media/background.png" );
+	backgroundImage= LoadImage( "media/background.png" );
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
 
@@ -150,11 +135,25 @@ bool Renderer::LoadAllFiles( )
 
 	return true;
 }
+bool Renderer::Render( )
+{
+	BlitBackground();
+	BlitForeground();
 
+	ApplySurface( 0, 0, backgroundArea, screen );
+
+
+	BlitText();
+	
+	if ( SDL_Flip( screen ) == -1 )
+		return false;
+	else
+		return true;
+}
 void Renderer::BlitBackground()
 {
-	FillSurface ( backgroundArea, 0x66, 0x66, 0x66 );
-	ApplySurface( 0, 0, background, backgroundArea );
+	//FillSurface ( backgroundArea, 0x66, 0x66, 0x66 );
+	ApplySurface( 0, 0, backgroundImage, backgroundArea );
 }
 
 void Renderer::BlitForeground()
@@ -175,6 +174,14 @@ void Renderer::BlitForeground()
 	// Apply game area ( with tiles ) to screen.
 	//ApplySurface( 0, SCREEN_HEIGHT - gameArea->h, gameArea, screen );
 
-	// Clear background. TODO : replace with pic.
+	// Clear backgroundImage. TODO : replace with pic.
 	//FillSurface ( gameArea, 0x66, 0x66, 0x66 );
+}
+
+void Renderer::BlitText()
+{
+	if ( lives )
+		ApplySurface( 0, 0, lives, screen );
+	if ( points )
+		ApplySurface( 0, lives->h + 5, points, screen );
 }
