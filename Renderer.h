@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
@@ -29,6 +30,11 @@ public:
 		textColor.b = 123;
 		text = TTF_RenderText_Solid( font, textToRender.c_str(), textColor );
 	}
+
+	void RemoveText()
+	{
+		text = NULL;
+	}
 	
 	void RenderLives( unsigned short lifeCount )
 	{
@@ -53,19 +59,20 @@ public:
 	}
 	SDL_Rect GetTileSize()
 	{
-		return tileSize;
+		return rects[GamePiece::Paddle];
 	}
 	SDL_Rect GetWindowSize()
 	{
-		return screenSize;
+		return rects[GamePiece::Background];
 	}
 private:
 
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
 
-	SDL_Surface* LoadImage( const std::string &filename );
+	SDL_Surface* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
 	void SetColorKey( SDL_Surface* source, int r, int g, int b );
+	void SetColorKey( GamePiece::TextureType textureID, int r, int g, int b );
 	void FillSurface( SDL_Surface* source, int r, int g, int b );
 
 	void ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination );
@@ -80,21 +87,16 @@ private:
 	const int SCREEN_HEIGHT;
 	const int SCREEN_BPP;
 
-	SDL_Surface *paddle;
-	SDL_Surface *ball;
+	std::map< int, SDL_Surface* > textures;
+	std::map< int, SDL_Rect > rects;
 
 	SDL_Surface *backgroundArea;
 	SDL_Surface *backgroundImage;
-
-	SDL_Surface *gameArea;
-
 	SDL_Surface *screen;
 
 	std::vector< std::shared_ptr< GamePiece >  > gamePieceList;
 
-	SDL_Rect tileSize;
-	SDL_Rect screenSize;
-
+	// Text
 	TTF_Font* font;
 	SDL_Surface* text;
 	SDL_Surface* lives;

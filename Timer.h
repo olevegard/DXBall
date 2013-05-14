@@ -12,7 +12,7 @@ public:
 	void Restart();
 	
 	// Time since last frame ( for framerate calculation )
-	float GetDelta( );
+	double GetDelta( );
 
 	// Elapsed time since last reset ( used for regular updates and elapsed game time )
 	unsigned int GetElapsed( bool reset = false );

@@ -5,6 +5,7 @@
 #include <SDL/SDL_image.h>
 
 #include "Renderer.h"
+#include "GamePiece.h"
 #include "Timer.h"
 #include "Ball.h"
 
@@ -15,27 +16,22 @@ struct GamePiece;
 int main( int argc, char* args[] )
 {
 
-	timer.Restart();
-
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
 		return 1;
 
 	if ( !renderer.Init() )
 		return 1;
 
-	renderer.RenderText( "DX Ball" );
 	std::shared_ptr< GamePiece > gamePiece( new GamePiece() );
-	gamePiece->textureType = 1;
+	gamePiece->textureType = GamePiece::Paddle;
 	gamePiece->rect.y = 610;
 	gamePiece->rect.w = 120;
 	gamePiece->rect.h = 30;
 	
 
-	renderer.AddObject( gamePiece );
-
 	std::shared_ptr< GamePiece > ball( new Ball() );
-	ball->textureType = 0;
-	renderer.AddObject( ball );
+
+	ball->textureType = GamePiece::Ball;
 
 	Ball* pBall = dynamic_cast< Ball* > (ball.get() );
 
@@ -45,12 +41,19 @@ int main( int argc, char* args[] )
 	SDL_Rect tileSize = renderer.GetTileSize();
 	SDL_Rect windowSize = renderer.GetWindowSize();
 
-	SDL_WM_GrabInput( SDL_GRAB_FULLSCREEN );
-	SDL_MouseMotionEvent prevMotion;
+	//SDL_WM_GrabInput( SDL_GRAB_FULLSCREEN );
+
 	int halfTileWidth = tileSize.w / 2;
 	int lives = 5;
+
 	renderer.RenderLives( lives );
 	renderer.RenderPoints( 123 );
+	renderer.RenderText( "Press enter to start");
+	renderer.AddObject( gamePiece );
+	renderer.AddObject( ball );
+
+	bool started = false;
+
 	while ( !quit )
 	{
 		while ( SDL_PollEvent( &event ) )
@@ -62,6 +65,9 @@ int main( int argc, char* args[] )
 			{
 				switch  ( event.key.keysym.sym )
 				{
+					case SDLK_RETURN:
+						started = true;
+						break;
 					case SDLK_RIGHT: 
 						gamePiece->rect.x += tileSize.w;
 						break;
@@ -85,18 +91,25 @@ int main( int argc, char* args[] )
 
 			if ( gamePiece->rect.x  <= 0  )
 				gamePiece->rect.x = 0;
-
-			prevMotion = event.motion;
 		}
 
-		pBall->update( timer.GetDelta( ));
-		pBall->BoundCheck( windowSize );
-		pBall->PaddleCheck( gamePiece->rect );
+		if ( started )
+		{
+			renderer.RemoveText();
+			pBall->Update( timer.GetDelta( ));
+			pBall->BoundCheck( windowSize );
+			pBall->PaddleCheck( gamePiece->rect );
+		} else
+		{
+			renderer.RenderText( "Press enter to start");
+		}
 
 		if ( pBall->DeathCheck( windowSize ) )
 		{
+			started = false;
 			renderer.RenderLives( --lives );
 		}
+
 		renderer.Render( );
 	}
 }

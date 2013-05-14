@@ -25,9 +25,8 @@ void Timer::Restart()
 }
 
 // Time since last frame ( for framerate calculation )
-float Timer::GetDelta( )
+double Timer::GetDelta( )
 {
-
 	// Get diff ms
 	unsigned long long deltaCurrent = GetCurrentTime();
 	unsigned long long diff = deltaCurrent - delta;
@@ -86,5 +85,5 @@ unsigned long long Timer::GetCurrentTime() const
 unsigned long long Timer::CreateTimeStamp( const timespec &tm ) const
 {
 	unsigned long long timeStamp = tm.tv_sec * 1000000000 + tm.tv_nsec;
-	return timeStamp; 
+	return timeStamp;
 }

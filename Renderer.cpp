@@ -5,25 +5,25 @@ Renderer::Renderer()
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
 
-	,	paddle(  NULL )
-	,	ball( NULL )
+	,	textures()
+	,	rects()
+
 	,	backgroundArea(  NULL )
 	,	backgroundImage(  NULL )
-	,	gameArea( NULL )
 	,	screen(  NULL )
 	,	gamePieceList( { } )
-	,	tileSize(  )
-	,	screenSize()
 	,	font()
 	,	text()
 	,	lives()
 	,	points()
 	,	textColor( { 0, 0, 0 } )
 {
+	/*
 	screenSize.x = 0;
 	screenSize.y = 0;
 	screenSize.w = 1920 / 2;
 	screenSize.h = 1280 / 2;
+	*/
 }
 
 Renderer::~Renderer()
@@ -33,7 +33,7 @@ Renderer::~Renderer()
 bool Renderer::Init()
 {
 	// Set up screen
-	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_SWSURFACE );
+	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_HWSURFACE | SDL_DOUBLEBUF );
 
 	if ( screen == NULL )
 		return false;
@@ -56,7 +56,7 @@ void Renderer::AddObject( std::shared_ptr< GamePiece >  &gamePiece )
 	gamePieceList.push_back( gamePiece );
 }
 
-SDL_Surface* Renderer::LoadImage( const std::string &filename )
+SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
 {
 	// Temporary stoare for the iamge that's loaded
 	SDL_Surface* loadedImage = NULL;
@@ -73,6 +73,9 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename )
 		//
 		// Create an optimized image
 		optimizedImage = SDL_DisplayFormat( loadedImage );
+		
+		textures[ textureType ] = optimizedImage;
+		rects[ textureType ] = optimizedImage->clip_rect;
 
 		// Free the old image
 		SDL_FreeSurface( loadedImage );
@@ -92,6 +95,12 @@ void Renderer::SetColorKey( SDL_Surface* source, int r, int g, int b )
 	}
 }
 
+
+void Renderer::SetColorKey( GamePiece::TextureType textureID, int r, int g, int b )
+{
+	SetColorKey( textures[ textureID ], r, g, b );
+
+}
 void Renderer::FillSurface( SDL_Surface* source, int r, int g, int b )
 {
 
@@ -113,20 +122,15 @@ void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* des
 
 bool Renderer::LoadAllFiles( )
 {
-	paddle = LoadImage( "media/paddles/paddle30x120.png" );
-	SetColorKey( paddle, 0xff,0xff,0xff );
-	tileSize = paddle->clip_rect;
+	LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
+	SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
 
-	ball = LoadImage( "media/ball.png" );
-	SetColorKey( ball, 0xff,0xff,0xff );
+	LoadImage( "media/ball.png", GamePiece::Ball );
+	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );
 
-	backgroundImage= LoadImage( "media/background.png" );
+	backgroundImage= LoadImage( "media/background.png", GamePiece::Background );
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
-
-	// Create game area surfae. ( Set to size of 10 * paddle width, 30 * paddle height )
-	gameArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, tileSize.h, SCREEN_BPP, 0x00, 0x00, 0x0, 0x00 );
-	FillSurface ( gameArea, 0x66, 0x66, 0x66);
 
 	font = TTF_OpenFont( "lazy.ttf", 28 );
 
@@ -138,21 +142,19 @@ bool Renderer::LoadAllFiles( )
 bool Renderer::Render( )
 {
 	BlitBackground();
+	BlitText();
 	BlitForeground();
 
 	ApplySurface( 0, 0, backgroundArea, screen );
 
-
-	BlitText();
-	
 	if ( SDL_Flip( screen ) == -1 )
 		return false;
 	else
 		return true;
 }
+
 void Renderer::BlitBackground()
 {
-	//FillSurface ( backgroundArea, 0x66, 0x66, 0x66 );
 	ApplySurface( 0, 0, backgroundImage, backgroundArea );
 }
 
@@ -160,28 +162,26 @@ void Renderer::BlitForeground()
 {
 	for ( std::shared_ptr< GamePiece > gp : gamePieceList )
 	{
-		if ( gp->textureType != 0 )
+		if ( gp->textureType == GamePiece::Paddle )
 		{
-			ApplySurface( gp->rect.x, gp->rect.y, paddle, backgroundArea );
+			ApplySurface( gp->rect.x, gp->rect.y, textures[GamePiece::Paddle], backgroundArea );
 		}
-		else
+		else if ( gp->textureType == GamePiece::Ball )
 		{
-			ApplySurface( gp->rect.x, gp->rect.y, ball, backgroundArea );
+			ApplySurface( gp->rect.x, gp->rect.y, textures[GamePiece::Ball], backgroundArea );
 		}
-
 	}
-
-	// Apply game area ( with tiles ) to screen.
-	//ApplySurface( 0, SCREEN_HEIGHT - gameArea->h, gameArea, screen );
-
-	// Clear backgroundImage. TODO : replace with pic.
-	//FillSurface ( gameArea, 0x66, 0x66, 0x66 );
 }
 
 void Renderer::BlitText()
 {
 	if ( lives )
-		ApplySurface( 0, 0, lives, screen );
+		ApplySurface( 0, 0, lives, backgroundArea );
+
 	if ( points )
-		ApplySurface( 0, lives->h + 5, points, screen );
+		ApplySurface( 0, lives->h + 5, points, backgroundArea );
+
+	SDL_Rect screenSize = rects[GamePiece::Background];
+	if ( text )
+		ApplySurface(  ( screenSize.w / 2 ) - ( text->clip_rect.w / 2 ), screenSize.h / 2, text, backgroundArea );
 }
