@@ -6,16 +6,19 @@
 
 #include "Renderer.h"
 #include "GamePiece.h"
+#include "GameManager.h"
 #include "Timer.h"
 #include "Ball.h"
+#include "Paddle.h"
 
-Renderer renderer;
-Timer timer;
-
-struct GamePiece;
+GameManager gameMan;
 int main( int argc, char* args[] )
 {
 
+	gameMan.Init();
+
+	gameMan.Run();
+/*
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
 		return 1;
 
@@ -93,10 +96,12 @@ int main( int argc, char* args[] )
 				gamePiece->rect.x = 0;
 		}
 
+		float delta = timer.GetDelta( );
+
 		if ( started )
 		{
 			renderer.RemoveText();
-			pBall->Update( timer.GetDelta( ));
+			pBall->Update( delta );
 			pBall->BoundCheck( windowSize );
 			pBall->PaddleCheck( gamePiece->rect );
 		} else
@@ -108,8 +113,11 @@ int main( int argc, char* args[] )
 		{
 			started = false;
 			renderer.RenderLives( --lives );
+			pBall->rect.x = 200;
+			pBall->rect.y = 20;
 		}
 
 		renderer.Render( );
 	}
+*/
 }

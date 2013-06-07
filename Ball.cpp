@@ -33,7 +33,7 @@
 	}
 
 	void Ball::Update( double tick )
-	{ 
+	{
 		int deltaMovement = static_cast<int>( tick * speed + 0.5f );
 		rect.x += static_cast<int> ( deltaMovement * dirX );
 		rect.y += static_cast<int> ( deltaMovement * dirY );

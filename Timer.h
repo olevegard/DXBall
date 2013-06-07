@@ -10,17 +10,15 @@ public:
 
 	// Restars everything
 	void Restart();
-	
+
 	// Time since last frame ( for framerate calculation )
 	double GetDelta( );
 
 	// Elapsed time since last reset ( used for regular updates and elapsed game time )
 	unsigned int GetElapsed( bool reset = false );
-	
+
 	// /Used for things that should be updated regularly
 	bool IsUpdateTime();
-
-	//int GetSleepTime();
 private:
 	void ResetPrevTime();
 

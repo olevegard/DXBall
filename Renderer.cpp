@@ -13,23 +13,30 @@ Renderer::Renderer()
 	,	screen(  NULL )
 	,	gamePieceList( { } )
 	,	font()
+	,	bigFont()
 	,	text()
 	,	lives()
 	,	points()
 	,	textColor( { 0, 0, 0 } )
 {
-	/*
-	screenSize.x = 0;
-	screenSize.y = 0;
-	screenSize.w = 1920 / 2;
-	screenSize.h = 1280 / 2;
-	*/
+
 }
 
 Renderer::~Renderer()
 {
+	gamePieceList.empty();
 
+	SDL_FreeSurface( backgroundArea );
+	SDL_FreeSurface( backgroundImage );
+	SDL_FreeSurface (screen );
+
+	SDL_FreeSurface( text );
+	SDL_FreeSurface( lives );
+	SDL_FreeSurface( points );
+
+	SDL_Quit();
 }
+
 bool Renderer::Init()
 {
 	// Set up screen
@@ -42,7 +49,7 @@ bool Renderer::Init()
 		return false;
 
 	// Set window title
- 	if ( !LoadAllFiles() )
+	if ( !LoadAllFiles() )
 		return false;
 
 	BlitBackground();
@@ -51,7 +58,6 @@ bool Renderer::Init()
 }
 
 void Renderer::AddObject( std::shared_ptr< GamePiece >  &gamePiece )
-
 {
 	gamePieceList.push_back( gamePiece );
 }
@@ -95,19 +101,17 @@ void Renderer::SetColorKey( SDL_Surface* source, int r, int g, int b )
 	}
 }
 
-
 void Renderer::SetColorKey( GamePiece::TextureType textureID, int r, int g, int b )
 {
 	SetColorKey( textures[ textureID ], r, g, b );
-
 }
+
 void Renderer::FillSurface( SDL_Surface* source, int r, int g, int b )
 {
-
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 0 ) );
 }
 
-void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination )
+void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination ) const
 {
 	// Make a temp rect to hold the offsets
 	SDL_Rect offset;
@@ -136,9 +140,15 @@ bool Renderer::LoadAllFiles( )
 
 	if ( font == NULL )
 		return false;
+	
+	bigFont = TTF_OpenFont( "lazy.ttf", 57 );
+
+	if ( bigFont == NULL )
+		return false;
 
 	return true;
 }
+
 bool Renderer::Render( )
 {
 	BlitBackground();
@@ -153,7 +163,7 @@ bool Renderer::Render( )
 		return true;
 }
 
-void Renderer::BlitBackground()
+void Renderer::BlitBackground() const
 {
 	ApplySurface( 0, 0, backgroundImage, backgroundArea );
 }
@@ -181,7 +191,7 @@ void Renderer::BlitText()
 	if ( points )
 		ApplySurface( 0, lives->h + 5, points, backgroundArea );
 
-	SDL_Rect screenSize = rects[GamePiece::Background];
+	SDL_Rect screenSize = GetWindowSize();
 	if ( text )
 		ApplySurface(  ( screenSize.w / 2 ) - ( text->clip_rect.w / 2 ), screenSize.h / 2, text, backgroundArea );
 }

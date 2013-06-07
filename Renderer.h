@@ -21,14 +21,26 @@ public:
 
 	bool Init();
 	bool Render( );
-	void AddObject( std::shared_ptr< GamePiece >  &gamePiece );
 
+	void AddObject( std::shared_ptr< GamePiece >  &gamePiece );
+	void RemoveObject(  std::shared_ptr< GamePiece >  &gamePiece )
+	{
+		for ( auto p = gamePieceList.begin(); p != gamePieceList.end();)
+		{
+			if ( (*p).get() == gamePiece.get() )
+			{
+				(*p).reset();
+				gamePieceList.erase( p );
+				break;
+			} else
+				++p;
+		}
+	}
 	void RenderText( const std::string &textToRender )
 	{
-		//.r = 123;
 		textColor.g = 123;
 		textColor.b = 123;
-		text = TTF_RenderText_Solid( font, textToRender.c_str(), textColor );
+		text = TTF_RenderText_Solid( bigFont, textToRender.c_str(), textColor );
 	}
 
 	void RemoveText()
@@ -75,11 +87,11 @@ private:
 	void SetColorKey( GamePiece::TextureType textureID, int r, int g, int b );
 	void FillSurface( SDL_Surface* source, int r, int g, int b );
 
-	void ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination );
+	void ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination ) const;
 
 	bool LoadAllFiles( );
 
-	void BlitBackground();
+	void BlitBackground() const;
 	void BlitForeground();
 	void BlitText();
 
@@ -98,6 +110,7 @@ private:
 
 	// Text
 	TTF_Font* font;
+	TTF_Font* bigFont;
 	SDL_Surface* text;
 	SDL_Surface* lives;
 	SDL_Surface* points;

@@ -1,5 +1,4 @@
 #include "Timer.h"
-#include <iostream>
 
 #include <sys/stat.h>
 
@@ -79,8 +78,10 @@ unsigned long long Timer::GetCurrentTime() const
 {
 	timespec tmCurrent;
 	clock_gettime( CLOCK_MONOTONIC_RAW, &tmCurrent);
+
 	return CreateTimeStamp( tmCurrent );
 }
+
 // Convert timespec to a timespac in nanoseconds.
 unsigned long long Timer::CreateTimeStamp( const timespec &tm ) const
 {
