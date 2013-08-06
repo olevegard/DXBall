@@ -13,6 +13,9 @@
 #include "GamePiece.h"
 #include <sstream>
 
+struct Ball;
+struct Paddle;
+
 class Renderer
 {
 public:
@@ -22,7 +25,8 @@ public:
 	bool Init();
 	bool Render( );
 
-	void AddObject( std::shared_ptr< GamePiece >  &gamePiece );
+	void AddBall( const std::shared_ptr< Ball > &ball );
+
 	void RemoveObject(  std::shared_ptr< GamePiece >  &gamePiece )
 	{
 		for ( auto p = gamePieceList.begin(); p != gamePieceList.end();)
@@ -99,14 +103,16 @@ private:
 	const int SCREEN_HEIGHT;
 	const int SCREEN_BPP;
 
-	std::map< int, SDL_Surface* > textures;
 	std::map< int, SDL_Rect > rects;
+	std::map< int, SDL_Surface* > textures;
 
 	SDL_Surface *backgroundArea;
 	SDL_Surface *backgroundImage;
 	SDL_Surface *screen;
 
 	std::vector< std::shared_ptr< GamePiece >  > gamePieceList;
+	std::vector< std::shared_ptr< Ball >  > ballList;
+	std::vector< std::shared_ptr< Paddle >  > paddleList;
 
 	// Text
 	TTF_Font* font;

@@ -12,10 +12,10 @@ struct GamePiece
 
 	}
 
-	virtual ~GamePiece()
+	/*virtual ~GamePiece()
 	{
 
-	}
+	}*/
 
 	SDL_Rect rect;
 

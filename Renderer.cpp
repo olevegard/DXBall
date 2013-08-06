@@ -11,7 +11,7 @@ Renderer::Renderer()
 	,	backgroundArea(  NULL )
 	,	backgroundImage(  NULL )
 	,	screen(  NULL )
-	,	gamePieceList( { } )
+	,	gamePieceList( /*{ }*/ )
 	,	font()
 	,	bigFont()
 	,	text()
@@ -57,9 +57,9 @@ bool Renderer::Init()
 	return true;
 }
 
-void Renderer::AddObject( std::shared_ptr< GamePiece >  &gamePiece )
+void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
-	gamePieceList.push_back( gamePiece );
+	ballList.push_back( ball );
 }
 
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
