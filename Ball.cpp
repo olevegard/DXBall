@@ -1,10 +1,9 @@
 #include "Ball.h"
 
 	Ball::Ball()
-		:	speed( 0.0705 )
-		,	dirX( -0.83205 )
-		,	dirY(-0.5547 )
-		,	stop( false )
+		:	speed( 0.0705f )
+		,	dirX( -0.83205f )
+		,	dirY(-0.5547f )
 	{
 		rect.w = 20;
 		rect.h = 20;
@@ -18,8 +17,8 @@
 	void Ball::Reset()
 	{
 		speed = 0.7f;
-		dirX = -0.83205;
-		dirY =  -0.87;
+		dirX = -0.83205f;
+		dirY =  -0.87f;
 		rect.x = 300;
 		rect.y = 110;
 		NormalizeDirection();
@@ -27,7 +26,7 @@
 
 	void Ball::NormalizeDirection()
 	{
-		float length = sqrt( ( dirX * dirX ) + ( dirY * dirY ) );
+		double length = sqrt( ( dirX * dirX ) + ( dirY * dirY ) );
 		dirX /= length;
 		dirY /= length;
 	}
@@ -41,9 +40,9 @@
 
 	bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 	{
-		int left = boundsRect.x;
-		int right = boundsRect.x + boundsRect.w;
-		int top = boundsRect.y;
+		short left = boundsRect.x;
+		short right = boundsRect.x + boundsRect.w;
+		short top = boundsRect.y;
 
 		if ( rect.x < left )
 		{

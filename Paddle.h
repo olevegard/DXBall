@@ -7,8 +7,8 @@ struct Paddle : GamePiece
 {
 	Paddle();
 
-	virtual ~Paddle(){}
+	virtual ~Paddle();
 
 	private:
-
+	
 };

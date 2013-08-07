@@ -27,6 +27,5 @@ struct Ball : GamePiece
 
 	float dirX;
 	float dirY;
-	bool stop;
 };
 

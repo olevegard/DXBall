@@ -4,3 +4,9 @@ Paddle::Paddle()
 {
 
 }
+
+
+Paddle::~Paddle()
+{
+
+}

@@ -46,19 +46,19 @@ unsigned int Timer::GetElapsed( bool reset /*= false*/ )
 	if ( reset )
 		update = currentTime;
 
-	return diff / 1000000;
+	return static_cast< unsigned int > ( diff / 1000000);
 }
 
 // /Used for things that should be updated regularly
 bool Timer::IsUpdateTime()
 {
 	// Check if there's more than sleepTime milliseconds since update
-	bool update = static_cast<int>(  GetElapsed( false ) - sleepTime ) >= 0;
+	bool isUpdateTime = static_cast<int>(  GetElapsed( false ) - sleepTime ) >= 0;
 
-	if ( update )
+	if ( isUpdateTime )
 		ResetPrevTime();
 
-	return update;
+	return isUpdateTime;
 }
 
 /*
@@ -85,6 +85,6 @@ unsigned long long Timer::GetCurrentTime() const
 // Convert timespec to a timespac in nanoseconds.
 unsigned long long Timer::CreateTimeStamp( const timespec &tm ) const
 {
-	unsigned long long timeStamp = tm.tv_sec * 1000000000 + tm.tv_nsec;
+	unsigned long long timeStamp = static_cast< unsigned long long > ( tm.tv_sec * 1000000000 + tm.tv_nsec );
 	return timeStamp;
 }

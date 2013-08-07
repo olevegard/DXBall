@@ -27,19 +27,26 @@ public:
 
 	void AddBall( const std::shared_ptr< Ball > &ball );
 
-	void RemoveObject(  std::shared_ptr< GamePiece >  &gamePiece )
+	void RemoveBall(  std::shared_ptr< Ball >  &ball )
 	{
-		for ( auto p = gamePieceList.begin(); p != gamePieceList.end();)
+		for ( auto p = ballList.begin(); p != ballList.end();)
 		{
-			if ( (*p).get() == gamePiece.get() )
+			if ( (*p).get() == ball.get() )
 			{
+				std::cout << "Ball removed\n";
 				(*p).reset();
-				gamePieceList.erase( p );
+				ballList.erase( p );
 				break;
 			} else
 				++p;
 		}
 	}
+
+	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
+	{
+		localPaddle = paddle;
+	}
+
 	void RenderText( const std::string &textToRender )
 	{
 		textColor.g = 123;
@@ -52,7 +59,7 @@ public:
 		text = NULL;
 	}
 	
-	void RenderLives( unsigned short lifeCount )
+	void RenderLives( unsigned long lifeCount )
 	{
 		textColor.r = 123;
 		textColor.g = 123;
@@ -91,7 +98,8 @@ private:
 	void SetColorKey( GamePiece::TextureType textureID, int r, int g, int b );
 	void FillSurface( SDL_Surface* source, int r, int g, int b );
 
-	void ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination ) const;
+	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
+	void ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;
 
 	bool LoadAllFiles( );
 
@@ -110,9 +118,8 @@ private:
 	SDL_Surface *backgroundImage;
 	SDL_Surface *screen;
 
-	std::vector< std::shared_ptr< GamePiece >  > gamePieceList;
 	std::vector< std::shared_ptr< Ball >  > ballList;
-	std::vector< std::shared_ptr< Paddle >  > paddleList;
+	std::shared_ptr< Paddle >  localPaddle;
 
 	// Text
 	TTF_Font* font;

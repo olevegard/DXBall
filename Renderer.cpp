@@ -1,30 +1,33 @@
 #include "Renderer.h"
 
+#include "Ball.h"
+#include "Paddle.h"
+
 Renderer::Renderer()
-	:	SCREEN_WIDTH( 1920 / 2 )
+	:	SCREEN_WIDTH ( 1920 / 2 )
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
 
-	,	textures()
 	,	rects()
+	,	textures()
 
 	,	backgroundArea(  NULL )
 	,	backgroundImage(  NULL )
 	,	screen(  NULL )
-	,	gamePieceList( /*{ }*/ )
+	,	ballList( /*{ }*/ )
 	,	font()
 	,	bigFont()
 	,	text()
 	,	lives()
 	,	points()
-	,	textColor( { 0, 0, 0 } )
+	,	textColor( { 0, 0, 0, 0 } )
 {
 
 }
 
 Renderer::~Renderer()
 {
-	gamePieceList.empty();
+	ballList.empty();
 
 	SDL_FreeSurface( backgroundArea );
 	SDL_FreeSurface( backgroundImage );
@@ -59,7 +62,10 @@ bool Renderer::Init()
 
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
+	std::cout << "Ball added\n";
+
 	ballList.push_back( ball );
+	//gamePieceList.push_back( ball );
 }
 
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
@@ -111,7 +117,7 @@ void Renderer::FillSurface( SDL_Surface* source, int r, int g, int b )
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 0 ) );
 }
 
-void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* destination ) const
+void Renderer::ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const
 {
 	// Make a temp rect to hold the offsets
 	SDL_Rect offset;
@@ -123,7 +129,12 @@ void Renderer::ApplySurface( int x, int y, SDL_Surface* source, SDL_Surface* des
 	// Blit the surface
 	SDL_BlitSurface( source, NULL, destination, &offset );
 }
+void Renderer::ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const
+{
 
+	ApplySurface( r.x, r.y, source, destination );
+
+}
 bool Renderer::LoadAllFiles( )
 {
 	LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
@@ -170,17 +181,15 @@ void Renderer::BlitBackground() const
 
 void Renderer::BlitForeground()
 {
-	for ( std::shared_ptr< GamePiece > gp : gamePieceList )
+	// Draw balls
+	for ( std::shared_ptr< Ball > gp : ballList )
 	{
-		if ( gp->textureType == GamePiece::Paddle )
-		{
-			ApplySurface( gp->rect.x, gp->rect.y, textures[GamePiece::Paddle], backgroundArea );
-		}
-		else if ( gp->textureType == GamePiece::Ball )
-		{
-			ApplySurface( gp->rect.x, gp->rect.y, textures[GamePiece::Ball], backgroundArea );
-		}
+		ApplySurface( gp->rect.x, gp->rect.y, textures[GamePiece::Ball], backgroundArea );
 	}
+
+	// Draw paddles
+	ApplySurface( localPaddle->rect.x, localPaddle->rect.y, textures[GamePiece::Paddle], backgroundArea );
+	
 }
 
 void Renderer::BlitText()
@@ -189,7 +198,7 @@ void Renderer::BlitText()
 		ApplySurface( 0, 0, lives, backgroundArea );
 
 	if ( points )
-		ApplySurface( 0, lives->h + 5, points, backgroundArea );
+		ApplySurface( 0, static_cast< short > ( lives->h + 5 ), points, backgroundArea );
 
 	SDL_Rect screenSize = GetWindowSize();
 	if ( text )

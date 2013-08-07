@@ -36,10 +36,12 @@ int GameManager::Init()
 void GameManager::Restart()
 {
 	//std::shared_ptr< GamePiece > paddle( new Paddle() );
-	localPaddle.textureType = GamePiece::Paddle;
-	localPaddle.rect.y = 610;
-	localPaddle.rect.w = 120;
-	localPaddle.rect.h = 30;
+	localPaddle.reset( new Paddle() );
+	localPaddle->textureType = GamePiece::Paddle;
+	localPaddle->rect.y = 610;
+	localPaddle->rect.w = 120;
+	localPaddle->rect.h = 30;
+	renderer.SetLocalPaddle( localPaddle );
 	//renderer.AddObject( paddle );
 	//
 	//localPaddle = paddle.get();
@@ -66,7 +68,11 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  pBall )
 
 	auto p = std::find( ballList.begin(), ballList.end(), pBall );
 	if ( p != ballList.end() )
-		std::cout << "No find\n";
+	{
+		//ballList.erase( p );
+		renderer.RemoveBall( (*p) );
+	}
+		//std::cout << "No find\n";
 	/*
 	for ( auto p = ballList.begin(); p != ballList.end(); ) 
 	{
@@ -82,7 +88,7 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  pBall )
 	*/
 }
 
-void GameManager::UpdateBalls( float delta )
+void GameManager::UpdateBalls( double delta )
 {
 	renderer.RenderLives( ballList.size() );
 
@@ -90,11 +96,11 @@ void GameManager::UpdateBalls( float delta )
 	{
 		renderer.RemoveText();
 
-		for ( std::vector< std::shared_ptr< Ball > >::iterator p = ballList.begin(); p != ballList.end() && (*p) != NULL;  )
+		for ( std::vector< std::shared_ptr< Ball > >::iterator p = ballList.begin(); p != ballList.end() && (*p) != nullptr;  )
 		{
 			(*p)->Update( delta );
 			(*p)->BoundCheck( windowSize );
-			(*p)->PaddleCheck( localPaddle.rect );
+			(*p)->PaddleCheck( localPaddle->rect );
 			if ( (*p)->DeathCheck( windowSize ) )
 			{
 				(*p)->rect.x = 200;
@@ -139,15 +145,15 @@ void GameManager::Run()
 			}
 
 			if ( event.motion.x != 0 && event.motion.y != 0 )
-				localPaddle.rect.x = event.motion.x - halfTileWidth;
+				localPaddle->rect.x = static_cast< short > ( event.motion.x - halfTileWidth );
 
-			if ( ( localPaddle.rect.x + tileSize.w) > windowSize.w )
-				localPaddle.rect.x = windowSize.w - tileSize.w;
+			if ( ( localPaddle->rect.x + tileSize.w) > windowSize.w )
+				localPaddle->rect.x = static_cast< short > ( windowSize.w - tileSize.w );
 
-			if ( localPaddle.rect.x  <= 0  )
-				localPaddle.rect.x = 0;
+			if ( localPaddle->rect.x  <= 0  )
+				localPaddle->rect.x = 0;
 		}
-		float delta = timer.GetDelta( );
+		double delta = timer.GetDelta( );
 		UpdateBalls( delta );
 
 		renderer.Render( );

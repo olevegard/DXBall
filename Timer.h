@@ -32,5 +32,5 @@ private:
 	unsigned long long delta;
 	unsigned long long update;
 
-	int sleepTime;
+	unsigned int sleepTime;
 };

@@ -27,14 +27,14 @@ class GameManager
 		void AddBullet();
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
-		void UpdateBalls( float delta );
+		void UpdateBalls( double delta );
 
 		void Run();
 	private:
 		Renderer renderer;
 		Timer timer;
 
-		Paddle localPaddle;
+		std::shared_ptr < Paddle > localPaddle;
 		std::vector< std::shared_ptr< Ball > > ballList;
 
 		SDL_Rect tileSize;
