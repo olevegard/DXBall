@@ -47,14 +47,14 @@ void GameManager::Restart()
 	//localPaddle = paddle.get();
 	//paddleList.push_back( dynamic_cast< Paddle* > ( paddle.get() ) );
 
-	AddBullet();
+	AddBall();
 
 	renderer.RenderLives( 1 );
 	renderer.RenderPoints( 123 );
 	renderer.RenderText( "Press enter to start");
 }
 
-void GameManager::AddBullet()
+void GameManager::AddBall()
 {
 	std::shared_ptr< Ball > ball( new Ball() );
 	ball->textureType = GamePiece::Ball;
@@ -133,7 +133,7 @@ void GameManager::Run()
 				{
 					case SDLK_RETURN:
 					case SDLK_b:
-						AddBullet();
+						AddBall();
 						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:

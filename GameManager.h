@@ -24,7 +24,7 @@ class GameManager
 
 		void Restart();
 
-		void AddBullet();
+		void AddBall();
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void UpdateBalls( double delta );
@@ -36,6 +36,7 @@ class GameManager
 
 		std::shared_ptr < Paddle > localPaddle;
 		std::vector< std::shared_ptr< Ball > > ballList;
+		std::vector< std::shared_ptr< Tile > > tileList;
 
 		SDL_Rect tileSize;
 		SDL_Rect windowSize;
