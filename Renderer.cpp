@@ -65,7 +65,21 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 	std::cout << "Ball added\n";
 
 	ballList.push_back( ball );
-	//gamePieceList.push_back( ball );
+}
+
+void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
+{
+	for ( auto p = ballList.begin(); p != ballList.end();)
+	{
+		if ( (*p).get() == ball.get() )
+		{
+			std::cout << "Ball removed\n";
+			(*p).reset();
+			ballList.erase( p );
+			break;
+		} else
+			++p;
+	}
 }
 
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
@@ -85,7 +99,7 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 		//
 		// Create an optimized image
 		optimizedImage = SDL_DisplayFormat( loadedImage );
-		
+
 		textures[ textureType ] = optimizedImage;
 		rects[ textureType ] = optimizedImage->clip_rect;
 
@@ -151,7 +165,7 @@ bool Renderer::LoadAllFiles( )
 
 	if ( font == NULL )
 		return false;
-	
+
 	bigFont = TTF_OpenFont( "lazy.ttf", 57 );
 
 	if ( bigFont == NULL )

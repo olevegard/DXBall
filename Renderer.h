@@ -14,6 +14,7 @@
 #include <sstream>
 
 struct Ball;
+struct Tile;
 struct Paddle;
 
 class Renderer
@@ -26,21 +27,7 @@ public:
 	bool Render( );
 
 	void AddBall( const std::shared_ptr< Ball > &ball );
-
-	void RemoveBall(  std::shared_ptr< Ball >  &ball )
-	{
-		for ( auto p = ballList.begin(); p != ballList.end();)
-		{
-			if ( (*p).get() == ball.get() )
-			{
-				std::cout << "Ball removed\n";
-				(*p).reset();
-				ballList.erase( p );
-				break;
-			} else
-				++p;
-		}
-	}
+	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 	{
@@ -119,6 +106,8 @@ private:
 	SDL_Surface *screen;
 
 	std::vector< std::shared_ptr< Ball >  > ballList;
+	std::vector< std::shared_ptr< Tile >  > tileList;
+
 	std::shared_ptr< Paddle >  localPaddle;
 
 	// Text
