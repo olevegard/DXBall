@@ -179,12 +179,12 @@ bool Renderer::LoadAllFiles( )
 	LoadImage( "media/ball.png", GamePiece::Ball );
 	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );
 
-	LoadImage( "media/tiles/red.png", GamePiece::Tile );
+	LoadImage( "media/tiles/blue.png", GamePiece::Tile );
 	SetColorKey( GamePiece::Tile, 0xff,0xff,0xff );
 
 	backgroundImage= LoadImage( "media/background.png", GamePiece::Background );
 
-	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00, 0, 0, 0);
+	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00ff0000, 0, 0, 0);
 
 	font = TTF_OpenFont( "lazy.ttf", 28 );
 

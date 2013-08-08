@@ -29,6 +29,9 @@ public:
 	void AddBall( const std::shared_ptr< Ball > &ball );
 	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 
+	void AddTile( const std::shared_ptr< Tile > &tile );
+	void RemoveTile( const std::shared_ptr< Tile >  &tile );
+
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 	{
 		localPaddle = paddle;

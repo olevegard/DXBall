@@ -4,6 +4,7 @@
 
 #include "Timer.h"
 #include "Ball.h"
+#include "Tile.h"
 #include "Paddle.h"
 #include "GamePiece.h"
 #include "Renderer.h"
@@ -26,6 +27,9 @@ class GameManager
 
 		void AddBall();
 		void RemoveBall( std::shared_ptr< Ball > pBall );
+
+		void AddTile();
+		void RemoveTile( std::shared_ptr< Ball > pTile );
 
 		void UpdateBalls( double delta );
 
