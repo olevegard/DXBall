@@ -64,7 +64,6 @@ bool Renderer::Init()
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
 	std::cout << "Ball added\n";
-
 	ballList.push_back( ball );
 }
 
@@ -86,8 +85,7 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 void Renderer::AddTile( const std::shared_ptr< Tile > &tile )
 {
 
-	std::cout << "Ball added\n";
-
+	std::cout << "Tile added\n";
 	tileList.push_back( tile );
 }
 void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
@@ -96,7 +94,7 @@ void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 	{
 		if ( (*p).get() == tile.get() )
 		{
-			std::cout << "Ball removed\n";
+			std::cout << "Tile removed\n";
 			(*p).reset();
 			tileList.erase( p );
 			break;

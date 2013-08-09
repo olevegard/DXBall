@@ -5,11 +5,11 @@
 	GameManager::GameManager()
 	:	renderer()
 	,	timer()
-	,	localPaddle()
-	//,	paddleList()
+		,	localPaddle()
+		 //,	paddleList()
 	,	ballList()
 	,	tileSize()
-	,	windowSize()
+		,	windowSize()
 {
 }
 
@@ -73,20 +73,20 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  pBall )
 		//ballList.erase( p );
 		renderer.RemoveBall( (*p) );
 	}
-		//std::cout << "No find\n";
+	//std::cout << "No find\n";
 	/*
-	for ( auto p = ballList.begin(); p != ballList.end(); ) 
-	{
-		if ( ( *p ).get() == pBall )
-		{
-			renderer.RemoveObject( (*p ) );
-			p =  gameObjectList.erase( p );
-			(*p).reset();
-		}
-		else
-			++p;
-	}
-	*/
+	   for ( auto p = ballList.begin(); p != ballList.end(); ) 
+	   {
+	   if ( ( *p ).get() == pBall )
+	   {
+	   renderer.RemoveObject( (*p ) );
+	   p =  gameObjectList.erase( p );
+	   (*p).reset();
+	   }
+	   else
+	   ++p;
+	   }
+	   */
 }
 
 void GameManager::AddTile()
@@ -122,8 +122,7 @@ void GameManager::UpdateBalls( double delta )
 			(*p)->BoundCheck( windowSize );
 			(*p)->PaddleCheck( localPaddle->rect );
 			if ( (*p)->DeathCheck( windowSize ) )
-			{
-				(*p)->rect.x = 200;
+			{ (*p)->rect.x = 200;
 				(*p)->rect.y = 20;
 				RemoveBall( (*p) );
 				p = ballList.erase( p );
