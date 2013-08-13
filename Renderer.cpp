@@ -4,6 +4,8 @@
 #include "Tile.h"
 #include "Paddle.h"
 
+#include <algorithm>
+
 Renderer::Renderer()
 	:	SCREEN_WIDTH ( 1920 / 2 )
 	,	SCREEN_HEIGHT( 1280 / 2 )
@@ -63,44 +65,22 @@ bool Renderer::Init()
 
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
-	std::cout << "Ball added\n";
 	ballList.push_back( ball );
 }
 
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 {
-	for ( auto p = ballList.begin(); p != ballList.end();)
-	{
-		if ( (*p).get() == ball.get() )
-		{
-			std::cout << "Ball removed\n";
-			(*p).reset();
-			ballList.erase( p );
-			break;
-		} else
-			++p;
-	}
+	ballList.erase( std::find( ballList.begin(), ballList.end(), ball ) );
 }
 
 void Renderer::AddTile( const std::shared_ptr< Tile > &tile )
 {
-
-	std::cout << "Tile added\n";
 	tileList.push_back( tile );
+	textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, tile->rect.w, tile->rect.h, SCREEN_BPP, 0xff, 0xff, 0xff, 0);
 }
 void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
-	for ( auto p = tileList.begin(); p != tileList.end();)
-	{
-		if ( (*p).get() == tile.get() )
-		{
-			std::cout << "Tile removed\n";
-			(*p).reset();
-			tileList.erase( p );
-			break;
-		} else
-			++p;
-	}
+	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
 {
@@ -232,7 +212,6 @@ void Renderer::BlitForeground()
 
 	// Draw paddles
 	ApplySurface( localPaddle->rect.x, localPaddle->rect.y, textures[GamePiece::Paddle], backgroundArea );
-	
 }
 
 void Renderer::BlitText()

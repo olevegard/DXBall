@@ -29,13 +29,13 @@ class GameManager
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void AddTile( short posX, short posY );
-		void RemoveTile( std::shared_ptr< Ball > pTile );
+		void RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void UpdateBalls( double delta );
 
 		void Run();
 
-		void CheckBallTileIntersection();
+		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 	private:
 		Renderer renderer;
 		Timer timer;

@@ -123,6 +123,7 @@
 		short ballRight =  rect.x + rect.w;
 		short ballBottom = rect.y + rect.h;
 
+		// Intersection test
 		if (
 			ballTop > tileBottom
 			|| ballLeft > tileRight
@@ -134,13 +135,11 @@
 			return false;
 		}
 
+		// Check Which Face Collided
 		short oldLeft   = rect.x + static_cast<short>(-speed * dirX  * 5.0f);
 		short oldTop    = rect.y + static_cast<short>(-speed * dirY  * 5.0f);
 		short oldRight  = oldLeft + rect.w;
 		short oldBottom = oldTop  + rect.h;
-
-		std::cout << "Collision\n";
-
 
 		if ( oldTop > tileBottom )
 		{
@@ -165,7 +164,7 @@
 			dirX *= -1.0f;
 			rect.x = oldLeft;
 		}
-		
+/*		
 		std::cout << "Edges"
 			<< "\n\tLeft   : " << ballLeft
 			<< "\n\tRight  : " << ballRight
@@ -186,61 +185,9 @@
 			<< "\n\tBottom : " << oldBottom
 			<< "\n\tTop    : " << oldTop
 		<< std::endl;
-
+*/
 		//std::cin.ignore();
 		return true;
-/*
-		if (
-			(  ( rect.x + rect.w ) <= left   )
-			|| ( rect.x >= right)
-			//|| ( ( rect.y - rect.h ) >= bottom )
-			|| ( rect.y >= bottom )
-			//|| ( rect.y  <= top )
-			|| ( ( rect.y + rect.h )  <= top )
-		   )
-		{
-			return false;
-		} else
-			std::cout << "Intersect\n";
-
-		SDL_Rect oldPos;
-		oldPos.x = rect.x -  (-speed * dirX  * 5.0f);
-		oldPos.y = rect.y -  (-speed * dirY  * 5.0f);
-
-		//std::cout << "Current pos : " << rect.x <<   " , " << rect.y   << std::endl;
-		//std::cout << "Prev pos    : " << oldPos.x << " , " << oldPos.y << std::endl;
-		std::cout << "Prev edges \n\tLeft " << rect.x   << "\n\tRight : " << ( rect.x + rect.w )   << "\n\tBottom : " << ( rect.y - rect.h )   << "\n\tTop : " << rect.y   << std::endl;
-		std::cout << "Prev edges \n\tLeft " << oldPos.x << "\n\tRight : " << ( oldPos.x + rect.w ) << "\n\tBottom : " << ( oldPos.y - rect.h ) << "\n\tTop : " << oldPos.y << std::endl;
-		std::cout << "Tile edges \n\tLeft " << left << "\n\tRight : " << right << "\n\tBottom : " << bottom << "\n\tTop : " << top << std::endl;
-
-		//std::cout << "( oldPos.y - rect.h  ) : " << ( oldPos.y - rect.h  ) << std::endl;
-		std::cout << "oldPos.y : " << oldPos.y << " size : " << rect.h << std::endl;
-		std::cout << "newPos.y : " << rect.y   << " size : " << rect.h << std::endl;
-		std::cout << "bottom   : " << bottom   << std::endl;
-
-		if ( ( oldPos.y - rect.h  ) > bottom )
-
-		{
-			std::cout << "Was outside\n";
-			if ( ( rect.y - rect.h ) < bottom  )
-			{
-				std::cout << "Bottom hit\n";
-				dirY *= -1.0f;
-				rect.y = oldPos.y;
-			}
-		}
-
-		else if ( oldPos.y < top && rect.y > top )
-		{
-			std::cout << "Top hit\n";
-			dirY *= -1.0f;
-			rect.y = oldPos.y;
-		}
-
-		std::cin.ignore();
-
-		return false;
-		*/
 	}
 
 

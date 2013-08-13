@@ -5,10 +5,11 @@
 	GameManager::GameManager()
 	:	renderer()
 	,	timer()
-	,	localPaddle()
+		,	localPaddle()
+		 //,	paddleList()
 	,	ballList()
 	,	tileSize()
-	,	windowSize()
+		,	windowSize()
 {
 }
 
@@ -47,12 +48,7 @@ void GameManager::Restart()
 	//paddleList.push_back( dynamic_cast< Paddle* > ( paddle.get() ) );
 
 	AddBall();
-	AddTile( 340, 120 );
-	AddTile( 405, 120 );
-	AddTile( 470, 120 );
-	AddTile( 340, 145 );
-	AddTile( 405, 145 );
-	AddTile( 470, 145 );
+	AddTile();
 
 	renderer.RenderLives( 1 );
 	renderer.RenderPoints( 123 );
@@ -69,18 +65,39 @@ void GameManager::AddBall()
 	renderer.AddBall( ball );
 }
 
-void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
+void GameManager::RemoveBall( const std::shared_ptr< Ball >  pBall )
 {
-	renderer.RemoveBall( ball );
+
+	auto p = std::find( ballList.begin(), ballList.end(), pBall );
+	if ( p != ballList.end() )
+	{
+		//ballList.erase( p );
+		renderer.RemoveBall( (*p) );
+	}
+	//std::cout << "No find\n";
+	/*
+	   for ( auto p = ballList.begin(); p != ballList.end(); ) 
+	   {
+	   if ( ( *p ).get() == pBall )
+	   {
+	   renderer.RemoveObject( (*p ) );
+	   p =  gameObjectList.erase( p );
+	   (*p).reset();
+	   }
+	   else
+	   ++p;
+	   }
+	   */
 }
-void GameManager::AddTile( short posX, short posY )
+
+void GameManager::AddTile()
 {
 	std::shared_ptr< Tile > tile( new Tile() );
 	tile->textureType = GamePiece::Tile;
-	tile->rect.x = posX;
-	tile->rect.y = posY;
-	tile->rect.w = 60;
-	tile->rect.h = 20;
+	tile->rect.x = 500;
+	tile->rect.y = 100;
+	tile->rect.w = 10;
+	tile->rect.h = 10;
 
 	tileList.push_back( tile );
 
@@ -88,9 +105,9 @@ void GameManager::AddTile( short posX, short posY )
 
 }
 
-void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
+void GameManager::RemoveTile( std::shared_ptr< Ball > pTile )
 {
-	renderer.RemoveTile( tile );
+
 }
 void GameManager::UpdateBalls( double delta )
 {
@@ -100,14 +117,12 @@ void GameManager::UpdateBalls( double delta )
 	{
 		renderer.RemoveText();
 
-		for ( auto p = ballList.begin(); p != ballList.end() && (*p) != nullptr;  )
+		for ( std::vector< std::shared_ptr< Ball > >::iterator p = ballList.begin(); p != ballList.end() && (*p) != nullptr;  )
 		{
 			(*p)->Update( delta );
 			(*p)->BoundCheck( windowSize );
 			(*p)->PaddleCheck( localPaddle->rect );
-
-			CheckBallTileIntersection( *p );
-
+			//(*p)->TileCheck( tileList[0]->rect );
 			if ( (*p)->DeathCheck( windowSize ) )
 			{ (*p)->rect.x = 200;
 				(*p)->rect.y = 20;
@@ -162,6 +177,19 @@ void GameManager::Run()
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;
 
+			short left =   event.motion.x;
+			short right =  event.motion.x + 10;
+			short top =    event.motion.y;
+			short bottom = event.motion.y + 1;
+
+			SDL_Rect rect = tileList[0]->rect;
+
+			//if ( ( rect.y < bottom && rect.y + rect.h > top ) &&
+			if (( /*rect.x < left && */ rect.x < right ) )
+			{
+				std::cout << "Intersect\n";
+			} else
+				std::cout << "No intersect\n";
 
 		}
 		double delta = timer.GetDelta( );
@@ -171,19 +199,10 @@ void GameManager::Run()
 	}
 
 }
-void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
+void GameManager::CheckBallTileIntersection()
 {
-	//for ( std::shared_ptr< Tile > tile : tileList )
-	for ( auto p = tileList.begin(); p != tileList.end() && (*p) != nullptr;  )
+	for ( std::shared_ptr< Ball > gp : ballList )
 	{
-		if ( ball->TileCheck( (*p)->rect ) )
-		{
-			RemoveTile( *p  );
-			p = tileList.erase( p );
-			break;
-		} else
-		{
-			++p;
-		}
+		
 	}
 }
