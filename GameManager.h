@@ -34,6 +34,8 @@ class GameManager
 		void UpdateBalls( double delta );
 
 		void Run();
+
+		void CheckBallTileIntersection();
 	private:
 		Renderer renderer;
 		Timer timer;

@@ -21,11 +21,25 @@ struct Ball : GamePiece
 
 	bool PaddleCheck( const SDL_Rect &paddleRect );
 
+	bool TileCheck( const SDL_Rect &paddleRect );
+
+	void SetOwner( int owner )
+	{
+		ballOwner = owner;
+	}
+
+	int SetOwner( )
+	{
+		return ballOwner;
+	}
+
 	private:
 
 	float speed;
 
 	float dirX;
 	float dirY;
+
+	int ballOwner;
 };
 

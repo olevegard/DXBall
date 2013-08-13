@@ -59,8 +59,9 @@ void GameManager::AddBall()
 {
 	std::shared_ptr< Ball > ball( new Ball() );
 	ball->textureType = GamePiece::Ball;
-	ballList.push_back( ball );
+	ball->SetOwner( 0 );
 
+	ballList.push_back( ball );
 	renderer.AddBall( ball );
 }
 
@@ -93,10 +94,10 @@ void GameManager::AddTile()
 {
 	std::shared_ptr< Tile > tile( new Tile() );
 	tile->textureType = GamePiece::Tile;
-	tile->rect.x = 100;
-	tile->rect.y = 100;
-	tile->rect.w = 10;
-	tile->rect.h = 10;
+	tile->rect.x = 340;
+	tile->rect.y = 120;
+	tile->rect.w = 120;
+	tile->rect.h = 40;
 
 	tileList.push_back( tile );
 
@@ -121,6 +122,7 @@ void GameManager::UpdateBalls( double delta )
 			(*p)->Update( delta );
 			(*p)->BoundCheck( windowSize );
 			(*p)->PaddleCheck( localPaddle->rect );
+			(*p)->TileCheck( tileList[0]->rect );
 			if ( (*p)->DeathCheck( windowSize ) )
 			{ (*p)->rect.x = 200;
 				(*p)->rect.y = 20;
@@ -132,6 +134,9 @@ void GameManager::UpdateBalls( double delta )
 	} else 
 		renderer.RenderText( "Press enter to start");
 }
+
+
+
 void GameManager::Run()
 {
 	bool quit = false;
@@ -171,6 +176,8 @@ void GameManager::Run()
 
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;
+
+			
 		}
 		double delta = timer.GetDelta( );
 		UpdateBalls( delta );
@@ -178,4 +185,11 @@ void GameManager::Run()
 		renderer.Render( );
 	}
 
+}
+void GameManager::CheckBallTileIntersection()
+{
+	for ( std::shared_ptr< Ball > gp : ballList )
+	{
+		
+	}
 }
