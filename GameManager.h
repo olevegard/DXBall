@@ -28,7 +28,7 @@ class GameManager
 		void AddBall();
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
-		void AddTile();
+		void AddTile( short posX, short posY );
 		void RemoveTile( std::shared_ptr< Ball > pTile );
 
 		void UpdateBalls( double delta );

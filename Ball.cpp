@@ -134,8 +134,8 @@
 			return false;
 		}
 
-		short oldLeft   = rect.x + (-speed * dirX  * 5.0f);
-		short oldTop    = rect.y + (-speed * dirY  * 5.0f);
+		short oldLeft   = rect.x + static_cast<short>(-speed * dirX  * 5.0f);
+		short oldTop    = rect.y + static_cast<short>(-speed * dirY  * 5.0f);
 		short oldRight  = oldLeft + rect.w;
 		short oldBottom = oldTop  + rect.h;
 

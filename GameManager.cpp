@@ -48,7 +48,12 @@ void GameManager::Restart()
 	//paddleList.push_back( dynamic_cast< Paddle* > ( paddle.get() ) );
 
 	AddBall();
-	AddTile();
+	AddTile( 340, 120 );
+	AddTile( 405, 120 );
+	AddTile( 470, 120 );
+	AddTile( 340, 145 );
+	AddTile( 405, 145 );
+	AddTile( 470, 145 );
 
 	renderer.RenderLives( 1 );
 	renderer.RenderPoints( 123 );
@@ -90,14 +95,16 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  pBall )
 	   */
 }
 
-void GameManager::AddTile()
+void GameManager::AddTile( short posX, short posY )
 {
 	std::shared_ptr< Tile > tile( new Tile() );
 	tile->textureType = GamePiece::Tile;
-	tile->rect.x = 340;
-	tile->rect.y = 120;
-	tile->rect.w = 120;
-	tile->rect.h = 40;
+	tile->rect.x = posX;
+	tile->rect.y = posY;
+	tile->rect.w = 60;
+	//tile->rect.w = 120;
+	//tile->rect.h = 40;
+	tile->rect.h = 20;
 
 	tileList.push_back( tile );
 
