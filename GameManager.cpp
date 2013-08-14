@@ -47,13 +47,14 @@ void GameManager::Restart()
 	//paddleList.push_back( dynamic_cast< Paddle* > ( paddle.get() ) );
 
 	AddBall();
+	/*
 	AddTile( 340, 120 );
 	AddTile( 405, 120 );
 	AddTile( 470, 120 );
 	AddTile( 340, 145 );
 	AddTile( 405, 145 );
 	AddTile( 470, 145 );
-
+	*/
 	renderer.RenderLives( 1 );
 	renderer.RenderPoints( 123 );
 	renderer.RenderText( "Press enter to start");
@@ -131,6 +132,8 @@ void GameManager::Run()
 
 	while ( !quit )
 	{
+		double delta = timer.GetDelta( );
+		std::cout << "delta : " <<  delta << std::endl;
 		while ( SDL_PollEvent( &event ) )
 		{
 			if ( event.type == SDL_QUIT )
@@ -164,7 +167,6 @@ void GameManager::Run()
 
 
 		}
-		double delta = timer.GetDelta( );
 		UpdateBalls( delta );
 
 		renderer.Render( );
