@@ -43,6 +43,7 @@
 
 	bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 	{
+
 		short left = boundsRect.x;
 		short right = boundsRect.x + boundsRect.w;
 		short top = boundsRect.y;
@@ -94,15 +95,24 @@
 		if ( ( left < ( rect.x + rect.w ) ) && ( right > rect.x ) && ( top < ( rect.y + rect.h  )  ) )
 
 		{
-			// Make ball go left of right depending where on the paddle it hits
-			int ballMidpoint = rect.x + ( rect.w / 2 );
-			int paddleMidpoint = paddleRect.x + ( paddleRect.w / 2 );
-			dirX = static_cast<float> ( ballMidpoint - paddleMidpoint ) / 70.0f;
-			dirY = -1.0f;
+			float hitPosition = CalculatePaddleHitPosition( paddleRect );
+	
+			// if -1.0f -> [  1.0f,  0,0f]
+			// if -0.5f -> [  0.5f, -0,5f]
+			// if  0.0f -> [  0.0f, -1,0f]
+			// if  0.5f -> [ -0.5f, -0,5f]
+			// if  1.0f -> [ -1.0f,  0,0f]
+
+			//dirX = static_cast<float> ( ballMidpoint - paddleMidpoint ) / 70.0f;
+			dirX = hitPosition;//* -1.0f;
+			dirY = fabs( hitPosition ) - 1.6f;
+			std::cout << "Hit     : " << hitPosition << std::endl;
+			std::cout << "New dir : " << dirX << " , " << dirY << std::endl;
+			//std::cin.ignore();
 		
 			NormalizeDirection();
 
-			speed *= 1.05f;
+			speed *= 1.0005f;
 
 			return true;
 		}
@@ -110,6 +120,15 @@
 		return false;
 	}
 
+	float Ball::CalculatePaddleHitPosition( const SDL_Rect &paddleRect )
+	{
+
+		int ballMidpoint = rect.x + ( rect.w / 2 );
+		int paddleMidpoint = paddleRect.x + ( paddleRect.w / 2 );
+
+		return ( static_cast< float >( ballMidpoint - paddleMidpoint ) / ( paddleRect.w + 20 ) ) * 2.0f;
+		//return ( static_cast< float >( ballMidpoint - paddleMidpoint ) / ( paddleRect.w + 50 ) ) * 2.0f;
+	}
 	bool Ball::TileCheck( const SDL_Rect &tileRect )
 	{
 		// 0,0 = upper left

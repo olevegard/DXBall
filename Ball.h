@@ -35,6 +35,8 @@ struct Ball : GamePiece
 
 	private:
 
+	float CalculatePaddleHitPosition( const SDL_Rect &paddleRect );
+
 	float speed;
 
 	float dirX;
