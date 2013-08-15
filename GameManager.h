@@ -41,6 +41,9 @@ class GameManager
 		Timer timer;
 
 		std::shared_ptr < Paddle > localPaddle;
+
+		int localPlayerPoints;
+
 		std::vector< std::shared_ptr< Ball > > ballList;
 		std::vector< std::shared_ptr< Tile > > tileList;
 

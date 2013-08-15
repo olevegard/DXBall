@@ -6,6 +6,7 @@
 	:	renderer()
 	,	timer()
 	,	localPaddle()
+	,	localPlayerPoints( 0 )
 	,	ballList()
 	,	tileSize()
 	,	windowSize()
@@ -55,8 +56,10 @@ void GameManager::Restart()
 	AddTile( 405, 145 );
 	AddTile( 470, 145 );
 
+	localPlayerPoints = 0;
+
 	renderer.RenderLives( 1 );
-	renderer.RenderPoints( 123 );
+	renderer.RenderPoints( localPlayerPoints );
 	renderer.RenderText( "Press enter to start");
 }
 
@@ -189,6 +192,7 @@ void GameManager::Run()
 		double delta = timer.GetDelta( );
 		UpdateBalls( delta );
 
+		renderer.RenderPoints( localPlayerPoints );
 		renderer.Render( );
 
 		if ( delay1 )
@@ -209,6 +213,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 	{
 		if ( ball->TileCheck( (*p)->rect ) )
 		{
+			++localPlayerPoints;
 			RemoveTile( *p  );
 			p = tileList.erase( p );
 			break;
