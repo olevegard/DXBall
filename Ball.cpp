@@ -5,7 +5,7 @@
 	Ball::Ball()
 	:	speed( 0.0705f )
 	,	dirX( -0.83205f )
-		,	dirY(-0.5547f )
+	,	dirY(-0.5547f )
 {
 	rect.w = 20;
 	rect.h = 20;
