@@ -7,6 +7,8 @@
 	,	timer()
 	,	localPaddle()
 	,	localPlayerPoints( 0 )
+	,	localPlayerLives( 3 )
+	,	localPlayerActiveBalls( 0 )
 	,	ballList()
 	,	tileSize()
 	,	windowSize()
@@ -47,7 +49,7 @@ void GameManager::Restart()
 	//localPaddle = paddle.get();
 	//paddleList.push_back( dynamic_cast< Paddle* > ( paddle.get() ) );
 
-	AddBall();
+	//AddBall();
 
 	AddTile( 340, 120 );
 	AddTile( 405, 120 );
@@ -57,6 +59,8 @@ void GameManager::Restart()
 	AddTile( 470, 145 );
 
 	localPlayerPoints = 0;
+	localPlayerLives = 3;
+	localPlayerActiveBalls = 0;
 
 	renderer.RenderLives( 1 );
 	renderer.RenderPoints( localPlayerPoints );
@@ -65,17 +69,28 @@ void GameManager::Restart()
 
 void GameManager::AddBall()
 {
+
+	if ( localPlayerActiveBalls > 0 || localPlayerLives == 0 )
+	{
+		return;
+	}
 	std::shared_ptr< Ball > ball( new Ball() );
 	ball->textureType = GamePiece::Ball;
 	ball->SetOwner( 0 );
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
+
+	++localPlayerActiveBalls;
 }
 
 void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 {
 	renderer.RemoveBall( ball );
+	--localPlayerActiveBalls;
+
+	if ( localPlayerActiveBalls == 0 )
+		--localPlayerLives;
 }
 void GameManager::AddTile( short posX, short posY )
 {
@@ -121,7 +136,7 @@ void GameManager::UpdateBalls( double delta )
 			++p;
 		}
 	} else 
-		renderer.RenderText( "Press enter to start");
+		renderer.RenderText( "Press enter to launch ball");
 }
 
 
@@ -139,7 +154,6 @@ void GameManager::Run()
 		bool delay2 = false;
 		bool delay3 = false;
 		bool delay4 = false;
-
 
 		while ( SDL_PollEvent( &event ) )
 		{
@@ -192,8 +206,7 @@ void GameManager::Run()
 		double delta = timer.GetDelta( );
 		UpdateBalls( delta );
 
-		renderer.RenderPoints( localPlayerPoints );
-		renderer.Render( );
+		UpdateGUI();
 
 		if ( delay1 )
 			SDL_Delay( 1 );
@@ -222,4 +235,19 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 			++p;
 		}
 	}
+}
+void GameManager::UpdateGUI( )
+{
+
+	if ( localPlayerActiveBalls == 0 )
+	{
+		if ( localPlayerLives == 0 )
+			renderer.RenderText( "Game Over" );
+		else
+			renderer.RenderText( "Press Enter to launch ball" );
+	}
+
+	renderer.RenderPoints( localPlayerPoints );
+	renderer.RenderLives( localPlayerLives );
+	renderer.Render( );
 }

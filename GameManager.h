@@ -32,6 +32,7 @@ class GameManager
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void UpdateBalls( double delta );
+		void UpdateGUI( );
 
 		void Run();
 
@@ -43,6 +44,8 @@ class GameManager
 		std::shared_ptr < Paddle > localPaddle;
 
 		unsigned int localPlayerPoints;
+		unsigned int localPlayerLives;
+		unsigned int localPlayerActiveBalls;
 
 		std::vector< std::shared_ptr< Ball > > ballList;
 		std::vector< std::shared_ptr< Tile > > tileList;
