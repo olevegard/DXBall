@@ -120,7 +120,7 @@ float Ball::CalculatePaddleHitPosition( const SDL_Rect &paddleRect ) const
 void  Ball::CalculateNewBallDirection( float hitPosition )
 {
 	dirX = hitPosition;//* -1.0f;
-	dirY = fabs( hitPosition ) - 1.6f;
+	dirY = fabsf( hitPosition ) - 1.6f;
 
 	dirY = dirY < -0.8f ? -0.8f : dirY;
 
