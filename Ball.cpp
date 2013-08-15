@@ -93,7 +93,6 @@
 		int top = paddleRect.y;
 
 		if ( ( left < ( rect.x + rect.w ) ) && ( right > rect.x ) && ( top < ( rect.y + rect.h  )  ) )
-
 		{
 			float hitPosition = CalculatePaddleHitPosition( paddleRect );
 	
@@ -106,6 +105,9 @@
 			//dirX = static_cast<float> ( ballMidpoint - paddleMidpoint ) / 70.0f;
 			dirX = hitPosition;//* -1.0f;
 			dirY = fabs( hitPosition ) - 1.6f;
+		
+			dirY = dirY < -0.8f ? -0.8f : dirY;
+
 			std::cout << "Hit     : " << hitPosition << std::endl;
 			std::cout << "New dir : " << dirX << " , " << dirY << std::endl;
 			//std::cin.ignore();
