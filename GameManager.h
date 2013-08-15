@@ -42,7 +42,7 @@ class GameManager
 
 		std::shared_ptr < Paddle > localPaddle;
 
-		int localPlayerPoints;
+		unsigned int localPlayerPoints;
 
 		std::vector< std::shared_ptr< Ball > > ballList;
 		std::vector< std::shared_ptr< Tile > > tileList;

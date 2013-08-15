@@ -60,7 +60,7 @@ public:
 		lives = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
 	}
 	
-	void RenderPoints( unsigned short pointCount )
+	void RenderPoints( unsigned int pointCount )
 	{
 		textColor.r = 123;
 		textColor.g = 123;
@@ -84,9 +84,9 @@ private:
 	Renderer& operator=( const Renderer &renderer );
 
 	SDL_Surface* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
-	void SetColorKey( SDL_Surface* source, int r, int g, int b );
-	void SetColorKey( GamePiece::TextureType textureID, int r, int g, int b );
-	void FillSurface( SDL_Surface* source, int r, int g, int b );
+	void SetColorKey( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b );
+	void SetColorKey( GamePiece::TextureType textureID, unsigned char r, unsigned char g, unsigned char b );
+	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b );
 
 	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
 	void ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;

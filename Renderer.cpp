@@ -111,7 +111,7 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 	return optimizedImage;
 }
 
-void Renderer::SetColorKey( SDL_Surface* source, int r, int g, int b )
+void Renderer::SetColorKey( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b )
 {
 	if ( source )
 	{
@@ -121,12 +121,12 @@ void Renderer::SetColorKey( SDL_Surface* source, int r, int g, int b )
 	}
 }
 
-void Renderer::SetColorKey( GamePiece::TextureType textureID, int r, int g, int b )
+void Renderer::SetColorKey( GamePiece::TextureType textureID, unsigned char r, unsigned char g, unsigned char b )
 {
 	SetColorKey( textures[ textureID ], r, g, b );
 }
 
-void Renderer::FillSurface( SDL_Surface* source, int r, int g, int b )
+void Renderer::FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b )
 {
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 0 ) );
 }
