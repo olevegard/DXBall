@@ -132,8 +132,12 @@ void GameManager::Run()
 
 	while ( !quit )
 	{
-		double delta = timer.GetDelta( );
-		std::cout << "delta : " <<  delta << std::endl;
+		bool delay1 = false;
+		bool delay2 = false;
+		bool delay3 = false;
+		bool delay4 = false;
+
+
 		while ( SDL_PollEvent( &event ) )
 		{
 			if ( event.type == SDL_QUIT )
@@ -151,6 +155,22 @@ void GameManager::Run()
 					case SDLK_ESCAPE:
 						quit = true;
 						break;
+					case SDLK_1:
+						std::cout << "Delay added\n";
+						delay1 = true;
+						break;
+					case SDLK_2:
+						std::cout << "Delay added\n";
+						delay2 = true;
+						break;
+					case SDLK_3:
+						std::cout << "Delay added\n";
+						delay3 = true;
+						break;
+					case SDLK_4:
+						std::cout << "Delay added\n";
+						delay4 = true;
+						break;
 					default:
 						break;
 				}
@@ -165,11 +185,20 @@ void GameManager::Run()
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;
 
-
 		}
+		double delta = timer.GetDelta( );
 		UpdateBalls( delta );
 
 		renderer.Render( );
+
+		if ( delay1 )
+			SDL_Delay( 1 );
+		if ( delay2 )
+			SDL_Delay( 2 );
+		if ( delay3 )
+			SDL_Delay( 5 );
+		if ( delay4 )
+			SDL_Delay( 10 );
 	}
 
 }
