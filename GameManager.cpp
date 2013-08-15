@@ -170,6 +170,9 @@ void GameManager::Run()
 					case SDLK_ESCAPE:
 						quit = true;
 						break;
+					case SDLK_r:
+						++localPlayerLives;
+						break;
 					case SDLK_1:
 						std::cout << "Delay added\n";
 						delay1 = true;
