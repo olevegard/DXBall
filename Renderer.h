@@ -84,8 +84,10 @@ private:
 	Renderer& operator=( const Renderer &renderer );
 
 	SDL_Surface* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
-	void SetColorKey( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b );
+
+	void SetColorKey( SDL_Surface* source             , unsigned char r, unsigned char g, unsigned char b );
 	void SetColorKey( GamePiece::TextureType textureID, unsigned char r, unsigned char g, unsigned char b );
+
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b );
 
 	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
