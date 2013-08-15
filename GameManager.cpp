@@ -47,14 +47,14 @@ void GameManager::Restart()
 	//paddleList.push_back( dynamic_cast< Paddle* > ( paddle.get() ) );
 
 	AddBall();
-	/*
+
 	AddTile( 340, 120 );
 	AddTile( 405, 120 );
 	AddTile( 470, 120 );
 	AddTile( 340, 145 );
 	AddTile( 405, 145 );
 	AddTile( 470, 145 );
-	*/
+
 	renderer.RenderLives( 1 );
 	renderer.RenderPoints( 123 );
 	renderer.RenderText( "Press enter to start");
