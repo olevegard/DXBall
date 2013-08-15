@@ -1,0 +1,11 @@
+DXBall
+Compiling:
+ clang++ main.cpp Timer.cpp Tile.cpp Ball.cpp Paddle.cpp Renderer.cpp GameManager.cpp -lSDL -lSDL_ttf -lSDL_image -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-switch-enum -o DXBall
+
+This will enable almost all warnings available in clang++ except@
+-Wno-c++98-compat 		- C++98 compability is no concern for this project ( though I might add functionality to enable C++ 98 support later )
+-Wno-c++98-compat-pedantic	- C++98 compability is no concern for this project ( though I might add functionality to enable C++ 98 support later )
+-Wno-switch-enum		- This warning warns if you are not explicitly handling all possible enum values in a switch. SDL_Keycode contains more than 230 values. 
+-Wno-padded			- Padding issues are not a concern at the moment.
+
+All other warnings are handled and should be dealt with if possible
