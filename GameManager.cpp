@@ -139,8 +139,6 @@ void GameManager::UpdateBalls( double delta )
 		renderer.RenderText( "Press enter to launch ball");
 }
 
-
-
 void GameManager::Run()
 {
 	bool quit = false;
