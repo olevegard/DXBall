@@ -1,3 +1,11 @@
+<<<<<<< HEAD
 tags
 DXBall*
 *.swp
+=======
+ tags
+ DXBall*
+ *.swp
++README~
+changauth.sh
+>>>>>>> 93f02bf... Gitingore issues test
