@@ -1,11 +1,20 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 tags
 DXBall*
 *.swp
 =======
+=======
+>>>>>>> 3593c7a... .gitingore again
  tags
  DXBall*
  *.swp
 +README~
+=======
+tags
+DXBall*
+*.swp
+README~
+>>>>>>> parent of 1fd47ea... Updated gitignore
 changauth.sh
 >>>>>>> 93f02bf... Gitingore issues test
