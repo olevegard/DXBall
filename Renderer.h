@@ -118,6 +118,7 @@ private:
 	// Text
 	TTF_Font* font;
 	TTF_Font* bigFont;
+	SDL_Surface* localPlayerCaption;
 	SDL_Surface* text;
 	SDL_Surface* lives;
 	SDL_Surface* points;

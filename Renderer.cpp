@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-Renderer::Renderer()
+	Renderer::Renderer()
 	:	SCREEN_WIDTH ( 1920 / 2 )
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
@@ -39,6 +39,7 @@ Renderer::~Renderer()
 	SDL_FreeSurface( text );
 	SDL_FreeSurface( lives );
 	SDL_FreeSurface( points );
+	SDL_FreeSurface( localPlayerCaption );
 
 	SDL_Quit();
 }
@@ -59,6 +60,7 @@ bool Renderer::Init()
 		return false;
 
 	BlitBackground();
+
 
 	return true;
 }
@@ -82,6 +84,7 @@ void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
+
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
 {
 	// Temporary stoare for the iamge that's loaded
@@ -164,6 +167,7 @@ bool Renderer::LoadAllFiles( )
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00, 0, 0, 0);
 
+
 	font = TTF_OpenFont( "lazy.ttf", 28 );
 
 	if ( font == NULL )
@@ -173,6 +177,8 @@ bool Renderer::LoadAllFiles( )
 
 	if ( bigFont == NULL )
 		return false;
+
+	localPlayerCaption = TTF_RenderText_Solid( font, "Local player : ", textColor );
 
 	return true;
 }
@@ -217,12 +223,15 @@ void Renderer::BlitForeground()
 void Renderer::BlitText()
 {
 	if ( lives )
-		ApplySurface( 0, 0, lives, backgroundArea );
+		ApplySurface( 10, static_cast<short> ( localPlayerCaption->h + 5 ), lives, backgroundArea );
 
 	if ( points )
-		ApplySurface( 0, static_cast< short > ( lives->h + 5 ), points, backgroundArea );
+		ApplySurface( 10, static_cast< short > ( localPlayerCaption->h + lives->h + 5 ), points, backgroundArea );
 
 	SDL_Rect screenSize = GetWindowSize();
 	if ( text )
 		ApplySurface(  ( screenSize.w / 2 ) - ( text->clip_rect.w / 2 ), screenSize.h / 2, text, backgroundArea );
+
+	if ( localPlayerCaption )
+		ApplySurface( 0, 0, localPlayerCaption, backgroundArea );
 }
