@@ -1,8 +1,6 @@
 #pragma once
 
-#include <sys/stat.h>
-#include <time.h>
-
+struct timespec;
 class Timer
 {
 public:

@@ -1,8 +1,6 @@
 #pragma once
 
 #include "GamePiece.h"
-#include <math.h>
-
 
 struct Ball : GamePiece
 {

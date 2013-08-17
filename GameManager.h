@@ -3,11 +3,13 @@
 #include <iostream>
 
 #include "Timer.h"
-#include "Ball.h"
-#include "Tile.h"
-#include "Paddle.h"
-#include "GamePiece.h"
 #include "Renderer.h"
+
+// Forward declarations
+struct GamePiece;
+struct Paddle;
+struct Ball;
+struct Tile;
 
 class GameManager
 {
@@ -18,9 +20,6 @@ class GameManager
 		{
 
 		}
-		//GameManager( const GameManager &gm );
-		//GameManager operator=( const GameManager &gm );
-
 		int Init();
 
 		void Restart();
@@ -53,3 +52,4 @@ class GameManager
 		SDL_Rect tileSize;
 		SDL_Rect windowSize;
 };
+

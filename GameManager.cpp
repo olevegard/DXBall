@@ -1,4 +1,9 @@
 #include "GameManager.h"
+
+#include "Ball.h"
+#include "Tile.h"
+#include "Paddle.h"
+
 #include <vector>
 #include <algorithm>
 

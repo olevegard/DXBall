@@ -1,18 +1,15 @@
 #pragma once
 
-#include <iostream>
-#include <string>
+#include <SDL/SDL_ttf.h>
+
+#include <sstream>
 #include <vector>
 #include <memory>
 #include <map>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_ttf.h>
-
 #include "GamePiece.h"
-#include <sstream>
 
+// Forward declarations
 struct Ball;
 struct Tile;
 struct Paddle;
@@ -32,52 +29,15 @@ public:
 	void AddTile( const std::shared_ptr< Tile > &tile );
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
 
-	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
-	{
-		localPaddle = paddle;
-	}
+	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
 
-	void RenderText( const std::string &textToRender )
-	{
-		textColor.g = 123;
-		textColor.b = 123;
-		text = TTF_RenderText_Solid( bigFont, textToRender.c_str(), textColor );
-	}
+	void RenderText( const std::string &textToRender );
+	void RemoveText();
+	void RenderLives( unsigned long lifeCount );
+	void RenderPoints( unsigned int pointCount );
 
-	void RemoveText()
-	{
-		text = NULL;
-	}
-	
-	void RenderLives( unsigned long lifeCount )
-	{
-		textColor.r = 123;
-		textColor.g = 123;
-		textColor.b = 123;
-
-		std::stringstream ss;
-		ss << "Lives : " << lifeCount;
-		lives = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
-	}
-	
-	void RenderPoints( unsigned int pointCount )
-	{
-		textColor.r = 123;
-		textColor.g = 123;
-		textColor.b = 123;
-
-		std::stringstream ss;
-		ss << "Points : " << pointCount;
-		points = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
-	}
-	SDL_Rect GetTileSize()
-	{
-		return rects[GamePiece::Paddle];
-	}
-	SDL_Rect GetWindowSize()
-	{
-		return rects[GamePiece::Background];
-	}
+	SDL_Rect GetTileSize();
+	SDL_Rect GetWindowSize();
 private:
 
 	Renderer( const Renderer &renderer );

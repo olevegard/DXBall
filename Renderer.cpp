@@ -64,6 +64,10 @@ bool Renderer::Init()
 
 	return true;
 }
+void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
+{
+	localPaddle = paddle;
+}
 
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
@@ -234,4 +238,43 @@ void Renderer::BlitText()
 
 	if ( localPlayerCaption )
 		ApplySurface( 0, 0, localPlayerCaption, backgroundArea );
+}
+void Renderer::RenderText( const std::string &textToRender )
+{
+	textColor.g = 123;
+	textColor.b = 123;
+	text = TTF_RenderText_Solid( bigFont, textToRender.c_str(), textColor );
+}
+void Renderer::RemoveText()
+{
+	text = nullptr;
+}
+void Renderer::RenderLives( unsigned long lifeCount )
+{
+	textColor.r = 123;
+	textColor.g = 123;
+	textColor.b = 123;
+
+	std::stringstream ss;
+	ss << "Lives : " << lifeCount;
+	lives = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
+}
+
+void Renderer::RenderPoints( unsigned int pointCount )
+{
+	textColor.r = 123;
+	textColor.g = 123;
+	textColor.b = 123;
+
+	std::stringstream ss;
+	ss << "Points : " << pointCount;
+	points = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
+}
+SDL_Rect Renderer::GetTileSize()
+{
+	return rects[GamePiece::Paddle];
+}
+SDL_Rect Renderer::GetWindowSize()
+{
+	return rects[GamePiece::Background];
 }

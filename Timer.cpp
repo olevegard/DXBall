@@ -1,13 +1,12 @@
 #include "Timer.h"
 
-#include <sys/stat.h>
+#include <time.h>
 
 Timer::Timer()
 	:	start(0)
 	,	delta(0)
 	,	update(0)
-
-	 ,	sleepTime( 1000 )
+	,	sleepTime( 1000 )
 {
 	Restart();
 }

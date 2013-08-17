@@ -1,8 +1,8 @@
 #include "Ball.h"
-
+#include <cmath>
 #include <iostream>
 
-	Ball::Ball()
+Ball::Ball()
 	:	speed( 0.0705f )
 	,	dirX( -0.83205f )
 	,	dirY(-0.5547f )
@@ -18,7 +18,6 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	//speed = 0.7f;
 	speed = 0.6f;
 	dirX = -0.83205f;
 	dirY =  -0.87f;
