@@ -5,6 +5,7 @@
 #include "Paddle.h"
 
 #include <algorithm>
+#include <iostream>
 
 	Renderer::Renderer()
 	:	SCREEN_WIDTH ( 1920 / 2 )
@@ -24,6 +25,7 @@
 	,	lives()
 	,	points()
 	,	textColor( { 0, 0, 0, 0 } )
+	,	tileColor( { 0, 0, 255, 0 } )
 {
 
 }
@@ -61,7 +63,6 @@ bool Renderer::Init()
 
 	BlitBackground();
 
-
 	return true;
 }
 void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
@@ -82,7 +83,7 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 void Renderer::AddTile( const std::shared_ptr< Tile > &tile )
 {
 	tileList.push_back( tile );
-	textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, tile->rect.w, tile->rect.h, SCREEN_BPP, 0xff, 0xff, 0xff, 0);
+	//textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, tile->rect.w, tile->rect.h, SCREEN_BPP, 0x00, 0x00, 0xff, 0);
 }
 void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
@@ -135,7 +136,13 @@ void Renderer::SetColorKey( GamePiece::TextureType textureID, unsigned char r, u
 
 void Renderer::FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b )
 {
-	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 0 ) );
+	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 255 )  );
+	std::cout << "Format : " << source->format  << std::endl;
+}
+	
+void Renderer::FillSurface( SDL_Surface* source, const SDL_Color &color )
+{
+	FillSurface( source, color.r, color.g, color.b );
 }
 
 void Renderer::ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const
@@ -158,19 +165,30 @@ void Renderer::ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface
 }
 bool Renderer::LoadAllFiles( )
 {
+	Uint32 rmask, gmask, bmask, amask;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	rmask = 0xff000000;
+	gmask = 0x00ff0000;
+	bmask = 0x0000ff00;
+	amask = 0x000000ff;
+#else
+	rmask = 0x000000ff;
+	gmask = 0x0000ff00;
+	bmask = 0x00ff0000;
+	amask = 0xff000000;
+#endif
 	LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
 	SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
 
 	LoadImage( "media/ball.png", GamePiece::Ball );
 	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );
 
-	LoadImage( "media/tiles/red.png", GamePiece::Tile );
-	SetColorKey( GamePiece::Tile, 0xff,0xff,0xff );
-
 	backgroundImage= LoadImage( "media/background.png", GamePiece::Background );
 
-	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, 0x00, 0, 0, 0);
+	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, rmask, gmask, bmask, amask);
 
+	textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	FillSurface( textures[GamePiece::Tile], tileColor );
 
 	font = TTF_OpenFont( "lazy.ttf", 28 );
 

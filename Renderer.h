@@ -49,6 +49,7 @@ private:
 	void SetColorKey( GamePiece::TextureType textureID, unsigned char r, unsigned char g, unsigned char b );
 
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b );
+	void FillSurface( SDL_Surface* source, const SDL_Color &color );
 
 	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
 	void ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;
@@ -83,4 +84,6 @@ private:
 	SDL_Surface* lives;
 	SDL_Surface* points;
 	SDL_Color textColor;
+
+	SDL_Color tileColor;
 };
