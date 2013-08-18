@@ -24,8 +24,8 @@
 	,	text()
 	,	lives()
 	,	points()
-	,	textColor( { 0, 0, 0, 0 } )
-	,	tileColor( { 0, 0, 255, 0 } )
+	,	textColor{ 0, 0, 0, 0 }
+	,	tileColors{ {0, 0, 255, 0}, {0, 255, 0, 0}, {255, 255, 0, 0}, {0, 255, 255, 0} }
 {
 
 }
@@ -188,7 +188,23 @@ bool Renderer::LoadAllFiles( )
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, rmask, gmask, bmask, amask);
 
 	textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
-	FillSurface( textures[GamePiece::Tile], tileColor );
+	FillSurface( textures[GamePiece::Tile], tileColors[0] );
+
+	SDL_Surface* surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	FillSurface( surf, tileColors[0] );
+	tileSurfaces.push_back( surf );
+
+	surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	FillSurface( surf, tileColors[1] );
+	tileSurfaces.push_back( surf );
+
+	surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	FillSurface( surf, tileColors[2] );
+	tileSurfaces.push_back( surf );
+
+	surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	FillSurface( surf, tileColors[3] );
+	tileSurfaces.push_back( surf );
 
 	font = TTF_OpenFont( "lazy.ttf", 28 );
 
@@ -235,7 +251,7 @@ void Renderer::BlitForeground()
 	// Draw tiles
 	for ( std::shared_ptr< Tile > gp : tileList)
 	{
-		ApplySurface( gp->rect.x, gp->rect.y, textures[GamePiece::Tile], backgroundArea );
+		ApplySurface( gp->rect.x, gp->rect.y, tileSurfaces[ gp->GetTileTypeAsIndex() ], backgroundArea );
 	}
 
 	// Draw paddles
@@ -251,6 +267,7 @@ void Renderer::BlitText()
 		ApplySurface( 10, static_cast< short > ( localPlayerCaption->h + lives->h + 5 ), points, backgroundArea );
 
 	SDL_Rect screenSize = GetWindowSize();
+
 	if ( text )
 		ApplySurface(  ( screenSize.w / 2 ) - ( text->clip_rect.w / 2 ), screenSize.h / 2, text, backgroundArea );
 

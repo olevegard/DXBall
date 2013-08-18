@@ -6,6 +6,7 @@
 #include "Renderer.h"
 
 // Forward declarations
+enum class TileTypes : int;
 struct GamePiece;
 struct Paddle;
 struct Ball;
@@ -27,7 +28,7 @@ class GameManager
 		void AddBall();
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
-		void AddTile( short posX, short posY );
+		void AddTile( short posX, short posY, TileTypes tileType );
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void UpdateBalls( double delta );
@@ -52,4 +53,3 @@ class GameManager
 		SDL_Rect tileSize;
 		SDL_Rect windowSize;
 };
-

@@ -56,12 +56,13 @@ void GameManager::Restart()
 
 	//AddBall();
 
-	AddTile( 340, 120 );
-	AddTile( 405, 120 );
-	AddTile( 470, 120 );
-	AddTile( 340, 145 );
-	AddTile( 405, 145 );
-	AddTile( 470, 145 );
+	AddTile( 340, 120, TileTypes::Regular);
+	AddTile( 405, 120, TileTypes::Explosive );
+	AddTile( 470, 120, TileTypes::Unbreakable );
+
+	AddTile( 340, 145, TileTypes::Regular );
+	AddTile( 405, 145, TileTypes::Hard );
+	AddTile( 470, 145, TileTypes::Regular );
 
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
@@ -97,14 +98,15 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	if ( localPlayerActiveBalls == 0 )
 		--localPlayerLives;
 }
-void GameManager::AddTile( short posX, short posY )
+void GameManager::AddTile( short posX, short posY, TileTypes tileType )
 {
-	std::shared_ptr< Tile > tile( new Tile() );
+	std::shared_ptr< Tile > tile( new Tile( tileType ) );
 	tile->textureType = GamePiece::Tile;
 	tile->rect.x = posX;
 	tile->rect.y = posY;
 	tile->rect.w = 60;
 	tile->rect.h = 20;
+
 
 	tileList.push_back( tile );
 

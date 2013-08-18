@@ -85,5 +85,6 @@ private:
 	SDL_Surface* points;
 	SDL_Color textColor;
 
-	SDL_Color tileColor;
+	SDL_Color tileColors[4];
+	std::vector< SDL_Surface* > tileSurfaces;
 };

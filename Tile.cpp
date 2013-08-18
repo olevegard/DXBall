@@ -1,8 +1,8 @@
 #include "Tile.h"
 
-Tile::Tile()
+Tile::Tile(TileTypes type_ )
 {
-
+	type = type_;
 }
 Tile::~Tile()
 {

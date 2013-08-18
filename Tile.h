@@ -2,12 +2,23 @@
 
 #include "GamePiece.h"
 
+enum class TileTypes
+{
+	Regular,
+	Explosive,
+	Hard,
+	Unbreakable
+};
 struct Tile : GamePiece
 {
-	Tile();
+	Tile( TileTypes type_);
 
 	virtual ~Tile();
 
+	size_t GetTileTypeAsIndex()
+	{
+		return static_cast<size_t> ( type );
+	}
 	private:
-	
+	TileTypes type;
 };
