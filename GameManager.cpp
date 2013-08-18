@@ -17,6 +17,7 @@
 	,	ballList()
 	,	tileSize()
 	,	windowSize()
+	, 	points{ 5, 10, 50, 100 }
 {
 }
 
@@ -220,7 +221,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 	{
 		if ( ball->TileCheck( (*p)->rect ) )
 		{
-			++localPlayerPoints;
+			localPlayerPoints += points[ (*p)->GetTileTypeAsIndex() ];
 			RemoveTile( *p  );
 			p = tileList.erase( p );
 			break;
@@ -244,3 +245,4 @@ void GameManager::UpdateGUI( )
 	renderer.RenderLives( localPlayerLives );
 	renderer.Render( );
 }
+

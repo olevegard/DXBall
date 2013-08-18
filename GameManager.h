@@ -52,4 +52,6 @@ class GameManager
 
 		SDL_Rect tileSize;
 		SDL_Rect windowSize;
+
+		unsigned int points[4];
 };
