@@ -22,7 +22,6 @@
 
 int GameManager::Init()
 {
-
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
 		return 1;
 
@@ -42,19 +41,12 @@ int GameManager::Init()
 
 void GameManager::Restart()
 {
-	//std::shared_ptr< GamePiece > paddle( new Paddle() );
 	localPaddle.reset( new Paddle() );
 	localPaddle->textureType = GamePiece::Paddle;
 	localPaddle->rect.y = 610;
 	localPaddle->rect.w = 120;
 	localPaddle->rect.h = 30;
 	renderer.SetLocalPaddle( localPaddle );
-	//renderer.AddObject( paddle );
-	//
-	//localPaddle = paddle.get();
-	//paddleList.push_back( dynamic_cast< Paddle* > ( paddle.get() ) );
-
-	//AddBall();
 
 	AddTile( 340, 120, TileTypes::Regular);
 	AddTile( 405, 120, TileTypes::Explosive );
@@ -75,11 +67,11 @@ void GameManager::Restart()
 
 void GameManager::AddBall()
 {
-
 	if ( localPlayerActiveBalls > 0 || localPlayerLives == 0 )
 	{
 		return;
 	}
+
 	std::shared_ptr< Ball > ball( new Ball() );
 	ball->textureType = GamePiece::Ball;
 	ball->SetOwner( 0 );
@@ -107,11 +99,9 @@ void GameManager::AddTile( short posX, short posY, TileTypes tileType )
 	tile->rect.w = 60;
 	tile->rect.h = 20;
 
-
 	tileList.push_back( tile );
 
 	renderer.AddTile( tile );
-
 }
 
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
@@ -226,7 +216,6 @@ void GameManager::Run()
 }
 void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 {
-	//for ( std::shared_ptr< Tile > tile : tileList )
 	for ( auto p = tileList.begin(); p != tileList.end() && (*p) != nullptr;  )
 	{
 		if ( ball->TileCheck( (*p)->rect ) )
@@ -243,7 +232,6 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 }
 void GameManager::UpdateGUI( )
 {
-
 	if ( localPlayerActiveBalls == 0 )
 	{
 		if ( localPlayerLives == 0 )

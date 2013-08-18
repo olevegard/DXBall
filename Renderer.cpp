@@ -5,10 +5,21 @@
 #include "Paddle.h"
 
 #include <algorithm>
-#include <iostream>
 
 	Renderer::Renderer()
-	:	SCREEN_WIDTH ( 1920 / 2 )
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	:	rmask( 0xff000000 )
+	,	gmask( 0x00ff0000 )
+	,	bmask( 0x0000ff00 )
+	,	amask( 0x000000ff )
+#else
+	:	rmask( 0x000000ff )
+	,	gmask( 0x0000ff00 )
+	,	bmask( 0x00ff0000 )
+	,	amask( 0xff000000 )
+#endif
+
+	,	SCREEN_WIDTH ( 1920 / 2 )
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
 
@@ -26,6 +37,7 @@
 	,	points()
 	,	textColor{ 0, 0, 0, 0 }
 	,	tileColors{ {0, 0, 255, 0}, {0, 255, 0, 0}, {255, 255, 0, 0}, {0, 255, 255, 0} }
+	,	tileSurfaces{ nullptr, nullptr, nullptr, nullptr }
 {
 
 }
@@ -57,8 +69,10 @@ bool Renderer::Init()
 	if ( TTF_Init( ) == -1 )
 		return false;
 
-	// Set window title
-	if ( !LoadAllFiles() )
+	if ( !LoadImages() )
+		return false;
+
+	if ( !LoadFontAndText() )
 		return false;
 
 	BlitBackground();
@@ -83,7 +97,6 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 void Renderer::AddTile( const std::shared_ptr< Tile > &tile )
 {
 	tileList.push_back( tile );
-	//textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, tile->rect.w, tile->rect.h, SCREEN_BPP, 0x00, 0x00, 0xff, 0);
 }
 void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
@@ -96,6 +109,7 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 	SDL_Surface* loadedImage = NULL;
 
 	// The optimized image that will be used
+	//
 	SDL_Surface* optimizedImage = NULL;
 
 	// Load the image
@@ -137,7 +151,6 @@ void Renderer::SetColorKey( GamePiece::TextureType textureID, unsigned char r, u
 void Renderer::FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b )
 {
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 255 )  );
-	std::cout << "Format : " << source->format  << std::endl;
 }
 	
 void Renderer::FillSurface( SDL_Surface* source, const SDL_Color &color )
@@ -159,24 +172,12 @@ void Renderer::ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface*
 }
 void Renderer::ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const
 {
-
 	ApplySurface( r.x, r.y, source, destination );
-
 }
-bool Renderer::LoadAllFiles( )
+
+bool Renderer::LoadImages()
 {
-	Uint32 rmask, gmask, bmask, amask;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	rmask = 0xff000000;
-	gmask = 0x00ff0000;
-	bmask = 0x0000ff00;
-	amask = 0x000000ff;
-#else
-	rmask = 0x000000ff;
-	gmask = 0x0000ff00;
-	bmask = 0x00ff0000;
-	amask = 0xff000000;
-#endif
+
 	LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
 	SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
 
@@ -190,22 +191,13 @@ bool Renderer::LoadAllFiles( )
 	textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
 	FillSurface( textures[GamePiece::Tile], tileColors[0] );
 
-	SDL_Surface* surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
-	FillSurface( surf, tileColors[0] );
-	tileSurfaces.push_back( surf );
+	for ( size_t i = 0; i < tileSurfaces.size() ; ++i )
+		SetTileColorSurface( i, tileColors[ i ] );
 
-	surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
-	FillSurface( surf, tileColors[1] );
-	tileSurfaces.push_back( surf );
-
-	surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
-	FillSurface( surf, tileColors[2] );
-	tileSurfaces.push_back( surf );
-
-	surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
-	FillSurface( surf, tileColors[3] );
-	tileSurfaces.push_back( surf );
-
+	return true;
+}
+bool Renderer::LoadFontAndText()
+{
 	font = TTF_OpenFont( "lazy.ttf", 28 );
 
 	if ( font == NULL )
@@ -221,6 +213,13 @@ bool Renderer::LoadAllFiles( )
 	return true;
 }
 
+void Renderer::SetTileColorSurface( size_t index, const SDL_Color &color )
+{
+	SDL_Surface* surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	FillSurface( surf, color );
+	tileSurfaces.at( index ) = surf;
+}
+
 bool Renderer::Render( )
 {
 	BlitBackground();
@@ -230,6 +229,7 @@ bool Renderer::Render( )
 	ApplySurface( 0, 0, backgroundArea, screen );
 
 	if ( SDL_Flip( screen ) == -1 )
+
 		return false;
 	else
 		return true;

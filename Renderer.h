@@ -54,11 +54,15 @@ private:
 	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
 	void ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;
 
-	bool LoadAllFiles( );
+	bool LoadImages();
+	bool LoadFontAndText();
+	void SetTileColorSurface( size_t index, const SDL_Color &color );
 
 	void BlitBackground() const;
 	void BlitForeground();
 	void BlitText();
+
+	Uint32 rmask, gmask, bmask, amask;
 
 	const int SCREEN_WIDTH;
 	const int SCREEN_HEIGHT;
