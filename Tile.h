@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GamePiece.h"
+#include <iostream>
 
 enum class TileTypes
 {
@@ -11,6 +12,7 @@ enum class TileTypes
 };
 struct Tile : GamePiece
 {
+	public:
 	Tile( TileTypes type_);
 
 	virtual ~Tile();
@@ -19,6 +21,21 @@ struct Tile : GamePiece
 	{
 		return static_cast<size_t> ( type );
 	}
+
+	bool IsDestroyed()
+	{
+		return ( type != TileTypes::Unbreakable && hitsLeft == 0 );
+	}
+
+	void Hit()
+	{
+		--hitsLeft;
+
+		if ( type == TileTypes::Hard )
+			std::cout << "Hits left : " << hitsLeft << std::endl;
+	}
+
 	private:
-	TileTypes type;
+		TileTypes type;
+		unsigned short hitsLeft;
 };

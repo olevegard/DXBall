@@ -36,7 +36,7 @@
 	,	lives()
 	,	points()
 	,	textColor{ 0, 0, 0, 0 }
-	,	tileColors{ {0, 0, 255, 0}, {0, 255, 0, 0}, {255, 255, 0, 0}, {0, 255, 255, 0} }
+	,	tileColors{ {0, 0, 255, 0}, {0, 255, 0, 0}, {0, 0, 0, 0}, {255, 255, 255, 0} }
 	,	tileSurfaces{ nullptr, nullptr, nullptr, nullptr }
 {
 

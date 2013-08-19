@@ -175,24 +175,27 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 	{
 		std::cout << "Bottom collision\n";
 		dirY *= -1.0f;
-		rect.y = oldTop;
+		rect.y = tileBottom + 5;
 
 	} else if ( oldBottom < tileTop )
 	{
 		std::cout << "Top collision\n";
 		dirY *= -1.0f;
-		rect.y = oldBottom - rect.h;
+		rect.y = tileTop - 5;
+		//rect.y = oldBottom - rect.h;
 	}
 	else if ( oldRight < tileLeft )
 	{
 		std::cout << "Left collision\n";
 		dirX *= -1.0f;
-		rect.x = oldLeft - rect.w;
+		rect.x = tileLeft - 5;
+		//rect.x = oldLeft - rect.w;
 	} else if ( oldLeft > tileRight )
 	{
 		std::cout << "Right collision\n";
 		dirX *= -1.0f;
-		rect.x = oldLeft;
+		rect.x = tileRight + 5;
+		//rect.x = oldLeft;
 	} else 
 	{
 		std::cout << "Could not determine collision edge\n";
@@ -215,7 +218,13 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 		<< "\n\tBottom : " << oldBottom
 		<< std::endl;
 
-		std::cin.ignore();
+		dirX *= -1.0f;
+		dirY *= -1.0f;
+		
+		rect.x += dirX * 2;
+		rect.y += dirY * 2;
+
+		//std::cin.ignore();
 	}
 	return true;
 }

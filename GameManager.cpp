@@ -225,8 +225,15 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 		if ( ball->TileCheck( (*p)->rect ) )
 		{
 			localPlayerPoints += points[ (*p)->GetTileTypeAsIndex() ];
-			RemoveTile( *p  );
-			p = tileList.erase( p );
+
+			(*p)->Hit();
+
+			if ( (*p)->IsDestroyed() )
+			{
+				RemoveTile( *p  );
+				p = tileList.erase( p );
+			}
+
 			break;
 		} else
 		{
