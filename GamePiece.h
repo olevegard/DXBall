@@ -7,6 +7,7 @@ struct GamePiece
 {
 	GamePiece()
 		:	rect( )
+		,	oldRect( )
 		,	textureType( Paddle )
 	{
 
@@ -18,6 +19,7 @@ struct GamePiece
 	}*/
 
 	SDL_Rect rect;
+	SDL_Rect oldRect;
 
 
 	enum TextureType

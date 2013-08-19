@@ -8,7 +8,11 @@ Ball::Ball()
 	,	dirY(-0.5547f )
 {
 	rect.w = 20;
+	oldRect.w = 20;
+
 	rect.h = 20;
+	oldRect.h = 20;
+
 	Reset();
 }
 
@@ -35,7 +39,11 @@ void Ball::NormalizeDirection()
 
 void Ball::Update( double tick )
 {
+	oldRect.x = rect.x;
+	oldRect.y = rect.y;
+
 	int deltaMovement = static_cast<int>( tick * speed + 0.5f );
+
 	rect.x += static_cast<int> ( deltaMovement * dirX );
 	rect.y += static_cast<int> ( deltaMovement * dirY );
 }
@@ -156,8 +164,10 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 	}
 
 	// Check Which Face Collided
-	short oldLeft   = rect.x + static_cast<short>(-speed * dirX  * 5.0f);
-	short oldTop    = rect.y + static_cast<short>(-speed * dirY  * 5.0f);
+	//short oldLeft   = rect.x + static_cast<short>(-speed * dirX  * 5.0f);
+	//short oldTop    = rect.y + static_cast<short>(-speed * dirY  * 5.0f);
+	short oldLeft   = oldRect.x;
+	short oldTop    = oldRect.y;
 	short oldRight  = oldLeft + rect.w;
 	short oldBottom = oldTop  + rect.h;
 
@@ -183,31 +193,29 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 		std::cout << "Right collision\n";
 		dirX *= -1.0f;
 		rect.x = oldLeft;
+	} else 
+	{
+		std::cout << "Could not determine collision edge\n";
+
+		std::cout << "Edges"
+		<< "\n\tTop    : " << ballTop
+		<< "\n\tLeft   : " << ballLeft   << "--------------------Right  : " << ballRight
+		<< "\n\tBottom : " << ballBottom
+		<< std::endl;
+
+		std::cout << "Tile edges"
+		<< "\n\tTop    : " << tileTop
+		<< "\n\tLeft   : " << tileLeft   << "--------------------Right  : " << tileRight
+		<< "\n\tBottom : " << tileBottom
+		<< std::endl;
+
+		std::cout << "Old edges"
+		<< "\n\tTop    : " << oldTop
+		<< "\n\tLeft   : " << oldLeft   << "--------------------Right  : " << oldRight
+		<< "\n\tBottom : " << oldBottom
+		<< std::endl;
+
+		std::cin.ignore();
 	}
-	/*		
-			std::cout << "Edges"
-			<< "\n\tLeft   : " << ballLeft
-			<< "\n\tRight  : " << ballRight
-			<< "\n\tBottom : " << ballBottom
-			<< "\n\tTop    : " << ballTop
-			<< std::endl;
-
-			std::cout << "Tile edges"
-			<< "\n\tLeft   : " << tileLeft
-			<< "\n\tRight  : " << tileRight
-			<< "\n\tBottom : " << tileBottom
-			<< "\n\tTop    : " << tileTop
-			<< std::endl;
-
-			std::cout << "Old edges"
-			<< "\n\tLeft   : " << oldLeft
-			<< "\n\tRight  : " << oldRight
-			<< "\n\tBottom : " << oldBottom
-			<< "\n\tTop    : " << oldTop
-			<< std::endl;
-			*/
-	//std::cin.ignore();
 	return true;
 }
-
-

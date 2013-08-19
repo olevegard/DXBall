@@ -184,6 +184,9 @@ void GameManager::Run()
 						std::cout << "Delay added\n";
 						delay4 = true;
 						break;
+					case SDLK_p:
+						std::cin.ignore();
+						break;
 					default:
 						break;
 				}
