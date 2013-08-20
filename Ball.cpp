@@ -171,60 +171,223 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 	short oldRight  = oldLeft + rect.w;
 	short oldBottom = oldTop  + rect.h;
 
-	if ( oldTop > tileBottom )
-	{
-		std::cout << "Bottom collision\n";
-		dirY *= -1.0f;
-		rect.y = tileBottom + 5;
+	bool stop = true;
 
-	} else if ( oldBottom < tileTop )
-	{
-		std::cout << "Top collision\n";
-		dirY *= -1.0f;
-		rect.y = tileTop - 5;
-		//rect.y = oldBottom - rect.h;
-	}
-	else if ( oldRight < tileLeft )
-	{
-		std::cout << "Left collision\n";
-		dirX *= -1.0f;
-		rect.x = tileLeft - 5;
-		//rect.x = oldLeft - rect.w;
-	} else if ( oldLeft > tileRight )
-	{
-		std::cout << "Right collision\n";
-		dirX *= -1.0f;
-		rect.x = tileRight + 5;
-		//rect.x = oldLeft;
-	} else 
-	{
-		std::cout << "Could not determine collision edge\n";
-
-		std::cout << "Edges"
+	
+/*
+	std::cout << "Edges"
 		<< "\n\tTop    : " << ballTop
 		<< "\n\tLeft   : " << ballLeft   << "--------------------Right  : " << ballRight
 		<< "\n\tBottom : " << ballBottom
 		<< std::endl;
 
-		std::cout << "Tile edges"
+
+	std::cout << "Tile edges"
 		<< "\n\tTop    : " << tileTop
 		<< "\n\tLeft   : " << tileLeft   << "--------------------Right  : " << tileRight
 		<< "\n\tBottom : " << tileBottom
 		<< std::endl;
 
-		std::cout << "Old edges"
+	std::cout << "Old edges"
 		<< "\n\tTop    : " << oldTop
 		<< "\n\tLeft   : " << oldLeft   << "--------------------Right  : " << oldRight
 		<< "\n\tBottom : " << oldBottom
-		<< std::endl;
+		<< std::endl << std::endl;
+*/
+	std::cout << "\tTile position tl : " << tileLeft   << " , " << tileTop  << std::endl;
+	std::cout << "\tTile position br : " << tileRight  << " , " << tileBottom << std::endl << std::endl;
+
+	std::cout << "\tBall position tl : " << oldLeft     << " , " << oldTop   << std::endl;
+	std::cout << "\tBall position br : " << oldRight    << " , " << oldBottom  << std::endl << std::endl;
+
+	std::cout << "\tBall direction   : " << dirX << " , " << dirY << std::endl << std::endl;
+
+	if ( dirY < 0.0f )
+	{
+		std::cout << "Checking collision bottom : \n";
+		float distBottom = oldTop - tileBottom;
+
+		float intersect = static_cast<float > ( distBottom / dirY );
+		float intersectPosLeft  = oldLeft + static_cast<float > ( dirX * fabsf( intersect ) );
+		float intersectPosRight = intersectPosLeft + rect.w;
+
+		std::cout << "\tDist bottom      : " << distBottom << std::endl;
+		std::cout << "\tIntersect        : " << intersect << std::endl;
+		std::cout << "\tIntersect left   : " << intersectPosLeft << std::endl;
+		std::cout << "\tIntersect right  : " << intersectPosRight << std::endl;
+
+		std::cout << "\tif ( " << intersectPosLeft  << " > " << tileLeft  << " )" << std::endl;
+		std::cout << "\tif ( " << intersectPosRight << " < " << tileRight << " )" << std::endl;
+
+		if ( distBottom > 0.0f && intersectPosRight > tileLeft && intersectPosLeft < tileRight )
+		{
+			std::cout << "\t\tIntersected bottom" << std::endl;
+			stop = false;
+		}
+		else
+		{
+			std::cout << "\t\tMissed bottom" << std::endl;
+			//std::cin.ignore();
+		}
+	} else 
+	{
+		std::cout << "Checking collision top : \n";
+		float distTop = tileTop - oldBottom;
+
+		float intersect = static_cast<float > ( distTop / dirY );
+		float intersectPosLeft  = oldLeft + static_cast<float > ( dirX * intersect  );
+		float intersectPosRight = intersectPosLeft + rect.w;
+
+		std::cout << "rect.w : " << rect.w << std::endl;
+
+		std::cout << "\tDist bottom      : " << distTop << std::endl;
+		std::cout << "\tIntersect        : " << intersect << std::endl;
+		std::cout << "\tIntersect left   : " << intersectPosLeft << std::endl;
+		std::cout << "\tIntersect right  : " << intersectPosRight << std::endl;
+
+		std::cout << "\tif ( " << intersectPosLeft  << " > " << tileLeft  << " )" << std::endl;
+		std::cout << "\tif ( " << intersectPosRight << " < " << tileRight << " )" << std::endl;
+		if ( distTop > 0.0f &&  intersectPosRight > tileLeft && intersectPosLeft < tileRight )
+		{
+			std::cout << "\t\tIntersected top" << std::endl;
+			stop = false;
+		}
+		else
+			std::cout << "\t\tMissed top" << std::endl;
+
+		//else if ( distBottom > 0.0f && intersectPosX > tileLeft && intersectPosX < tileRight )
+		//std::cout << "\nIntersected top" << std::endl;
+	}
+
+	if ( dirX > 0.0f )
+	{
+		std::cout << "Checking collision left : \n";
+		float distLeft = tileLeft - oldRight;
+
+		float intersect = static_cast<float > ( distLeft / dirX );
+		float intersectPosTop     = oldTop + static_cast<float > ( dirY * fabsf( intersect ) );
+		float intersectPosBottom  = intersectPosTop + rect.h;
+
+		std::cout << "\tDist lwf          : " << distLeft           << std::endl;
+		std::cout << "\tIntersect         : " << intersect          << std::endl;
+		std::cout << "\tIntersect top     : " << intersectPosTop    << std::endl;
+		std::cout << "\tIntersect bottom  : " << intersectPosBottom << std::endl;
+
+		std::cout << "\tif ( " << intersectPosTop    << " < " << tileBottom  << " )" << std::endl;
+		std::cout << "\tif ( " << intersectPosBottom << " > " << tileTop     << " )" << std::endl;
+
+		if ( distLeft > 0.0f && intersectPosTop < tileBottom && intersectPosBottom > tileTop )
+		{
+			std::cout << "\t\tIntersected left" << std::endl;
+			stop = false;
+		}
+		else
+		{
+			std::cout << "\t\tMissed left" << std::endl;
+			//std::cin.ignore();
+		}
+	} else if ( dirX < 0.0f )
+	{
+		std::cout << "Checking collision left : \n";
+		float distRight = oldLeft - tileRight;
+
+		float intersect = static_cast<float > ( distRight / dirX );
+		float intersectPosTop     = oldTop + static_cast<float > ( dirY * fabsf( intersect ) );
+		float intersectPosBottom  = intersectPosTop + rect.h;
+
+		std::cout << "\tDist right        : " << distRight          << std::endl;
+		std::cout << "\tIntersect         : " << intersect          << std::endl;
+		std::cout << "\tIntersect top     : " << intersectPosTop    << std::endl;
+		std::cout << "\tIntersect bottom  : " << intersectPosBottom << std::endl;
+
+		std::cout << "\tif ( " << intersectPosTop    << " < " << tileBottom  << " )" << std::endl;
+		std::cout << "\tif ( " << intersectPosBottom << " > " << tileTop     << " )" << std::endl;
+
+		if ( distRight > 0.0f && intersectPosTop < tileBottom && intersectPosBottom > tileTop )
+		{
+			std::cout << "\t\tIntersected right" << std::endl;
+			stop = false;
+		}
+		else
+		{
+			std::cout << "\t\tMissed right" << std::endl;
+			//std::cin.ignore();
+		}
+	}
+
+	if ( oldTop > tileBottom )
+	{
+		// Colliding with underside of tile...
+		dirY *= -1.0f;
+
+		short dist = tileBottom - ballTop;
+		float f = dist / ( dirY );
+		//f *= 1.05f;	
+
+		std::cout << "Bottom collision : " << dist << "\n";
+		std::cout << "f : " << f << std::endl;
+
+		//rect.x += dirX * f;
+		//rect.y += dirY * f;
+
+	} else if ( oldBottom < tileTop )
+	{
+		// Colliding with top side of tile...
+		dirY *= -1.0f;
+
+		short dist = tileTop - ballBottom;
+		float f = dist / ( dirY );
+		//f *= 1.05f;	
+
+		std::cout << "Top collision : " << dist << "\n";
+		std::cout << "f : " << f << std::endl;
+
+		//rect.x += dirX * f;
+		//rect.y += dirY * f;
+	}
+	else if ( oldRight < tileLeft )
+	{
+		// Colliding with left side of tile...
+		dirX *= -1.0f;
+
+		short dist = tileLeft - ballRight;
+		float f = dist / ( dirY );
+		//f *= 1.05f;	
+
+		std::cout << "Left collision : " << dist << "\n";
+		std::cout << "f : " << f << std::endl;
+
+		//rect.x += dirX * f;
+		//rect.y += dirY * f;
+
+	} else if ( oldLeft > tileRight )
+	{
+		// Colliding with right side of tile...
+		dirX *= -1.0f;
+
+		short dist = tileTop - ballBottom;
+		float f = dist / ( dirY );
+		//f *= 1.05f;	
+
+		std::cout << "Right collision : " << dist << "\n";
+		std::cout << "f : " << f << std::endl;
+
+		//rect.x += dirX * f;
+		//rect.y += dirY * f;
+	} else 
+	{
+		std::cout << "Could not determine collision edge\n";
+
 
 		dirX *= -1.0f;
 		dirY *= -1.0f;
-		
 		rect.x += dirX * 2;
 		rect.y += dirY * 2;
 
-		//std::cin.ignore();
+		stop = true;
 	}
+	if ( stop )
+		std::cin.ignore();
+
 	return true;
 }
