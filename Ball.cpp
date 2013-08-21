@@ -22,11 +22,15 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	speed = 0.6f;
-	dirX = -0.83205f;
+	//speed = 0.6f;
+	speed = 0.3f;
+
+	dirX = 0.83205f;
 	dirY =  -0.87f;
-	rect.x = 400;
+
+	rect.x = 150;
 	rect.y = 110;
+
 	NormalizeDirection();
 }
 
