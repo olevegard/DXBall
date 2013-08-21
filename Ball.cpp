@@ -22,8 +22,7 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	//speed = 0.6f;
-	speed = 0.3f;
+	speed = 0.6f;
 
 	dirX = 0.83205f;
 	dirY =  -0.87f;
@@ -126,7 +125,6 @@ float Ball::CalculatePaddleHitPosition( const SDL_Rect &paddleRect ) const
 	int paddleMidpoint = paddleRect.x + ( paddleRect.w / 2 );
 
 	return ( static_cast< float >( ballMidpoint - paddleMidpoint ) / ( paddleRect.w + 20 ) ) * 2.0f;
-	//return ( static_cast< float >( ballMidpoint - paddleMidpoint ) / ( paddleRect.w + 50 ) ) * 2.0f;
 }
 void  Ball::CalculateNewBallDirection( float hitPosition )
 {
@@ -142,6 +140,31 @@ void  Ball::CalculateNewBallDirection( float hitPosition )
 }
 bool Ball::TileCheck( const SDL_Rect &tileRect )
 {
+	// Intersection test
+	if ( !CheckTileIntersection( tileRect, rect ) )
+		return false;
+
+	std::cout << "Colliding in current frame\n";
+
+	// If the ball collided with the same rect in the previous frame too,
+	// This means the ball needs an extra frame to get fully out of the tile
+	if ( CheckTileIntersection( tileRect, oldRect ) )
+	{
+		std::cout << "Collided in the prev frame too...\n";
+		return false;
+	}
+
+	HandleTileIntersection( tileRect );
+	HandleTileIntersection2( tileRect );
+
+	return true;
+}
+void Ball::HandleTileIntersection( const SDL_Rect &tileRect )
+{
+	// Check Which Face Collided
+	short vecX = rect.x - static_cast< short >( dirX * 100.0f );
+	short vecY = rect.y - static_cast< short >( dirY * 100.0f );
+
 	// 0,0 = upper left
 	short tileLeft =   tileRect.x;
 	short tileTop =    tileRect.y;
@@ -153,22 +176,10 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 	short ballRight =  rect.x + rect.w;
 	short ballBottom = rect.y + rect.h;
 
-	// Intersection test
-	if ( !CheckTileIntersection( tileRect, rect ) )
-		return false;
-
-	std::cout << "Colliding in current frame\n";
-
-	// Check Which Face Collided
-	short vecX = rect.x - static_cast< short >( dirX * 100.0f );
-	short vecY = rect.y - static_cast< short >( dirY * 100.0f );
-
 	short oldLeft   = oldRect.x;
 	short oldTop    = oldRect.y;
 	short oldRight  = oldLeft + rect.w;
 	short oldBottom = oldTop  + rect.h;
-
-	bool stop = true;
 
 	std::cout << "\tTile position tl : " << tileLeft   << " , " << tileTop  << std::endl;
 	std::cout << "\tTile position br : " << tileRight  << " , " << tileBottom << std::endl << std::endl;
@@ -183,14 +194,63 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 
 	std::cout << "\tBall est odlpos  : " << vecX << " , " << vecY << std::endl << std::endl;
 
-	// If the ball collided with the same rect in the previous frame too,
-	// This means the ball needs an extra frame to get fully out of the tile
-	if ( CheckTileIntersection( tileRect, oldRect ) )
+	if ( oldTop > tileBottom )
 	{
-		std::cout << "Collided in the prev frame too...\n";
-		//std::cin.ignore();
-		return false;
+		// Colliding with underside of tile...
+		dirY *= -1.0f;
+
+		short dist = tileBottom - ballTop;
+
+		std::cout << "Bottom collision : " << dist << "\n";
 	}
+	else if ( oldBottom < tileTop )
+	{
+		// Colliding with top side of tile...
+		dirY *= -1.0f;
+
+		short dist = tileTop - ballBottom;
+
+		std::cout << "Top collision : " << dist << "\n";
+	}
+	else if ( oldRight < tileLeft )
+	{
+		// Colliding with left side of tile...
+		dirX *= -1.0f;
+
+		short dist = tileLeft - ballRight;
+
+		std::cout << "Left collision : " << dist << "\n";
+	}
+	else if ( oldLeft > tileRight )
+	{
+		// Colliding with right side of tile...
+		dirX *= -1.0f;
+
+		short dist = tileTop - ballBottom;
+
+		std::cout << "Right collision : " << dist << "\n";
+	}
+	else 
+	{
+		std::cout << "Could not determine collision edge\n";
+
+		dirX *= -1.0f;
+		dirY *= -1.0f;
+	}
+}
+void Ball::HandleTileIntersection2( const SDL_Rect &tileRect )
+{
+	bool stop = true;
+
+	short tileLeft =   tileRect.x;
+	short tileTop =    tileRect.y;
+	short tileRight =  tileRect.x + tileRect.w;
+	short tileBottom = tileRect.y + tileRect.h;
+
+	short oldLeft   = oldRect.x;
+	short oldTop    = oldRect.y;
+	short oldRight  = oldLeft + rect.w;
+	short oldBottom = oldTop  + rect.h;
 
 	if ( dirY < 0.0f )
 	{
@@ -243,9 +303,6 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 		}
 		else
 			std::cout << "\t\tMissed top" << std::endl;
-
-		//else if ( distBottom > 0.0f && intersectPosX > tileLeft && intersectPosX < tileRight )
-		//std::cout << "\nIntersected top" << std::endl;
 	}
 
 	if ( dirX > 0.0f )
@@ -273,7 +330,6 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 		else
 		{
 			std::cout << "\t\tMissed left" << std::endl;
-			//std::cin.ignore();
 		}
 	} else if ( dirX < 0.0f )
 	{
@@ -300,86 +356,10 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 		else
 		{
 			std::cout << "\t\tMissed right" << std::endl;
-			//std::cin.ignore();
 		}
 	}
 
-	if ( oldTop > tileBottom )
-	{
-		// Colliding with underside of tile...
-		dirY *= -1.0f;
 
-		short dist = tileBottom - ballTop;
-		float f = dist / ( dirY );
-		//f *= 1.05f;	
-
-		std::cout << "Bottom collision : " << dist << "\n";
-		std::cout << "f : " << f << std::endl;
-
-		//rect.x += dirX * f;
-		//rect.y += dirY * f;
-
-	} else if ( oldBottom < tileTop )
-	{
-		// Colliding with top side of tile...
-		dirY *= -1.0f;
-
-		short dist = tileTop - ballBottom;
-		float f = dist / ( dirY );
-		//f *= 1.05f;	
-
-		std::cout << "Top collision : " << dist << "\n";
-		std::cout << "f : " << f << std::endl;
-
-		//rect.x += dirX * f;
-		//rect.y += dirY * f;
-	}
-	else if ( oldRight < tileLeft )
-	{
-		// Colliding with left side of tile...
-		dirX *= -1.0f;
-
-		short dist = tileLeft - ballRight;
-		float f = dist / ( dirY );
-		//f *= 1.05f;	
-
-		std::cout << "Left collision : " << dist << "\n";
-		std::cout << "f : " << f << std::endl;
-
-		//rect.x += dirX * f;
-		//rect.y += dirY * f;
-
-	} else if ( oldLeft > tileRight )
-	{
-		// Colliding with right side of tile...
-		dirX *= -1.0f;
-
-		short dist = tileTop - ballBottom;
-		float f = dist / ( dirY );
-		//f *= 1.05f;	
-
-		std::cout << "Right collision : " << dist << "\n";
-		std::cout << "f : " << f << std::endl;
-
-		//rect.x += dirX * f;
-		//rect.y += dirY * f;
-	} else 
-	{
-		std::cout << "Could not determine collision edge\n";
-
-
-		dirX *= -1.0f;
-		dirY *= -1.0f;
-		rect.x += dirX * 2;
-		rect.y += dirY * 2;
-
-		stop = true;
-	}
-
-	if ( stop )
-		std::cin.ignore();
-
-	return true;
 }
 bool Ball::CheckTileIntersection( const SDL_Rect &tile, const SDL_Rect &ball ) const
 {
@@ -394,13 +374,10 @@ bool Ball::CheckTileIntersection( const SDL_Rect &tile, const SDL_Rect &ball ) c
 	short ballBottom = ball.y + ball.h;
 
 	// Intersection test
-	if (
+	return !(
 			   ballTop    > tileBottom
 			|| ballLeft   > tileRight
 			|| ballRight  < tileLeft
 			|| ballBottom < tileTop
-	)
-		return false;
-	else
-		return true;
+	);
 }

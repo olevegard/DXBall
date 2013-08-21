@@ -33,6 +33,8 @@ struct Ball : GamePiece
 
 	private:
 	bool CheckTileIntersection( const SDL_Rect &tile, const SDL_Rect &ball ) const;
+	void HandleTileIntersection( const SDL_Rect &tile );
+	void HandleTileIntersection2( const SDL_Rect &tileRect );
 
 	void HandlePaddleHit( const SDL_Rect &paddleRect );
 	float CalculatePaddleHitPosition( const SDL_Rect &paddleRect ) const;
