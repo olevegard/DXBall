@@ -156,8 +156,8 @@ bool Ball::TileCheck( const SDL_Rect &tileRect )
 	std::cout << "Colliding in current frame\n";
 
 	// Check Which Face Collided
-	short vecX = rect.x - ( dirX * 100 );
-	short vecY = rect.y - ( dirY * 100 );
+	short vecX = rect.x - static_cast< short >( dirX * 100.0f );
+	short vecY = rect.y - static_cast< short >( dirY * 100.0f );
 
 	short oldLeft   = oldRect.x;
 	short oldTop    = oldRect.y;
