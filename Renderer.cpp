@@ -38,6 +38,8 @@
 	,	textColor{ 0, 0, 0, 0 }
 	,	tileColors{ {0, 0, 255, 0}, {0, 255, 0, 0}, {0, 0, 0, 0}, {255, 255, 255, 0} }
 	,	tileSurfaces{ nullptr, nullptr, nullptr, nullptr }
+	,	hardTileColors{ { 255, 255, 255, 255}, { 199, 199, 199, 255}, { 148, 148, 148, 255},{ 97, 97, 97, 255}, { 46, 46, 46, 255} }
+	,	hardTileSurfaces{ nullptr, nullptr, nullptr, nullptr, nullptr }
 {
 
 }
@@ -102,6 +104,9 @@ void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
+
+
+
 
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
 {
@@ -191,8 +196,13 @@ bool Renderer::LoadImages()
 	textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
 	FillSurface( textures[GamePiece::Tile], tileColors[0] );
 
+	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileSurfaces.size() ; ++i )
-		SetTileColorSurface( i, tileColors[ i ] );
+		SetTileColorSurface( i, tileColors[ i ], tileSurfaces );
+
+	std::cout << "Adding hard tile surfaces : " << std::endl;
+	for ( size_t i = 0; i < hardTileSurfaces.size() ; ++i )
+		SetTileColorSurface( i, hardTileColors[ i ], hardTileSurfaces );
 
 	return true;
 }
@@ -213,11 +223,11 @@ bool Renderer::LoadFontAndText()
 	return true;
 }
 
-void Renderer::SetTileColorSurface( size_t index, const SDL_Color &color )
+void Renderer::SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Surface* > &list  )
 {
 	SDL_Surface* surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
 	FillSurface( surf, color );
-	tileSurfaces.at( index ) = surf;
+	list.at( index ) = surf;
 }
 
 bool Renderer::Render( )
@@ -251,7 +261,10 @@ void Renderer::BlitForeground()
 	// Draw tiles
 	for ( std::shared_ptr< Tile > gp : tileList)
 	{
-		ApplySurface( gp->rect.x, gp->rect.y, tileSurfaces[ gp->GetTileTypeAsIndex() ], backgroundArea );
+		if ( gp->GetTileType() == TileTypes::Hard )
+			ApplySurface( gp->rect.x, gp->rect.y, hardTileSurfaces[ 5 - gp->GetHitsLeft()], backgroundArea );
+		else
+			ApplySurface( gp->rect.x, gp->rect.y, tileSurfaces[ gp->GetTileTypeAsIndex() ], backgroundArea );
 	}
 
 	// Draw paddles

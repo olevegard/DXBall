@@ -56,7 +56,7 @@ private:
 
 	bool LoadImages();
 	bool LoadFontAndText();
-	void SetTileColorSurface( size_t index, const SDL_Color &color );
+	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Surface* > &list );
 
 	void BlitBackground() const;
 	void BlitForeground();
@@ -91,4 +91,8 @@ private:
 
 	SDL_Color tileColors[4];
 	std::vector< SDL_Surface* > tileSurfaces;
+
+	SDL_Color hardTileColors[5];
+	std::vector< SDL_Surface* > hardTileSurfaces;
+
 };

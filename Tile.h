@@ -17,9 +17,19 @@ struct Tile : GamePiece
 
 	virtual ~Tile();
 
+	TileTypes GetTileType()
+	{
+		return type;
+	}
+
 	size_t GetTileTypeAsIndex()
 	{
 		return static_cast<size_t> ( type );
+	}
+
+	unsigned int GetHitsLeft()
+	{
+		return hitsLeft;
 	}
 
 	bool IsDestroyed()
