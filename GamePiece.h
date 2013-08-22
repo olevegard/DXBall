@@ -5,23 +5,6 @@
 
 struct GamePiece
 {
-	GamePiece()
-		:	rect( )
-		,	oldRect( )
-		,	textureType( Paddle )
-	{
-
-	}
-
-	/*virtual ~GamePiece()
-	{
-
-	}*/
-
-	SDL_Rect rect;
-	SDL_Rect oldRect;
-
-
 	enum TextureType
 	{
 		Paddle = 0,
@@ -31,6 +14,12 @@ struct GamePiece
 		Background = 99,
 	};
 
+	GamePiece();
+
+	SDL_Rect rect;
+	SDL_Rect oldRect;
+
+	
 	
 	TextureType textureType;
 
