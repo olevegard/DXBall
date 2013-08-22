@@ -17,7 +17,7 @@
 	,	ballList()
 	,	tileSize()
 	,	windowSize()
-	, 	points{ 5, 10, 50, 100 }
+	, 	points{ 20, 50, 100, 200 }
 {
 }
 
@@ -49,13 +49,13 @@ void GameManager::Restart()
 	localPaddle->rect.h = 30;
 	renderer.SetLocalPaddle( localPaddle );
 
-	//AddTile( 340, 120, TileTypes::Regular);
-	//AddTile( 405, 120, TileTypes::Explosive );
+	AddTile( 340, 120, TileTypes::Regular);
+	AddTile( 405, 120, TileTypes::Hard );
 	AddTile( 470, 120, TileTypes::Unbreakable );
 
-	//AddTile( 340, 145, TileTypes::Regular );
+	AddTile( 340, 145, TileTypes::Regular );
 	AddTile( 405, 145, TileTypes::Unbreakable );
-	//AddTile( 470, 145, TileTypes::Regular );
+	AddTile( 470, 145, TileTypes::Hard );
 
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
@@ -227,12 +227,14 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 	{
 		if ( ball->TileCheck( (*p)->rect ) )
 		{
-			localPlayerPoints += points[ (*p)->GetTileTypeAsIndex() ];
+
+			localPlayerPoints += 10;
 
 			(*p)->Hit();
 
 			if ( (*p)->IsDestroyed() )
 			{
+				localPlayerPoints += points[ (*p)->GetTileTypeAsIndex() ];
 				RemoveTile( *p  );
 				p = tileList.erase( p );
 			}
