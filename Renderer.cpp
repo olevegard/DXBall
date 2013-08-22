@@ -36,9 +36,9 @@
 	,	lives()
 	,	points()
 	,	textColor{ 0, 0, 0, 0 }
-	,	tileColors{ {0, 0, 255, 0}, {0, 255, 0, 0}, {0, 0, 0, 0}, {255, 255, 255, 0} }
+	,	tileColors{ {48, 9, 178, 255}, {255, 55, 13, 255}, {0, 0, 0, 255}, {255, 183, 13, 255} }
 	,	tileSurfaces{ nullptr, nullptr, nullptr, nullptr }
-	,	hardTileColors{ { 255, 255, 255, 255}, { 199, 199, 199, 255}, { 148, 148, 148, 255},{ 97, 97, 97, 255}, { 46, 46, 46, 255} }
+	,	hardTileColors{ { 255, 243, 233, 255}, { 222, 212, 203, 255}, { 191, 183, 175, 255},{ 127, 122, 117, 255}, { 64, 61, 58, 255} }
 	,	hardTileSurfaces{ nullptr, nullptr, nullptr, nullptr, nullptr }
 {
 
@@ -190,6 +190,7 @@ bool Renderer::LoadImages()
 	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );
 
 	backgroundImage= LoadImage( "media/background.png", GamePiece::Background );
+	FillSurface( backgroundImage, 0, 0, 0 );
 
 	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, rmask, gmask, bmask, amask);
 
