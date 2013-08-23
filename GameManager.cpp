@@ -173,6 +173,18 @@ void GameManager::Run()
 					case SDLK_r:
 						++localPlayerLives;
 						break;
+					case SDLK_t:
+						std::cout << "Tile respawned\n";
+						AddTile( 340, 120, TileTypes::Regular);
+						AddTile( 405, 120, TileTypes::Hard );
+						AddTile( 470, 120, TileTypes::Unbreakable );
+						AddTile( 535, 120, TileTypes::Explosive );
+
+						AddTile( 340, 145, TileTypes::Regular );
+						AddTile( 405, 145, TileTypes::Unbreakable );
+						AddTile( 470, 145, TileTypes::Hard );
+						AddTile( 535, 145, TileTypes::Explosive );
+						break;
 					case SDLK_1:
 						std::cout << "Delay added\n";
 						delay1 = true;
