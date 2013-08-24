@@ -35,7 +35,7 @@
 	,	text()
 	,	lives()
 	,	points()
-	,	textColor{ 0, 0, 0, 0 }
+	,	textColor{ 0, 140, 0, 255 }
 	,	tileColors{ {48, 9, 178, 255}, {255, 55, 13, 255}, {0, 0, 0, 255}, {255, 183, 13, 255} }
 	,	tileSurfaces{ nullptr, nullptr, nullptr, nullptr }
 	,	hardTileColors{ { 255, 243, 233, 255}, { 222, 212, 203, 255}, { 191, 183, 175, 255},{ 127, 122, 117, 255}, { 64, 61, 58, 255} }
