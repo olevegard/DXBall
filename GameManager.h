@@ -54,4 +54,6 @@ class GameManager
 		SDL_Rect windowSize;
 
 		unsigned int points[4];
+
+		unsigned int tileCount;
 };

@@ -2,6 +2,8 @@
 
 #include "GamePiece.h"
 
+#include <string>
+
 struct Ball : GamePiece
 {
 	Ball();
@@ -19,7 +21,7 @@ struct Ball : GamePiece
 
 	bool PaddleCheck( const SDL_Rect &paddleRect );
 
-	bool TileCheck( const SDL_Rect &paddleRect );
+	bool TileCheck( const SDL_Rect &paddleRect, unsigned int tileID );
 
 	void SetOwner( int owner )
 	{
@@ -40,11 +42,15 @@ struct Ball : GamePiece
 	float CalculatePaddleHitPosition( const SDL_Rect &paddleRect ) const;
 	void  CalculateNewBallDirection( float hitPosition );
 
+	void PrintPosition( const SDL_Rect &pos, const std::string &tilename );
+
 	float speed;
 
 	float dirX;
 	float dirY;
 
 	int ballOwner;
+
+	unsigned int lastTileHit;
 };
 

@@ -18,6 +18,7 @@
 	,	tileSize()
 	,	windowSize()
 	, 	points{ 20, 50, 100, 200 }
+	,	tileCount( 0 )
 {
 }
 
@@ -49,6 +50,7 @@ void GameManager::Restart()
 	localPaddle->rect.h = 30;
 	renderer.SetLocalPaddle( localPaddle );
 
+	tileCount = 0;
 	AddTile( 340, 120, TileTypes::Regular);
 	AddTile( 405, 120, TileTypes::Hard );
 	AddTile( 470, 120, TileTypes::Unbreakable );
@@ -95,7 +97,7 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 }
 void GameManager::AddTile( short posX, short posY, TileTypes tileType )
 {
-	std::shared_ptr< Tile > tile( new Tile( tileType ) );
+	std::shared_ptr< Tile > tile( new Tile( tileType, tileCount++  ) );
 	tile->textureType = GamePiece::Tile;
 	tile->rect.x = posX;
 	tile->rect.y = posY;
@@ -110,7 +112,11 @@ void GameManager::AddTile( short posX, short posY, TileTypes tileType )
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
 	renderer.RemoveTile( tile );
+
+	// Decrement tile count
+	--tileCount;
 }
+
 void GameManager::UpdateBalls( double delta )
 {
 	renderer.RenderLives( ballList.size() );
@@ -172,6 +178,9 @@ void GameManager::Run()
 						break;
 					case SDLK_r:
 						++localPlayerLives;
+						break;
+					case SDLK_c:
+						std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 						break;
 					case SDLK_t:
 						std::cout << "Tile respawned\n";
@@ -239,7 +248,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 {
 	for ( auto p = tileList.begin(); p != tileList.end() && (*p) != nullptr;  )
 	{
-		if ( ball->TileCheck( (*p)->rect ) )
+		if ( ball->TileCheck( (*p)->rect, (*p )->GetTileID() ) )
 		{
 
 			localPlayerPoints += 10;

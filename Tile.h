@@ -13,7 +13,7 @@ enum class TileTypes
 struct Tile : GamePiece
 {
 	public:
-	Tile( TileTypes type_);
+	Tile( TileTypes type_, unsigned int ID);
 
 	virtual ~Tile();
 
@@ -45,7 +45,13 @@ struct Tile : GamePiece
 			std::cout << "Hits left : " << hitsLeft << std::endl;
 	}
 
+	unsigned int GetTileID() const
+	{
+		return tileID;
+	}
+
 	private:
 		TileTypes type;
 		unsigned short hitsLeft;
+		unsigned int tileID;
 };
