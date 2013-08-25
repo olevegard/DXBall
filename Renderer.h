@@ -47,6 +47,7 @@ private:
 	Renderer& operator=( const Renderer &renderer );
 
 	SDL_Surface* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
+	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
 
 	void SetColorKey( SDL_Surface* source             , unsigned char r, unsigned char g, unsigned char b );
 	void SetColorKey( GamePiece::TextureType textureID, unsigned char r, unsigned char g, unsigned char b );
@@ -55,6 +56,8 @@ private:
 	void FillSurface( SDL_Surface* source, const SDL_Color &color );
 
 	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Surface* > &list );
+
+	SDL_Surface* RenderTextSurface_Solid(  TTF_Font* font, const std::string &text, const SDL_Color &color );
 
 	SDL_Surface* InitSurface( unsigned int flags, int width, int height ) const;
 	SDL_Surface* InitSurface(GamePiece::TextureType textureType, unsigned int flags, int width, int height );

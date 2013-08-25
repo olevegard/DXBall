@@ -132,6 +132,18 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 	return optimizedImage;
 }
 
+TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
+{
+	TTF_Font* tempFont = TTF_OpenFont( fontName.c_str(), fontSize );
+
+	if ( tempFont == nullptr )
+	{
+		std::cout << "Failed to open font : " << fontName << std::endl;
+	}
+
+	return tempFont;
+
+}
 void Renderer::SetColorKey( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b )
 {
 	if ( source )
@@ -173,6 +185,22 @@ SDL_Surface* Renderer::InitSurface(GamePiece::TextureType textureType, unsigned 
 
 	return surface;
 }
+	
+
+SDL_Surface* Renderer::RenderTextSurface_Solid(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color )
+{
+	SDL_Surface* surface = TTF_RenderText_Solid( textFont, textToRender.c_str(), color );
+
+	if ( surface != nullptr )
+	{
+		SetDisplayFormat( surface );
+	} else
+	{
+		std::cout << "Failed to create text surface...\n";
+	}
+
+	return surface;
+}
 
 void Renderer::SetArrayData( GamePiece::TextureType textureType, SDL_Surface* surface )
 {
@@ -185,6 +213,9 @@ SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 	if ( surface )
 	{
 		surface = SDL_DisplayFormat( surface );
+	} else 
+	{
+		std::cout << "Cannot set display format : nullptr\n";
 	}
 
 	return surface;
@@ -234,17 +265,17 @@ bool Renderer::LoadImages()
 }
 bool Renderer::LoadFontAndText()
 {
-	font = TTF_OpenFont( "lazy.ttf", 28 );
+	font = LoadFont( "lazy.ttf", 28 );
 
-	if ( font == NULL )
+	bigFont = LoadFont( "lazy.ttf", 57 );
+
+	if ( bigFont == nullptr || font == nullptr )
+	{
+		std::cout << "Fonts not initialized properly\n";
 		return false;
+	}
 
-	bigFont = TTF_OpenFont( "lazy.ttf", 57 );
-
-	if ( bigFont == NULL )
-		return false;
-
-	localPlayerCaption = TTF_RenderText_Solid( font, "Local player : ", textColor );
+	localPlayerCaption = RenderTextSurface_Solid( font, "Local player : ", textColor );
 
 	return true;
 }
@@ -316,7 +347,7 @@ void Renderer::BlitText()
 }
 void Renderer::RenderText( const std::string &textToRender )
 {
-	text = TTF_RenderText_Solid( bigFont, textToRender.c_str(), textColor );
+	text = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
 }
 void Renderer::RemoveText()
 {
@@ -326,14 +357,14 @@ void Renderer::RenderLives( unsigned long lifeCount )
 {
 	std::stringstream ss;
 	ss << "Lives : " << lifeCount;
-	lives = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
+	lives = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
 }
 
 void Renderer::RenderPoints( unsigned int pointCount )
 {
 	std::stringstream ss;
 	ss << "Points : " << pointCount;
-	points = TTF_RenderText_Solid( font, ss.str().c_str(), textColor );
+	points = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
 }
 SDL_Rect Renderer::GetTileSize()
 {
