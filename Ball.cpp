@@ -47,7 +47,6 @@ void Ball::Update( double tick )
 
 	int deltaMovement = static_cast<int>( tick * speed + 0.5f );
 
-	std::cout << "Delta movement : " <<  deltaMovement << std::endl;
 	rect.x += static_cast<int> ( deltaMovement * dirX );
 	rect.y += static_cast<int> ( deltaMovement * dirY );
 }
@@ -212,20 +211,20 @@ void Ball::HandleTileIntersection( const SDL_Rect &tileRect )
 		{
 			std::cout << "\tCorner collision\n";
 
-			float ratioVertical = static_cast< float > ( ballBottom - tileTop );
-			float ratioHorizontal = 0.0f;
+			double ratioVertical = static_cast< double > ( ballBottom - tileTop );
+			double ratioHorizontal = 0.0f;
 			if ( ballLeft < tileLeft )
 			{
-				 ratioHorizontal = static_cast< float > ( ballRight - tileLeft );
-				std::cout << "\t\tLeft  : " << ratioHorizontal  << " ratio : " << ratioHorizontal  / static_cast< float > ( rect.w ) << std::endl;
+				 ratioHorizontal = static_cast< double > ( ballRight - tileLeft );
+				std::cout << "\t\tLeft  : " << ratioHorizontal  << " ratio : " << ratioHorizontal  / static_cast< double > ( rect.w ) << std::endl;
 			} else if ( ballRight > tileRight )
 			{
-				ratioHorizontal = static_cast< float > ( tileRight - ballLeft );
-				std::cout << "\t\tRight : " << ratioHorizontal << " ratio : " << ratioHorizontal / static_cast< float > ( rect.w ) << std::endl;
+				ratioHorizontal = static_cast< double > ( tileRight - ballLeft );
+				std::cout << "\t\tRight : " << ratioHorizontal << " ratio : " << ratioHorizontal / static_cast< double > ( rect.w ) << std::endl;
 			}
 
-			std::cout << "\t\tTop : " << ratioVertical << " ratio : " << static_cast< float > ( ratioVertical / rect.h ) << std::endl;
-			float length = sqrt( ratioHorizontal * ratioHorizontal + ratioVertical * ratioVertical );
+			std::cout << "\t\tTop : " << ratioVertical << " ratio : " << static_cast< double > ( ratioVertical / rect.h ) << std::endl;
+			double length = sqrt( ratioHorizontal * ratioHorizontal + ratioVertical * ratioVertical );
 			//std::cout << "\t\tSuggest dir change : " << ratioHorizontal / length << " , " << ratioVertical / length << std::endl;
 			dirX *=  ( ( ratioHorizontal / length ) * -1.0f );
 			dirY *=  ( ( ratioVertical   / length ) * -1.0f );
