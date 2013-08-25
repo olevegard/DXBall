@@ -47,6 +47,7 @@ void Ball::Update( double tick )
 
 	int deltaMovement = static_cast<int>( tick * speed + 0.5f );
 
+	std::cout << "Delta movement : " <<  deltaMovement << std::endl;
 	rect.x += static_cast<int> ( deltaMovement * dirX );
 	rect.y += static_cast<int> ( deltaMovement * dirY );
 }
@@ -143,14 +144,14 @@ bool Ball::TileCheck( const SDL_Rect &tileRect, unsigned int tileID )
 	// Intersection test
 	if ( !CheckTileIntersection( tileRect, rect ) )
 		return false;
-
+	std::cout << "===============================================================================\n";
 	std::cout << "Colliding in current frame\n";
 
 	// If the ball collided with the same rect in the previous frame too,
 	// This means the ball needs an extra frame to get fully out of the tile
 	if ( lastTileHit == tileID && CheckTileIntersection( tileRect, oldRect ) )
 	{
-		std::cout << "Collided in the prev frame too...\n";
+		std::cout << "\tCollided in the prev frame too...\n";
 		PrintPosition( tileRect, "Tile" );
 		PrintPosition( rect,     "Ball" );
 		return false;
@@ -182,8 +183,8 @@ void Ball::HandleTileIntersection( const SDL_Rect &tileRect )
 	short oldBottom = oldTop  + rect.h;
 
 	PrintPosition( tileRect,"Tile");
-	PrintPosition( oldRect , "Ball old ");
 	PrintPosition( rect    , "Ball cur ");
+	PrintPosition( oldRect , "Ball old ");
 
 	std::cout << "\tBall direction   : " << dirX << " , " << dirY << std::endl << std::endl;
 
@@ -194,16 +195,47 @@ void Ball::HandleTileIntersection( const SDL_Rect &tileRect )
 
 		short dist = tileBottom - ballTop;
 
-		std::cout << "Bottom collision : " << dist << "\n";
+		std::cout << "\tBottom collision : " << dist << "\n";
+
+		if ( ballLeft < tileLeft || ballRight > tileRight )
+		{
+			std::cout << "\tCorner collision\n";
+		}
 	}
+
 	else if ( oldBottom < tileTop )
 	{
 		// Colliding with top side of tile...
-		dirY *= -1.0f;
 
-		short dist = tileTop - ballBottom;
+		std::cout << "\tTop collision\n";
+		if ( ballLeft < tileLeft || ballRight > tileRight )
+		{
+			std::cout << "\tCorner collision\n";
 
-		std::cout << "Top collision : " << dist << "\n";
+			float ratioVertical = static_cast< float > ( ballBottom - tileTop );
+			float ratioHorizontal = 0.0f;
+			if ( ballLeft < tileLeft )
+			{
+				 ratioHorizontal = static_cast< float > ( ballRight - tileLeft );
+				std::cout << "\t\tLeft  : " << ratioHorizontal  << " ratio : " << ratioHorizontal  / static_cast< float > ( rect.w ) << std::endl;
+			} else if ( ballRight > tileRight )
+			{
+				ratioHorizontal = static_cast< float > ( tileRight - ballLeft );
+				std::cout << "\t\tRight : " << ratioHorizontal << " ratio : " << ratioHorizontal / static_cast< float > ( rect.w ) << std::endl;
+			}
+
+			std::cout << "\t\tTop : " << ratioVertical << " ratio : " << static_cast< float > ( ratioVertical / rect.h ) << std::endl;
+			float length = sqrt( ratioHorizontal * ratioHorizontal + ratioVertical * ratioVertical );
+			//std::cout << "\t\tSuggest dir change : " << ratioHorizontal / length << " , " << ratioVertical / length << std::endl;
+			dirX *=  ( ( ratioHorizontal / length ) * -1.0f );
+			dirY *=  ( ( ratioVertical   / length ) * -1.0f );
+			std::cout << "\t\tSuggest dir change : " << dirX << " , " << dirY << std::endl;
+			//std::cin.ignore();
+		} else 
+		{
+			dirY *= -1.0f;
+		}
+
 	}
 	else if ( oldRight < tileLeft )
 	{
@@ -212,7 +244,7 @@ void Ball::HandleTileIntersection( const SDL_Rect &tileRect )
 
 		short dist = tileLeft - ballRight;
 
-		std::cout << "Left collision : " << dist << "\n";
+		std::cout << "\tLeft collision : " << dist << "\n";
 	}
 	else if ( oldLeft > tileRight )
 	{
@@ -221,12 +253,12 @@ void Ball::HandleTileIntersection( const SDL_Rect &tileRect )
 
 		short dist = tileTop - ballLeft;
 
-		std::cout << "Right collision : " << dist << "\n";
+		std::cout << "\tRight collision : " << dist << "\n";
 	}
-	else 
+	else
 	{
-		std::cout << "Could not determine collision edge\n";
-
+		std::cout << "\tCould not determine collision edge\n";
+		std::cin.ignore();
 		dirX *= -1.0f;
 		dirY *= -1.0f;
 	}

@@ -63,7 +63,7 @@ Renderer::~Renderer()
 bool Renderer::Init()
 {
 	// Set up screen
-	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_HWSURFACE | SDL_DOUBLEBUF );
+	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF );
 
 	if ( screen == NULL )
 		return false;

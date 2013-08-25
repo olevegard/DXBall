@@ -134,7 +134,8 @@ void GameManager::UpdateBalls( double delta )
 			CheckBallTileIntersection( *p );
 
 			if ( (*p)->DeathCheck( windowSize ) )
-			{ (*p)->rect.x = 200;
+			{
+				(*p)->rect.x = 200;
 				(*p)->rect.y = 20;
 				RemoveBall( (*p) );
 				p = ballList.erase( p );
@@ -233,6 +234,7 @@ void GameManager::Run()
 
 		UpdateGUI();
 
+		/*
 		if ( delay1 )
 			SDL_Delay( 1 );
 		if ( delay2 )
@@ -241,6 +243,7 @@ void GameManager::Run()
 			SDL_Delay( 5 );
 		if ( delay4 )
 			SDL_Delay( 10 );
+		*/
 	}
 
 }
