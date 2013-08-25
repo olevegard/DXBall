@@ -104,10 +104,6 @@ void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
-
-
-
-
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
 {
 	// Temporary stoare for the iamge that's loaded
@@ -123,12 +119,10 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 	// If the image loaded
 	if ( loadedImage != NULL )
 	{
-		//
 		// Create an optimized image
 		optimizedImage = SDL_DisplayFormat( loadedImage );
 
-		textures[ textureType ] = optimizedImage;
-		rects[ textureType ] = optimizedImage->clip_rect;
+		SetArrayData( textureType, optimizedImage );
 
 		// Free the old image
 		SDL_FreeSurface( loadedImage );
@@ -163,6 +157,38 @@ void Renderer::FillSurface( SDL_Surface* source, const SDL_Color &color )
 	FillSurface( source, color.r, color.g, color.b );
 }
 
+SDL_Surface* Renderer::InitSurface( unsigned int flags, int width, int height ) const
+{
+	SDL_Surface* surface = SDL_CreateRGBSurface( flags, width, height, SCREEN_BPP, rmask, gmask, bmask, amask);
+
+	surface = SetDisplayFormat( surface );
+
+	return surface;
+}
+SDL_Surface* Renderer::InitSurface(GamePiece::TextureType textureType, unsigned int flags, int width, int height )
+{
+	SDL_Surface* surface = InitSurface( flags, width, height );
+
+	SetArrayData( textureType, surface );
+
+	return surface;
+}
+
+void Renderer::SetArrayData( GamePiece::TextureType textureType, SDL_Surface* surface )
+{
+	textures[ textureType ] = surface;
+	rects[ textureType ]    = surface->clip_rect;
+}
+
+SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
+{
+	if ( surface )
+	{
+		surface = SDL_DisplayFormat( surface );
+	}
+
+	return surface;
+}
 void Renderer::ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const
 {
 	// Make a temp rect to hold the offsets
@@ -182,19 +208,18 @@ void Renderer::ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface
 
 bool Renderer::LoadImages()
 {
-
 	LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
 	SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
 
 	LoadImage( "media/ball.png", GamePiece::Ball );
 	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );
 
-	backgroundImage= LoadImage( "media/background.png", GamePiece::Background );
+	backgroundImage = InitSurface( GamePiece::Background, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
 	FillSurface( backgroundImage, 0, 0, 0 );
 
-	backgroundArea = SDL_CreateRGBSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, rmask, gmask, bmask, amask);
+	backgroundArea = InitSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	textures[GamePiece::Tile] = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	textures[GamePiece::Tile] = InitSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT );
 	FillSurface( textures[GamePiece::Tile], tileColors[0] );
 
 	std::cout << "Adding tile surfaces : " << std::endl;
@@ -226,7 +251,8 @@ bool Renderer::LoadFontAndText()
 
 void Renderer::SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Surface* > &list  )
 {
-	SDL_Surface* surf = SDL_CreateRGBSurface( 0, 60, 20, 32, rmask, gmask, bmask, amask);
+	SDL_Surface* surf = InitSurface( 0, 60, 20 );
+
 	FillSurface( surf, color );
 	list.at( index ) = surf;
 }

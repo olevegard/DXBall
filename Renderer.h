@@ -9,6 +9,9 @@
 
 #include "GamePiece.h"
 
+
+#include <iostream>
+
 // Forward declarations
 struct Ball;
 struct Tile;
@@ -51,12 +54,21 @@ private:
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b );
 	void FillSurface( SDL_Surface* source, const SDL_Color &color );
 
+	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Surface* > &list );
+
+	SDL_Surface* InitSurface( unsigned int flags, int width, int height ) const;
+	SDL_Surface* InitSurface(GamePiece::TextureType textureType, unsigned int flags, int width, int height );
+
+	void SetArrayData( GamePiece::TextureType textureType, SDL_Surface* surface );
+
+	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
+
 	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
 	void ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;
 
 	bool LoadImages();
 	bool LoadFontAndText();
-	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Surface* > &list );
+
 
 	void BlitBackground() const;
 	void BlitForeground();
