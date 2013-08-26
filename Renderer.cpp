@@ -29,7 +29,7 @@
 	,	backgroundArea(  NULL )
 	,	backgroundImage(  NULL )
 	,	screen(  NULL )
-	,	ballList( /*{ }*/ )
+	,	ballList(  )
 	,	font()
 	,	bigFont()
 	,	text()
@@ -110,7 +110,6 @@ SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 	SDL_Surface* loadedImage = NULL;
 
 	// The optimized image that will be used
-	//
 	SDL_Surface* optimizedImage = NULL;
 
 	// Load the image
@@ -185,7 +184,6 @@ SDL_Surface* Renderer::InitSurface(GamePiece::TextureType textureType, unsigned 
 
 	return surface;
 }
-	
 
 SDL_Surface* Renderer::RenderTextSurface_Solid(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color )
 {
@@ -263,6 +261,7 @@ bool Renderer::LoadImages()
 
 	return true;
 }
+
 bool Renderer::LoadFontAndText()
 {
 	font = LoadFont( "lazy.ttf", 28 );
@@ -345,6 +344,7 @@ void Renderer::BlitText()
 	if ( localPlayerCaption )
 		ApplySurface( 0, 0, localPlayerCaption, backgroundArea );
 }
+
 void Renderer::RenderText( const std::string &textToRender )
 {
 	text = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
