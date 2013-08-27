@@ -28,7 +28,7 @@ double Timer::GetDelta( )
 	// Get diff ms
 	unsigned long long deltaCurrent = GetCurrentTime();
 	unsigned long long diff = deltaCurrent - delta;
-	float deltaMSec = static_cast< float > ( diff / 1000000.0f );
+	double  deltaMSec = static_cast< double > ( diff / 1000000.0f );
 
 	// Reset delta
 	delta = deltaCurrent;
