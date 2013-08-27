@@ -3,6 +3,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
+#include "math/Rect.h"
+
 struct GamePiece
 {
 	enum TextureType
@@ -16,11 +18,12 @@ struct GamePiece
 
 	GamePiece();
 
-	SDL_Rect rect;
-	SDL_Rect oldRect;
+	//SDL_Rect rect;
+	//SDL_Rect oldRect;
 
-	
-	
+	Rect rect;
+	Rect oldRect;
+
 	TextureType textureType;
 
 	private:

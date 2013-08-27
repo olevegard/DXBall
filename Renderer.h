@@ -39,8 +39,8 @@ public:
 	void RenderLives( unsigned long lifeCount );
 	void RenderPoints( unsigned int pointCount );
 
-	SDL_Rect GetTileSize();
-	SDL_Rect GetWindowSize();
+	Rect GetTileSize();
+	Rect GetWindowSize();
 private:
 
 	Renderer( const Renderer &renderer );
@@ -67,7 +67,7 @@ private:
 	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
 
 	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
-	void ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;
+	void ApplySurface( const Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;
 
 	bool LoadImages();
 	bool LoadFontAndText();
@@ -88,7 +88,6 @@ private:
 	const int SCREEN_HEIGHT;
 	const int SCREEN_BPP;
 
-	std::map< int, SDL_Rect > rects;
 	std::map< int, SDL_Surface* > textures;
 
 	SDL_Surface *backgroundArea;
@@ -99,6 +98,8 @@ private:
 	std::vector< std::shared_ptr< Tile >  > tileList;
 
 	std::shared_ptr< Paddle >  localPaddle;
+
+	Rect background;
 
 	// Text
 	TTF_Font* font;
@@ -114,4 +115,5 @@ private:
 
 	SDL_Color hardTileColors[5];
 	std::vector< SDL_Surface* > hardTileSurfaces;
+
 };

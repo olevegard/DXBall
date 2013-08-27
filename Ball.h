@@ -15,13 +15,13 @@ struct Ball : GamePiece
 
 	void Update( double tick );
 
-	bool BoundCheck( const SDL_Rect &boundsRect );
+	bool BoundCheck( const Rect &boundsRect );
 
-	bool DeathCheck( const SDL_Rect &boundsRect );
+	bool DeathCheck( const Rect &boundsRect );
 
-	bool PaddleCheck( const SDL_Rect &paddleRect );
+	bool PaddleCheck( const Rect &paddleRect );
 
-	bool TileCheck( const SDL_Rect &paddleRect, unsigned int tileID );
+	bool TileCheck( const Rect &paddleRect, unsigned int tileID );
 
 	void SetOwner( int owner )
 	{
@@ -34,23 +34,22 @@ struct Ball : GamePiece
 	}
 
 	private:
-	bool CheckTileIntersection( const SDL_Rect &tile, const SDL_Rect &ball ) const;
-	void HandleTileIntersection( const SDL_Rect &tile );
-	void HandleTileIntersection2( const SDL_Rect &tileRect );
+	bool CheckTileIntersection( const Rect &tile, const Rect &ball ) const;
+	void HandleTileIntersection( const Rect &tile );
+	void HandleTileIntersection2( const Rect &tileRect );
 
-	void HandlePaddleHit( const SDL_Rect &paddleRect );
-	float CalculatePaddleHitPosition( const SDL_Rect &paddleRect ) const;
-	void  CalculateNewBallDirection( float hitPosition );
+	void HandlePaddleHit( const Rect &paddleRect );
+	double CalculatePaddleHitPosition( const Rect &paddleRect ) const;
+	void  CalculateNewBallDirection( double  hitPosition );
 
-	void PrintPosition( const SDL_Rect &pos, const std::string &tilename );
+	void PrintPosition( const Rect &pos, const std::string &tilename );
 
-	float speed;
+	double speed;
 
-	float dirX;
-	float dirY;
+	double dirX;
+	double dirY;
 
 	int ballOwner;
 
 	unsigned int lastTileHit;
 };
-

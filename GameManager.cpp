@@ -30,13 +30,13 @@ int GameManager::Init()
 	if ( !renderer.Init() )
 		return 1;
 
+	Restart();
+
 	tileSize = renderer.GetTileSize();
 	windowSize = renderer.GetWindowSize();
 
 	std::cout << "tile size " << tileSize.x << " , " << tileSize.y << " , " << tileSize.w << " , " << tileSize.h << std::endl;
 	std::cout << "window size " << windowSize.x << " , " << windowSize.y << " , " << windowSize.w << " , " << windowSize.h << std::endl;
-
-	Restart();
 
 	return 0;
 }
@@ -151,7 +151,7 @@ void GameManager::Run()
 	bool quit = false;
 	SDL_Event event;
 
-	int halfTileWidth = tileSize.w / 2;
+	double halfTileWidth = tileSize.w / 2;
 
 	while ( !quit )
 	{
@@ -220,10 +220,10 @@ void GameManager::Run()
 			}
 
 			if ( event.motion.x != 0 && event.motion.y != 0 )
-				localPaddle->rect.x = static_cast< short > ( event.motion.x - halfTileWidth );
+				localPaddle->rect.x = static_cast< double > ( event.motion.x ) - halfTileWidth;
 
 			if ( ( localPaddle->rect.x + tileSize.w) > windowSize.w )
-				localPaddle->rect.x = static_cast< short > ( windowSize.w - tileSize.w );
+				localPaddle->rect.x = static_cast< double > ( windowSize.w ) - tileSize.w;
 
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;
@@ -231,7 +231,6 @@ void GameManager::Run()
 		}
 		double delta = timer.GetDelta( );
 		UpdateBalls( delta );
-
 		UpdateGUI();
 
 		/*

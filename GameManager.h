@@ -50,8 +50,8 @@ class GameManager
 		std::vector< std::shared_ptr< Ball > > ballList;
 		std::vector< std::shared_ptr< Tile > > tileList;
 
-		SDL_Rect tileSize;
-		SDL_Rect windowSize;
+		Rect tileSize;
+		Rect windowSize;
 
 		unsigned int points[4];
 

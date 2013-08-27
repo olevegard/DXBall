@@ -24,7 +24,6 @@
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
 
-	,	rects()
 	,	textures()
 
 	,	backgroundArea(  NULL )
@@ -42,7 +41,10 @@
 	,	hardTileColors{ { 255, 243, 233, 255}, { 222, 212, 203, 255}, { 191, 183, 175, 255},{ 127, 122, 117, 255}, { 64, 61, 58, 255} }
 	,	hardTileSurfaces{ nullptr, nullptr, nullptr, nullptr, nullptr }
 {
-
+	background.x = 0.0;
+	background.y = 0.0;
+	background.w = SCREEN_WIDTH;
+	background.h = SCREEN_HEIGHT;
 }
 
 Renderer::~Renderer()
@@ -54,7 +56,6 @@ bool Renderer::Init()
 {
 	// Set up screen
 	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF );
-
 
 	if ( screen == NULL )
 		return false;
@@ -194,7 +195,6 @@ SDL_Surface* Renderer::RenderTextSurface_Solid(  TTF_Font* textFont, const std::
 void Renderer::SetArrayData( GamePiece::TextureType textureType, SDL_Surface* surface )
 {
 	textures[ textureType ] = surface;
-	rects[ textureType ]    = surface->clip_rect;
 }
 
 SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
@@ -221,9 +221,9 @@ void Renderer::ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface*
 	// Blit the surface
 	SDL_BlitSurface( source, NULL, destination, &offset );
 }
-void Renderer::ApplySurface( const SDL_Rect &r, SDL_Surface* source, SDL_Surface* destination ) const
+void Renderer::ApplySurface( const Rect &r, SDL_Surface* source, SDL_Surface* destination ) const
 {
-	ApplySurface( r.x, r.y, source, destination );
+	ApplySurface( static_cast<short> ( r.x ), static_cast<short> ( r.y ), source, destination );
 }
 
 bool Renderer::LoadImages()
@@ -300,20 +300,20 @@ void Renderer::BlitForeground()
 	// Draw balls
 	for ( std::shared_ptr< Ball > gp : ballList )
 	{
-		ApplySurface( gp->rect.x, gp->rect.y, textures[GamePiece::Ball], backgroundArea );
+		ApplySurface( gp->rect, textures[GamePiece::Ball], backgroundArea );
 	}
 
 	// Draw tiles
 	for ( std::shared_ptr< Tile > gp : tileList)
 	{
 		if ( gp->GetTileType() == TileTypes::Hard )
-			ApplySurface( gp->rect.x, gp->rect.y, hardTileSurfaces[ 5 - gp->GetHitsLeft()], backgroundArea );
+			ApplySurface( gp->rect, hardTileSurfaces[ 5 - gp->GetHitsLeft()], backgroundArea );
 		else
-			ApplySurface( gp->rect.x, gp->rect.y, tileSurfaces[ gp->GetTileTypeAsIndex() ], backgroundArea );
+			ApplySurface( gp->rect, tileSurfaces[ gp->GetTileTypeAsIndex() ], backgroundArea );
 	}
 
 	// Draw paddles
-	ApplySurface( localPaddle->rect.x, localPaddle->rect.y, textures[GamePiece::Paddle], backgroundArea );
+	ApplySurface( localPaddle->rect, textures[GamePiece::Paddle], backgroundArea );
 }
 
 void Renderer::BlitText()
@@ -324,10 +324,10 @@ void Renderer::BlitText()
 	if ( points )
 		ApplySurface( 10, static_cast< short > ( localPlayerCaption->h + lives->h + 5 ), points, backgroundArea );
 
-	SDL_Rect screenSize = GetWindowSize();
+	Rect screenSize = GetWindowSize();
 
 	if ( text )
-		ApplySurface(  ( screenSize.w / 2 ) - ( text->clip_rect.w / 2 ), screenSize.h / 2, text, backgroundArea );
+		ApplySurface( static_cast< short > ( ( screenSize.w / 2 ) - ( text->clip_rect.w / 2 ) ), static_cast< short > (  screenSize.h / 2 ) , text, backgroundArea );
 
 	if ( localPlayerCaption )
 		ApplySurface( 0, 0, localPlayerCaption, backgroundArea );
@@ -357,13 +357,13 @@ void Renderer::RenderPoints( unsigned int pointCount )
 	ss << "Points : " << pointCount;
 	points = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
 }
-SDL_Rect Renderer::GetTileSize()
+Rect Renderer::GetTileSize()
 {
-	return rects[GamePiece::Paddle];
+	return localPaddle->rect;
 }
-SDL_Rect Renderer::GetWindowSize()
+Rect Renderer::GetWindowSize()
 {
-	return rects[GamePiece::Background];
+	return background;
 }
 void Renderer::CleanUp()
 {
@@ -403,7 +403,6 @@ void Renderer::CleanUpLists()
 {
 	ballList.empty();
 	tileList.empty();
-	rects.empty();
 	textures.empty();
 }
 void Renderer::CleanUpTTF()
