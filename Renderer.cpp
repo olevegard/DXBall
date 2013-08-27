@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+
 #include "Ball.h"
 #include "Tile.h"
 #include "Paddle.h"
@@ -46,24 +47,14 @@
 
 Renderer::~Renderer()
 {
-	ballList.empty();
-
-	SDL_FreeSurface( backgroundArea );
-	SDL_FreeSurface( backgroundImage );
-	SDL_FreeSurface (screen );
-
-	SDL_FreeSurface( text );
-	SDL_FreeSurface( lives );
-	SDL_FreeSurface( points );
-	SDL_FreeSurface( localPlayerCaption );
-
-	SDL_Quit();
+	CleanUp();
+	QuitSDL();
 }
-
 bool Renderer::Init()
 {
 	// Set up screen
 	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF );
+
 
 	if ( screen == NULL )
 		return false;
@@ -248,9 +239,6 @@ bool Renderer::LoadImages()
 
 	backgroundArea = InitSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	textures[GamePiece::Tile] = InitSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT );
-	FillSurface( textures[GamePiece::Tile], tileColors[0] );
-
 	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileSurfaces.size() ; ++i )
 		SetTileColorSurface( i, tileColors[ i ], tileSurfaces );
@@ -347,6 +335,7 @@ void Renderer::BlitText()
 
 void Renderer::RenderText( const std::string &textToRender )
 {
+	SDL_FreeSurface( text );
 	text = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
 }
 void Renderer::RemoveText()
@@ -355,6 +344,7 @@ void Renderer::RemoveText()
 }
 void Renderer::RenderLives( unsigned long lifeCount )
 {
+	SDL_FreeSurface( lives );
 	std::stringstream ss;
 	ss << "Lives : " << lifeCount;
 	lives = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
@@ -362,6 +352,7 @@ void Renderer::RenderLives( unsigned long lifeCount )
 
 void Renderer::RenderPoints( unsigned int pointCount )
 {
+	SDL_FreeSurface( points );
 	std::stringstream ss;
 	ss << "Points : " << pointCount;
 	points = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
@@ -373,4 +364,55 @@ SDL_Rect Renderer::GetTileSize()
 SDL_Rect Renderer::GetWindowSize()
 {
 	return rects[GamePiece::Background];
+}
+void Renderer::CleanUp()
+{
+	CleanUpSurfaces();
+	CleanUpLists();
+	CleanUpTTF();
+}
+void Renderer::CleanUpSurfaces()
+{
+	// Free tile surfaces
+	for ( auto p : tileSurfaces )
+	{
+		SDL_FreeSurface( p );
+	}
+
+	for ( auto p : hardTileSurfaces )
+	{
+		SDL_FreeSurface( p );
+	}
+
+	// Free ball/paddle
+	SDL_FreeSurface( textures[GamePiece::Paddle] );
+	SDL_FreeSurface( textures[GamePiece::Ball] );
+
+	// Free background/screen surfaces
+	SDL_FreeSurface( backgroundArea );
+	SDL_FreeSurface( backgroundImage );
+	SDL_FreeSurface (screen );
+
+	// Free text surfaces
+	SDL_FreeSurface( text );
+	SDL_FreeSurface( lives );
+	SDL_FreeSurface( points );
+	SDL_FreeSurface( localPlayerCaption );
+}
+void Renderer::CleanUpLists()
+{
+	ballList.empty();
+	tileList.empty();
+	rects.empty();
+	textures.empty();
+}
+void Renderer::CleanUpTTF()
+{
+	TTF_CloseFont( font );
+	TTF_CloseFont( bigFont );
+}
+void Renderer::QuitSDL()
+{
+	TTF_Quit();
+	SDL_Quit();
 }

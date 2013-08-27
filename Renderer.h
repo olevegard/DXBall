@@ -72,10 +72,15 @@ private:
 	bool LoadImages();
 	bool LoadFontAndText();
 
-
 	void BlitBackground() const;
 	void BlitForeground();
 	void BlitText();
+
+	void CleanUp();
+	void CleanUpSurfaces();
+	void CleanUpLists();
+	void CleanUpTTF();
+	void QuitSDL();
 
 	Uint32 rmask, gmask, bmask, amask;
 
@@ -109,5 +114,4 @@ private:
 
 	SDL_Color hardTileColors[5];
 	std::vector< SDL_Surface* > hardTileSurfaces;
-
 };
