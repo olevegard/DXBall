@@ -1,12 +1,10 @@
 tags
 DXBall*
 *.swp
+*.swo
  tags
- DXBall*
- *.swp
+DXBall*
 +README~
 tags
-DXBall*
-*.swp
 README~
 changauth.sh
