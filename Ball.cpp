@@ -215,19 +215,19 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 		{
 			std::cout << "\tCorner collision\n";
 
-			double ratioVertical = static_cast< double > ( ballBottom - tileTop );
+			double ratioVertical = ballBottom - tileTop;
 			double ratioHorizontal = 0.0f;
 			if ( ballLeft < tileLeft )
 			{
-				 ratioHorizontal = static_cast< double > ( ballRight - tileLeft );
-				std::cout << "\t\tLeft  : " << ratioHorizontal  << " ratio : " << ratioHorizontal  / static_cast< double > ( rect.w ) << std::endl;
+				 ratioHorizontal = ballRight - tileLeft;
+				std::cout << "\t\tLeft  : " << ratioHorizontal  << " ratio : " << ratioHorizontal  / rect.w << std::endl;
 			} else if ( ballRight > tileRight )
 			{
-				ratioHorizontal = static_cast< double > ( tileRight - ballLeft );
-				std::cout << "\t\tRight : " << ratioHorizontal << " ratio : " << ratioHorizontal / static_cast< double > ( rect.w ) << std::endl;
+				ratioHorizontal = tileRight - ballLeft;
+				std::cout << "\t\tRight : " << ratioHorizontal << " ratio : " << ratioHorizontal / rect.w << std::endl;
 			}
 
-			std::cout << "\t\tTop : " << ratioVertical << " ratio : " << static_cast< double > ( ratioVertical / rect.h ) << std::endl;
+			std::cout << "\t\tTop : " << ratioVertical << " ratio : " << ratioVertical / rect.h << std::endl;
 			double length = sqrt( ratioHorizontal * ratioHorizontal + ratioVertical * ratioVertical );
 			//std::cout << "\t\tSuggest dir change : " << ratioHorizontal / length << " , " << ratioVertical / length << std::endl;
 			dirX *=  ( ( ratioHorizontal / length ) * -1.0f );
@@ -285,8 +285,8 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		std::cout << "Checking collision bottom : \n";
 		double distBottom = oldTop - tileBottom;
 
-		double intersect = static_cast< double  > ( distBottom / dirY );
-		double intersectPosLeft  = oldLeft + static_cast< double > ( dirX * fabs( intersect ) );
+		double intersect = distBottom / dirY;
+		double intersectPosLeft  = oldLeft + dirX * fabs( intersect );
 		double intersectPosRight = intersectPosLeft + rect.w;
 
 		std::cout << "\tDist bottom      : " << distBottom << std::endl;
@@ -311,8 +311,8 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		std::cout << "Checking collision top : \n";
 		double distTop = tileTop - oldBottom;
 
-		double intersect = static_cast<double > ( distTop / dirY );
-		double intersectPosLeft  = oldLeft + static_cast<double > ( dirX * intersect  );
+		double intersect = distTop / dirY;
+		double intersectPosLeft  = oldLeft + dirX * intersect;
 		double intersectPosRight = intersectPosLeft + rect.w;
 
 		std::cout << "rect.w : " << rect.w << std::endl;
@@ -324,6 +324,7 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 
 		std::cout << "\tif ( " << intersectPosLeft  << " > " << tileLeft  << " )" << std::endl;
 		std::cout << "\tif ( " << intersectPosRight << " < " << tileRight << " )" << std::endl;
+
 		if ( distTop > 0.0f &&  intersectPosRight > tileLeft && intersectPosLeft < tileRight )
 		{
 			std::cout << "\t\tIntersected top" << std::endl;
@@ -338,8 +339,8 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		std::cout << "Checking collision left : \n";
 		double distLeft = tileLeft - oldRight;
 
-		double intersect = static_cast<double > ( distLeft / dirX );
-		double intersectPosTop     = oldTop + static_cast<double > ( dirY * fabs( intersect ) );
+		double intersect = distLeft / dirX;
+		double intersectPosTop     = oldTop + dirY * fabs( intersect );
 		double intersectPosBottom  = intersectPosTop + rect.h;
 
 		std::cout << "\tDist lwf          : " << distLeft           << std::endl;
@@ -364,8 +365,8 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		std::cout << "Checking collision left : \n";
 		double distRight = oldLeft - tileRight;
 
-		double intersect = static_cast<double > ( distRight / dirX );
-		double intersectPosTop     = oldTop + static_cast<double > ( dirY * fabs( intersect ) );
+		double intersect = distRight / dirX;
+		double intersectPosTop     = oldTop + dirY * fabs( intersect );
 		double intersectPosBottom  = intersectPosTop + rect.h;
 
 		std::cout << "\tDist right        : " << distRight          << std::endl;
@@ -408,10 +409,8 @@ bool Ball::CheckTileIntersection( const Rect &tile, const Rect &ball ) const
 			|| ballBottom < tileTop
 	);
 }
-void Ball::PrintPosition( const Rect &pos,	const std::string &tileName )
+void Ball::PrintPosition( const Rect &pos, const std::string &tileName )
 {
 	std::cout << "\t" << tileName << " position tl : " << pos.x              << " , " << pos.y             << std::endl;
 	std::cout << "\t" << tileName << " position br : " << ( pos.x + pos.w )  << " , " << ( pos.y + pos.h ) << std::endl << std::endl;
 }
-
-
