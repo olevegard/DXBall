@@ -45,10 +45,8 @@ void Ball::Update( double tick )
 	oldRect.x = rect.x;
 	oldRect.y = rect.y;
 
-	int deltaMovement = static_cast<int>( tick * speed + 0.5f );
-
-	rect.x += static_cast<int> ( deltaMovement * dirX );
-	rect.y += static_cast<int> ( deltaMovement * dirY );
+	rect.x += tick * speed * dirX;
+	rect.y += tick * speed * dirY;
 }
 
 bool Ball::BoundCheck( const Rect &boundsRect )
