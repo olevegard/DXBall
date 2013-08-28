@@ -261,9 +261,9 @@ bool Renderer::LoadImages()
 
 bool Renderer::LoadFontAndText()
 {
-	font = LoadFont( "lazy.ttf", 28 );
+	font = LoadFont( "media/fonts/sketchy.ttf", 28 );
 
-	bigFont = LoadFont( "lazy.ttf", 57 );
+	bigFont = LoadFont( "media/fonts/sketchy.ttf", 57 );
 
 	if ( bigFont == nullptr || font == nullptr )
 	{
