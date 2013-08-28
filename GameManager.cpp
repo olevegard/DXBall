@@ -22,13 +22,15 @@
 {
 }
 
-int GameManager::Init()
+int GameManager::Init( const std::string &localPlayerName, const std::string &remotePlayerName )
 {
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
 		return 1;
 
 	if ( !renderer.Init() )
 		return 1;
+
+	renderer.RenderPlayerCaption( localPlayerName );
 
 	Restart();
 

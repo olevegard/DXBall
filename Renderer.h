@@ -38,6 +38,7 @@ public:
 	void RemoveText();
 	void RenderLives( unsigned long lifeCount );
 	void RenderPoints( unsigned int pointCount );
+	void RenderPlayerCaption( const std::string textToRender );
 
 	Rect GetTileSize();
 	Rect GetWindowSize();

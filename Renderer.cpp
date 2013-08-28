@@ -366,6 +366,11 @@ void Renderer::RenderPoints( unsigned int pointCount )
 	ss << "Points : " << pointCount;
 	points = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
 }
+void Renderer::RenderPlayerCaption( const std::string textToRender )
+{
+	SDL_FreeSurface( localPlayerCaption );
+	localPlayerCaption = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+}
 Rect Renderer::GetTileSize()
 {
 	return localPaddle->rect;

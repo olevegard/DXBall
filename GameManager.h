@@ -21,7 +21,7 @@ class GameManager
 		{
 
 		}
-		int Init();
+		int Init( const std::string &localPlayerName, const std::string &remotePlayerName );
 
 		void Restart();
 
