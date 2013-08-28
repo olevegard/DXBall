@@ -2,7 +2,8 @@
 
 Paddle::Paddle()
 {
-
+	rect.w = 120;
+	rect.h = 20;
 }
 
 

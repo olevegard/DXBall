@@ -6,6 +6,7 @@ Ball::Ball()
 	:	speed( 0.0705f )
 	,	dirX( -0.83205f )
 	,	dirY(-0.5547f )
+	,	paddleHitInPrevFrame( false )
 {
 	rect.w = 20;
 	oldRect.w = 20;
@@ -22,13 +23,15 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	speed = 0.6f;
+	speed = 0.2f;
 
 	dirX = 0.83205f;
 	dirY =  -0.87f;
 
 	rect.x = 150;
 	rect.y = 110;
+
+	paddleHitInPrevFrame = false;
 
 	NormalizeDirection();
 }
@@ -102,10 +105,15 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 
 	if ( ( left < ( rect.x + rect.w ) ) && ( right > rect.x ) && ( top < ( rect.y + rect.h  )  ) )
 	{
-		HandlePaddleHit( paddleRect );
-		return true;
+		if ( !paddleHitInPrevFrame )
+		{
+			paddleHitInPrevFrame = false;
+			HandlePaddleHit( paddleRect );
+			return true;
+		}
 	}
 
+	paddleHitInPrevFrame = false;
 	return false;
 }
 
@@ -122,24 +130,17 @@ double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
 	double paddleMidpoint = paddleRect.x + ( paddleRect.w / 2.0 );
 
 	std::cout << "Ball midpoint   : " << ballMidpoint << std::endl;
+	std::cout << "Paddle size     : " << paddleRect.w << " , " << paddleRect.h << std::endl;
 	std::cout << "Paddle midpoint : " << paddleMidpoint << std::endl;
 
-	return  ( ballMidpoint - paddleMidpoint / ( paddleRect.w + 20.0 ) ) * 2.0;
+	return ( ballMidpoint - paddleMidpoint ) / ( ( paddleRect.w / 2.0 ) + ( rect.w / 2.0 ));
 }
 void  Ball::CalculateNewBallDirection( double hitPosition )
 {
-	/*
-	dirX = hitPosition;//* -1.0f;
-	dirY = fabs( hitPosition ) - 1.6f;
-
-	dirY = dirY < -0.8f ? -0.8f : dirY;
-	*/
+	dirX = hitPosition;
 	dirY *= -1.0f;
 
-	std::cout << "Hit     : " << hitPosition << std::endl;
-	std::cout << "New dir : " << dirX << " , " << dirY << std::endl;
-
-	//NormalizeDirection();
+	NormalizeDirection();
 }
 bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 {

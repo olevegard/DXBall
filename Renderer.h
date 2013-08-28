@@ -59,6 +59,7 @@ private:
 
 	SDL_Surface* RenderTextSurface_Solid(  TTF_Font* font, const std::string &text, const SDL_Color &color );
 
+	SDL_Surface* InitSurface( const Rect &rect ) const;
 	SDL_Surface* InitSurface( unsigned int flags, int width, int height ) const;
 	SDL_Surface* InitSurface(GamePiece::TextureType textureType, unsigned int flags, int width, int height );
 

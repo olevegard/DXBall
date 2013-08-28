@@ -76,6 +76,8 @@ bool Renderer::Init()
 void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	localPaddle = paddle;
+	textures[GamePiece::Paddle] = InitSurface( localPaddle->rect );
+	FillSurface( textures[GamePiece::Paddle], 120, 0, 120 );
 }
 
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
@@ -160,6 +162,10 @@ void Renderer::FillSurface( SDL_Surface* source, const SDL_Color &color )
 	FillSurface( source, color.r, color.g, color.b );
 }
 
+SDL_Surface* Renderer::InitSurface( const Rect &rect ) const
+{
+	return InitSurface( 0, static_cast< int > ( rect.w ), static_cast< int > ( rect.h ) );
+}
 SDL_Surface* Renderer::InitSurface( unsigned int flags, int width, int height ) const
 {
 	SDL_Surface* surface = SDL_CreateRGBSurface( flags, width, height, SCREEN_BPP, rmask, gmask, bmask, amask);
@@ -228,8 +234,11 @@ void Renderer::ApplySurface( const Rect &r, SDL_Surface* source, SDL_Surface* de
 
 bool Renderer::LoadImages()
 {
-	LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
-	SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
+	//LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
+	//SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
+
+	backgroundImage = InitSurface( GamePiece::Background, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
+	FillSurface( backgroundImage, 0, 0, 0 );
 
 	LoadImage( "media/ball.png", GamePiece::Ball );
 	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );

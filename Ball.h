@@ -52,4 +52,6 @@ struct Ball : GamePiece
 	int ballOwner;
 
 	unsigned int lastTileHit;
+
+	bool paddleHitInPrevFrame;
 };
