@@ -23,7 +23,7 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	speed = 0.2f;
+	speed = 0.6f;
 
 	dirX = 0.83205f;
 	dirY =  -0.87f;
@@ -210,7 +210,6 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 	else if ( oldBottom < tileTop )
 	{
 		// Colliding with top side of tile...
-
 		std::cout << "\tTop collision\n";
 		if ( ballLeft < tileLeft || ballRight > tileRight )
 		{
@@ -230,16 +229,16 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 
 			std::cout << "\t\tTop : " << ratioVertical << " ratio : " << ratioVertical / rect.h << std::endl;
 			double length = sqrt( ratioHorizontal * ratioHorizontal + ratioVertical * ratioVertical );
-			//std::cout << "\t\tSuggest dir change : " << ratioHorizontal / length << " , " << ratioVertical / length << std::endl;
-			dirX *=  ( ( ratioHorizontal / length ) * -1.0f );
-			dirY *=  ( ( ratioVertical   / length ) * -1.0f );
+			std::cout << "\t\tSuggest dir change : " << ratioHorizontal / length << " , " << ratioVertical / length << std::endl;
+			//dirX *=  ( ( ratioHorizontal / length ) * -1.0f );
+			//dirY *=  ( ( ratioVertical   / length ) * -1.0f );
 			std::cout << "\t\tSuggest dir change : " << dirX << " , " << dirY << std::endl;
-			//std::cin.ignore();
-		} else 
+
+			dirY *= -1.f;
+		} else
 		{
 			dirY *= -1.0f;
 		}
-
 	}
 	else if ( oldRight < tileLeft )
 	{
