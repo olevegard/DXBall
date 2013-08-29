@@ -341,7 +341,7 @@ void Renderer::BlitText()
 
 	short xPos = 0;
 
-	if ( localPlayerLives && localPlayerPoints )
+	//if ( localPlayerLives && localPlayerPoints )
 	{
 		ApplySurface( 10, yPosLives , localPlayerLives, backgroundArea );
 		ApplySurface( 10, yPosPoints, localPlayerPoints, backgroundArea );
@@ -349,7 +349,7 @@ void Renderer::BlitText()
 
 	if ( remotePlayerLives && remotePlayerPoints )
 	{
-		xPos = static_cast< short > ( screenSize.w ) - remotePlayerPoints->w - 10;
+		xPos = static_cast< short > ( screenSize.w  - remotePlayerPoints->w - 10 );
 		ApplySurface( xPos, yPosLives, remotePlayerLives, backgroundArea );
 		ApplySurface( xPos, yPosPoints, remotePlayerPoints, backgroundArea );
 	}
@@ -366,15 +366,17 @@ void Renderer::BlitText()
 
 	if ( remotePlayerCaption )
 	{
-		short xPos = static_cast< short > ( screenSize.w - remotePlayerCaption->w );
+		//short xPos = static_cast< short > ( screenSize.w - remotePlayerCaption->w );
 		ApplySurface( xPos, 0, remotePlayerCaption, backgroundArea );
 	}
 }
-
 void Renderer::RenderText( const std::string &textToRender, const Player &player  )
 {
-	SDL_FreeSurface( localPlayerText );
-	localPlayerText = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+	if ( player == Player::Local )
+	{
+		SDL_FreeSurface( localPlayerText );
+		localPlayerText = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+	}
 }
 void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 {
