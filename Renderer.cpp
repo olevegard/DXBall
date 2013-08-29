@@ -341,7 +341,7 @@ void Renderer::BlitText()
 
 	short xPos = 0;
 
-	//if ( localPlayerLives && localPlayerPoints )
+	if ( localPlayerLives && localPlayerPoints )
 	{
 		ApplySurface( 10, yPosLives , localPlayerLives, backgroundArea );
 		ApplySurface( 10, yPosPoints, localPlayerPoints, backgroundArea );
@@ -366,7 +366,7 @@ void Renderer::BlitText()
 
 	if ( remotePlayerCaption )
 	{
-		//short xPos = static_cast< short > ( screenSize.w - remotePlayerCaption->w );
+		xPos = static_cast< short > ( screenSize.w - remotePlayerCaption->w );
 		ApplySurface( xPos, 0, remotePlayerCaption, backgroundArea );
 	}
 }
