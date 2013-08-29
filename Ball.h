@@ -42,7 +42,7 @@ struct Ball : GamePiece
 	double CalculatePaddleHitPosition( const Rect &paddleRect ) const;
 	void  CalculateNewBallDirection( double  hitPosition );
 
-	void PrintPosition( const Rect &pos, const std::string &tilename );
+	void PrintPosition( const Rect &pos, const std::string &tilename ) const;
 
 	double speed;
 

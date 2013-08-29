@@ -99,17 +99,16 @@ bool Ball::DeathCheck( const Rect &boundsRect )
 
 bool Ball::PaddleCheck( const Rect &paddleRect )
 {
-	double left = paddleRect.x;
-	double right = paddleRect.x + paddleRect.w;
-	double top = paddleRect.y;
-
-	if ( ( left < ( rect.x + rect.w ) ) && ( right > rect.x ) && ( top < ( rect.y + rect.h  )  ) )
+	if ( CheckTileIntersection( paddleRect, rect ) )
 	{
 		if ( !paddleHitInPrevFrame )
 		{
-			paddleHitInPrevFrame = false;
+			paddleHitInPrevFrame = true;
 			HandlePaddleHit( paddleRect );
 			return true;
+		} else
+		{
+			return false;
 		}
 	}
 
@@ -122,6 +121,7 @@ void Ball::HandlePaddleHit( const Rect &paddleRect )
 	double hitPosition = CalculatePaddleHitPosition( paddleRect );
 
 	CalculateNewBallDirection( hitPosition );
+
 	speed *= 1.0005f;
 }
 double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
@@ -129,10 +129,7 @@ double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
 	double ballMidpoint = rect.x + ( rect.w / 2.0 );
 	double paddleMidpoint = paddleRect.x + ( paddleRect.w / 2.0 );
 
-	std::cout << "Ball midpoint   : " << ballMidpoint << std::endl;
-	std::cout << "Paddle size     : " << paddleRect.w << " , " << paddleRect.h << std::endl;
-	std::cout << "Paddle midpoint : " << paddleMidpoint << std::endl;
-
+	// Returns on which ratio the ball hit. 1.0f is right edge, -1.0f is left edge and 0.0f is middle
 	return ( ballMidpoint - paddleMidpoint ) / ( ( paddleRect.w / 2.0 ) + ( rect.w / 2.0 ));
 }
 void  Ball::CalculateNewBallDirection( double hitPosition )
@@ -261,7 +258,7 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 	else
 	{
 		std::cout << "\tCould not determine collision edge\n";
-		std::cin.ignore();
+		//std::cin.ignore();
 		dirX *= -1.0f;
 		dirY *= -1.0f;
 	}
@@ -409,7 +406,7 @@ bool Ball::CheckTileIntersection( const Rect &tile, const Rect &ball ) const
 			|| ballBottom < tileTop
 	);
 }
-void Ball::PrintPosition( const Rect &pos, const std::string &tileName )
+void Ball::PrintPosition( const Rect &pos, const std::string &tileName ) const
 {
 	std::cout << "\t" << tileName << " position tl : " << pos.x              << " , " << pos.y             << std::endl;
 	std::cout << "\t" << tileName << " position br : " << ( pos.x + pos.w )  << " , " << ( pos.y + pos.h ) << std::endl << std::endl;
