@@ -295,8 +295,8 @@ void Renderer::SetTileColorSurface( size_t index, const SDL_Color &color, std::v
 bool Renderer::Render( )
 {
 	BlitBackground();
-	BlitText();
 	BlitForeground();
+	BlitText();
 
 	ApplySurface( 0, 0, backgroundArea, screen );
 
