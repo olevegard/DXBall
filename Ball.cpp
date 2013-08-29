@@ -28,8 +28,8 @@ void Ball::Reset()
 	dirX = 0.83205f;
 	dirY =  -0.87f;
 
-	rect.x = 150;
-	rect.y = 110;
+	rect.x = 50;
+	rect.y = 50;
 
 	paddleHitInPrevFrame = false;
 
