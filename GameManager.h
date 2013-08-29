@@ -37,6 +37,8 @@ class GameManager
 		void Run();
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
+
+		void SetFPSLimit( unsigned short limit );
 	private:
 		Renderer renderer;
 		Timer timer;
@@ -56,4 +58,7 @@ class GameManager
 		unsigned int points[4];
 
 		unsigned int tileCount;
+
+		unsigned short fpsLimit;
+		double frameDuration;
 };

@@ -10,6 +10,7 @@ int main( int argc, char* args[] )
 
 	std::string localPlayerName  = "Player 1";
 	std::string remotePlayerName = "Player 2";
+	unsigned short fpsLimit = 100;
 
 	std::cout << "C++ version : " << __cplusplus << std::endl;
 	std::cout << "Args : \n";
@@ -25,6 +26,8 @@ int main( int argc, char* args[] )
 				localPlayerName = args[i + 1 ];
 			else if ( str == "-rplayer" && argc > ( i + 1 )  )
 				remotePlayerName = args[i + 1 ];
+			else if ( str == "-fpslimit" && argc > ( i + 1 )  )
+				fpsLimit = static_cast< unsigned short > ( std::stoi( args[i + 1] ) );
 		}
 	}
 
@@ -32,6 +35,7 @@ int main( int argc, char* args[] )
 	remotePlayerName = ReplaceUnderscores( remotePlayerName );
 
 	gameMan.Init( localPlayerName, remotePlayerName );
+	gameMan.SetFPSLimit( fpsLimit );
 
 	gameMan.Run();
 }

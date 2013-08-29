@@ -17,8 +17,10 @@
 	,	ballList()
 	,	tileSize()
 	,	windowSize()
-	, 	points{ 20, 50, 100, 200 }
+	,	points{ 20, 50, 100, 200 }
 	,	tileCount( 0 )
+	,	fpsLimit( 60 )
+	,	frameDuration( 1000.0 / 60.0 )
 {
 }
 
@@ -239,6 +241,15 @@ void GameManager::Run()
 		UpdateBalls( delta );
 		UpdateGUI();
 
+		if ( fpsLimit > 0 && delta < frameDuration )
+		{
+			unsigned short delay = static_cast< unsigned short > ( ( frameDuration  - (delta + 0.5 )  ) + 0.5 );
+
+			if ( static_cast< unsigned short > ( delta ) < 60 )
+			{
+				SDL_Delay( delay );
+			}
+		}
 		/*
 		if ( delay1 )
 			SDL_Delay( 1 );
@@ -290,4 +301,11 @@ void GameManager::UpdateGUI( )
 	renderer.RenderLives( localPlayerLives, Player::Local );
 	renderer.Render( );
 }
-
+void GameManager::SetFPSLimit( unsigned short limit )
+{
+	fpsLimit  = limit;
+	if ( fpsLimit > 0.0f )
+		frameDuration = 1000.0 / static_cast< double > ( fpsLimit );
+	else
+		frameDuration = 0.0;
+}
