@@ -17,9 +17,16 @@ struct Ball;
 struct Tile;
 struct Paddle;
 
+	enum class Player
+	{
+		Local,
+		Remote
+	};
+
 class Renderer
 {
 public:
+
 	Renderer();
 	~Renderer();
 
@@ -34,11 +41,12 @@ public:
 
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
 
-	void RenderText( const std::string &textToRender );
+	void RenderText( const std::string &textToRender, const Player &player );
+	void RenderLives( unsigned long lifeCount, const Player &player  );
+	void RenderPoints( unsigned int pointCount, const Player &player  );
+	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
+
 	void RemoveText();
-	void RenderLives( unsigned long lifeCount );
-	void RenderPoints( unsigned int pointCount );
-	void RenderPlayerCaption( const std::string textToRender );
 
 	Rect GetTileSize();
 	Rect GetWindowSize();
@@ -106,11 +114,19 @@ private:
 	// Text
 	TTF_Font* font;
 	TTF_Font* bigFont;
-	SDL_Surface* localPlayerCaption;
-	SDL_Surface* text;
-	SDL_Surface* lives;
-	SDL_Surface* points;
+
 	SDL_Color textColor;
+
+	// Local player surfaces
+	SDL_Surface* localPlayerText;
+	SDL_Surface* localPlayerLives;
+	SDL_Surface* localPlayerPoints;
+	SDL_Surface* localPlayerCaption;
+
+	SDL_Surface* remotePlayerText;
+	SDL_Surface* remotePlayerLives;
+	SDL_Surface* remotePlayerPoints;
+	SDL_Surface* remotePlayerCaption;
 
 	SDL_Color tileColors[4];
 	std::vector< SDL_Surface* > tileSurfaces;

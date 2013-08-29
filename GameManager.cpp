@@ -30,7 +30,11 @@ int GameManager::Init( const std::string &localPlayerName, const std::string &re
 	if ( !renderer.Init() )
 		return 1;
 
-	renderer.RenderPlayerCaption( localPlayerName );
+	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
+	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
+
+	renderer.RenderLives ( 0, Player::Remote );
+	renderer.RenderPoints( 1, Player::Remote );
 
 	Restart();
 
@@ -67,9 +71,9 @@ void GameManager::Restart()
 	localPlayerLives = 3;
 	localPlayerActiveBalls = 0;
 
-	renderer.RenderLives( 1 );
-	renderer.RenderPoints( localPlayerPoints );
-	renderer.RenderText( "Press enter to start");
+	renderer.RenderLives( 1, Player::Local );
+	renderer.RenderPoints( localPlayerPoints, Player::Local );
+	renderer.RenderText( "Press enter to start", Player::Local );
 }
 
 void GameManager::AddBall()
@@ -121,7 +125,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::UpdateBalls( double delta )
 {
-	renderer.RenderLives( ballList.size() );
+	renderer.RenderLives( ballList.size(), Player::Local  );
 
 	if ( ballList.size() > 0 )
 	{
@@ -145,7 +149,7 @@ void GameManager::UpdateBalls( double delta )
 			++p;
 		}
 	} else 
-		renderer.RenderText( "Press enter to launch ball");
+		renderer.RenderText( "Press enter to launch ball", Player::Local );
 }
 
 void GameManager::Run()
@@ -254,7 +258,6 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 	{
 		if ( ball->TileCheck( (*p)->rect, (*p )->GetTileID() ) )
 		{
-
 			localPlayerPoints += 10;
 
 			(*p)->Hit();
@@ -278,13 +281,13 @@ void GameManager::UpdateGUI( )
 	if ( localPlayerActiveBalls == 0 )
 	{
 		if ( localPlayerLives == 0 )
-			renderer.RenderText( "Game Over" );
+			renderer.RenderText( "Game Over", Player::Local  );
 		else
-			renderer.RenderText( "Press Enter to launch ball" );
+			renderer.RenderText( "Press Enter to launch ball", Player::Local  );
 	}
 
-	renderer.RenderPoints( localPlayerPoints );
-	renderer.RenderLives( localPlayerLives );
+	renderer.RenderPoints( localPlayerPoints, Player::Local );
+	renderer.RenderLives( localPlayerLives, Player::Local );
 	renderer.Render( );
 }
 

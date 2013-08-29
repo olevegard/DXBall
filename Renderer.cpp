@@ -32,10 +32,18 @@
 	,	ballList(  )
 	,	font()
 	,	bigFont()
-	,	text()
-	,	lives()
-	,	points()
 	,	textColor{ 0, 140, 0, 255 }
+
+	,	localPlayerText()
+	,	localPlayerLives()
+	,	localPlayerPoints()
+	,	localPlayerCaption()
+
+	,	remotePlayerText()
+	,	remotePlayerLives()
+	,	remotePlayerPoints()
+	,	remotePlayerCaption()
+
 	,	tileColors{ {48, 9, 178, 255}, {255, 55, 13, 255}, {0, 0, 0, 255}, {255, 183, 13, 255} }
 	,	tileSurfaces{ nullptr, nullptr, nullptr, nullptr }
 	,	hardTileColors{ { 255, 243, 233, 255}, { 222, 212, 203, 255}, { 191, 183, 175, 255},{ 127, 122, 117, 255}, { 64, 61, 58, 255} }
@@ -327,49 +335,93 @@ void Renderer::BlitForeground()
 
 void Renderer::BlitText()
 {
-	if ( lives )
-		ApplySurface( 10, static_cast<short> ( localPlayerCaption->h + 5 ), lives, backgroundArea );
-
-	if ( points )
-		ApplySurface( 10, static_cast< short > ( localPlayerCaption->h + lives->h + 5 ), points, backgroundArea );
-
 	Rect screenSize = GetWindowSize();
+	short yPosLives  = static_cast<short> ( localPlayerCaption->h ) + 5;
+	short yPosPoints = yPosLives + static_cast<short> ( localPlayerLives->h + 5 );
 
-	if ( text )
-		ApplySurface( static_cast< short > ( ( screenSize.w / 2 ) - ( text->clip_rect.w / 2 ) ), static_cast< short > (  screenSize.h / 2 ) , text, backgroundArea );
+	short xPos = 0;
+
+	if ( localPlayerLives && localPlayerPoints )
+	{
+		ApplySurface( 10, yPosLives , localPlayerLives, backgroundArea );
+		ApplySurface( 10, yPosPoints, localPlayerPoints, backgroundArea );
+	}
+
+	if ( remotePlayerLives && remotePlayerPoints )
+	{
+		xPos = static_cast< short > ( screenSize.w ) - remotePlayerPoints->w - 10;
+		ApplySurface( xPos, yPosLives, remotePlayerLives, backgroundArea );
+		ApplySurface( xPos, yPosPoints, remotePlayerPoints, backgroundArea );
+	}
+
+	if ( localPlayerText )
+	{
+		screenSize.x = ( ( screenSize.w / 2 ) - ( localPlayerText->w / 2 ) );
+		screenSize.y =  screenSize.h / 2;
+		ApplySurface( screenSize, localPlayerText, backgroundArea );
+	}
 
 	if ( localPlayerCaption )
 		ApplySurface( 0, 0, localPlayerCaption, backgroundArea );
+
+	if ( remotePlayerCaption )
+	{
+		short xPos = static_cast< short > ( screenSize.w - remotePlayerCaption->w );
+		ApplySurface( xPos, 0, remotePlayerCaption, backgroundArea );
+	}
 }
 
-void Renderer::RenderText( const std::string &textToRender )
+void Renderer::RenderText( const std::string &textToRender, const Player &player  )
 {
-	SDL_FreeSurface( text );
-	text = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+	SDL_FreeSurface( localPlayerText );
+	localPlayerText = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+}
+void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
+{
+	std::stringstream ss;
+	ss << "Lives : " << lifeCount;
+
+	if ( player == Player::Local )
+	{
+		SDL_FreeSurface( localPlayerLives );
+		localPlayerLives = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
+	} else if ( player == Player::Remote )
+	{
+		SDL_FreeSurface( remotePlayerLives );
+		remotePlayerLives = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
+	}
+}
+
+void Renderer::RenderPoints( unsigned int pointCount, const Player &player  )
+{
+	std::stringstream ss;
+	ss << "Points : " << pointCount;
+
+	if ( player == Player::Local )
+	{
+		SDL_FreeSurface( localPlayerPoints );
+		localPlayerPoints = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
+	} else if ( player == Player::Remote )
+	{
+		SDL_FreeSurface( remotePlayerPoints );
+		remotePlayerPoints = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
+	}
+}
+void Renderer::RenderPlayerCaption( const std::string textToRender, const Player &player  )
+{
+	if ( player == Player::Local )
+	{
+		SDL_FreeSurface( localPlayerCaption );
+		localPlayerCaption = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+	} else if ( player == Player::Remote )
+	{
+		SDL_FreeSurface( remotePlayerCaption );
+		remotePlayerCaption = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+	}
 }
 void Renderer::RemoveText()
 {
-	text = nullptr;
-}
-void Renderer::RenderLives( unsigned long lifeCount )
-{
-	SDL_FreeSurface( lives );
-	std::stringstream ss;
-	ss << "Lives : " << lifeCount;
-	lives = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
-}
-
-void Renderer::RenderPoints( unsigned int pointCount )
-{
-	SDL_FreeSurface( points );
-	std::stringstream ss;
-	ss << "Points : " << pointCount;
-	points = RenderTextSurface_Solid( font, ss.str().c_str(), textColor );
-}
-void Renderer::RenderPlayerCaption( const std::string textToRender )
-{
-	SDL_FreeSurface( localPlayerCaption );
-	localPlayerCaption = RenderTextSurface_Solid( bigFont, textToRender.c_str(), textColor );
+	localPlayerText = nullptr;
 }
 Rect Renderer::GetTileSize()
 {
@@ -408,9 +460,9 @@ void Renderer::CleanUpSurfaces()
 	SDL_FreeSurface (screen );
 
 	// Free text surfaces
-	SDL_FreeSurface( text );
-	SDL_FreeSurface( lives );
-	SDL_FreeSurface( points );
+	SDL_FreeSurface( localPlayerText );
+	SDL_FreeSurface( localPlayerLives );
+	SDL_FreeSurface( localPlayerPoints );
 	SDL_FreeSurface( localPlayerCaption );
 }
 void Renderer::CleanUpLists()
