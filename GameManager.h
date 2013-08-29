@@ -40,6 +40,8 @@ class GameManager
 
 		void SetFPSLimit( unsigned short limit );
 	private:
+		void GenerateBoard();
+
 		Renderer renderer;
 		Timer timer;
 

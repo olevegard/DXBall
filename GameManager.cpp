@@ -59,15 +59,7 @@ void GameManager::Restart()
 	renderer.SetLocalPaddle( localPaddle );
 
 	tileCount = 0;
-	AddTile( 340, 120, TileTypes::Regular);
-	AddTile( 405, 120, TileTypes::Hard );
-	AddTile( 470, 120, TileTypes::Unbreakable );
-	AddTile( 535, 120, TileTypes::Explosive );
-
-	AddTile( 340, 145, TileTypes::Regular );
-	AddTile( 405, 145, TileTypes::Unbreakable );
-	AddTile( 470, 145, TileTypes::Hard );
-	AddTile( 535, 145, TileTypes::Explosive );
+	GenerateBoard();
 
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
@@ -193,15 +185,7 @@ void GameManager::Run()
 						break;
 					case SDLK_t:
 						std::cout << "Tile respawned\n";
-						AddTile( 340, 120, TileTypes::Regular);
-						AddTile( 405, 120, TileTypes::Hard );
-						AddTile( 470, 120, TileTypes::Unbreakable );
-						AddTile( 535, 120, TileTypes::Explosive );
-
-						AddTile( 340, 145, TileTypes::Regular );
-						AddTile( 405, 145, TileTypes::Unbreakable );
-						AddTile( 470, 145, TileTypes::Hard );
-						AddTile( 535, 145, TileTypes::Explosive );
+						GenerateBoard();
 						break;
 					case SDLK_1:
 						std::cout << "Delay added\n";
@@ -308,4 +292,16 @@ void GameManager::SetFPSLimit( unsigned short limit )
 		frameDuration = 1000.0 / static_cast< double > ( fpsLimit );
 	else
 		frameDuration = 0.0;
+}
+void GameManager::GenerateBoard()
+{
+	AddTile( 340, 120, TileTypes::Regular);
+	AddTile( 405, 120, TileTypes::Hard );
+	AddTile( 470, 120, TileTypes::Unbreakable );
+	AddTile( 535, 120, TileTypes::Explosive );
+
+	AddTile( 340, 145, TileTypes::Regular );
+	AddTile( 405, 145, TileTypes::Unbreakable );
+	AddTile( 470, 145, TileTypes::Hard );
+	AddTile( 535, 145, TileTypes::Explosive );
 }
