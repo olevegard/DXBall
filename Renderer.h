@@ -30,7 +30,7 @@ public:
 	Renderer();
 	~Renderer();
 
-	bool Init();
+	bool Init( const SDL_Rect &r, bool startFS);
 	bool Render( );
 
 	void AddBall( const std::shared_ptr< Ball > &ball );
@@ -48,16 +48,13 @@ public:
 
 	void RemoveText();
 
-	Rect GetTileSize();
-	Rect GetWindowSize();
-
 	void ToggleFullscreen();
+	bool SetVideoMode( bool fullscreenOn );
 private:
 
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
 
-	bool SetVideoMode( bool fullscreenOn );
 	bool ApplyVideoMode();
 	void SetFlags_VideoMode();
 
@@ -100,8 +97,7 @@ private:
 
 	Uint32 rmask, gmask, bmask, amask;
 
-	const int SCREEN_WIDTH;
-	const int SCREEN_HEIGHT;
+	SDL_Rect background;
 	const int SCREEN_BPP;
 	Uint32 screenFlags;
 	bool fullscreen;
@@ -117,7 +113,6 @@ private:
 
 	std::shared_ptr< Paddle >  localPaddle;
 
-	Rect background;
 
 	// Text
 	TTF_Font* font;

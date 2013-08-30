@@ -52,12 +52,12 @@ void Ball::Update( double tick )
 	rect.y += tick * speed * dirY;
 }
 
-bool Ball::BoundCheck( const Rect &boundsRect )
+bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 {
 
-	double left = boundsRect.x;
-	double right = boundsRect.x + boundsRect.w;
-	double top = boundsRect.y;
+	double left  = static_cast< double > ( boundsRect.x );
+	double right = static_cast< double > ( boundsRect.x ) + boundsRect.w;
+	double top   = static_cast< double > ( boundsRect.y );
 
 	if ( rect.x < left )
 	{
@@ -83,9 +83,9 @@ bool Ball::BoundCheck( const Rect &boundsRect )
 	return false;
 }
 
-bool Ball::DeathCheck( const Rect &boundsRect )
+bool Ball::DeathCheck( const SDL_Rect &boundsRect )
 {
-	double bottom = boundsRect.y + boundsRect.h;
+	double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
 
 	if (  ( rect.y + rect.h ) > bottom  )
 	{

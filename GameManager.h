@@ -21,7 +21,9 @@ class GameManager
 		{
 
 		}
-		int Init( const std::string &localPlayerName, const std::string &remotePlayerName );
+		int Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
+
+		void SetSize( const SDL_Rect &size );
 
 		void Restart();
 
@@ -54,9 +56,7 @@ class GameManager
 		std::vector< std::shared_ptr< Ball > > ballList;
 		std::vector< std::shared_ptr< Tile > > tileList;
 
-		Rect tileSize;
-		Rect windowSize;
-
+		SDL_Rect windowSize;
 		unsigned int points[4];
 
 		unsigned int tileCount;

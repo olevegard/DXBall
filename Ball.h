@@ -15,9 +15,9 @@ struct Ball : GamePiece
 
 	void Update( double tick );
 
-	bool BoundCheck( const Rect &boundsRect );
+	bool BoundCheck( const SDL_Rect &boundsRect );
 
-	bool DeathCheck( const Rect &boundsRect );
+	bool DeathCheck( const SDL_Rect &boundsRect );
 
 	bool PaddleCheck( const Rect &paddleRect );
 

@@ -15,21 +15,26 @@
 	,	localPlayerLives( 3 )
 	,	localPlayerActiveBalls( 0 )
 	,	ballList()
-	,	tileSize()
 	,	windowSize()
 	,	points{ 20, 50, 100, 200 }
 	,	tileCount( 0 )
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
 {
+	windowSize.x = 0.0;
+	windowSize.y = 0.0;
+	windowSize.w = 1920 / 2;
+	windowSize.h = 1080 / 2;
 }
 
-int GameManager::Init( const std::string &localPlayerName, const std::string &remotePlayerName )
+int GameManager::Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS )
 {
+	windowSize = size;
+
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
 		return 1;
 
-	if ( !renderer.Init() )
+	if ( !renderer.Init( windowSize, startFS ) )
 		return 1;
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
@@ -40,23 +45,16 @@ int GameManager::Init( const std::string &localPlayerName, const std::string &re
 
 	Restart();
 
-	tileSize = renderer.GetTileSize();
-
-	std::cout << "tile size " << tileSize.x << " , " << tileSize.y << " , " << tileSize.w << " , " << tileSize.h << std::endl;
-	std::cout << "window size " << windowSize.x << " , " << windowSize.y << " , " << windowSize.w << " , " << windowSize.h << std::endl;
-
 	return 0;
 }
 
 void GameManager::Restart()
 {
-	windowSize = renderer.GetWindowSize();
-
 	localPaddle.reset( new Paddle() );
 	localPaddle->textureType = GamePiece::Paddle;
 	localPaddle->rect.w = 120;
 	localPaddle->rect.h = 30;
-	localPaddle->rect.y = static_cast< short > ( windowSize.h ) - localPaddle->rect.h;
+	localPaddle->rect.y = windowSize.h  - localPaddle->rect.h;
 	renderer.SetLocalPaddle( localPaddle );
 
 	std::cout << "y : " << localPaddle->rect.y << std::endl;
@@ -154,7 +152,8 @@ void GameManager::Run()
 	bool quit = false;
 	SDL_Event event;
 
-	double halfTileWidth = tileSize.w / 2;
+	double tileWidth = localPaddle->rect.w;
+	double halfTileWidth = tileWidth / 2;
 
 	while ( !quit )
 	{
@@ -220,8 +219,8 @@ void GameManager::Run()
 			if ( event.motion.x != 0 && event.motion.y != 0 )
 				localPaddle->rect.x = static_cast< double > ( event.motion.x ) - halfTileWidth;
 
-			if ( ( localPaddle->rect.x + tileSize.w) > windowSize.w )
-				localPaddle->rect.x = static_cast< double > ( windowSize.w ) - tileSize.w;
+			if ( ( localPaddle->rect.x + tileWidth ) > windowSize.w )
+				localPaddle->rect.x = static_cast< double > ( windowSize.w ) - tileWidth;
 
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;

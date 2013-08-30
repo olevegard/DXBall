@@ -20,8 +20,7 @@
 	,	amask( 0xff000000 )
 #endif
 
-	,	SCREEN_WIDTH ( 1920 / 2 )
-	,	SCREEN_HEIGHT( 1080 /2  )
+	,	background{ 0, 0, 1920 / 2, 1080 / 2 }
 	,	SCREEN_BPP ( 32 )
 	,	screenFlags( SDL_HWSURFACE | SDL_DOUBLEBUF )
 	,	fullscreen( false )
@@ -51,10 +50,6 @@
 	,	hardTileColors{ { 255, 243, 233, 255}, { 222, 212, 203, 255}, { 191, 183, 175, 255},{ 127, 122, 117, 255}, { 64, 61, 58, 255} }
 	,	hardTileSurfaces{ nullptr, nullptr, nullptr, nullptr, nullptr }
 {
-	background.x = 0.0;
-	background.y = 0.0;
-	background.w = SCREEN_WIDTH;
-	background.h = SCREEN_HEIGHT;
 }
 
 Renderer::~Renderer()
@@ -62,8 +57,13 @@ Renderer::~Renderer()
 	CleanUp();
 	QuitSDL();
 }
-bool Renderer::Init()
+bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 {
+
+	fullscreen = startFS;
+
+	background = rect;
+
 	// Set up screen
 	ApplyVideoMode();
 
@@ -89,7 +89,7 @@ bool Renderer::ApplyVideoMode()
 {
 	SetFlags_VideoMode();
 
-	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, 0, screenFlags );
+	screen = SDL_SetVideoMode( background.w, background.h, 0, screenFlags );
 
 	if ( screen == nullptr )
 	{
@@ -292,16 +292,16 @@ bool Renderer::LoadImages()
 	//LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
 	//SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
 
-	backgroundImage = InitSurface( GamePiece::Background, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
+	backgroundImage = InitSurface( GamePiece::Background, 0, background.w, background.h );
 	FillSurface( backgroundImage, 0, 0, 0 );
 
 	LoadImage( "media/ball.png", GamePiece::Ball );
 	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );
 
-	backgroundImage = InitSurface( GamePiece::Background, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
+	backgroundImage = InitSurface( GamePiece::Background, 0, background.w, background.h );
 	FillSurface( backgroundImage, 0, 0, 0 );
 
-	backgroundArea = InitSurface( 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	backgroundArea = InitSurface( 0, background.w, background.h);
 
 	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileSurfaces.size() ; ++i )
@@ -382,7 +382,6 @@ void Renderer::BlitForeground()
 
 void Renderer::BlitText()
 {
-	Rect screenSize = GetWindowSize();
 	short yPosLives  = static_cast<short> ( localPlayerCaption->h ) + 5;
 	short yPosPoints = yPosLives + static_cast<short> ( localPlayerLives->h + 5 );
 
@@ -396,16 +395,17 @@ void Renderer::BlitText()
 
 	if ( remotePlayerLives && remotePlayerPoints )
 	{
-		xPos = static_cast< short > ( screenSize.w  - remotePlayerPoints->w - 10 );
+		xPos = static_cast< short > ( background.w  - remotePlayerPoints->w - 10 );
 		ApplySurface( xPos, yPosLives, remotePlayerLives, backgroundArea );
 		ApplySurface( xPos, yPosPoints, remotePlayerPoints, backgroundArea );
 	}
 
 	if ( localPlayerText )
 	{
-		screenSize.x = ( ( screenSize.w / 2 ) - ( localPlayerText->w / 2 ) );
-		screenSize.y =  screenSize.h / 2;
-		ApplySurface( screenSize, localPlayerText, backgroundArea );
+		SDL_Rect textPos;
+		textPos.x = static_cast< short >( ( background.w / 2 ) - ( localPlayerText->w / 2 ) );
+		textPos.y =  background.h / 2;
+		ApplySurface( textPos.x, textPos.y, localPlayerText, backgroundArea );
 	}
 
 	if ( localPlayerCaption )
@@ -413,7 +413,7 @@ void Renderer::BlitText()
 
 	if ( remotePlayerCaption )
 	{
-		xPos = static_cast< short > ( screenSize.w - remotePlayerCaption->w );
+		xPos = static_cast<short> ( background.w - remotePlayerCaption->w );
 		ApplySurface( xPos, 0, remotePlayerCaption, backgroundArea );
 	}
 }
@@ -471,14 +471,6 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 void Renderer::RemoveText()
 {
 	localPlayerText = nullptr;
-}
-Rect Renderer::GetTileSize()
-{
-	return localPaddle->rect;
-}
-Rect Renderer::GetWindowSize()
-{
-	return background;
 }
 void Renderer::CleanUp()
 {
