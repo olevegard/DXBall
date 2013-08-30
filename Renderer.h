@@ -50,10 +50,16 @@ public:
 
 	Rect GetTileSize();
 	Rect GetWindowSize();
+
+	void ToggleFullscreen();
 private:
 
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
+
+	bool SetVideoMode( bool fullscreenOn );
+	bool ApplyVideoMode();
+	void SetFlags_VideoMode();
 
 	SDL_Surface* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
 	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
@@ -97,6 +103,8 @@ private:
 	const int SCREEN_WIDTH;
 	const int SCREEN_HEIGHT;
 	const int SCREEN_BPP;
+	Uint32 screenFlags;
+	bool fullscreen;
 
 	std::map< int, SDL_Surface* > textures;
 

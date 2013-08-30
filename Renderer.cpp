@@ -23,6 +23,8 @@
 	,	SCREEN_WIDTH ( 1920 / 2 )
 	,	SCREEN_HEIGHT( 1280 / 2 )
 	,	SCREEN_BPP ( 32 )
+	,	screenFlags( SDL_HWSURFACE | SDL_DOUBLEBUF )
+	,	fullscreen( false )
 
 	,	textures()
 
@@ -63,11 +65,11 @@ Renderer::~Renderer()
 bool Renderer::Init()
 {
 	// Set up screen
-	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, 0, SDL_HWSURFACE | SDL_DOUBLEBUF );
+	ApplyVideoMode();
 
 	SDL_WM_SetCaption( "DX Ball", nullptr );
 
-	if ( screen == NULL )
+	if ( screen == nullptr )
 		return false;
 
 	if ( TTF_Init( ) == -1 )
@@ -82,6 +84,49 @@ bool Renderer::Init()
 	BlitBackground();
 
 	return true;
+}
+bool Renderer::ApplyVideoMode()
+{
+	SetFlags_VideoMode();
+
+	screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, 0, screenFlags );
+
+	if ( screen == nullptr )
+	{
+		std::cout << "Failed to apply video mode\n";
+		return false;
+	}
+
+	return true;
+}
+
+void Renderer::ToggleFullscreen()
+{
+	SetVideoMode( !fullscreen );
+}
+bool Renderer::SetVideoMode( bool fullscreenOn )
+{
+	fullscreen = fullscreenOn;
+
+	if ( !ApplyVideoMode() )
+	{
+		if ( fullscreen )
+			SetVideoMode( false );
+		else
+			return false;
+	}
+
+	return true;
+}
+void Renderer::SetFlags_VideoMode( )
+{
+	if ( fullscreen )
+	{
+		screenFlags |= SDL_FULLSCREEN;
+	} else 
+	{
+		screenFlags &= !SDL_FULLSCREEN;
+	}
 }
 void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 {

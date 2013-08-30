@@ -169,6 +169,9 @@ void GameManager::Run()
 			{
 				switch  ( event.key.keysym.sym )
 				{
+					case SDLK_F11:
+						renderer.ToggleFullscreen();
+						break;
 					case SDLK_RETURN:
 					case SDLK_b:
 						AddBall();
