@@ -41,7 +41,6 @@ int GameManager::Init( const std::string &localPlayerName, const std::string &re
 	Restart();
 
 	tileSize = renderer.GetTileSize();
-	windowSize = renderer.GetWindowSize();
 
 	std::cout << "tile size " << tileSize.x << " , " << tileSize.y << " , " << tileSize.w << " , " << tileSize.h << std::endl;
 	std::cout << "window size " << windowSize.x << " , " << windowSize.y << " , " << windowSize.w << " , " << windowSize.h << std::endl;
@@ -51,12 +50,16 @@ int GameManager::Init( const std::string &localPlayerName, const std::string &re
 
 void GameManager::Restart()
 {
+	windowSize = renderer.GetWindowSize();
+
 	localPaddle.reset( new Paddle() );
 	localPaddle->textureType = GamePiece::Paddle;
-	localPaddle->rect.y = 610;
 	localPaddle->rect.w = 120;
 	localPaddle->rect.h = 30;
+	localPaddle->rect.y = static_cast< short > ( windowSize.h ) - localPaddle->rect.h;
 	renderer.SetLocalPaddle( localPaddle );
+
+	std::cout << "y : " << localPaddle->rect.y << std::endl;
 
 	tileCount = 0;
 	GenerateBoard();

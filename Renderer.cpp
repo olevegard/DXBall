@@ -21,7 +21,7 @@
 #endif
 
 	,	SCREEN_WIDTH ( 1920 / 2 )
-	,	SCREEN_HEIGHT( 1280 / 2 )
+	,	SCREEN_HEIGHT( 1080 /2  )
 	,	SCREEN_BPP ( 32 )
 	,	screenFlags( SDL_HWSURFACE | SDL_DOUBLEBUF )
 	,	fullscreen( false )
