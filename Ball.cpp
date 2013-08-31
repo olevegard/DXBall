@@ -191,69 +191,32 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 
 	if ( oldTop > tileBottom )
 	{
+		std::cout << "\tBottom collision\n";
+
 		// Colliding with underside of tile...
 		dirY *= -1.0f;
-
-		double dist = tileBottom - ballTop;
-
-		std::cout << "\tBottom collision : " << dist << "\n";
-
-		if ( ballLeft < tileLeft || ballRight > tileRight )
-		{
-			std::cout << "\tCorner collision\n";
-		}
 	}
 
 	else if ( oldBottom < tileTop )
 	{
 		// Colliding with top side of tile...
 		std::cout << "\tTop collision\n";
-		if ( ballLeft < tileLeft || ballRight > tileRight )
-		{
-			std::cout << "\tCorner collision\n";
 
-			double ratioVertical = ballBottom - tileTop;
-			double ratioHorizontal = 0.0f;
-			if ( ballLeft < tileLeft )
-			{
-				 ratioHorizontal = ballRight - tileLeft;
-				std::cout << "\t\tLeft  : " << ratioHorizontal  << " ratio : " << ratioHorizontal  / rect.w << std::endl;
-			} else if ( ballRight > tileRight )
-			{
-				ratioHorizontal = tileRight - ballLeft;
-				std::cout << "\t\tRight : " << ratioHorizontal << " ratio : " << ratioHorizontal / rect.w << std::endl;
-			}
-
-			std::cout << "\t\tTop : " << ratioVertical << " ratio : " << ratioVertical / rect.h << std::endl;
-			double length = sqrt( ratioHorizontal * ratioHorizontal + ratioVertical * ratioVertical );
-			std::cout << "\t\tSuggest dir change : " << ratioHorizontal / length << " , " << ratioVertical / length << std::endl;
-			//dirX *=  ( ( ratioHorizontal / length ) * -1.0f );
-			//dirY *=  ( ( ratioVertical   / length ) * -1.0f );
-			std::cout << "\t\tSuggest dir change : " << dirX << " , " << dirY << std::endl;
-
-			dirY *= -1.f;
-		} else
-		{
-			dirY *= -1.0f;
-		}
+		dirY *= -1.0f;
 	}
 	else if ( oldRight < tileLeft )
 	{
 		// Colliding with left side of tile...
 		dirX *= -1.0f;
 
-		double dist = tileLeft - ballRight;
-
-		std::cout << "\tLeft collision : " << dist << "\n";
+		std::cout << "\tLeft collision\n";
 	}
 	else if ( oldLeft > tileRight )
 	{
 		// Colliding with right side of tile...
 		dirX *= -1.0f;
 
-		double dist = tileTop - ballLeft;
-
-		std::cout << "\tRight collision : " << dist << "\n";
+		std::cout << "\tRight collision\n";
 	}
 	else
 	{
@@ -262,6 +225,8 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 		dirX *= -1.0f;
 		dirY *= -1.0f;
 	}
+
+	std::cout << "\tNew ball direction   : " << dirX << " , " << dirY << std::endl << std::endl;
 }
 void Ball::HandleTileIntersection2( const Rect &tileRect )
 {
@@ -279,7 +244,7 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 
 	if ( dirY < 0.0f )
 	{
-		std::cout << "Checking collision bottom : \n";
+		std::cout << "\tChecking collision bottom : \n\n";
 		double distBottom = oldTop - tileBottom;
 
 		double intersect = distBottom / dirY;
@@ -305,14 +270,12 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		}
 	} else 
 	{
-		std::cout << "Checking collision top : \n";
+		std::cout << "\tChecking collision top : \n\n";
 		double distTop = tileTop - oldBottom;
 
 		double intersect = distTop / dirY;
 		double intersectPosLeft  = oldLeft + dirX * intersect;
 		double intersectPosRight = intersectPosLeft + rect.w;
-
-		std::cout << "rect.w : " << rect.w << std::endl;
 
 		std::cout << "\tDist bottom      : " << distTop << std::endl;
 		std::cout << "\tIntersect        : " << intersect << std::endl;
@@ -333,7 +296,7 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 
 	if ( dirX > 0.0f )
 	{
-		std::cout << "Checking collision left : \n";
+		std::cout << "\tChecking collision left : \n\n";
 		double distLeft = tileLeft - oldRight;
 
 		double intersect = distLeft / dirX;
@@ -359,7 +322,7 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		}
 	} else if ( dirX < 0.0f )
 	{
-		std::cout << "Checking collision left : \n";
+		std::cout << "\tChecking collision left : \n\n";
 		double distRight = oldLeft - tileRight;
 
 		double intersect = distRight / dirX;
