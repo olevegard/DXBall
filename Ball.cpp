@@ -7,6 +7,7 @@ Ball::Ball()
 	,	dirX( -0.83205f )
 	,	dirY(-0.5547f )
 	,	paddleHitInPrevFrame( false )
+	,	debugMode( false )
 {
 	rect.w = 20;
 	oldRect.w = 20;
@@ -23,7 +24,7 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	speed = 0.6f;
+	speed = 0.5f;
 
 	dirX = 0.83205f;
 	dirY =  -0.87f;
@@ -144,17 +145,23 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 	// Intersection test
 	if ( !CheckTileIntersection( tileRect, rect ) )
 		return false;
-	std::cout << "===============================================================================\n";
-	std::cout << "Colliding in current frame\n";
+	if ( debugMode )
+	{
+		std::cout << "===============================================================================\n";
+		std::cout << "Colliding in current frame\n";
+	}
 
 
 	// If the ball collided with the same rect in the previous frame too,
 	// This means the ball needs an extra frame to get fully out of the tile
-	if ( lastTileHit == tileID && CheckTileIntersection( tileRect, oldRect ) )
+	if ( /*lastTileHit == tileID && */ CheckTileIntersection( tileRect, oldRect ) )
 	{
-		std::cout << "\tCollided in the prev frame too...\n";
-		PrintPosition( tileRect, "Tile" );
-		PrintPosition( rect,     "Ball" );
+		if ( debugMode )
+		{
+			std::cout << "\tCollided in the prev frame too...\n";
+			PrintPosition( tileRect, "Tile" );
+			PrintPosition( rect,     "Ball" );
+		}
 		return false;
 	}
 
@@ -183,50 +190,65 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 	double oldRight  = oldLeft + rect.w;
 	double oldBottom = oldTop  + rect.h;
 
-	PrintPosition( tileRect,"Tile");
-	PrintPosition( rect    , "Ball cur ");
-	PrintPosition( oldRect , "Ball old ");
+	if ( debugMode )
+	{
+		PrintPosition( tileRect,"Tile");
+		PrintPosition( rect    , "Ball cur ");
+		PrintPosition( oldRect , "Ball old ");
 
-	std::cout << "\tBall direction   : " << dirX << " , " << dirY << std::endl << std::endl;
+		std::cout << "\tBall direction       : " << dirX << " , " << dirY << std::endl << std::endl;
+	}
 
 	if ( oldTop > tileBottom )
 	{
-		std::cout << "\tBottom collision\n";
+		if ( debugMode )
+			std::cout << "\tColided with bottom side of tile\n";
 
-		// Colliding with underside of tile...
-		dirY *= -1.0f;
+		if ( dirY < 0.0f )
+			dirY *= -1.0f;
 	}
 
 	else if ( oldBottom < tileTop )
 	{
-		// Colliding with top side of tile...
-		std::cout << "\tTop collision\n";
-
-		dirY *= -1.0f;
+		if ( debugMode )
+			std::cout << "\tColided with top side of tile\n";
+		
+		if ( dirY > 0.0f )
+			dirY *= -1.0f;
 	}
 	else if ( oldRight < tileLeft )
 	{
-		// Colliding with left side of tile...
-		dirX *= -1.0f;
+		if ( debugMode )
+			std::cout << "\tColided with left side of tile\n";
 
-		std::cout << "\tLeft collision\n";
+		if ( dirX > 0.0f )
+			dirX *= -1.0f;
 	}
 	else if ( oldLeft > tileRight )
 	{
-		// Colliding with right side of tile...
-		dirX *= -1.0f;
+		if ( debugMode )
+			std::cout << "\tColided with right side of tile\n";
 
-		std::cout << "\tRight collision\n";
-	}
-	else
+		if ( dirX < 0.0f )
+			dirX *= -1.0f;
+	} else
 	{
+		// At this point, we know there was a collision in the previous frame.
 		std::cout << "\tCould not determine collision edge\n";
-		//std::cin.ignore();
-		dirX *= -1.0f;
-		dirY *= -1.0f;
+		PrintPosition( tileRect,"Tile");
+		PrintPosition( rect    , "Ball cur ");
+		PrintPosition( oldRect , "Ball old ");
+
+		std::cout << "\tBall direction       : " << dirX << " , " << dirY << std::endl << std::endl;
+
+		std::cin.ignore();
+		//dirX *= -1.0f; dirY *= -1.0f;
 	}
 
-	std::cout << "\tNew ball direction   : " << dirX << " , " << dirY << std::endl << std::endl;
+	if ( debugMode )
+	{
+		std::cout << "\tNew ball direction   : " << dirX << " , " << dirY << std::endl << std::endl;
+	}
 }
 void Ball::HandleTileIntersection2( const Rect &tileRect )
 {
@@ -241,6 +263,10 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 	double oldTop    = oldRect.y;
 	double oldRight  = oldLeft + rect.w;
 	double oldBottom = oldTop  + rect.h;
+
+	PrintPosition( tileRect,"Tile");
+	PrintPosition( rect    , "Ball cur ");
+	PrintPosition( oldRect , "Ball old ");
 
 	if ( dirY < 0.0f )
 	{

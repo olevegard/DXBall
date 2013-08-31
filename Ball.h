@@ -54,4 +54,6 @@ struct Ball : GamePiece
 	unsigned int lastTileHit;
 
 	bool paddleHitInPrevFrame;
+
+	bool debugMode;
 };
