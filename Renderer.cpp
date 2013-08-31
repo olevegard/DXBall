@@ -69,6 +69,9 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 
 	SDL_WM_SetCaption( "DX Ball", nullptr );
 
+	// Hide cursor
+	SDL_ShowCursor( SDL_DISABLE );
+
 	if ( screen == nullptr )
 		return false;
 
