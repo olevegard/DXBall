@@ -145,17 +145,20 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 	// Intersection test
 	if ( !CheckTileIntersection( tileRect, rect ) )
 		return false;
+
 	if ( debugMode )
 	{
 		std::cout << "===============================================================================\n";
 		std::cout << "Colliding in current frame\n";
 	}
 
+	if ( debugMode ) 
+		std::cout << "Checking sphere intersection....\n";
 
-	std::cout << "Checking sphere intersection....\n";
 	if ( !CheckTileSphereIntersection( tileRect, rect  ) )
 	{
-		std::cout << "No circle collision, skipping....\n";
+		if ( debugMode ) 
+			std::cout << "No circle collision, skipping....\n";
 		return false;
 	}
 
@@ -186,11 +189,6 @@ void Ball::HandleTileIntersection( const Rect &tileRect )
 	double tileTop =    tileRect.y;
 	double tileRight =  tileRect.x + tileRect.w;
 	double tileBottom = tileRect.y + tileRect.h;
-
-	double ballLeft =   rect.x;
-	double ballTop =    rect.y;
-	double ballRight =  rect.x + rect.w;
-	double ballBottom = rect.y + rect.h;
 
 	double oldLeft   = oldRect.x;
 	double oldTop    = oldRect.y;
@@ -451,7 +449,7 @@ bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball ) con
 	{
 		if ( debugMode )
 		{
-			std::cout << "\tdistY < tileHalfHeight" << std::endl
+			std::cout << "\tdistY < tileHalfHeight" << std::endl;
 			std::cout << "\n\t" << distX << " <= " << tileHalfHeight << std::endl;
 		}
 		return true;

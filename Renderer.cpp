@@ -292,14 +292,8 @@ void Renderer::ApplySurface( const Rect &r, SDL_Surface* source, SDL_Surface* de
 
 bool Renderer::LoadImages()
 {
-	//LoadImage( "media/paddles/paddle30x120.png", GamePiece::Paddle );
-	//SetColorKey( GamePiece::Paddle, 0xff,0xff,0xff );
-
-	backgroundImage = InitSurface( GamePiece::Background, 0, background.w, background.h );
-	FillSurface( backgroundImage, 0, 0, 0 );
-
 	LoadImage( "media/ball.png", GamePiece::Ball );
-	SetColorKey( GamePiece::Ball, 0xff,0xff,0xff );
+	SetColorKey( GamePiece::Ball, 255, 255, 255 );
 
 	backgroundImage = InitSurface( GamePiece::Background, 0, background.w, background.h );
 	FillSurface( backgroundImage, 0, 0, 0 );
