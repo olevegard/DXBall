@@ -9,3 +9,5 @@ tags
 README~
 changauth.sh
 /build/.obj/
+Makefile
+/build/Makefile
