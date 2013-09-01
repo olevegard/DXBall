@@ -37,6 +37,8 @@ struct Ball : GamePiece
 	bool CheckTileIntersection( const Rect &tile, const Rect &ball ) const;
 	void HandleTileIntersection( const Rect &tile );
 	void HandleTileIntersection2( const Rect &tileRect );
+	
+	bool CheckTileSphereIntersection( const Rect &tile, const Rect &ball ) const;
 
 	void HandlePaddleHit( const Rect &paddleRect );
 	double CalculatePaddleHitPosition( const Rect &paddleRect ) const;

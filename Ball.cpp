@@ -152,6 +152,13 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 	}
 
 
+	std::cout << "Checking sphere intersection....\n";
+	if ( !CheckTileSphereIntersection( tileRect, rect  ) )
+	{
+		std::cout << "No circle collision, skipping....\n";
+		return false;
+	}
+
 	// If the ball collided with the same rect in the previous frame too,
 	// This means the ball needs an extra frame to get fully out of the tile
 	if ( /*lastTileHit == tileID && */ CheckTileIntersection( tileRect, oldRect ) )
@@ -394,6 +401,67 @@ bool Ball::CheckTileIntersection( const Rect &tile, const Rect &ball ) const
 			|| ballRight  < tileLeft
 			|| ballBottom < tileTop
 	);
+}
+bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball ) const
+{
+	double ballRadius  = ball.w / 2.0;
+	double ballCenterX = ball.x + ballRadius;
+	double ballCenterY = ball.y + ballRadius;
+
+	double tileHalfWidth  = ( tile.w / 2.0 );
+	double tileHalfHeight = ( tile.h / 2.0 );
+	double tileCenterX = tile.x + tileHalfWidth;
+	double tileCenterY = tile.y + tileHalfHeight;
+	
+	double distX = ballCenterX - tileCenterX;
+	double distY = ballCenterY - tileCenterY;
+
+	// If distance from center of sphere to center of rect is larger than 
+	// the sum of the raidus of the ball and the distance from the center of the rect to the edge
+	if ( distX > ( tileHalfWidth + ballRadius ) )
+	{
+		if ( debugMode )
+		{
+			std::cout << "\tdistx < ( tilehalfwidth + ballradius )" << std::endl;
+			std::cout << "\t" << distX << " < " << tileHalfWidth << " + " << ballRadius << std::endl;
+		}
+		return false;
+	}
+
+	if ( distY > ( tileHalfHeight + ballRadius ) )
+	{
+		std::cout << "\tdistY < ( tilehalfHeight + ballradius )" << std::endl;
+		std::cout << "\t" << distX << " < " << tileHalfHeight << " + " << ballRadius << std::endl;
+		return false;
+	}
+
+	// if the distance from the center of the sphere to the center of the rect is smaller or equal to
+	// the the distance from the center of the rect to the edge
+	if ( distX <= tileHalfWidth )
+	{
+		if ( debugMode )
+		{
+			std::cout << "\tdistX < tilehalfWidth" << std::endl;
+			std::cout << "\t" << distX << " <= " << tileHalfWidth << std::endl;
+		}
+		return true;
+	}
+
+	if ( distY <= tileHalfHeight )
+	{
+		if ( debugMode )
+		{
+			std::cout << "\tdistY < tileHalfHeight" << std::endl
+			std::cout << "\n\t" << distX << " <= " << tileHalfHeight << std::endl;
+		}
+		return true;
+	}
+
+	// Get the distance from center of the sphere, to the edge of the rect squared.
+	double cornerDistance = ( distX - tileHalfWidth ) * ( distX - tileHalfWidth );
+	cornerDistance += ( distY - tileHalfHeight ) * ( distY - tileHalfHeight );
+
+	return cornerDistance <= ( ballRadius * ballRadius );
 }
 void Ball::PrintPosition( const Rect &pos, const std::string &tileName ) const
 {
