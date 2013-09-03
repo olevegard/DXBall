@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GamePiece.h"
-#include <iostream>
+#include <cstddef>
 
 enum class TileTypes
 {
@@ -37,13 +37,7 @@ struct Tile : GamePiece
 		return ( type != TileTypes::Unbreakable && hitsLeft == 0 );
 	}
 
-	void Hit()
-	{
-		--hitsLeft;
-
-		if ( type == TileTypes::Hard )
-			std::cout << "Hits left : " << hitsLeft << std::endl;
-	}
+	void Hit();
 
 	unsigned int GetTileID() const
 	{

@@ -1,4 +1,5 @@
 #include "Tile.h"
+#include <iostream>
 
 Tile::Tile(TileTypes type_, unsigned int tileID_ )
 	:	type( type_ )
@@ -19,4 +20,13 @@ Tile::Tile(TileTypes type_, unsigned int tileID_ )
 Tile::~Tile()
 {
 
+}
+
+void Tile::Hit()
+{
+	// Decrease hits left
+	--hitsLeft;
+
+	if ( type == TileTypes::Hard )
+		std::cout << "Hits left : " << hitsLeft << std::endl;
 }

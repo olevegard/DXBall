@@ -4,8 +4,7 @@
 #include "Tile.h"
 #include "Paddle.h"
 
-#include <vector>
-#include <algorithm>
+#include <iostream>
 
 	GameManager::GameManager()
 	:	renderer()

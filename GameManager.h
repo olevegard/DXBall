@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include "Timer.h"
 #include "Renderer.h"
 

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-
 #include "math/Rect.h"
 
 struct GamePiece
@@ -17,9 +14,6 @@ struct GamePiece
 	};
 
 	GamePiece();
-
-	//SDL_Rect rect;
-	//SDL_Rect oldRect;
 
 	Rect rect;
 	Rect oldRect;

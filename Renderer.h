@@ -2,15 +2,11 @@
 
 #include <SDL/SDL_ttf.h>
 
-#include <sstream>
 #include <vector>
 #include <memory>
 #include <map>
 
 #include "GamePiece.h"
-
-
-#include <iostream>
 
 // Forward declarations
 struct Ball;
@@ -95,11 +91,11 @@ private:
 	void CleanUpTTF();
 	void QuitSDL();
 
-	Uint32 rmask, gmask, bmask, amask;
+	unsigned int rmask, gmask, bmask, amask;
 
 	SDL_Rect background;
 	const int SCREEN_BPP;
-	Uint32 screenFlags;
+	unsigned int screenFlags;
 	bool fullscreen;
 
 	std::map< int, SDL_Surface* > textures;

@@ -19,7 +19,8 @@ struct Rect
 	{
 
 	}
-	
+
+	/*
 	void Set( const SDL_Rect &r )
 	{
 		this->x = r.x;
@@ -36,7 +37,7 @@ struct Rect
 		r.w = static_cast< unsigned short > ( this->w );
 		r.h = static_cast< unsigned short > ( this->h );
 		return r;
-	}
+	}*/
 
 		double x;
 		double y;

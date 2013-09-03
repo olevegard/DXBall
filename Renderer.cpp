@@ -1,11 +1,14 @@
 #include "Renderer.h"
 
-
 #include "Ball.h"
 #include "Tile.h"
 #include "Paddle.h"
 
+#include <sstream>
+#include <iostream>
 #include <algorithm>
+
+#include <SDL/SDL_image.h>
 
 	Renderer::Renderer()
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -55,6 +58,7 @@
 Renderer::~Renderer()
 {
 	CleanUp();
+
 	QuitSDL();
 }
 bool Renderer::Init( const SDL_Rect &rect, bool startFS )

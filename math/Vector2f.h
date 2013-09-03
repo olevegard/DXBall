@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ostream>
-
 struct Vector2f{
 	Vector2f( double posX, double posY)
 		:   x(0)
