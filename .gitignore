@@ -11,3 +11,5 @@ changauth.sh
 /build/.obj/
 Makefile
 /build/Makefile
+/math/unused*
+/math/unused/*
