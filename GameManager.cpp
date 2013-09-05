@@ -157,12 +157,15 @@ void GameManager::Run()
 	double tileWidth = localPaddle->rect.w;
 	double halfTileWidth = tileWidth / 2;
 
+	unsigned int ticks;
 	while ( !quit )
 	{
 		bool delay1 = false;
 		bool delay2 = false;
 		bool delay3 = false;
 		bool delay4 = false;
+
+		ticks = SDL_GetTicks();
 
 		while ( SDL_PollEvent( &event ) )
 		{
@@ -232,11 +235,13 @@ void GameManager::Run()
 		UpdateBalls( delta );
 		UpdateGUI();
 
-		if ( fpsLimit > 0 && delta < frameDuration )
-		{
-			unsigned short delay = static_cast< unsigned short > ( ( frameDuration  - (delta + 0.5 )  ) + 0.5 );
+		unsigned int diff = SDL_GetTicks() - ticks;
 
-			if ( static_cast< unsigned short > ( delta ) < 60 )
+		if ( fpsLimit > 0 && diff < frameDuration )
+		{
+			unsigned short delay = static_cast< unsigned short > ( ( frameDuration  - diff  ) + 0.5 );
+
+			if ( diff < 60 )
 			{
 				SDL_Delay( delay );
 			}
