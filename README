@@ -2,9 +2,13 @@ DXBall
 Compiling:
 
 UPDATE : 
-	You can now compile using sh buildDXB. This will do two things
+	You can now compile using sh buildDXB. This will do several things
 		1. Crate a makefile based on DXBall.pro ( requires qmake )
 		2. Build the makefile using the command make
+		3. Based on command line options :
+			-r run the program using command line ards in buildDXB.sh
+			-g run gdb also using the gdb and game args in buildDXB.sh
+			-v run valgrind using the valgrind and game ars stated in buildDXB.sh
 	This will compile the project using the same settings as the command line below ( the old way ) 
 
 	clang++ main.cpp Timer.cpp Tile.cpp Ball.cpp Paddle.cpp Renderer.cpp GameManager.cpp -lSDL -lSDL_ttf -lSDL_image -o DXBall -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-switch-enum -Werror

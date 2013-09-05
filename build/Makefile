@@ -8,18 +8,15 @@
 
 ####### Compiler, tools and options
 
-CC            = gcc
+# C flags
+CC            = clang
+CFLAGS        = -m64 -pipe -Wall
+# C++ flags
 CXX           = clang++
-DEFINES       = -DQT_WEBKIT
-CFLAGS        = -m64 -pipe -O2 -Wall -W $(DEFINES)
-CXXFLAGS      = -m64 -pipe -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-switch-enum -O2 -Wall -W $(DEFINES)
-INCPATH       = -I/usr/share/qt4/mkspecs/linux-g++-64 -I.
+CXXFLAGS      = -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-switch-enum -Werror
+LIBS          = -lSDL -lSDL_image -lSDL_ttf 
 LINK          = clang++
-LFLAGS        = -m64 -Wl,-O1
-LIBS          = $(SUBLIBS)   -lSDL -lSDL_image -lSDL_ttf 
 AR            = ar cqs
-RANLIB        = 
-QMAKE         = /usr/bin/qmake
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 COPY          = cp -f
