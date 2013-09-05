@@ -81,7 +81,7 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 	if ( rect.y < top )
 	{
 		rect.y = top;
-		dirY *= -1.0f;
+		dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
 		return true;
 	}
 
@@ -117,6 +117,7 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 		}
 	}
 
+
 	paddleHitInPrevFrame = false;
 	return false;
 }
@@ -140,7 +141,7 @@ double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
 void  Ball::CalculateNewBallDirection( double hitPosition )
 {
 	dirX = hitPosition;
-	dirY *= -1.0f;
+	dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
 
 	NormalizeDirection();
 }
@@ -154,7 +155,8 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 	std::cout << "Colliding in current frame\n";
 
 	std::cout << "\tChecking sphere intersection....\n";
-	if ( !CheckTileSphereIntersection( tileRect, rect  ) )
+	double dist = 0.0f;
+	if ( !CheckTileSphereIntersection( tileRect, rect, dist  ) )
 	{
 		std::cout << "\tNo circle collision, skipping....\n";
 		return false;
@@ -164,7 +166,9 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 	// This means the ball needs an extra frame to get fully out of the tile
 	if ( debugMode )
 		std::cout << "\tPrev checking sphere intersection....\n";
-	if ( lastTileHit == tileID && CheckTileSphereIntersection( tileRect, oldRect ) )
+
+
+	if ( lastTileHit == tileID && CheckTileSphereIntersection( tileRect, oldRect, dist ) )
 	{
 		std::cout << "Collided in the prev frame too...\n";
 		return false;
@@ -186,6 +190,369 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 
 	return true;
 }
+
+
+
+bool Ball::CheckTileIntersection( const Rect &tile, const Rect &ball ) const
+{
+	double tileLeft =   tile.x;
+	double tileTop =    tile.y;
+	double tileRight =  tile.x + tile.w;
+	double tileBottom = tile.y + tile.h;
+
+	double ballLeft =   ball.x;
+	double ballTop =    ball.y;
+	double ballRight =  ball.x + ball.w;
+	double ballBottom = ball.y + ball.h;
+
+	// Intersection test
+	return !(
+			ballTop    > tileBottom
+			|| ballLeft   > tileRight
+			|| ballRight  < tileLeft
+			|| ballBottom < tileTop
+		);
+}
+bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball, double &retDistance ) const
+{
+	double ballRadius  = ball.w / 2.0;
+	double ballCenterX = ball.x + ballRadius;
+	double ballCenterY = ball.y + ballRadius;
+
+	double tileHalfWidth  = ( tile.w / 2.0 );
+	double tileHalfHeight = ( tile.h / 2.0 );
+	double tileCenterX = tile.x + tileHalfWidth;
+	double tileCenterY = tile.y + tileHalfHeight;
+
+	double distX = fabs( ballCenterX - tileCenterX );
+	double distY = fabs( ballCenterY - tileCenterY );
+
+	// If distance from center of sphere to center of rect is larger than 
+	// the sum of the raidus of the ball and the distance from the center of the rect to the edge
+	if ( distX > ( tileHalfWidth + ballRadius ) )
+		return false;
+
+	if ( distY > ( tileHalfHeight + ballRadius ) )
+		return false;
+
+	// if the distance from the center of the sphere to the center of the rect is smaller or equal to
+	// the the distance from the center of the rect to the edge
+	if ( distX <= tileHalfWidth )
+		return true;
+
+	if ( distY <= tileHalfHeight )
+		return true;
+
+	// Get the distance from center of the sphere, to the edge of the rect squared.
+	double cornerDistance = ( distX - tileHalfWidth ) * ( distX - tileHalfWidth );
+	cornerDistance += ( distY - tileHalfHeight ) * ( distY - tileHalfHeight );
+
+	if ( cornerDistance > ( ballRadius * ballRadius ) )
+		return false;
+
+	retDistance = sqrt( cornerDistance );
+
+	return true;
+}
+void Ball::PrintPosition( const Rect &pos, const std::string &tileName ) const
+{
+	std::cout << "\t" << tileName << " position tl : " << pos.x              << " , " << pos.y             << std::endl;
+	std::cout << "\t" << tileName << " position br : " << ( pos.x + pos.w )  << " , " << ( pos.y + pos.h ) << std::endl << std::endl;
+}
+
+bool Ball::LineLineIntersectionTestV2( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2, double &ret ) const
+{
+	Vector2f tile( tile2 - tile1 );
+	Vector2f ball( ball2 - ball1 );
+
+	Vector2f ballTile( ball2 - tile2 );
+
+	double dot = Math::PerpDot( tile, ball );
+	double dotTile = Math::PerpDot( tile, ballTile );
+	double dotBall = Math::PerpDot( ball, ballTile );
+
+	if ( debugMode )
+	{
+		std::cout << "\tBall : " << ball << std::endl;
+		std::cout << "\tTile : " << tile << std::endl;
+	}
+
+	if ( CheckDotProducts( dot, dotTile, dotBall ) )
+	{
+		ret = 1.0f - ( dotTile / dot );
+		return true;
+	} else
+	{
+		return false;
+	}
+}
+bool Ball::CheckDotProducts( double dot, double dotTile, double dotBall ) const
+{
+	// Paralell check
+	if ( dot == 0.0f )
+	{
+		if ( debugMode )
+			std::cout << "\tDot product is 0, lines are paralell\n";
+		return false;
+	}
+
+	if ( dot < 0.0 )
+	{
+		if ( dotTile > 0.0 )
+		{
+			if ( debugMode )
+				std::cout << "\tLINE : " << __LINE__ << " " << "dot Tile is > 0 : " << dotTile << std::endl;
+			return false;
+		}
+		if ( dotBall > 0.0 )
+		{
+			if ( debugMode )
+				std::cout << "\tLINE : " << __LINE__ << " "  << "dot ball is > 0 : " << dotBall << std::endl;
+			return false;
+		}
+		if ( dotTile < dot )
+		{
+			if ( debugMode )
+				std::cout << "\tLINE : " << __LINE__ << " "  << "dot Tile is < dot : " << dotTile << " < " << dot << std::endl;
+			return false;
+		}
+		if ( dotBall < dot )
+		{
+			if ( debugMode )
+				std::cout << "\tLINE : " << __LINE__ << " "  << "dot Ball is < dot : " << dotBall << " < " << dot << std::endl;
+			return false;
+		}
+	} else
+	{
+		if ( dotTile < 0.0 )
+		{
+			if ( debugMode )
+				std::cout << "LINE : " << __LINE__ << " "  << "dot Tile is < 0 : " << dotTile << std::endl;
+			return false;
+		}
+		if ( dotBall < 0.0 )
+		{
+			if ( debugMode )
+				std::cout << "LINE : " << __LINE__ << " "  << "dot ball is < 0 : " << dotBall << std::endl;
+			return false;
+		}
+		if ( dotTile > dot )
+		{
+			if ( debugMode )
+				std::cout << "LINE : " << __LINE__ << " "  << "dot Tile is > dot : " << dotTile << " > " << dot << std::endl;
+			return false;
+		}
+		if ( dotBall > dot )
+		{
+			if ( debugMode )
+				std::cout << "LINE : " << __LINE__ << " "  << "dot Ball is > dot : " << dotBall << " > " << dot << std::endl;
+			return false;
+		}
+	}
+
+	return true;
+
+}
+int Ball::FindIntersectingSide( const Rect &tileRect )
+{
+	Vector2f ballDir = GetEsimtatedDir( );
+	Vector2f ballCurrentPos( rect.x, rect.y );
+
+	Vector2f ballEstOldPos( ballCurrentPos - ( ballDir * 5.0 ) );
+	Vector2f ballEstNewPos( ballCurrentPos + ( ballDir * 20.0 ) );
+
+	// Get ball positions
+	Vector2f ballEstOldPos_Bl = Transform( ballEstOldPos, Corner::BottomLeft, rect );
+	Vector2f ballEstNewPos_Bl = Transform( ballEstNewPos, Corner::BottomLeft, rect );
+
+	Vector2f ballEstOldPos_Br = Transform( ballEstOldPos, Corner::BottomRight, rect );
+	Vector2f ballEstNewPos_Br = Transform( ballEstNewPos, Corner::BottomRight, rect );
+
+	Vector2f ballEstOldPos_Tl = Transform( ballEstOldPos, Corner::TopLeft, rect  );
+	Vector2f ballEstNewPos_Tl = Transform( ballEstNewPos, Corner::TopLeft, rect  );
+
+	Vector2f ballEstOldPos_Ml( ballEstOldPos.x, ballEstOldPos.y + ( rect.y / 2.0 ));
+	Vector2f ballEstNewPos_Ml( ballEstNewPos.x, ballEstNewPos.y + ( rect.y / 2.0 ));
+
+	Vector2f ballEstOldPos_Tr = Transform( ballEstOldPos, Corner::TopRight, rect  );
+
+	Vector2f ballEstNewPos_Tr = Transform( ballEstNewPos, Corner::TopRight, rect  );
+
+	std::cout << "\tBall est old pos    : " << ballEstOldPos << std::endl;
+	std::cout << "\tBall est future pos : " << ballEstOldPos << std::endl;
+
+	// Top left corner
+	Vector2f rect_Tl( tileRect.x             , tileRect.y );
+	Vector2f rect_Tr = Transform( rect_Tl, Corner::TopRight   , tileRect );
+
+
+	Vector2f rect_Bl = Transform( rect_Tl, Corner::BottomLeft , tileRect );
+	Vector2f rect_Br = Transform( rect_Tl, Corner::BottomRight, tileRect );
+
+	double dist = 0.0f;
+	double distMax = 0.0f;
+	Side collisionSide = Side::Unknown;
+
+	// Top collisions - bottom side of ball
+	// ========================================================================================
+	if ( LineLineIntersectionTestV2( rect_Tr, rect_Tl, ballEstNewPos_Bl, ballEstOldPos_Bl, dist ) )
+	{
+		std::cout << "\n\tIntersected top\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		distMax = dist;
+		collisionSide = Side::Top;
+	}
+
+	if ( LineLineIntersectionTestV2( rect_Tr, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
+	{
+		std::cout << "\n\tIntersected top\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		distMax = dist;
+		collisionSide = Side::Top;
+	}
+
+	// Right collisions - left side of ball
+	// ========================================================================================
+	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
+	{
+		std::cout << "\n\tIntersected rigt 1\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( dist >= distMax )
+		{
+			distMax = dist;
+			collisionSide = Side::Right;
+		}
+	}
+	
+	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Bl, ballEstOldPos_Bl, dist ) )
+	{
+		std::cout << "\n\tIntersected right 2\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( dist >= distMax )
+		{
+			distMax = dist;
+			collisionSide = Side::Right;
+		}
+	}
+	
+	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Ml, ballEstOldPos_Ml, dist ) )
+	{
+		std::cout << "\n\tIntersected right 3\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		/*if ( dist >= distMax )
+		{
+			distMax = dist;
+			collisionSide = Side::Right;
+		}*/
+	}
+
+	// Bottom collisions - top side of ball
+	// ========================================================================================
+	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
+	{
+		std::cout << "\n\tIntersected bottom\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( dist >= distMax )
+		{
+			distMax = dist;
+			collisionSide = Side::Bottom;
+		}
+	}
+	
+	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
+	{
+		std::cout << "\n\tIntersected bottom\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( dist >= distMax )
+		{
+			distMax = dist;
+			collisionSide = Side::Bottom;
+		}
+	}
+
+	// Left collisions - right side of ball
+	// ========================================================================================
+	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
+	{
+		std::cout << "\n\tIntersected left\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( dist >= distMax )
+		{
+			distMax = dist;
+			collisionSide = Side::Left;
+		}
+	}
+	
+	// Check intersection left II
+	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
+	{
+		std::cout << "\n\tIntersected left\n";
+		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( dist >= distMax )
+		{
+			distMax = dist;
+			collisionSide = Side::Left;
+		}
+	}
+
+	switch ( collisionSide )
+	{
+		case Side::Top :
+			dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
+			std::cout << "\tTop collision flipping y !\n";
+			break;
+		case Side::Right :
+			dirX = ( dirX < 0.0f ) ? dirX * -1.0f : dirX;
+			std::cout << "\tRight collision flipping x !\n";
+			break;
+		case Side::Bottom :
+			dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
+			std::cout << "\tBottom collision flipping y !\n";
+			break;
+		case Side::Left :
+			dirX = ( dirX > 0.0f ) ? dirX * -1.0f : dirX;
+			std::cout << "\tLeft collision flipping x !\n";
+			break;
+		case Side::Unknown :
+			std::cout << "Uknown collosion\n";
+			std::cin.ignore();
+			break;
+	}
+
+	return 0;
+}
+Vector2f Ball::GetEsimtatedDir( )
+{
+	Vector2f ballCurrentPos( rect.x   , rect.y );
+	Vector2f ballPrevPos   ( oldRect.x, oldRect.y );
+
+	return Vector2f( ballCurrentPos - ballPrevPos  );
+}
+Vector2f Ball::Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const
+
+{
+	switch ( side )
+	{
+		case Corner::TopLeft:
+			return vec;
+		case Corner::TopRight:
+			return Vector2f( vec.x + size.w, vec.y );
+		case Corner::BottomLeft:
+			return Vector2f( vec.x, vec.y + size.h );
+		case Corner::BottomRight:
+			return Vector2f( vec.x + size.w, vec.y + size.h );
+	}
+}
+
 void Ball::HandleTileIntersection( const Rect &tileRect )
 {
 	// Check Which Face Collided
@@ -370,409 +737,5 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		{
 			std::cout << "\t\tMissed right" << std::endl;
 		}
-	}
-}
-
-bool Ball::CheckTileIntersection( const Rect &tile, const Rect &ball ) const
-{
-	double tileLeft =   tile.x;
-	double tileTop =    tile.y;
-	double tileRight =  tile.x + tile.w;
-	double tileBottom = tile.y + tile.h;
-
-	double ballLeft =   ball.x;
-	double ballTop =    ball.y;
-	double ballRight =  ball.x + ball.w;
-	double ballBottom = ball.y + ball.h;
-
-	// Intersection test
-	return !(
-			ballTop    > tileBottom
-			|| ballLeft   > tileRight
-			|| ballRight  < tileLeft
-			|| ballBottom < tileTop
-		);
-}
-bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball ) const
-{
-	double ballRadius  = ball.w / 2.0;
-	double ballCenterX = ball.x + ballRadius;
-	double ballCenterY = ball.y + ballRadius;
-
-	double tileHalfWidth  = ( tile.w / 2.0 );
-	double tileHalfHeight = ( tile.h / 2.0 );
-	double tileCenterX = tile.x + tileHalfWidth;
-	double tileCenterY = tile.y + tileHalfHeight;
-
-	double distX = fabs( ballCenterX - tileCenterX );
-	double distY = fabs( ballCenterY - tileCenterY );
-
-	// If distance from center of sphere to center of rect is larger than 
-	// the sum of the raidus of the ball and the distance from the center of the rect to the edge
-	//
-	//std::cout << "\t\t" << distX << " >  " << tileHalfWidth + ballRadius << std::endl;
-	if ( distX > ( tileHalfWidth + ballRadius ) )
-	{
-		//std::cout << "\t\t\tFalse - no collision" << std::endl;
-		return false;
-	}
-
-	//std::cout << "\t\t" << distY << " >  " << tileHalfHeight + ballRadius << std::endl;
-	if ( distY > ( tileHalfHeight + ballRadius ) )
-	{
-		//std::cout << "\t\t\tFalse - no collision" << std::endl;
-		return false;
-	}
-
-	// if the distance from the center of the sphere to the center of the rect is smaller or equal to
-	// the the distance from the center of the rect to the edge
-	//std::cout << "\t\t" << distX << " <= " << tileHalfWidth << std::endl;
-	if ( distX <= tileHalfWidth )
-	{
-		//std::cout << "\t\t\tTrue - collision" << std::endl;
-		return true;
-	}
-
-	//std::cout << "\t\t" << distY << " <= " << tileHalfHeight << std::endl;
-	if ( distY <= tileHalfHeight )
-	{
-		////std::cout << "\t\t\tTrue - collision" << std::endl;
-		return true;
-	}
-
-	// Get the distance from center of the sphere, to the edge of the rect squared.
-	double cornerDistance = ( distX - tileHalfWidth ) * ( distX - tileHalfWidth );
-	cornerDistance += ( distY - tileHalfHeight ) * ( distY - tileHalfHeight );
-
-	//std::cout << "\t\tDist : " << cornerDistance <<  " <= " << ( ballRadius * ballRadius ) << std::endl;
-
-	return cornerDistance <= ( ballRadius * ballRadius );
-}
-void Ball::PrintPosition( const Rect &pos, const std::string &tileName ) const
-{
-	std::cout << "\t" << tileName << " position tl : " << pos.x              << " , " << pos.y             << std::endl;
-	std::cout << "\t" << tileName << " position br : " << ( pos.x + pos.w )  << " , " << ( pos.y + pos.h ) << std::endl << std::endl;
-}
-bool Ball::LineLineIntersectionTest( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2  ) const
-{
-	std::cout << "Rect 1 " << tile1 << std::endl;
-	std::cout << "Rect 1 " << tile2 << std::endl;
-
-	std::cout << "Ball 1 " << ball1 << std::endl;
-	std::cout << "Ball 1 " << ball2 << std::endl;
-
-	std::cout << "Line-line intersection...\n";
-	double dist = ( ( tile1.x - tile2.x ) * ( ball1.y - ball2.y ) ) - ( ( tile1.y - tile2.y ) * ( ball1.x - ball2.x ));
-
-	if ( dist == 0.0f )
-	{
-		std::cout << "Dist is 0\n";
-		return false;
-	}
-
-	double pre  = ( tile1.x * tile2.y ) - ( tile1.y * tile2.x );
-	double post = ( ball1.x * ball2.y ) - ( ball1.y * ball2.x );
-
-	double x = 
-		(
-		 ( pre  * ( ball1.x - ball2.x ) ) -
-		 ( post * ( tile1.x - tile2.x ) )
-		) / dist;
-
-	double y = 
-		(
-		 ( pre  * ( ball1.y - ball2.y ) ) -
-		 ( post * ( tile1.y - tile2.y ) )
-		) / dist;
-
-	if ( x < std::min( tile1.x, tile2.x ) ||  x > std::max( tile1.x, tile2.x ) )
-	{
-		std::cout << "if 1 failed\n";
-		return false;
-	}
-
-	if ( x < std::min( ball1.x, ball2.x ) ||  x > std::max( ball1.x, ball2.x ) )
-	{
-		std::cout << "if 2 failed\n";
-		return false;
-	}
-
-	if ( y < std::min( tile1.y, tile2.y ) ||  y > std::max( tile1.y, tile2.y ) )
-	{
-		std::cout << "if 3 failed\n";
-		return false;
-	}
-
-	if ( y < std::min( ball1.y, ball2.y ) ||  y > std::max( ball1.y, ball2.y ) )
-	{
-		std::cout << "if 4 failed\n";
-		return false;
-	}
-
-	std::cout << "Intersection at " << x << " , " << y << std::endl;
-
-	return true;
-}
-bool Ball::LineLineIntersectionTestV2( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2, double &ret ) const
-{
-	Vector2f tile( tile2 - tile1 );
-	Vector2f ball( ball2 - ball1 );
-
-	Vector2f ballTile( ball2 - tile2 );
-
-	double dot = Math::PerpDot( tile, ball );
-	double dotTile = Math::PerpDot( tile, ballTile );
-	double dotBall = Math::PerpDot( ball, ballTile );
-
-	if ( debugMode )
-	{
-		std::cout << "\tBall : " << ball << std::endl;
-		std::cout << "\tTile : " << tile << std::endl;
-	}
-
-	if ( CheckDotProducts( dot, dotTile, dotBall ) )
-	{
-		ret = 1.0f - ( dotTile / dot );
-		return true;
-	} else
-	{
-		return false;
-	}
-}
-bool Ball::CheckDotProducts( double dot, double dotTile, double dotBall ) const
-{
-	// Paralell check
-	if ( dot == 0.0f )
-	{
-		if ( debugMode )
-			std::cout << "\tDot product is 0, lines are paralell\n";
-		return false;
-	}
-
-	if ( dot < 0.0 )
-	{
-		if ( dotTile > 0.0 )
-		{
-			if ( debugMode )
-				std::cout << "\tLINE : " << __LINE__ << " " << "dot Tile is > 0 : " << dotTile << std::endl;
-			return false;
-		}
-		if ( dotBall > 0.0 )
-		{
-			if ( debugMode )
-				std::cout << "\tLINE : " << __LINE__ << " "  << "dot ball is > 0 : " << dotBall << std::endl;
-			return false;
-		}
-		if ( dotTile < dot )
-		{
-			if ( debugMode )
-				std::cout << "\tLINE : " << __LINE__ << " "  << "dot Tile is < dot : " << dotTile << " < " << dot << std::endl;
-			return false;
-		}
-		if ( dotBall < dot )
-		{
-			if ( debugMode )
-				std::cout << "\tLINE : " << __LINE__ << " "  << "dot Ball is < dot : " << dotBall << " < " << dot << std::endl;
-			return false;
-		}
-	} else
-	{
-		if ( dotTile < 0.0 )
-		{
-			if ( debugMode )
-				std::cout << "LINE : " << __LINE__ << " "  << "dot Tile is < 0 : " << dotTile << std::endl;
-			return false;
-		}
-		if ( dotBall < 0.0 )
-		{
-			if ( debugMode )
-				std::cout << "LINE : " << __LINE__ << " "  << "dot ball is < 0 : " << dotBall << std::endl;
-			return false;
-		}
-		if ( dotTile > dot )
-		{
-			if ( debugMode )
-				std::cout << "LINE : " << __LINE__ << " "  << "dot Tile is > dot : " << dotTile << " > " << dot << std::endl;
-			return false;
-		}
-		if ( dotBall > dot )
-		{
-			if ( debugMode )
-				std::cout << "LINE : " << __LINE__ << " "  << "dot Ball is > dot : " << dotBall << " > " << dot << std::endl;
-			return false;
-		}
-	}
-
-	return true;
-
-}
-int Ball::FindIntersectingSide( const Rect &tileRect )
-{
-	Vector2f ballDir = GetEsimtatedDir( );
-	Vector2f ballCurrentPos( rect.x, rect.y );
-
-	Vector2f ballEstOldPos( ballCurrentPos - ( ballDir * 5.0 ) );
-	Vector2f ballEstNewPos( ballCurrentPos + ( ballDir * 20.0 ) );
-
-	// Get ball positions
-	Vector2f ballEstOldPos_Bl = Transform( ballEstOldPos, Corner::BottomLeft, rect );
-	Vector2f ballEstNewPos_Bl = Transform( ballEstNewPos, Corner::BottomLeft, rect );
-
-	Vector2f ballEstOldPos_Br = Transform( ballEstOldPos, Corner::BottomRight, rect );
-	Vector2f ballEstNewPos_Br = Transform( ballEstNewPos, Corner::BottomRight, rect );
-
-	Vector2f ballEstOldPos_Tl = Transform( ballEstOldPos, Corner::TopLeft, rect  );
-	Vector2f ballEstNewPos_Tl = Transform( ballEstNewPos, Corner::TopLeft, rect  );
-
-	Vector2f ballEstOldPos_Tr = Transform( ballEstOldPos, Corner::TopRight, rect  );
-
-	Vector2f ballEstNewPos_Tr = Transform( ballEstNewPos, Corner::TopRight, rect  );
-
-	std::cout << "Ball est old pos    : " << ballEstOldPos << std::endl;
-	std::cout << "Ball est future pos : " << ballEstOldPos << std::endl;
-
-	// Top left corner
-	Vector2f rect_Tl( tileRect.x             , tileRect.y );
-	Vector2f rect_Tr = Transform( rect_Tl, Corner::TopRight   , tileRect );
-
-	Vector2f rect_Bl = Transform( rect_Tl, Corner::BottomLeft , tileRect );
-	Vector2f rect_Br = Transform( rect_Tl, Corner::BottomRight, tileRect );
-
-	double dist = 0.0f;
-	double distMax = 0.0f;
-	Side collisionSide = Side::Unknown;
-
-	// Top collisions - bottom side of ball
-	// ========================================================================================
-	// Check intersection top I
-	if ( LineLineIntersectionTestV2( rect_Tr, rect_Tl, ballEstNewPos_Bl, ballEstOldPos_Bl, dist ) )
-	{
-		std::cout << "Intersected top!\n";
-		distMax = dist;
-		collisionSide = Side::Top;
-	}
-
-	// Check intersection top II
-	if ( LineLineIntersectionTestV2( rect_Tr, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
-	{
-		std::cout << "Intersected top!\n";
-		distMax = dist;
-		collisionSide = Side::Top;
-	}
-
-	// Right collisions - left side of ball
-	// ========================================================================================
-	// Check intersection left I
-	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
-	{
-		std::cout << "Intersected right!\n";
-		if ( dist >= distMax )
-		{
-			distMax = dist;
-			collisionSide = Side::Right;
-		}
-	}
-	
-	// Check intersection left II
-	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Bl, ballEstOldPos_Bl, dist ) )
-	{
-		std::cout << "Intersected right!\n";
-		if ( dist >= distMax )
-		{
-			distMax = dist;
-			collisionSide = Side::Right;
-		}
-	}
-
-	// Bottom collisions - top side of ball
-	// ========================================================================================
-	// Check intersection left I
-	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
-	{
-		std::cout << "Intersected top!\n";
-		if ( dist >= distMax )
-		{
-			distMax = dist;
-			collisionSide = Side::Bottom;
-		}
-	}
-	
-	// Check intersection left II
-	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
-	{
-		std::cout << "Intersected top!\n";
-		if ( dist >= distMax )
-		{
-			distMax = dist;
-			collisionSide = Side::Bottom;
-		}
-	}
-
-	// Left collisions - right side of ball
-	// ========================================================================================
-	// Check intersection left I
-	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
-	{
-		std::cout << "Intersected top!\n";
-		if ( dist >= distMax )
-		{
-			distMax = dist;
-			collisionSide = Side::Left;
-		}
-	}
-	
-	// Check intersection left II
-	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
-	{
-		std::cout << "Intersected top!\n";
-		if ( dist >= distMax )
-		{
-			distMax = dist;
-			collisionSide = Side::Left;
-		}
-	}
-
-	switch ( collisionSide )
-	{
-		case Side::Top :
-			dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
-			break;
-		case Side::Right :
-			dirX = ( dirX < 0.0f ) ? dirX * -1.0f : dirX;
-			break;
-		case Side::Bottom :
-			dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
-			break;
-		case Side::Left :
-			dirX = ( dirX > 0.0f ) ? dirX * -1.0f : dirX;
-			break;
-		case Side::Unknown :
-			std::cout << "Uknown collosion\n";
-			std::cin.ignore();
-			break;
-	}
-
-	return 0;
-}
-Vector2f Ball::GetEsimtatedDir( )
-{
-	Vector2f ballCurrentPos( rect.x   , rect.y );
-	Vector2f ballPrevPos   ( oldRect.x, oldRect.y );
-
-	return Vector2f( ballCurrentPos - ballPrevPos  );
-}
-Vector2f Ball::Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const
-
-{
-	switch ( side )
-	{
-		case Corner::TopLeft:
-			return vec;
-		case Corner::TopRight:
-			return Vector2f( vec.x + size.w, vec.y );
-		case Corner::BottomLeft:
-			return Vector2f( vec.x, vec.y + size.h );
-		case Corner::BottomRight:
-			return Vector2f( vec.x + size.w, vec.y + size.h );
 	}
 }

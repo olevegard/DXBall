@@ -35,6 +35,8 @@ struct Ball : GamePiece
 		return ballOwner;
 	}
 
+	bool CheckTileSphereIntersection( const Rect &tile, const Rect &ball, double &retDistance ) const;
+
 	private:
 
 	enum class Corner
@@ -60,7 +62,6 @@ struct Ball : GamePiece
 
 	bool LineLineIntersectionTest( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2  ) const;
 
-	bool CheckTileSphereIntersection( const Rect &tile, const Rect &ball ) const;
 
 	void HandlePaddleHit( const Rect &paddleRect );
 	double CalculatePaddleHitPosition( const Rect &paddleRect ) const;
@@ -89,4 +90,9 @@ struct Ball : GamePiece
 	bool debugMode;
 
 	int ballOwner;
+
+	Ball( const Ball &other) = delete;
+
+	Ball& operator=( const Ball &other) = delete;
+
 };
