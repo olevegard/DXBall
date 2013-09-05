@@ -50,7 +50,7 @@ int GameManager::Init( const std::string &localPlayerName, const std::string &re
 
 void GameManager::Restart()
 {
-	localPaddle.reset( new Paddle() );
+	localPaddle = std::make_shared< Paddle > ();
 	localPaddle->textureType = GamePiece::Paddle;
 	localPaddle->rect.w = 120;
 	localPaddle->rect.h = 30;
@@ -78,7 +78,7 @@ void GameManager::AddBall()
 		return;
 	}
 
-	std::shared_ptr< Ball > ball( new Ball() );
+	std::shared_ptr< Ball > ball = std::make_shared< Ball >(  );
 	ball->textureType = GamePiece::Ball;
 	ball->SetOwner( 0 );
 
@@ -98,7 +98,7 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 }
 void GameManager::AddTile( short posX, short posY, TileTypes tileType )
 {
-	std::shared_ptr< Tile > tile( new Tile( tileType, tileCount++  ) );
+	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
 	tile->textureType = GamePiece::Tile;
 	tile->rect.x = posX;
 	tile->rect.y = posY;
@@ -126,7 +126,7 @@ void GameManager::UpdateBalls( double delta )
 	{
 		renderer.RemoveText();
 
-		for ( auto p = ballList.begin(); p != ballList.end() && (*p) != nullptr;  )
+		for ( auto p = ballList.begin(); p != ballList.end() ;  )
 		{
 			(*p)->Update( delta );
 			(*p)->BoundCheck( windowSize );
@@ -140,8 +140,10 @@ void GameManager::UpdateBalls( double delta )
 				(*p)->rect.y = 20;
 				RemoveBall( (*p) );
 				p = ballList.erase( p );
+			} else
+			{
+				++p;
 			}
-			++p;
 		}
 	} else 
 		renderer.RenderText( "Press enter to launch ball", Player::Local );
