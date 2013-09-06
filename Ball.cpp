@@ -11,7 +11,7 @@ Ball::Ball()
 	,	dirX( -0.83205f )
 	,	dirY(-0.5547f )
 	,	paddleHitInPrevFrame( false )
-	,	debugMode( true )
+	,	debugMode( false )
 {
 	rect.w = 20;
 	oldRect.w = 20;
@@ -30,7 +30,7 @@ void Ball::Reset()
 {
 	speed = 0.5f;
 
-	dirX = 0.83205f;
+	dirX = 0.2;
 	dirY =  -0.87f;
 
 	rect.x = 50;
@@ -150,15 +150,17 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 	if ( !CheckTileIntersection( tileRect, rect ) )
 		return false;
 
-	debugMode = false;
-	std::cout << "===============================================================================\n";
-	std::cout << "Colliding in current frame\n";
-
-	std::cout << "\tChecking sphere intersection....\n";
+	if ( debugMode )
+	{
+		std::cout << "===============================================================================\n";
+		std::cout << "Colliding in current frame\n";
+		std::cout << "\tChecking sphere intersection....\n";
+	}
 	double dist = 0.0f;
 	if ( !CheckTileSphereIntersection( tileRect, rect, dist  ) )
 	{
-		std::cout << "\tNo circle collision, skipping....\n";
+		if ( debugMode )
+			std::cout << "\tNo circle collision, skipping....\n";
 		return false;
 	}
 
@@ -170,19 +172,18 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 
 	if ( lastTileHit == tileID && CheckTileSphereIntersection( tileRect, oldRect, dist ) )
 	{
-		std::cout << "Collided in the prev frame too...\n";
+		if ( debugMode )
+			std::cout << "Collided in the prev frame too...\n";
 		return false;
 	}
 
 	if ( debugMode )
 	{
 		std::cout << "\tTile ID : " << tileID << std::endl;
+		PrintPosition( tileRect,"Tile");
+		PrintPosition( rect    , "Ball cur ");
+		PrintPosition( oldRect , "Ball old ");
 	}
-
-	PrintPosition( tileRect,"Tile");
-	PrintPosition( rect    , "Ball cur ");
-	PrintPosition( oldRect , "Ball old ");
-
 	lastTileHit = tileID;
 	FindIntersectingSide( tileRect );
 	//HandleTileIntersection( tileRect );
@@ -378,8 +379,12 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 
 	Vector2f ballEstNewPos_Tr = Transform( ballEstNewPos, Corner::TopRight, rect  );
 
-	std::cout << "\tBall est old pos    : " << ballEstOldPos << std::endl;
-	std::cout << "\tBall est future pos : " << ballEstOldPos << std::endl;
+
+	if ( debugMode )
+	{
+		std::cout << "\tBall est old pos    : " << ballEstOldPos << std::endl;
+		std::cout << "\tBall est future pos : " << ballEstOldPos << std::endl;
+	}
 
 	// Top left corner
 	Vector2f rect_Tl( tileRect.x             , tileRect.y );
@@ -397,8 +402,11 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	// ========================================================================================
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Tl, ballEstNewPos_Bl, ballEstOldPos_Bl, dist ) )
 	{
-		std::cout << "\n\tIntersected top\n";
-		std::cout << "\tdist : " << dist << std::endl;
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected top\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		distMax = dist;
 		collisionSide = Side::Top;
@@ -406,8 +414,12 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
 	{
-		std::cout << "\n\tIntersected top\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected top\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		distMax = dist;
 		collisionSide = Side::Top;
@@ -417,8 +429,12 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	// ========================================================================================
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
 	{
-		std::cout << "\n\tIntersected rigt 1\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected rigt 1\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		if ( dist >= distMax )
 		{
@@ -426,11 +442,15 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			collisionSide = Side::Right;
 		}
 	}
-	
+
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Bl, ballEstOldPos_Bl, dist ) )
 	{
-		std::cout << "\n\tIntersected right 2\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected right 2\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		if ( dist >= distMax )
 		{
@@ -438,25 +458,33 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			collisionSide = Side::Right;
 		}
 	}
-	
+
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Ml, ballEstOldPos_Ml, dist ) )
 	{
-		std::cout << "\n\tIntersected right 3\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected right 3\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		/*if ( dist >= distMax )
-		{
-			distMax = dist;
-			collisionSide = Side::Right;
-		}*/
+		  {
+		  distMax = dist;
+		  collisionSide = Side::Right;
+		  }*/
 	}
 
 	// Bottom collisions - top side of ball
 	// ========================================================================================
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
 	{
-		std::cout << "\n\tIntersected bottom\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected bottom\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		if ( dist >= distMax )
 		{
@@ -464,11 +492,15 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			collisionSide = Side::Bottom;
 		}
 	}
-	
+
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
 	{
-		std::cout << "\n\tIntersected bottom\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected bottom\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		if ( dist >= distMax )
 		{
@@ -481,8 +513,12 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	// ========================================================================================
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
 	{
-		std::cout << "\n\tIntersected left\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected left\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		if ( dist >= distMax )
 		{
@@ -490,12 +526,16 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			collisionSide = Side::Left;
 		}
 	}
-	
+
 	// Check intersection left II
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
 	{
-		std::cout << "\n\tIntersected left\n";
-		std::cout << "\tdist : " << dist << std::endl;
+
+		if ( debugMode )
+		{
+			std::cout << "\n\tIntersected left\n";
+			std::cout << "\tdist : " << dist << std::endl;
+		}
 
 		if ( dist >= distMax )
 		{
@@ -508,19 +548,15 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	{
 		case Side::Top :
 			dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
-			std::cout << "\tTop collision flipping y !\n";
 			break;
 		case Side::Right :
 			dirX = ( dirX < 0.0f ) ? dirX * -1.0f : dirX;
-			std::cout << "\tRight collision flipping x !\n";
 			break;
 		case Side::Bottom :
 			dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
-			std::cout << "\tBottom collision flipping y !\n";
 			break;
 		case Side::Left :
 			dirX = ( dirX > 0.0f ) ? dirX * -1.0f : dirX;
-			std::cout << "\tLeft collision flipping x !\n";
 			break;
 		case Side::Unknown :
 			std::cout << "Uknown collosion\n";
