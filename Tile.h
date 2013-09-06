@@ -37,6 +37,10 @@ struct Tile : GamePiece
 		return ( type != TileTypes::Unbreakable && hitsLeft == 0 );
 	}
 
+	bool CheckExplosion( const Rect &explodingTile );
+
+	void ExpandRect( Rect &explodingTile ) const;
+
 	void Hit();
 
 	unsigned int GetTileID() const
@@ -49,3 +53,11 @@ struct Tile : GamePiece
 		unsigned short hitsLeft;
 		unsigned int tileID;
 };
+inline bool operator==( const Tile &tile1, const Tile &tile2)
+{
+	return tile1.GetTileID() == tile2.GetTileID();
+}
+inline bool operator!=( const Tile &tile1, const Tile &tile2)
+{
+	return tile1.GetTileID() != tile2.GetTileID();
+}

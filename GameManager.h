@@ -29,17 +29,21 @@ class GameManager
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void AddTile( short posX, short posY, TileTypes tileType );
-		void RemoveTile( std::shared_ptr< Tile > pTile );
+		std::vector< std::shared_ptr< Tile > >::iterator RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void UpdateBalls( double delta );
 		void UpdateGUI( );
 
 		void Run();
 
-		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 
 		void SetFPSLimit( unsigned short limit );
 	private:
+		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
+
+		void CheckExplosions( std::shared_ptr< Tile > explodingTile );
+		void FindNearbyExplosiveTiles( std::shared_ptr< Tile > explodingTile );
+
 		void GenerateBoard();
 
 		Renderer renderer;

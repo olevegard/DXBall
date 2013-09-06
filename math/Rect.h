@@ -63,10 +63,13 @@ struct Rect
 		);
 	}
 
+	double FindDistanceBetweenTiles( const Rect &other ) const;
+
 	double x;
 	double y;
 
 	double w;
+
 	double h;
 };
 
