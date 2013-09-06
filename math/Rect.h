@@ -1,5 +1,8 @@
 #pragma once
 
+
+#include<ostream>
+
 struct Rect
 {
 	Rect()
@@ -39,12 +42,36 @@ struct Rect
 		return r;
 	}*/
 
-		double x;
-		double y;
+	bool CheckTileIntersection( const Rect &other ) const
+	{
+		double thisLeft =   x;
+		double thisTop =    y;
+		double thisRight =  x + w;
+		double thisBottom = y + h;
 
-		double w;
-		double h;
-	
-	
+		double otherLeft =   other.x;
+		double otherTop =    other.y;
+		double otherRight =  other.x + other.w;
+		double otherBottom = other.y + other.h;
+
+		// Intersection test
+		return !(
+				   otherTop    > thisBottom
+				|| otherLeft   > thisRight
+				|| otherRight  < thisLeft
+				|| otherBottom < thisTop
+		);
+	}
+
+	double x;
+	double y;
+
+	double w;
+	double h;
 };
 
+inline std::ostream& operator<<(std::ostream& stream, const Rect &rect)
+{
+	stream << "Pos ( " << rect.x << " , " << rect.y << " ) Size ( " << rect.w << " , " << rect.h << ")";
+	return stream;
+}

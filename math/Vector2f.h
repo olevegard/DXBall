@@ -1,5 +1,7 @@
 #pragma once
 
+#include<ostream>
+
 struct Vector2f{
 	Vector2f( double posX, double posY)
 		:   x(0)
@@ -113,14 +115,4 @@ namespace Math
 {
 	double Dot( const Vector2f &vec1, const Vector2f &vec2 );
 	double PerpDot( const Vector2f &vec1, const Vector2f &vec2 );
-
-	double Dot( const Vector2f &vec1, const Vector2f &vec2 )
-	{
-		return ( vec1.x * vec2.x ) + ( vec1.y * vec2.y );
-	}
-
-	double PerpDot( const Vector2f &vec1, const Vector2f &vec2 )
-	{
-		return ( vec1.y * vec2.x ) - ( vec1.x * vec2.y );
-	}
 };
