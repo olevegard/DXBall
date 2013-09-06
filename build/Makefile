@@ -13,7 +13,7 @@ CC            = clang
 CFLAGS        = -m64 -pipe -Wall
 # C++ flags
 CXX           = clang++
-CXXFLAGS      = -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-switch-enum -Werror
+CXXFLAGS      = -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-switch-enum -Werror -v
 LIBS          = -lSDL -lSDL_image -lSDL_ttf 
 LINK          = clang++
 AR            = ar cqs

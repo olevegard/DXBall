@@ -10,15 +10,17 @@ RunValgrind=false
 RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 "
 GDBString="gdb -ex run --args $RunString"
 ValgindString="valgrind \
---suppressions=valgrind/ignore \
---tool=memcheck \
---leak-check=full \
---leak-resolution=high \
---error-limit=no \
---track-origins=yes \
---undef-value-errors=yes \
---read-var-info=yes \
-$RunString"
+	--suppressions=valgrind/ignore \
+	--tool=memcheck \
+	--leak-check=full \
+	--leak-resolution=high \
+	--error-limit=no \
+	--track-origins=yes \
+	--undef-value-errors=yes \
+	--read-var-info=yes \
+	$RunString"
+
+clear
 
 # Try to build the project
 if make; then
