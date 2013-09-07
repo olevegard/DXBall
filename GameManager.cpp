@@ -119,8 +119,7 @@ std::vector< std::shared_ptr< Tile > >::iterator GameManager::RemoveTile( std::s
 
 	std::cout << "Removing tile at     : " << tile->rect << std::endl;
 
-	if ( p != tileList.end() )
-		p = tileList.erase( p );
+	//if ( p != tileList.end() ) p = tileList.erase( p );
 
 	renderer.RemoveTile( tile );
 
@@ -276,6 +275,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 	std::shared_ptr< Tile > tile;
 	std::shared_ptr< Tile > closestTile;
 	double closest = std::numeric_limits< double >::max();
+
 	double current = current;
 	auto itClosestTile = tileList.end();
 	for ( auto p = tileList.begin(); p != tileList.end() && (*p) != nullptr; ++p  )
@@ -307,61 +307,114 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 
 		if ( tile->IsDestroyed() )
 		{
-			if (tile->GetTileType() == TileTypes::Explosive )
-				CheckExplosions( tile );
 
 			localPlayerPoints += points[ tile->GetTileTypeAsIndex() ];
 			if ( tile->GetTileType() != TileTypes::Explosive )
+			{
+				tileList.erase( itClosestTile );
 				RemoveTile( tile );
+			}
 		}
+
+		if (tile->GetTileType() == TileTypes::Explosive )
+			CheckExplosions( tile );
 	}
 
 }
 void GameManager::CheckExplosions( std::shared_ptr< Tile > explodingTile )
 {
 	Rect explodeRect( explodingTile->rect );
-	//std::cout << "Before :" << explodeRect << std::endl;
-	explodeRect.x -= explodeRect.w;
-	explodeRect.y -= explodeRect.h;
-	explodeRect.w += explodeRect.w * 2.0;
-	explodeRect.h += explodeRect.h * 2.0;
-	//std::cout << "After :" << explodeRect << std::endl;
+	explodeRect.DoubleRectSizes();
 
-	std::vector < std::shared_ptr< Tile > > explodelist;
-	double distMin = std::numeric_limits< double >::max();
-	std::shared_ptr< Tile > closestExplosiveTile;
-	bool b = false;
+	// A simple lambda to only copy explosive and thoose that are different from explodinTile
+	auto copyExplosive = [ explodingTile ]( std::shared_ptr< Tile > tile )
+	{
+		return  ( tile->GetTileType() == TileTypes::Explosive ) &&
+			( tile != explodingTile );
+	};
+
+	// Back inserter because std::copy/std::copy_if expects an iterator that can write to the vector. The ones obtained by std::begin() can't.
+	std::vector< std::shared_ptr< Tile > > explodeVec;
+	std::copy_if(
+			tileList.begin(),
+			tileList.end(),
+			std::back_inserter( explodeVec ),
+			copyExplosive
+		);
+
+	std::vector< Rect > rectVec;
+	rectVec.push_back( explodeRect );
+
+	std::cout << "Exploding tile list\n";
+	for ( const auto p : explodeVec )
+	{
+		std::cout << "\t" << p->rect << std::endl;
+	}
+
+	std::cout << "==============================================================\n";
+
+	// Put the below loop in a separate function.
+	// Rect GenereateExplosionRect( std::vector< std::shared_ptr< Tile > > explodeTiles );
+	bool newExplosion = true;
+	while ( explodeVec.size() > 0 && newExplosion )
+	{
+		newExplosion = false;
+
+		for ( auto p = explodeVec.begin(); p != explodeVec.end() ;  )
+		{
+			//if ( explodeRect.CheckTileIntersection( (*p)->rect ) )
+			if ( Rect::CheckTileIntersection( rectVec, (*p)->rect) )
+			{
+				Rect r = (*p)->rect;
+				std::cout << "Adding rect : " << r << std::endl;
+				r.DoubleRectSizes();
+				//explodeRect.CombineRects( r );
+				rectVec.push_back( r );
+
+				//RemoveTile( *p );
+				p = explodeVec.erase( p );
+				newExplosion = true;
+			} else 
+			{
+				++p;
+			}
+		}
+	}
+
+	std::cout << "==============================================================\n";
+	std::cout << "Triggered explosive rects\n";
+	for ( const auto p : rectVec )
+	{
+		std::cout << "\t" << p << std::endl;
+	}
+	std::cout << "==============================================================\n";
+
 	for ( auto p = tileList.begin(); p != tileList.end() ;  )
 	{
-		if ( (*p) != explodingTile && explodeRect.CheckTileIntersection( (*p)->rect ) )
+		std::cout << "Tile : " << (*p)->rect << std::endl;
+		if ( Rect::CheckTileIntersection( rectVec, (*p)->rect) )
 		{
-			if ( (*p)->GetTileType() == TileTypes::Explosive && !b )
-			{ 
-				double dist = explodeRect.FindDistanceBetweenTiles( (*p)->rect );
-
-				if ( dist < distMin )
-				{
-					distMin = dist;
-					closestExplosiveTile = (*p);
-				}
-			}
-
-			p = RemoveTile( (*p) );
-
-		} else
+			RemoveTile( *p );
+			p = tileList.erase( p );
+		}
+		else
 		{
 			++p;
 		}
 	}
 
-	if ( closestExplosiveTile )
-	{
-		//std::cout << "Closest : " << closestExplosiveTile->rect << std::endl;
-		CheckExplosions( closestExplosiveTile );
-		//std::cin.ignore();
-	}
 
+	//RemoveTile( explodingTile );
+	//std::cin.ignore();
+	std::cout << "Unexploded tiles : " << explodeVec.size() << std::endl;
+	std::cout << "Final rect       : " << explodeRect << std::endl;
+
+	// Now we have a huge rect, all we need to do is remove any tile that intersects it
+	// BONUS : partial intersections doesn't affect unbreakable tiles, and only damages hard tiles somewehat based on how much of the hard tile is covered by the explosion rect. 
+	// DestroyTilesWithinExplosionRect( const Rect &explosionRect );
 }
+
+
 void GameManager::UpdateGUI( )
 {
 	if ( localPlayerActiveBalls == 0 )
@@ -386,10 +439,12 @@ void GameManager::SetFPSLimit( unsigned short limit )
 }
 void GameManager::GenerateBoard()
 {
+	/*
 	//================================ Explosive test
 	AddTile( 325, 425, TileTypes::Unbreakable );
 	AddTile( 390, 425, TileTypes::Hard );
 	AddTile( 455, 425, TileTypes::Explosive );
+
 	AddTile( 520, 425, TileTypes::Hard );
 	AddTile( 585, 425, TileTypes::Unbreakable );
 
@@ -426,6 +481,7 @@ void GameManager::GenerateBoard()
 	AddTile( 325, 275, TileTypes::Unbreakable );
 	AddTile( 390, 275, TileTypes::Hard );
 	AddTile( 455, 275, TileTypes::Explosive );
+
 	AddTile( 520, 275, TileTypes::Hard );
 	AddTile( 585, 275, TileTypes::Unbreakable );
 
@@ -455,14 +511,79 @@ void GameManager::GenerateBoard()
 	AddTile( 520,  50, TileTypes::Unbreakable );
 	AddTile( 520,  25, TileTypes::Unbreakable );
 	AddTile( 520,   0, TileTypes::Unbreakable );
+	*/
 
-	/*
 	//================================ Original board code
-	short x = 100;
-	short y = 100;
 
-	TileTypes outerLayer = TileTypes::Regular;
+	AddTile(   0, 100, TileTypes::Explosive); // 2
+	AddTile(  65, 100, TileTypes::Regular);
+	AddTile( 130, 100, TileTypes::Regular);
+	AddTile( 195, 100, TileTypes::Regular);
+	AddTile( 260, 100, TileTypes::Regular);
+/*
+	AddTile(  15, 125, TileTypes::Regular);
+	AddTile(  80, 125, TileTypes::Explosive); // 1
+	AddTile( 145, 125, TileTypes::Regular);
+	AddTile( 210, 125, TileTypes::Regular);
+	AddTile( 275, 125, TileTypes::Regular);
 
+	AddTile(  15, 150, TileTypes::Regular);
+	AddTile(  80, 150, TileTypes::Regular);
+	AddTile( 145, 150, TileTypes::Explosive); // 3
+	AddTile( 210, 150, TileTypes::Regular);
+	AddTile( 275, 150, TileTypes::Regular);
+
+	AddTile(  15, 175, TileTypes::Regular);
+	AddTile(  80, 175, TileTypes::Regular);
+	AddTile( 145, 175, TileTypes::Regular);
+	AddTile( 210, 175, TileTypes::Explosive); // 4
+	AddTile( 275, 175, TileTypes::Regular);
+
+	AddTile(  15, 200, TileTypes::Regular);
+	AddTile(  80, 200, TileTypes::Regular);
+	AddTile( 145, 200, TileTypes::Regular);
+	AddTile( 210, 200, TileTypes::Regular);
+	AddTile( 275, 200, TileTypes::Explosive); // 5
+
+	AddTile(  15, 200, TileTypes::Explosive);
+
+
+
+*/
+
+	//AddTile(  80, 150, TileTypes::Explosive);
+	//AddTile( 500, 125, TileTypes::Explosive);
+	/*
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer);
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer);
+	x += 65;
+	AddTile( x, y, TileTypes::Explosive );
+	x += 65;
+	AddTile( x, y, TileTypes::Explosive );
+	x += 65;
+	AddTile( x, y, TileTypes::Explosive );
+	x += 65;
+
+	x = 100;
+	y += 25;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
 	AddTile( x, y, outerLayer);
 	x += 65;
 	AddTile( x, y, outerLayer );
@@ -481,6 +602,27 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, outerLayer);
 	x += 65;
+
+	x = 100;
+	y += 25;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
 	AddTile( x, y, outerLayer );
 	x += 65;
 	AddTile( x, y, outerLayer );
@@ -492,25 +634,78 @@ void GameManager::GenerateBoard()
 	y += 25;
 	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive);
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive);
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+
+	x = 100;
+	y += 25;
+	AddTile( x, y, outerLayer);
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+
+	x = 100;
+	y += 25;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
+	x += 65;
+	AddTile( x, y, outerLayer );
 	x += 65;
 	AddTile( x, y, outerLayer);
 	x += 65;
@@ -519,132 +714,25 @@ void GameManager::GenerateBoard()
 	y += 25;
 	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
 	AddTile( x, y, outerLayer );
 	x += 65;
-
-	x = 100;
-	y += 25;
 	AddTile( x, y, outerLayer );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, outerLayer );
-
-	x = 100;
-	y += 25;
-	AddTile( x, y, outerLayer);
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
 	x += 65;
 	AddTile( x, y, outerLayer );
 	x += 65;
-
-	x = 100;
-	y += 25;
+	AddTile( x, y, outerLayer) ;
+	x += 65;
 	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, outerLayer);
-	x += 65;
-
-	x = 100;
-	y += 25;
 	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive) ;
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
-	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, outerLayer );
 	x += 65;
 	AddTile( x, y, outerLayer );
 	x += 65;

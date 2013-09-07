@@ -1,7 +1,8 @@
 #pragma once
 
 
-#include<ostream>
+#include <ostream>
+#include <vector>
 
 struct Rect
 {
@@ -42,28 +43,15 @@ struct Rect
 		return r;
 	}*/
 
-	bool CheckTileIntersection( const Rect &other ) const
-	{
-		double thisLeft =   x;
-		double thisTop =    y;
-		double thisRight =  x + w;
-		double thisBottom = y + h;
+	bool CheckTileIntersection( const Rect &other ) const;
+	static bool CheckTileIntersection( const std::vector< Rect > &rectVec, const Rect &explosion );
+	//static bool CheckTileIntersection( const std::vector< Rect > &rect );
 
-		double otherLeft =   other.x;
-		double otherTop =    other.y;
-		double otherRight =  other.x + other.w;
-		double otherBottom = other.y + other.h;
-
-		// Intersection test
-		return !(
-				   otherTop    > thisBottom
-				|| otherLeft   > thisRight
-				|| otherRight  < thisLeft
-				|| otherBottom < thisTop
-		);
-	}
+	void DoubleRectSizes( );
 
 	double FindDistanceBetweenTiles( const Rect &other ) const;
+
+	void CombineRects( const Rect &other );
 
 	double x;
 	double y;

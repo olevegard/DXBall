@@ -42,7 +42,8 @@ class GameManager
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 
 		void CheckExplosions( std::shared_ptr< Tile > explodingTile );
-		void FindNearbyExplosiveTiles( std::shared_ptr< Tile > explodingTile );
+		std::vector < std::shared_ptr< Tile > > FindNearbyExplosiveTiles( std::shared_ptr< Tile > explodingTile );
+		std::vector < std::shared_ptr< Tile > > FindAllExplosiveTiles( std::shared_ptr< Tile > explodingTile );
 
 		void GenerateBoard();
 
@@ -65,4 +66,5 @@ class GameManager
 
 		unsigned short fpsLimit;
 		double frameDuration;
+
 };
