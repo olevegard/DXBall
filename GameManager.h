@@ -3,6 +3,8 @@
 #include "Timer.h"
 #include "Renderer.h"
 
+#include <vector>
+
 // Forward declarations
 enum class TileTypes : int;
 struct GamePiece;
@@ -29,7 +31,7 @@ class GameManager
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void AddTile( short posX, short posY, TileTypes tileType );
-		std::vector< std::shared_ptr< Tile > >::iterator RemoveTile( std::shared_ptr< Tile > pTile );
+		void RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void UpdateBalls( double delta );
 		void UpdateGUI( );
@@ -41,9 +43,16 @@ class GameManager
 	private:
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 
-		void CheckExplosions( std::shared_ptr< Tile > explodingTile );
-		std::vector < std::shared_ptr< Tile > > FindNearbyExplosiveTiles( std::shared_ptr< Tile > explodingTile );
-		std::vector < std::shared_ptr< Tile > > FindAllExplosiveTiles( std::shared_ptr< Tile > explodingTile );
+		void HandleExplosions( const std::shared_ptr< Tile > &explodingTile );
+		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept
+		(
+			const std::shared_ptr< Tile > &explodingTile
+		) const;
+
+		std::vector< Rect > GenereateExplosionRects
+		(
+			const std::shared_ptr< Tile > &explodingTile
+		) const;
 
 		void GenerateBoard();
 

@@ -158,7 +158,6 @@ void Renderer::AddTile( const std::shared_ptr< Tile > &tile )
 }
 void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
-	std::cout << "Renderer romoving tile " << tile->rect << std::endl;
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
 SDL_Surface* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )

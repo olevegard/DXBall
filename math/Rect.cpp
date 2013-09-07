@@ -32,26 +32,12 @@ bool Rect::CheckTileIntersection( const Rect &other ) const
 
 bool Rect::CheckTileIntersection( const std::vector< Rect > &rectVec, const Rect &explosion )
 {
-	std::cout << "Checking all rects.." << "\n\tList size : " << rectVec.size() << "\n\tNon-exp rect   : " << explosion << std::endl;
-
 	auto p = [ explosion ]( const Rect &rect )
 	{
-		std::cout << "\tExplosion rect : " << rect << std::endl;
-		if  ( explosion.CheckTileIntersection( rect ) )
-		{
-			std::cout << "\tintersection!" << std::endl;
-			return true;
-		}
-
-		return false;
+		return ( explosion.CheckTileIntersection( rect ) );
 	};
 
-	if (  std::any_of( rectVec.begin(), rectVec.end(), p ) )
-	{
-		return true;
-	}
-
-	return false;
+	return (  std::any_of( rectVec.begin(), rectVec.end(), p ) );
 }
 double Rect::FindDistanceBetweenTiles( const Rect &other ) const
 {
