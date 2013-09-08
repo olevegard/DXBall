@@ -19,7 +19,7 @@
 	,	ballList()
 	,	windowSize()
 
-	,	points{ 20, 50, 100, 200 }
+	,	points{ 20, 50, 100, 500 }
 	,	tileCount( 0 )
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
@@ -290,35 +290,33 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 		if ( !ball->TileCheck( tile->rect, tile->GetTileID() ) )
 			return;
 
-		localPlayerPoints += 10;
-
 		tile->Hit();
-
-		if ( tile->IsDestroyed() )
+		
+		bool isDestroyed = tile->IsDestroyed();
+		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed );
+		if ( isDestroyed )
 		{
 
-			localPlayerPoints += points[ tile->GetTileTypeAsIndex() ];
-			if ( tile->GetTileType() != TileTypes::Explosive )
+			if (tile->GetTileType() == TileTypes::Explosive )
+				HandleExplosions( tile );
+			else
 			{
 				tileList.erase( itClosestTile );
 				RemoveTile( tile );
 			}
 		}
-
-		if (tile->GetTileType() == TileTypes::Explosive )
-			HandleExplosions( tile );
 	}
-
 }
 void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile )
 {
 	std::vector< Rect > rectVec = GenereateExplosionRects( explodingTile );
-
 	for ( auto p = tileList.begin(); p != tileList.end() ;  )
 	{
-		if ( Rect::CheckTileIntersection( rectVec, (*p)->rect) )
+		const std::shared_ptr< Tile > tile = (*p);
+		if ( Rect::CheckTileIntersection( rectVec, tile->rect) )
 		{
-			RemoveTile( *p );
+			IncrementPoints( tile->GetTileTypeAsIndex(), true );
+			RemoveTile( tile );
 			p = tileList.erase( p );
 		}
 		else
@@ -424,7 +422,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Explosive );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
 	x += 65;
@@ -453,7 +451,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Regular );
+	AddTile( x, y, TileTypes::Explosive );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -483,8 +481,6 @@ void GameManager::GenerateBoard()
 	AddTile( x, y, TileTypes::Explosive );
 	x += 65;
 	AddTile( x, y, TileTypes::Explosive );
-
-
 	x += 65;
 	AddTile( x, y, TileTypes::Explosive );
 	x += 65;
@@ -848,3 +844,12 @@ void GameManager::GenerateBoard()
 	AddTile( x, y, TileTypes::Unbreakable );
 
 }
+
+void GameManager::IncrementPoints( size_t tileType, bool isDestroyed )
+{
+	localPlayerPoints += 10;
+
+	if ( isDestroyed )
+		localPlayerPoints += points[ tileType ];
+}
+

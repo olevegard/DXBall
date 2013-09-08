@@ -41,20 +41,15 @@ class GameManager
 
 		void SetFPSLimit( unsigned short limit );
 	private:
+
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 
 		void HandleExplosions( const std::shared_ptr< Tile > &explodingTile );
-		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept
-		(
-			const std::shared_ptr< Tile > &explodingTile
-		) const;
-
-		std::vector< Rect > GenereateExplosionRects
-		(
-			const std::shared_ptr< Tile > &explodingTile
-		) const;
+		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
+		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
 
 		void GenerateBoard();
+		void IncrementPoints( size_t tileType, bool isDestroyed );
 
 		Renderer renderer;
 		Timer timer;
