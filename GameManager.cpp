@@ -30,29 +30,29 @@
 	windowSize.h = 1080 / 2;
 }
 
-int GameManager::Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS )
+bool GameManager::Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS )
 {
 	windowSize = size;
 
-	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
-		return 1;
-
 	if ( !renderer.Init( windowSize, startFS ) )
-		return 1;
+		return false;
 
+	std::cout << localPlayerName << " vs " << remotePlayerName << std::endl;
+
+	Restart();
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
-	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
+	//renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
 	renderer.RenderLives ( 0, Player::Remote );
 	renderer.RenderPoints( 1, Player::Remote );
 
-	Restart();
 
-	return 0;
+	return true;
 }
 
 void GameManager::Restart()
 {
+	std::cout << "Restart\n";
 	localPaddle = std::make_shared< Paddle > ();
 	localPaddle->textureType = GamePiece::Paddle;
 	localPaddle->rect.w = 120;
@@ -123,7 +123,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::UpdateBalls( double delta )
 {
-	renderer.RenderLives( ballList.size(), Player::Local  );
+	//renderer.RenderLives( ballList.size(), Player::Local  );
 
 	if ( ballList.size() > 0 )
 	{
@@ -148,8 +148,9 @@ void GameManager::UpdateBalls( double delta )
 				++p;
 			}
 		}
-	} else 
+	}  else
 		renderer.RenderText( "Press enter to launch ball", Player::Local );
+
 }
 
 void GameManager::Run()
@@ -157,6 +158,7 @@ void GameManager::Run()
 	bool quit = false;
 	SDL_Event event;
 
+	std::cout << "local paddle " << localPaddle << std::endl;
 	double tileWidth = localPaddle->rect.w;
 	double halfTileWidth = tileWidth / 2;
 
@@ -169,7 +171,7 @@ void GameManager::Run()
 		bool delay4 = false;
 
 		ticks = SDL_GetTicks();
-
+		
 		while ( SDL_PollEvent( &event ) )
 		{
 			if ( event.type == SDL_QUIT )
@@ -235,6 +237,7 @@ void GameManager::Run()
 
 		}
 		double delta = timer.GetDelta( );
+		//std::cout << "Delta : " << delta << std::endl;
 		UpdateBalls( delta );
 		UpdateGUI();
 
@@ -390,7 +393,7 @@ void GameManager::UpdateGUI( )
 		if ( localPlayerLives == 0 )
 			renderer.RenderText( "Game Over", Player::Local  );
 		else
-			renderer.RenderText( "Press Enter to launch ball", Player::Local  );
+			renderer.RenderText( "Press enter to launch ball", Player::Local  );
 	}
 
 	renderer.RenderPoints( localPlayerPoints, Player::Local );
@@ -422,7 +425,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Hard );//Middle
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
 	x += 65;

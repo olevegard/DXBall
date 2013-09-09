@@ -2,7 +2,7 @@
 #include <cmath>
 #include <iostream>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "math/Vector2f.h"
 

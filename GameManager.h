@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <SDL2/SDL.h>
+
 // Forward declarations
 enum class TileTypes : int;
 struct GamePiece;
@@ -21,7 +23,7 @@ class GameManager
 		{
 
 		}
-		int Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
+		bool Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
 
 		void SetSize( const SDL_Rect &size );
 
@@ -55,6 +57,7 @@ class GameManager
 		Timer timer;
 
 		std::shared_ptr < Paddle > localPaddle;
+
 
 		unsigned int localPlayerPoints;
 		unsigned int localPlayerLives;

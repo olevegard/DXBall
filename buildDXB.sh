@@ -1,11 +1,31 @@
 #!/bin/bash
 
-# Let qmake create a makefile
-qmake -o Makefile build/DXBall.pro
 
 RunGame=false
 RunGDB=false
 RunValgrind=false
+ClearCompileOutput=false
+ForceFullCompile=false
+
+CompileString="clang++ \
+	main.cpp \
+	Timer.cpp \
+	GamePiece.cpp \
+	Tile.cpp \
+	Ball.cpp \
+	Paddle.cpp \
+	Renderer.cpp \
+	GameManager.cpp \
+	math/Vector2f.cpp \
+	math/Rect.cpp  \
+
+	-lSDL2 \
+	-lSDL2_ttf \
+	-std=c++11 \
+
+	-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded \
+	-Wno-switch-enum -Wno-float-equal -Werror \
+	-o DXBall"
 
 RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 "
 GDBString="gdb -ex run --args $RunString"
@@ -20,17 +40,18 @@ ValgindString="valgrind \
 	--read-var-info=yes \
 	$RunString"
 
+# Let qmake create a makefile
+qmake -o Makefile build/DXBall.pro
+
 clear
+
+echo "Building..."
 
 # Try to build the project
 if make; then
 
-	# Build succesfull, no need to see make output
-	clear
-	echo "Compilation succesfull"
-
 	# Check arguments
-	while getopts ":rvg" opt; do
+	while getopts ":rvgcf" opt; do
 		case $opt in
 			r)
 				RunGame=true
@@ -47,12 +68,30 @@ if make; then
 				RunGDB=true
 				RunValgrind=false
 				;;
+			c)
+				ClearCompileOutput=true
+				;;
+			f)
+				ForceFullCompile=true
+				;;
 			\?)
 				echo "Invalid option: -$OPTARG" >&2
 				;;
 		esac
 
 	done
+
+	echo "Build succesfull"
+
+	if $ForceFullCompile ; then
+		echo "========================================================================"
+		echo $CompileString
+		$CompileString
+	fi
+
+	if $ClearCompileOutput ; then
+		clear
+	fi
 
 	if $RunGame ; then
 		echo -e "\tNormal mode"

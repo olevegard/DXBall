@@ -4,6 +4,7 @@
 #include <ostream>
 #include <vector>
 
+struct SDL_Rect;
 struct Rect
 {
 	Rect()
@@ -42,6 +43,7 @@ struct Rect
 		r.h = static_cast< unsigned short > ( this->h );
 		return r;
 	}*/
+	SDL_Rect ToSDLRect(  ) const;
 
 	bool CheckTileIntersection( const Rect &other ) const;
 	static bool CheckTileIntersection( const std::vector< Rect > &rectVec, const Rect &explosion );

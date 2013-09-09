@@ -1,4 +1,5 @@
 #include "Paddle.h"
+#include <iostream>
 
 Paddle::Paddle()
 {
@@ -9,5 +10,4 @@ Paddle::Paddle()
 
 Paddle::~Paddle()
 {
-
 }

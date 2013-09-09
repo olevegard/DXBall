@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iostream>
 
+#include <SDL2/SDL.h>
 
 bool Rect::CheckTileIntersection( const Rect &other ) const
 {
@@ -121,4 +122,13 @@ void Rect::DoubleRectSizes( )
 		y = newY;
 	}
 
+}
+SDL_Rect Rect::ToSDLRect(  ) const
+{
+	SDL_Rect ret;
+	ret.x = static_cast< int > ( x );
+	ret.y = static_cast< int > ( y );
+	ret.w = static_cast< int > ( w );
+	ret.h = static_cast< int > ( h );
+	return ret;
 }

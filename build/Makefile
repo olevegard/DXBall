@@ -10,7 +10,7 @@
 
 # C flags
 CC            = clang
-CFLAGS        = -m64 -pipe -Wall
+CFLAGS        = -m64 -pipe
 # C++ flags
 CXX           = clang++
 CXXFLAGS      = -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded -Wno-switch-enum -Werror -v

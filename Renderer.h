@@ -1,12 +1,14 @@
 #pragma once
 
-#include <SDL/SDL_ttf.h>
 
 #include <vector>
 #include <memory>
 #include <map>
 
 #include "GamePiece.h"
+#include <SDL2/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 // Forward declarations
 struct Ball;
@@ -26,70 +28,71 @@ public:
 	Renderer();
 	~Renderer();
 
-	bool Init( const SDL_Rect &r, bool startFS);
-	bool Render( );
 
-	void AddBall( const std::shared_ptr< Ball > &ball );
-	void RemoveBall( const std::shared_ptr< Ball >  &ball );
+	bool Init( const SDL_Rect &r, bool startFS);
+
+	void ToggleFullscreen();
+	bool SetFullscreen( bool fullscreenOn );
 
 	void AddTile( const std::shared_ptr< Tile > &tile );
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
 
+	void AddBall( const std::shared_ptr< Ball > &ball );
+	void RemoveBall( const std::shared_ptr< Ball >  &ball );
+
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
 
-	void RenderText( const std::string &textToRender, const Player &player );
-	void RenderLives( unsigned long lifeCount, const Player &player  );
-	void RenderPoints( unsigned int pointCount, const Player &player  );
-	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
+	void Render( );
 
+	void RenderText( const std::string &textToRender, const Player &player );
 	void RemoveText();
 
-	void ToggleFullscreen();
-	bool SetVideoMode( bool fullscreenOn );
+	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
+	void RenderLives( unsigned long lifeCount, const Player &player  );
+	void RenderPoints( unsigned long pointCount, const Player &player  );
 private:
-
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
 
-	bool ApplyVideoMode();
+	void Setup();
+	bool CreateRenderer();
+
+	bool CreateWindow();
 	void SetFlags_VideoMode();
 
-	SDL_Surface* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
-	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
+	void RenderForeground();
+	void RenderText();
 
-	void SetColorKey( SDL_Surface* source             , unsigned char r, unsigned char g, unsigned char b );
-	void SetColorKey( GamePiece::TextureType textureID, unsigned char r, unsigned char g, unsigned char b );
+	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;
+	void FillSurface( SDL_Surface* source, const SDL_Color &color ) const;
 
-	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b );
-	void FillSurface( SDL_Surface* source, const SDL_Color &color );
-
-	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Surface* > &list );
-
-	SDL_Surface* RenderTextSurface_Solid(  TTF_Font* font, const std::string &text, const SDL_Color &color );
-
-	SDL_Surface* InitSurface( const Rect &rect ) const;
-	SDL_Surface* InitSurface( unsigned int flags, int width, int height ) const;
-	SDL_Surface* InitSurface(GamePiece::TextureType textureType, unsigned int flags, int width, int height );
-
-	void SetArrayData( GamePiece::TextureType textureType, SDL_Surface* surface );
+	SDL_Texture* InitSurface( const Rect &rect     , unsigned char r, unsigned char g, unsigned char b ) const;
+	SDL_Texture* InitSurface( int width, int height, unsigned char r, unsigned char g, unsigned char b ) const;
 
 	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
 
-	void ApplySurface( short x, short y, SDL_Surface* source, SDL_Surface* destination ) const;
-	void ApplySurface( const Rect &r, SDL_Surface* source, SDL_Surface* destination ) const;
+	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list );
 
 	bool LoadImages();
-	bool LoadFontAndText();
 
-	void BlitBackground() const;
-	void BlitForeground();
-	void BlitText();
+	void PrintSDL_TTFVersion();
+
+	SDL_Texture* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
+	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
+
+	void SetArrayData( GamePiece::TextureType textureType, SDL_Texture* surface );
+
+	bool LoadFontAndText();
+	SDL_Texture* RenderTextTexture_Solid(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
 
 	void CleanUp();
 	void CleanUpSurfaces();
 	void CleanUpLists();
 	void CleanUpTTF();
 	void QuitSDL();
+
+	SDL_Window* window;
+	SDL_Renderer* renderer;
 
 	unsigned int rmask, gmask, bmask, amask;
 
@@ -98,39 +101,47 @@ private:
 	unsigned int screenFlags;
 	bool fullscreen;
 
-	std::map< int, SDL_Surface* > textures;
+	SDL_Color tileColors[4];
+	std::vector< SDL_Texture* > tileTextures;
 
-	SDL_Surface *backgroundArea;
-	SDL_Surface *backgroundImage;
-	SDL_Surface *screen;
+	SDL_Color hardTileColors[5];
+	std::vector< SDL_Texture* > hardTileTextures;
 
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;
-
 	std::shared_ptr< Paddle >  localPaddle;
 
+	std::map< int, SDL_Texture* > textures;
 
 	// Text
+	// =============================================
 	TTF_Font* font;
 	TTF_Font* bigFont;
 
 	SDL_Color textColor;
 
-	// Local player surfaces
-	SDL_Surface* localPlayerText;
-	SDL_Surface* localPlayerLives;
-	SDL_Surface* localPlayerPoints;
-	SDL_Surface* localPlayerCaption;
+	// main info text...
+	SDL_Texture* localPlayerTextTexture;
+	SDL_Rect     localPlayerTextRect;
+	std::string  localPlayerTextValue;
 
-	SDL_Surface* remotePlayerText;
-	SDL_Surface* remotePlayerLives;
-	SDL_Surface* remotePlayerPoints;
-	SDL_Surface* remotePlayerCaption;
+	// Player name
+	SDL_Texture* localPlayerCaptionTexture;
+	SDL_Rect     localPlayerCaptionRect;
+	std::string  localPlayerCaptionValue;
 
-	SDL_Color tileColors[4];
-	std::vector< SDL_Surface* > tileSurfaces;
+	// lives
+	SDL_Texture*   localPlayerLivesTexture;
+	SDL_Rect       localPlayerLivesRect;
+	unsigned long  localPlayerLivesValue;
 
-	SDL_Color hardTileColors[5];
-	std::vector< SDL_Surface* > hardTileSurfaces;
+	// points
+	SDL_Texture*   localPlayerPointsTexture;
+	SDL_Rect       localPlayerPointsRect;
+	unsigned long  localPlayerPointsValue;
 
+	//SDL_Surface* remotePlayerLives;
+	//SDL_Surface* remotePlayerText;
+	//SDL_Surface* remotePlayerPoints;
+	//SDL_Surface* remotePlayerCaption;
 };

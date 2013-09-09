@@ -26,6 +26,7 @@ int main( int argc, char* args[] )
 	resolution.y = 0;
 	resolution.w = 1920 / 2;
 	resolution.h = 1080 / 2;
+
 	bool startFS = false;
 
 	std::cout << "Args : \n";
@@ -61,7 +62,9 @@ int main( int argc, char* args[] )
 	std::cout << "Fullscreen       : " << std::boolalpha << startFS << std::endl;
 	std::cout << "============================\n";
 
-	gameMan.Init( localPlayerName, remotePlayerName, resolution, startFS  );
+	if ( !gameMan.Init( localPlayerName, remotePlayerName , resolution, startFS  ) )
+		return 1;
+
 	gameMan.SetFPSLimit( fpsLimit );
 
 	gameMan.Run();

@@ -46,7 +46,7 @@ struct Vector2f{
 
 inline bool operator==( const Vector2f &vec1, const Vector2f &vec2)
 {
-	return ( vec1.x == vec2.x && vec1.y == vec2.y );
+	return ( ( vec1.x == vec2.x ) && vec1.y == vec2.y );
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const Vector2f &pos)
