@@ -152,7 +152,7 @@ void Renderer::Setup()
 	SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
 	// Hide cursor
-	//SDL_ShowCursor( SDL_DISABLE );
+	SDL_ShowCursor( SDL_DISABLE );
 }
 bool Renderer::CreateWindow()
 {
