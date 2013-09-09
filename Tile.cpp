@@ -18,6 +18,9 @@ Tile::Tile(TileTypes type_, unsigned int tileID_ )
 	} else if ( type == TileTypes::Hard )
 	{
 		hitsLeft = 5;
+	} else if ( type == TileTypes::Unbreakable )
+	{
+		hitsLeft = 821;
 	}
 }
 Tile::~Tile()
@@ -29,9 +32,6 @@ void Tile::Hit()
 {
 	// Decrease hits left
 	--hitsLeft;
-
-	if ( type == TileTypes::Hard )
-		std::cout << "Hits left : " << hitsLeft << std::endl;
 }
 bool Tile::CheckExplosion( const Rect &explodingTile )
 {

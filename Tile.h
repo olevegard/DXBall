@@ -34,7 +34,7 @@ struct Tile : GamePiece
 
 	bool IsDestroyed()
 	{
-		return ( type != TileTypes::Unbreakable && hitsLeft == 0 );
+		return hitsLeft == 0;
 	}
 
 	bool CheckExplosion( const Rect &explodingTile );
