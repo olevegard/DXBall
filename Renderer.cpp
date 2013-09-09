@@ -94,6 +94,8 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 		return false;
 	}
 
+	Setup();
+
 	LoadImages();
 
 	
