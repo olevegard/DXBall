@@ -50,6 +50,8 @@ public:
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
 	void RenderLives( unsigned long lifeCount, const Player &player  );
 	void RenderPoints( unsigned long pointCount, const Player &player  );
+
+	void ForceMouseFocus();
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );

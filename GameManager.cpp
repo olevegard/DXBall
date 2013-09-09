@@ -108,8 +108,6 @@ void GameManager::AddTile( short posX, short posY, TileTypes tileType )
 
 	tileList.push_back( tile );
 
-	std::cout << "Adding Tile at : " << posX << " , " << posY << std::endl;
-
 	renderer.AddTile( tile );
 }
 
@@ -224,6 +222,13 @@ void GameManager::Run()
 					default:
 						break;
 				}
+			}
+
+			if ( event.type == SDL_WINDOWEVENT)
+			{
+				if ( SDL_WINDOWEVENT_LEAVE )
+					renderer.ForceMouseFocus();
+					//std::cout << "Lost mouse focus" << std::endl;
 			}
 
 			if ( event.motion.x != 0 && event.motion.y != 0 )

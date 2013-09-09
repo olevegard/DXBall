@@ -152,7 +152,7 @@ void Renderer::Setup()
 	SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
 	// Hide cursor
-	SDL_ShowCursor( SDL_DISABLE );
+	//SDL_ShowCursor( SDL_DISABLE );
 }
 bool Renderer::CreateWindow()
 {
@@ -526,4 +526,8 @@ void Renderer::PrintSDL_TTFVersion()
 			link_version->major,
 			link_version->minor,
 			link_version->patch);
+}
+void Renderer::ForceMouseFocus()
+{
+	SDL_SetWindowGrab( window, SDL_TRUE );
 }
