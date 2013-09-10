@@ -41,6 +41,7 @@ public:
 	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
+	void SetRemotePaddle( std::shared_ptr< Paddle >  &paddle );
 
 	void Render( );
 
@@ -112,8 +113,10 @@ private:
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;
 	std::shared_ptr< Paddle >  localPaddle;
+	std::shared_ptr< Paddle >  remotePaddle;
 
 	std::map< int, SDL_Texture* > textures;
+	SDL_Texture* remotePlayerBall;
 
 	// Text
 	// =============================================

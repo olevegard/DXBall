@@ -60,6 +60,14 @@ void GameManager::Restart()
 	localPaddle->rect.y = windowSize.h  - localPaddle->rect.h;
 	renderer.SetLocalPaddle( localPaddle );
 
+	remotePaddle = std::make_shared< Paddle > ();
+	remotePaddle->textureType = GamePiece::Paddle;
+	remotePaddle->rect.w = 120;
+	remotePaddle->rect.h = 30;
+	remotePaddle->rect.x = 400;
+	remotePaddle->rect.y = remotePaddle->rect.h;
+	renderer.SetRemotePaddle( remotePaddle );
+
 	tileCount = 0;
 	GenerateBoard();
 
@@ -72,16 +80,16 @@ void GameManager::Restart()
 	renderer.RenderText( "Press enter to start", Player::Local );
 }
 
-void GameManager::AddBall()
+void GameManager::AddBall( int owner )
 {
-	if ( localPlayerActiveBalls > 0 || localPlayerLives == 0 )
+	if (  localPlayerLives == 0 )
 	{
 		return;
 	}
 
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >(  );
 	ball->textureType = GamePiece::Ball;
-	ball->SetOwner( 0 );
+	ball->SetOwner( owner );
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
@@ -122,7 +130,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 void GameManager::UpdateBalls( double delta )
 {
 	//renderer.RenderLives( ballList.size(), Player::Local  );
-
 	if ( ballList.size() > 0 )
 	{
 		renderer.RemoveText();
@@ -131,7 +138,12 @@ void GameManager::UpdateBalls( double delta )
 		{
 			(*p)->Update( delta );
 			(*p)->BoundCheck( windowSize );
-			(*p)->PaddleCheck( localPaddle->rect );
+
+			if ( ( *p)->GetOwner() == 0 )
+				(*p)->PaddleCheck( localPaddle->rect );
+
+			else if ( (*p)->GetOwner() == 1 )
+				(*p)->PaddleCheck( remotePaddle->rect );
 
 			CheckBallTileIntersection( *p );
 
@@ -184,7 +196,8 @@ void GameManager::Run()
 						break;
 					case SDLK_RETURN:
 					case SDLK_b:
-						AddBall();
+						AddBall( 1 );
+						//AddBall( 0 );
 						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:
@@ -228,7 +241,6 @@ void GameManager::Run()
 			{
 				if ( SDL_WINDOWEVENT_LEAVE )
 					renderer.ForceMouseFocus();
-					//std::cout << "Lost mouse focus" << std::endl;
 			}
 
 			if ( event.motion.x != 0 && event.motion.y != 0 )
@@ -241,6 +253,10 @@ void GameManager::Run()
 				localPaddle->rect.x = 0;
 
 		}
+
+		if ( ballList.size() > 0 )
+			remotePaddle->rect.x = ballList[0]->rect.x - ( localPaddle->rect.w / 3.5);
+
 		double delta = timer.GetDelta( );
 		//std::cout << "Delta : " << delta << std::endl;
 		UpdateBalls( delta );
@@ -364,6 +380,8 @@ std::vector< Rect > GameManager::GenereateExplosionRects( const std::shared_ptr<
 			} else 
 			{
 				++p;
+
+
 			}
 		}
 	}
@@ -416,7 +434,7 @@ void GameManager::SetFPSLimit( unsigned short limit )
 void GameManager::GenerateBoard()
 {
 	short x = 60;
-	short y = 60;
+	short y = 200;
 
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;

@@ -28,13 +28,13 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	speed = 0.5f;
+	speed = 0.2f;
 
 	dirX = 0.2;
 	dirY =  -0.87f;
 
 	rect.x = 50;
-	rect.y = 50;
+	rect.y = 150;
 
 	paddleHitInPrevFrame = false;
 
@@ -59,10 +59,10 @@ void Ball::Update( double tick )
 
 bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 {
-
-	double left  = static_cast< double > ( boundsRect.x );
-	double right = static_cast< double > ( boundsRect.x ) + boundsRect.w;
-	double top   = static_cast< double > ( boundsRect.y );
+	double left   = static_cast< double > ( boundsRect.x );
+	double right  = static_cast< double > ( boundsRect.x ) + boundsRect.w;
+	double top    = static_cast< double > ( boundsRect.y );
+	double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
 
 	if ( rect.x < left )
 	{
@@ -78,11 +78,24 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 		return true;
 	}
 
-	if ( rect.y < top )
+	if ( ballOwner == 0 )
 	{
-		rect.y = top;
-		dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
-		return true;
+		if ( rect.y < top )
+		{
+			rect.y = top;
+			dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
+			return true;
+		}
+	}
+
+	if ( ballOwner == 1 )
+	{
+		if ( ( rect.y + rect.h ) > bottom )
+		{
+			rect.y = bottom - rect.h;
+			dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
+			return true;
+		}
 	}
 
 	return false;
@@ -90,13 +103,27 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 
 bool Ball::DeathCheck( const SDL_Rect &boundsRect )
 {
-	double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
 
-	if (  ( rect.y + rect.h ) > bottom  )
+	if ( ballOwner == 0 )
 	{
-		Reset();
-		dirY *= -1.0f;
-		return true;
+		double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
+
+		if (  ( rect.y + rect.h ) > bottom  )
+		{
+			Reset();
+			dirY *= -1.0f;
+			return true;
+		}
+	} else  if ( ballOwner == 1 )
+	{
+		double top  = static_cast< double > ( boundsRect.y );
+
+		if ( rect.y  < top  )
+		{
+			Reset();
+			dirY *= -1.0f;
+			return true;
+		}
 	}
 
 	return false;
@@ -110,6 +137,8 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 		{
 			paddleHitInPrevFrame = true;
 			HandlePaddleHit( paddleRect );
+			if ( ballOwner == 1 )
+				dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
 			return true;
 		} else
 		{
@@ -560,7 +589,7 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			break;
 		case Side::Unknown :
 			std::cout << "Uknown collosion\n";
-			std::cin.ignore();
+			//std::cin.ignore();
 			break;
 	}
 

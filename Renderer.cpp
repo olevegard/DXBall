@@ -115,6 +115,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 bool Renderer::LoadImages()
 {
 	textures[ GamePiece::Ball ] = InitSurface( background.w, background.h, 0, 0, 0);//SDL_CreateTextureFromSurface( renderer, surf );
+	remotePlayerBall = InitSurface( background.w, background.h, 0, 255, 0);//SDL_CreateTextureFromSurface( renderer, surf );
 
 	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileTextures.size() ; ++i )
@@ -289,6 +290,12 @@ void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 	SDL_Texture* surf = InitSurface( localPaddle->rect, 120, 0, 120 );
 	textures[ GamePiece::Paddle ] = surf;
 }
+void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
+{
+	remotePaddle = paddle;
+}
+
+
 // ============================================================================================
 // ================================= Renderering ==============================================
 // ============================================================================================
@@ -322,9 +329,11 @@ void Renderer::RenderForeground()
 	}
 
 	// Draw paddles
-	SDL_Rect r = localPaddle->rect.ToSDLRect();
-	SDL_RenderCopy( renderer, textures[ GamePiece::Ball ], nullptr, &r );
+	SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
+	SDL_RenderCopy( renderer, textures[ GamePiece::Ball ], nullptr, &localPaddleRect  );
 
+	SDL_Rect remotePaddleRect = remotePaddle->rect.ToSDLRect();
+	SDL_RenderCopy( renderer, textures[ GamePiece::Ball ], nullptr, &remotePaddleRect  );
 }
 void Renderer::RenderText()
 {

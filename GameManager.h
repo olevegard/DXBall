@@ -29,7 +29,7 @@ class GameManager
 
 		void Restart();
 
-		void AddBall();
+		void AddBall( int owner );
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void AddTile( short posX, short posY, TileTypes tileType );
@@ -57,6 +57,7 @@ class GameManager
 		Timer timer;
 
 		std::shared_ptr < Paddle > localPaddle;
+		std::shared_ptr < Paddle > remotePaddle;
 
 
 		unsigned int localPlayerPoints;

@@ -30,7 +30,7 @@ struct Ball : GamePiece
 		ballOwner = owner;
 	}
 
-	int SetOwner( )
+	int GetOwner( )
 	{
 		return ballOwner;
 	}
