@@ -23,11 +23,12 @@ CompileString="clang++ \
 	-lSDL2_ttf \
 	-std=c++11 \
 
+	O3 \
 	-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded \
 	-Wno-switch-enum -Wno-float-equal -Werror \
 	-o DXBall"
 
-RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 "
+RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 -resolution 1600x900"
 GDBString="gdb -ex run --args $RunString"
 ValgindString="valgrind \
 	--suppressions=valgrind/ignore \
@@ -39,6 +40,8 @@ ValgindString="valgrind \
 	--undef-value-errors=yes \
 	--read-var-info=yes \
 	$RunString"
+# Completely clean console window
+reset
 
 # Let qmake create a makefile
 qmake -o Makefile build/DXBall.pro
