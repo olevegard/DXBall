@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 	Renderer::Renderer()
 	:	window( nullptr )
@@ -39,7 +40,11 @@
 	,	tileList(  )
 	,	localPaddle( )
 
-	,	textures()
+	,	localPlayerBallTexture( nullptr )
+	,	remotePlayerBallTexture( nullptr )
+
+	,	localPlayerPaddle( )
+	,	remotePlayerPaddle( )
 
 	,	font()
 	,	bigFont()
@@ -60,6 +65,19 @@
 	,	localPlayerPointsTexture( )
 	,	localPlayerPointsRect( )
 	,	localPlayerPointsValue( 0 )
+
+	,	remotePlayerCaptionTexture( )
+	,	remotePlayerCaptionRect( )
+	,	remotePlayerCaptionValue( "" )
+
+	,	remotePlayerLivesTexture()
+	,	remotePlayerLivesRect()
+	,	remotePlayerLivesValue( 0 )
+
+	,	remotePlayerPointsTexture( )
+	,	remotePlayerPointsRect( )
+	,	remotePlayerPointsValue( 0 )
+
 {
 }
 
@@ -114,8 +132,8 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 }
 bool Renderer::LoadImages()
 {
-	textures[ GamePiece::Ball ] = InitSurface( background.w, background.h, 0, 0, 0);//SDL_CreateTextureFromSurface( renderer, surf );
-	remotePlayerBall = InitSurface( background.w, background.h, 0, 255, 0);//SDL_CreateTextureFromSurface( renderer, surf );
+	localPlayerBallTexture  = InitSurface( background.w, background.h,   0, 255, 0);
+	remotePlayerBallTexture = InitSurface( background.w, background.h, 255,   0, 0);
 
 	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileTextures.size() ; ++i )
@@ -146,7 +164,7 @@ bool Renderer::CreateRenderer()
 	SDL_RenderClear( renderer );
 	SDL_RenderPresent( renderer );
 
-	return true;
+		return true;
 }
 void Renderer::Setup()
 {
@@ -164,6 +182,33 @@ bool Renderer::CreateWindow()
 		std::cout << "Failed to apply video mode\n";
 		return false;
 	}
+
+	SDL_Surface* surface = SDL_CreateRGBSurface( 0, background.w, background.h, SCREEN_BPP, rmask, gmask, bmask, amask);
+	SDL_FillRect( surface, NULL, SDL_MapRGBA( surface->format, 0, 0, 0, 50 )  );
+	SDL_Color clr;
+	clr.r = 0;
+	clr.g = 0;
+	clr.b = 0;
+	clr.a = 200;
+
+	/*
+	window = SDL_CreateShapedWindow( "DX Ball", 0, 0, static_cast< unsigned int > (background.w ), static_cast< unsigned int > ( background.h ), screenFlags );
+	SDL_WindowShapeMode wsm;
+	wsm.mode = ShapeModeBinarizeAlpha;
+	wsm.parameters.binarizationCutoff = 55;
+	wsm.parameters.colorKey = clr;
+	int ret = SDL_SetWindowShape( window, surface, &wsm );
+
+	if ( ret == SDL_NONSHAPEABLE_WINDOW )
+		std::cout << "ERRROR : SDL_NONSHAPEABLE_WINDOW " << std::endl;
+	else if ( ret == SDL_INVALID_SHAPE_ARGUMENT )
+		std::cout << "ERRROR : SDL_INVALID_SHAPE_ARGUMENT " << std::endl;
+	else if ( ret == SDL_WINDOW_LACKS_SHAPE )
+		std::cout << "ERRROR : SDL_WINDOW_LACKS_SHAPE " << std::endl;
+	else 
+		std::cout << "Success!" << std::endl;
+*/
+
 
 	return true;
 }
@@ -215,7 +260,7 @@ SDL_Texture* Renderer::InitSurface( int width, int height, unsigned char r, unsi
 
 	return texture;
 }
-SDL_Texture* Renderer::LoadImage( const std::string &filename, GamePiece::TextureType textureType )
+SDL_Texture* Renderer::LoadImage( const std::string &filename )
 {
 	// Temporary stoare for the iamge that's loaded
 	SDL_Surface* loadedImage = nullptr;
@@ -228,7 +273,6 @@ SDL_Texture* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 	// If the image loaded
 	if ( loadedImage != nullptr )
 	{
-		SetArrayData( textureType, texture );
 
 	} else
 	{
@@ -240,10 +284,6 @@ SDL_Texture* Renderer::LoadImage( const std::string &filename, GamePiece::Textur
 
 	// Return the optimized image
 	return texture;
-}
-void Renderer::SetArrayData( GamePiece::TextureType textureType, SDL_Texture* texture )
-{
-	textures[ textureType ] = texture;
 }
 SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 {
@@ -287,12 +327,13 @@ void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	localPaddle = paddle;
 
-	SDL_Texture* surf = InitSurface( localPaddle->rect, 120, 0, 120 );
-	textures[ GamePiece::Paddle ] = surf;
+	localPlayerPaddle = InitSurface( localPaddle->rect, 0, 255, 0 );
 }
 void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	remotePaddle = paddle;
+
+	remotePlayerPaddle = InitSurface( localPaddle->rect, 255, 0, 0 );
 }
 
 
@@ -315,7 +356,10 @@ void Renderer::RenderForeground()
 	for ( std::shared_ptr< Ball > gp : ballList )
 	{
 		SDL_Rect r = gp->rect.ToSDLRect( );
-		SDL_RenderCopy( renderer, textures[ GamePiece::Ball ], nullptr, &r );
+		if ( gp->GetOwner() == Player::Local )
+			SDL_RenderCopy( renderer, localPlayerBallTexture, nullptr, &r );
+		else if ( gp->GetOwner() == Player::Remote )
+			SDL_RenderCopy( renderer, remotePlayerBallTexture, nullptr, &r );
 	}
 
 	// Draw tiles
@@ -329,11 +373,17 @@ void Renderer::RenderForeground()
 	}
 
 	// Draw paddles
-	SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
-	SDL_RenderCopy( renderer, textures[ GamePiece::Ball ], nullptr, &localPaddleRect  );
+	if ( localPaddle )
+	{
+		SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
+		SDL_RenderCopy( renderer, localPlayerPaddle, nullptr, &localPaddleRect  );
+	}
 
-	SDL_Rect remotePaddleRect = remotePaddle->rect.ToSDLRect();
-	SDL_RenderCopy( renderer, textures[ GamePiece::Ball ], nullptr, &remotePaddleRect  );
+	if ( remotePaddle )
+	{
+		SDL_Rect remotePaddleRect = remotePaddle->rect.ToSDLRect();
+		SDL_RenderCopy( renderer, remotePlayerPaddle, nullptr, &remotePaddleRect  );
+	}
 }
 void Renderer::RenderText()
 {
@@ -348,6 +398,17 @@ void Renderer::RenderText()
 
 	if ( localPlayerPointsTexture  )
 		SDL_RenderCopy( renderer, localPlayerPointsTexture, nullptr, &localPlayerPointsRect);
+
+	// Remote
+	if ( remotePlayerCaptionTexture )
+		SDL_RenderCopy( renderer, remotePlayerCaptionTexture , nullptr, &remotePlayerCaptionRect  );
+
+	if ( remotePlayerLivesTexture  )
+		SDL_RenderCopy( renderer, remotePlayerLivesTexture, nullptr, &remotePlayerLivesRect );
+
+	if ( remotePlayerPointsTexture  )
+		SDL_RenderCopy( renderer, remotePlayerPointsTexture, nullptr, &remotePlayerPointsRect);
+
 }
 // ==============================================================================================
 // ================================= Text handling ==============================================
@@ -401,6 +462,7 @@ SDL_Texture* Renderer::RenderTextTexture_Solid(  TTF_Font* textFont, const std::
 }
 void Renderer::RenderText( const std::string &textToRender, const Player &player  )
 {
+
 	if ( player == Player::Local )
 	{
 		if (  localPlayerTextValue != textToRender || localPlayerTextTexture == nullptr )
@@ -440,10 +502,30 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 			localPlayerPointsRect.x = localPlayerLivesRect.x;
 			localPlayerPointsRect.y = localPlayerLivesRect.y + localPlayerLivesRect.h ;
 		}
+	} else if ( player == Player::Remote )
+	{
+		if ( remotePlayerCaptionValue != textToRender ||   remotePlayerCaptionTexture == nullptr )
+		{
+			remotePlayerCaptionValue  = textToRender;
+
+			SDL_DestroyTexture( remotePlayerCaptionTexture );
+			remotePlayerCaptionTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), textColor, remotePlayerCaptionRect );
+
+			remotePlayerCaptionRect.x = background.w - remotePlayerCaptionRect.w;
+			remotePlayerCaptionRect.y = 0;
+
+			// Set remaning text rects based on caption rect
+			remotePlayerLivesRect.x = background.w - 180;
+			remotePlayerLivesRect.y = localPlayerLivesRect.y; //remotePlayerCaptionRect.h - 10;
+
+			remotePlayerPointsRect.x = remotePlayerLivesRect.x;
+			remotePlayerPointsRect.y = localPlayerPointsRect.y;// remotePlayerLivesRect.y + remotePlayerLivesRect.h  + 20;
+		}
 	}
 }
 void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 {
+
 	if ( player == Player::Local )
 	{
 		if ( localPlayerLivesValue != lifeCount ||   localPlayerLivesTexture == nullptr )
@@ -455,6 +537,18 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 
 			SDL_DestroyTexture( localPlayerLivesTexture );
 			localPlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, localPlayerLivesRect );
+		}
+	} else if ( player == Player::Remote )
+	{
+		if ( remotePlayerLivesValue != lifeCount ||   remotePlayerLivesTexture == nullptr )
+		{
+			remotePlayerLivesValue  = lifeCount;
+
+			std::stringstream ss;
+			ss << "Lives : " << lifeCount;
+			std::cout << "Rendering lives " << lifeCount << std::endl;
+			SDL_DestroyTexture( remotePlayerLivesTexture );
+			remotePlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, remotePlayerLivesRect );
 		}
 	}
 }
@@ -471,6 +565,18 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
 
 			SDL_DestroyTexture( localPlayerPointsTexture  );
 			localPlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, localPlayerPointsRect  );
+		}
+	} else if ( player == Player::Remote )
+	{
+		if ( remotePlayerPointsValue != pointCount || remotePlayerPointsTexture == nullptr )
+		{
+			remotePlayerPointsValue  = pointCount;
+
+			std::stringstream ss;
+			ss << "Points : " << pointCount;
+
+			SDL_DestroyTexture( remotePlayerPointsTexture  );
+			remotePlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, remotePlayerPointsRect  );
 		}
 	}
 }
@@ -495,8 +601,10 @@ void Renderer::CleanUpSurfaces()
 	}
 
 	// Free ball/paddle
-	SDL_DestroyTexture( textures[GamePiece::Paddle] );
-	SDL_DestroyTexture( textures[GamePiece::Ball] );
+	SDL_DestroyTexture( localPlayerPaddle       );
+	SDL_DestroyTexture( remotePlayerPaddle      );
+	SDL_DestroyTexture( localPlayerBallTexture  );
+	SDL_DestroyTexture( remotePlayerBallTexture );
 
 	// Free text surfaces
 	SDL_DestroyTexture( localPlayerTextTexture);
@@ -508,7 +616,6 @@ void Renderer::CleanUpLists()
 {
 	ballList.empty();
 	tileList.empty();
-	textures.empty();
 }
 void Renderer::CleanUpTTF()
 {

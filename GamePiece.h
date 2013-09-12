@@ -2,6 +2,11 @@
 
 #include "math/Rect.h"
 
+enum class Player
+{
+	Local,
+	Remote
+};
 struct GamePiece
 {
 	enum TextureType

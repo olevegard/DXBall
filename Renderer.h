@@ -3,31 +3,28 @@
 
 #include <vector>
 #include <memory>
-#include <map>
 
 #include "GamePiece.h"
-#include <SDL2/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 
 // Forward declarations
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+/*
+struct SDL_Rect;
+struct SDL_Window;
+struct SDL_Surface;
+struct SDL_Texture;
+*/
 struct Ball;
 struct Tile;
 struct Paddle;
-
-	enum class Player
-	{
-		Local,
-		Remote
-	};
+enum class Player : int;
 
 class Renderer
 {
 public:
-
 	Renderer();
 	~Renderer();
-
 
 	bool Init( const SDL_Rect &r, bool startFS);
 
@@ -80,10 +77,8 @@ private:
 
 	void PrintSDL_TTFVersion();
 
-	SDL_Texture* LoadImage( const std::string &filename, GamePiece::TextureType textureType );
+	SDL_Texture* LoadImage( const std::string &filename);
 	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
-
-	void SetArrayData( GamePiece::TextureType textureType, SDL_Texture* surface );
 
 	bool LoadFontAndText();
 	SDL_Texture* RenderTextTexture_Solid(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
@@ -115,8 +110,11 @@ private:
 	std::shared_ptr< Paddle >  localPaddle;
 	std::shared_ptr< Paddle >  remotePaddle;
 
-	std::map< int, SDL_Texture* > textures;
-	SDL_Texture* remotePlayerBall;
+	SDL_Texture* localPlayerBallTexture;
+	SDL_Texture* remotePlayerBallTexture;
+
+	SDL_Texture* localPlayerPaddle;
+	SDL_Texture* remotePlayerPaddle;
 
 	// Text
 	// =============================================
@@ -145,8 +143,19 @@ private:
 	SDL_Rect       localPlayerPointsRect;
 	unsigned long  localPlayerPointsValue;
 
-	//SDL_Surface* remotePlayerLives;
-	//SDL_Surface* remotePlayerText;
-	//SDL_Surface* remotePlayerPoints;
-	//SDL_Surface* remotePlayerCaption;
+	// Player name
+	SDL_Texture* remotePlayerCaptionTexture;
+	SDL_Rect     remotePlayerCaptionRect;
+	std::string  remotePlayerCaptionValue;
+
+	// lives
+	SDL_Texture*   remotePlayerLivesTexture;
+	SDL_Rect       remotePlayerLivesRect;
+	unsigned long  remotePlayerLivesValue;
+
+	// points
+	SDL_Texture*   remotePlayerPointsTexture;
+	SDL_Rect       remotePlayerPointsRect;
+	unsigned long  remotePlayerPointsValue;
+
 };

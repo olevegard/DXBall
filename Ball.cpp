@@ -28,13 +28,13 @@ Ball::~Ball()
 
 void Ball::Reset()
 {
-	speed = 0.2f;
+	speed = 0.5f;
 
 	dirX = 0.2;
 	dirY =  -0.87f;
 
 	rect.x = 50;
-	rect.y = 150;
+	rect.y = 175;
 
 	paddleHitInPrevFrame = false;
 
@@ -78,7 +78,7 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 		return true;
 	}
 
-	if ( ballOwner == 0 )
+	if ( ballOwner == Player::Local )
 	{
 		if ( rect.y < top )
 		{
@@ -88,7 +88,7 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 		}
 	}
 
-	if ( ballOwner == 1 )
+	if ( ballOwner == Player::Remote )
 	{
 		if ( ( rect.y + rect.h ) > bottom )
 		{
@@ -104,7 +104,7 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 bool Ball::DeathCheck( const SDL_Rect &boundsRect )
 {
 
-	if ( ballOwner == 0 )
+	if ( ballOwner == Player::Local )
 	{
 		double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
 
@@ -114,7 +114,7 @@ bool Ball::DeathCheck( const SDL_Rect &boundsRect )
 			dirY *= -1.0f;
 			return true;
 		}
-	} else  if ( ballOwner == 1 )
+	} else  if ( ballOwner == Player::Remote )
 	{
 		double top  = static_cast< double > ( boundsRect.y );
 
@@ -137,7 +137,7 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 		{
 			paddleHitInPrevFrame = true;
 			HandlePaddleHit( paddleRect );
-			if ( ballOwner == 1 )
+			if ( ballOwner == Player::Remote )
 				dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
 			return true;
 		} else

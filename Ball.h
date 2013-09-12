@@ -6,6 +6,7 @@
 
 struct SDL_Rect;
 struct Vector2f;
+enum class Player : int;
 struct Ball : GamePiece
 {
 	Ball();
@@ -25,12 +26,12 @@ struct Ball : GamePiece
 
 	bool TileCheck( const Rect &paddleRect, unsigned int tileID );
 
-	void SetOwner( int owner )
+	void SetOwner( Player owner )
 	{
 		ballOwner = owner;
 	}
 
-	int GetOwner( )
+	Player GetOwner( ) const
 	{
 		return ballOwner;
 	}
@@ -89,7 +90,7 @@ struct Ball : GamePiece
 
 	bool debugMode;
 
-	int ballOwner;
+	Player ballOwner;
 
 	Ball( const Ball &other) = delete;
 

@@ -13,9 +13,16 @@
 	:	renderer()
 	,	timer()
 	,	localPaddle()
+
+	,	isTwoPlayerMode( false )
 	,	localPlayerPoints( 0 )
 	,	localPlayerLives( 3 )
 	,	localPlayerActiveBalls( 0 )
+
+	,	remotePlayerPoints( 0 )
+	,	remotePlayerLives( 3 )
+	,	remotePlayerActiveBalls( 0 )
+
 	,	ballList()
 	,	windowSize()
 
@@ -41,11 +48,13 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 
 	Restart();
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
-	//renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
+	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
+
+	renderer.RenderLives ( 0, Player::Local );
+	renderer.RenderPoints( 0, Player::Local );
 
 	renderer.RenderLives ( 0, Player::Remote );
-	renderer.RenderPoints( 1, Player::Remote );
-
+	renderer.RenderPoints( 0, Player::Remote );
 
 	return true;
 }
@@ -57,34 +66,58 @@ void GameManager::Restart()
 	localPaddle->textureType = GamePiece::Paddle;
 	localPaddle->rect.w = 120;
 	localPaddle->rect.h = 30;
-	localPaddle->rect.y = windowSize.h  - localPaddle->rect.h;
+	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
 	renderer.SetLocalPaddle( localPaddle );
 
-	remotePaddle = std::make_shared< Paddle > ();
-	remotePaddle->textureType = GamePiece::Paddle;
-	remotePaddle->rect.w = 120;
-	remotePaddle->rect.h = 30;
-	remotePaddle->rect.x = 400;
-	remotePaddle->rect.y = remotePaddle->rect.h;
-	renderer.SetRemotePaddle( remotePaddle );
+	if ( isTwoPlayerMode )
+	{
+		remotePaddle = std::make_shared< Paddle > ();
+		remotePaddle->textureType = GamePiece::Paddle;
+		remotePaddle->rect.w = 120;
+		remotePaddle->rect.h = 30;
+		remotePaddle->rect.x = 400;
+		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
+		renderer.SetRemotePaddle( remotePaddle );
+	}
 
 	tileCount = 0;
+
 	GenerateBoard();
 
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
 	localPlayerActiveBalls = 0;
 
-	renderer.RenderLives( 1, Player::Local );
+	remotePlayerPoints = 0;
+	remotePlayerLives = 3;
+	remotePlayerActiveBalls = 0;
+
+	renderer.RenderLives( localPlayerLives, Player::Local );
 	renderer.RenderPoints( localPlayerPoints, Player::Local );
+
+	renderer.RenderLives( remotePlayerLives, Player::Remote );
+	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
+
 	renderer.RenderText( "Press enter to start", Player::Local );
 }
 
-void GameManager::AddBall( int owner )
+void GameManager::AddBall( Player owner )
 {
-	if (  localPlayerLives == 0 )
+	if ( owner == Player::Local )
 	{
-		return;
+		if (  localPlayerLives == 0 )
+		{
+			return;
+		}
+		++localPlayerActiveBalls;
+	}
+	else  if ( owner == Player::Remote )
+	{
+		if (  remotePlayerLives == 0 )
+		{
+			return;
+		}
+		++remotePlayerActiveBalls;
 	}
 
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >(  );
@@ -94,16 +127,27 @@ void GameManager::AddBall( int owner )
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
 
-	++localPlayerActiveBalls;
 }
 
 void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 {
-	renderer.RemoveBall( ball );
-	--localPlayerActiveBalls;
 
-	if ( localPlayerActiveBalls == 0 )
-		--localPlayerLives;
+	if ( ball->GetOwner() == Player::Local )
+	{
+		--localPlayerActiveBalls;
+
+		if ( localPlayerActiveBalls == 0 )
+			--localPlayerLives;
+	} else if ( ball->GetOwner() == Player::Remote )
+	{
+		--remotePlayerActiveBalls;
+
+		if ( remotePlayerActiveBalls == 0 )
+			--remotePlayerLives;
+	}
+
+	renderer.RemoveBall( ball );
+
 }
 void GameManager::AddTile( short posX, short posY, TileTypes tileType )
 {
@@ -139,11 +183,13 @@ void GameManager::UpdateBalls( double delta )
 			(*p)->Update( delta );
 			(*p)->BoundCheck( windowSize );
 
-			if ( ( *p)->GetOwner() == 0 )
+			if ( ( *p)->GetOwner() == Player::Local )
 				(*p)->PaddleCheck( localPaddle->rect );
 
-			else if ( (*p)->GetOwner() == 1 )
+			else if ( isTwoPlayerMode && (*p)->GetOwner() == Player::Remote )
+			{
 				(*p)->PaddleCheck( remotePaddle->rect );
+			}
 
 			CheckBallTileIntersection( *p );
 
@@ -196,8 +242,8 @@ void GameManager::Run()
 						break;
 					case SDLK_RETURN:
 					case SDLK_b:
-						AddBall( 1 );
-						//AddBall( 0 );
+						AddBall( Player::Remote );
+						AddBall( Player::Local );
 						break;
 					case SDLK_q:
 					case SDLK_ESCAPE:
@@ -230,7 +276,7 @@ void GameManager::Run()
 						delay4 = true;
 						break;
 					case SDLK_p:
-						std::cin.ignore();
+						//std::cin.ignore();
 						break;
 					default:
 						break;
@@ -254,8 +300,10 @@ void GameManager::Run()
 
 		}
 
-		if ( ballList.size() > 0 )
-			remotePaddle->rect.x = ballList[0]->rect.x - ( localPaddle->rect.w / 3.5);
+		if ( remotePaddle )
+		{
+			if ( ballList.size() > 0 ) remotePaddle->rect.x = ballList[0]->rect.x - ( localPaddle->rect.w / 3.5);
+		}
 
 		double delta = timer.GetDelta( );
 		//std::cout << "Delta : " << delta << std::endl;
@@ -317,12 +365,12 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 		tile->Hit();
 		
 		bool isDestroyed = tile->IsDestroyed();
-		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed );
+		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 		if ( isDestroyed )
 		{
 
 			if (tile->GetTileType() == TileTypes::Explosive )
-				HandleExplosions( tile );
+				HandleExplosions( tile, ball->GetOwner() );
 			else
 			{
 				tileList.erase( itClosestTile );
@@ -331,7 +379,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 		}
 	}
 }
-void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile )
+void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner )
 {
 	std::vector< Rect > rectVec = GenereateExplosionRects( explodingTile );
 	for ( auto p = tileList.begin(); p != tileList.end() ;  )
@@ -339,7 +387,7 @@ void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile
 		const std::shared_ptr< Tile > tile = (*p);
 		if ( Rect::CheckTileIntersection( rectVec, tile->rect) )
 		{
-			IncrementPoints( tile->GetTileTypeAsIndex(), true );
+			IncrementPoints( tile->GetTileTypeAsIndex(), true, ballOwner );
 			RemoveTile( tile );
 			p = tileList.erase( p );
 		}
@@ -421,6 +469,11 @@ void GameManager::UpdateGUI( )
 
 	renderer.RenderPoints( localPlayerPoints, Player::Local );
 	renderer.RenderLives( localPlayerLives, Player::Local );
+
+
+	renderer.RenderLives( remotePlayerLives, Player::Remote );
+	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
+
 	renderer.Render( );
 }
 void GameManager::SetFPSLimit( unsigned short limit )
@@ -871,11 +924,21 @@ void GameManager::GenerateBoard()
 
 }
 
-void GameManager::IncrementPoints( size_t tileType, bool isDestroyed )
+void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner )
 {
-	localPlayerPoints += 10;
+	if ( ballOwner == Player::Local )
+	{
+		localPlayerPoints += 10;
 
-	if ( isDestroyed )
-		localPlayerPoints += points[ tileType ];
+		if ( isDestroyed )
+			localPlayerPoints += points[ tileType ];
+	} else if ( ballOwner == Player::Remote )
+	{
+		remotePlayerPoints += 10;
+
+		if ( isDestroyed )
+			remotePlayerPoints += points[ tileType ];
+	}
 }
+
 
