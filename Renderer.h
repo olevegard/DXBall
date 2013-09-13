@@ -94,10 +94,10 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
-	SDL_Window* window2;
-	SDL_Renderer* renderer2;
-
-	unsigned int rmask, gmask, bmask, amask;
+	unsigned int rmask;
+	unsigned int gmask;
+	unsigned int bmask;
+	unsigned int amask;
 
 	SDL_Rect background;
 	const int SCREEN_BPP;

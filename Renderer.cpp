@@ -15,9 +15,6 @@
 	:	window( nullptr )
 	,	renderer( nullptr )
 
-	,	window2( nullptr )
-	,	renderer2( nullptr )
-
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	,	rmask( 0xff000000 )
 	,	gmask( 0x00ff0000 )
@@ -158,7 +155,6 @@ bool Renderer::CreateRenderer()
 {
 	renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );//SDL_RENDERER_PREVENTVSYNC 
 
-	renderer2 = SDL_CreateRenderer( window2, -1, SDL_RENDERER_ACCELERATED );//SDL_RENDERER_PREVENTVSYNC 
 
 	if ( renderer == nullptr )
 	{
@@ -168,18 +164,11 @@ bool Renderer::CreateRenderer()
 
 	SDL_RenderSetLogicalSize( renderer, background.w, background.h );
 
-	SDL_SetRenderDrawColor( renderer, 70, 20, 70, 255 );
+	SDL_SetRenderDrawColor( renderer, 40, 20, 40, 255 );
 	SDL_RenderClear( renderer );
 	SDL_RenderPresent( renderer );
 
-
-	SDL_RenderSetLogicalSize( renderer2, background.w, background.h );
-
-	SDL_SetRenderDrawColor( renderer2, 70, 20, 70, 255 );
-	SDL_RenderClear( renderer2 );
-	SDL_RenderPresent( renderer2 );
-
-		return true;
+	return true;
 }
 void Renderer::Setup()
 {
@@ -192,42 +181,11 @@ bool Renderer::CreateWindow()
 {
 	window = SDL_CreateWindow( "DX Ball", 0, 0, background.w, background.h, screenFlags );
 
-	window2 = SDL_CreateWindow( "DX Ball 2", background.w + 1, 0, background.w, background.h, screenFlags );
-
-	std::cout << "windows something, i dont know what, just something : " << window2 << std::endl;
-
 	if ( window == nullptr )
 	{
 		std::cout << "Failed to apply video mode\n";
 		return false;
 	}
-
-	SDL_Surface* surface = SDL_CreateRGBSurface( 0, background.w, background.h, SCREEN_BPP, rmask, gmask, bmask, amask);
-	SDL_FillRect( surface, NULL, SDL_MapRGBA( surface->format, 0, 0, 0, 50 )  );
-	SDL_Color clr;
-	clr.r = 0;
-	clr.g = 0;
-	clr.b = 0;
-	clr.a = 200;
-
-	/*
-	window = SDL_CreateShapedWindow( "DX Ball", 0, 0, static_cast< unsigned int > (background.w ), static_cast< unsigned int > ( background.h ), screenFlags );
-	SDL_WindowShapeMode wsm;
-	wsm.mode = ShapeModeBinarizeAlpha;
-	wsm.parameters.binarizationCutoff = 55;
-	wsm.parameters.colorKey = clr;
-	int ret = SDL_SetWindowShape( window, surface, &wsm );
-
-	if ( ret == SDL_NONSHAPEABLE_WINDOW )
-		std::cout << "ERRROR : SDL_NONSHAPEABLE_WINDOW " << std::endl;
-	else if ( ret == SDL_INVALID_SHAPE_ARGUMENT )
-		std::cout << "ERRROR : SDL_INVALID_SHAPE_ARGUMENT " << std::endl;
-	else if ( ret == SDL_WINDOW_LACKS_SHAPE )
-		std::cout << "ERRROR : SDL_WINDOW_LACKS_SHAPE " << std::endl;
-	else 
-		std::cout << "Success!" << std::endl;
-*/
-
 
 	return true;
 }
@@ -370,13 +328,11 @@ void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 void Renderer::Render( )
 {
 	SDL_RenderClear( renderer );
-	SDL_RenderClear( renderer2 );
 
 	RenderForeground();
 	RenderText();
 
 	SDL_RenderPresent( renderer );
-	SDL_RenderPresent( renderer2 );
 }
 void Renderer::RenderForeground()
 {
@@ -419,10 +375,7 @@ void Renderer::RenderText()
 	if ( localPlayerTextTexture )
 	{
 		SDL_RenderCopy( renderer, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
-		SDL_RenderCopy( renderer2, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
 	}
-
-
 
 	if ( localPlayerCaptionTexture )
 		SDL_RenderCopy( renderer, localPlayerCaptionTexture , nullptr, &localPlayerCaptionRect  );
