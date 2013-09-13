@@ -44,11 +44,13 @@
 	,	tileList(  )
 	,	localPaddle( )
 
+	,	localPlayerColor{ 0, 255, 0,255 }
 	,	localPlayerBallTexture( nullptr )
-	,	remotePlayerBallTexture( nullptr )
+	,	localPlayerPaddle( nullptr )
 
-	,	localPlayerPaddle( )
-	,	remotePlayerPaddle( )
+	,	remotePlayerColor{ 255, 0, 0, 255 }
+	,	remotePlayerBallTexture( nullptr )
+	,	remotePlayerPaddle( nullptr )
 
 	,	font()
 	,	bigFont()
@@ -136,8 +138,8 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 }
 bool Renderer::LoadImages()
 {
-	localPlayerBallTexture  = InitSurface( background.w, background.h,   0, 255, 0);
-	remotePlayerBallTexture = InitSurface( background.w, background.h, 255,   0, 0);
+	localPlayerBallTexture  = InitSurface( background.w, background.h, localPlayerColor );
+	remotePlayerBallTexture = InitSurface( background.w, background.h, remotePlayerColor );
 
 	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileTextures.size() ; ++i )
@@ -261,6 +263,14 @@ void Renderer::FillSurface( SDL_Surface* source, const SDL_Color &color ) const
 	FillSurface( source, color.r, color.g, color.b );
 }
 
+SDL_Texture* Renderer::InitSurface( const Rect &rect     , const SDL_Color &clr ) const
+{
+	return InitSurface( static_cast< int > ( rect.w ), static_cast< int > ( rect.h ), clr.r, clr.g, clr.b );
+}
+SDL_Texture* Renderer::InitSurface( int width, int height, const SDL_Color &clr ) const
+{
+	return InitSurface( width, height, clr.r, clr.g, clr.b );
+}
 SDL_Texture* Renderer::InitSurface( const Rect &rect, unsigned char r, unsigned char g, unsigned char b) const
 {
 	return InitSurface( static_cast< int > ( rect.w ), static_cast< int > ( rect.h ), r, g, b);
@@ -344,13 +354,13 @@ void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	localPaddle = paddle;
 
-	localPlayerPaddle = InitSurface( localPaddle->rect, 0, 255, 0 );
+	localPlayerPaddle = InitSurface( localPaddle->rect, localPlayerColor );
 }
 void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	remotePaddle = paddle;
 
-	remotePlayerPaddle = InitSurface( localPaddle->rect, 255, 0, 0 );
+	remotePlayerPaddle = InitSurface( localPaddle->rect, remotePlayerColor );
 }
 
 
@@ -514,7 +524,7 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 			localPlayerCaptionValue  = textToRender;
 
 			SDL_DestroyTexture( localPlayerCaptionTexture );
-			localPlayerCaptionTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), textColor, localPlayerCaptionRect );
+			localPlayerCaptionTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), localPlayerColor, localPlayerCaptionRect );
 
 			localPlayerCaptionRect.x = 0;
 			localPlayerCaptionRect.y = 0;
@@ -533,7 +543,7 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 			remotePlayerCaptionValue  = textToRender;
 
 			SDL_DestroyTexture( remotePlayerCaptionTexture );
-			remotePlayerCaptionTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), textColor, remotePlayerCaptionRect );
+			remotePlayerCaptionTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), remotePlayerColor, remotePlayerCaptionRect );
 
 			remotePlayerCaptionRect.x = background.w - remotePlayerCaptionRect.w;
 			remotePlayerCaptionRect.y = 0;
@@ -560,7 +570,7 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 			ss << "Lives : " << lifeCount;
 
 			SDL_DestroyTexture( localPlayerLivesTexture );
-			localPlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, localPlayerLivesRect );
+			localPlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerLivesRect );
 		}
 	} else if ( player == Player::Remote )
 	{
@@ -572,7 +582,7 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 			ss << "Lives : " << lifeCount;
 			std::cout << "Rendering lives " << lifeCount << std::endl;
 			SDL_DestroyTexture( remotePlayerLivesTexture );
-			remotePlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, remotePlayerLivesRect );
+			remotePlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerLivesRect );
 		}
 	}
 }
@@ -588,7 +598,7 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
 			ss << "Points : " << pointCount;
 
 			SDL_DestroyTexture( localPlayerPointsTexture  );
-			localPlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, localPlayerPointsRect  );
+			localPlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerPointsRect  );
 		}
 	} else if ( player == Player::Remote )
 	{
@@ -600,7 +610,7 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
 			ss << "Points : " << pointCount;
 
 			SDL_DestroyTexture( remotePlayerPointsTexture  );
-			remotePlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), textColor, remotePlayerPointsRect  );
+			remotePlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerPointsRect  );
 		}
 	}
 }

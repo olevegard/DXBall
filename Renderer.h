@@ -68,6 +68,8 @@ private:
 
 	SDL_Texture* InitSurface( const Rect &rect     , unsigned char r, unsigned char g, unsigned char b ) const;
 	SDL_Texture* InitSurface( int width, int height, unsigned char r, unsigned char g, unsigned char b ) const;
+	SDL_Texture* InitSurface( const Rect &rect     , const SDL_Color &clr ) const;
+	SDL_Texture* InitSurface( int width, int height, const SDL_Color &clr ) const;
 
 	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
 
@@ -113,10 +115,12 @@ private:
 	std::shared_ptr< Paddle >  localPaddle;
 	std::shared_ptr< Paddle >  remotePaddle;
 
+	SDL_Color    localPlayerColor;
 	SDL_Texture* localPlayerBallTexture;
-	SDL_Texture* remotePlayerBallTexture;
-
 	SDL_Texture* localPlayerPaddle;
+
+	SDL_Color    remotePlayerColor;
+	SDL_Texture* remotePlayerBallTexture;
 	SDL_Texture* remotePlayerPaddle;
 
 	// Text
