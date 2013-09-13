@@ -28,6 +28,7 @@ int main( int argc, char* args[] )
 	resolution.h = 1080 / 2;
 
 	bool startFS = false;
+	bool startTwoPlayer = false;
 
 	std::cout << "Args : \n";
 
@@ -49,6 +50,8 @@ int main( int argc, char* args[] )
 				resolution = SetResolution( args[i + 1 ] );
 			else if ( str == "-startfs" && argc > ( i + 1 ) )
 				startFS = StrToBool( args[ i + 1 ]);
+			else if ( str == "-twoplayer" && argc > ( i + 1 ) )
+				startTwoPlayer = StrToBool( args[ i + 1 ]);
 		}
 	}
 	localPlayerName = ReplaceUnderscores( localPlayerName );
@@ -60,8 +63,10 @@ int main( int argc, char* args[] )
 	std::cout << "Frame rate limit : " << fpsLimit << std::endl;
 	std::cout << "Resolution       : " << resolution.w << "x" << resolution.h  << std::endl;
 	std::cout << "Fullscreen       : " << std::boolalpha << startFS << std::endl;
+	std::cout << "2 player mode    : " << std::boolalpha << startTwoPlayer << std::endl;
 	std::cout << "============================\n";
 
+	gameMan.SetTwoPlayerMode( startTwoPlayer );
 	if ( !gameMan.Init( localPlayerName, remotePlayerName , resolution, startFS  ) )
 		return 1;
 

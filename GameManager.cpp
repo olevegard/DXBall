@@ -173,7 +173,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::UpdateBalls( double delta )
 {
-	//renderer.RenderLives( ballList.size(), Player::Local  );
 	if ( ballList.size() > 0 )
 	{
 		renderer.RemoveText();
@@ -184,8 +183,9 @@ void GameManager::UpdateBalls( double delta )
 			(*p)->BoundCheck( windowSize );
 
 			if ( ( *p)->GetOwner() == Player::Local )
+			{
 				(*p)->PaddleCheck( localPaddle->rect );
-
+			}
 			else if ( isTwoPlayerMode && (*p)->GetOwner() == Player::Remote )
 			{
 				(*p)->PaddleCheck( remotePaddle->rect );
@@ -195,8 +195,6 @@ void GameManager::UpdateBalls( double delta )
 
 			if ( (*p)->DeathCheck( windowSize ) )
 			{
-				//(*p)->rect.x = 200;
-				//(*p)->rect.y = 20;
 				RemoveBall( (*p) );
 				p = ballList.erase( p );
 			} else
@@ -204,11 +202,8 @@ void GameManager::UpdateBalls( double delta )
 				++p;
 			}
 		}
-	}  else
-		renderer.RenderText( "Press enter to launch ball", Player::Local );
-
+	}
 }
-
 void GameManager::Run()
 {
 	bool quit = false;

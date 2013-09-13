@@ -92,6 +92,9 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
+	SDL_Window* window2;
+	SDL_Renderer* renderer2;
+
 	unsigned int rmask, gmask, bmask, amask;
 
 	SDL_Rect background;

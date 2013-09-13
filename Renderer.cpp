@@ -14,6 +14,10 @@
 	Renderer::Renderer()
 	:	window( nullptr )
 	,	renderer( nullptr )
+
+	,	window2( nullptr )
+	,	renderer2( nullptr )
+
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	,	rmask( 0xff000000 )
 	,	gmask( 0x00ff0000 )
@@ -152,6 +156,8 @@ bool Renderer::CreateRenderer()
 {
 	renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );//SDL_RENDERER_PREVENTVSYNC 
 
+	renderer2 = SDL_CreateRenderer( window2, -1, SDL_RENDERER_ACCELERATED );//SDL_RENDERER_PREVENTVSYNC 
+
 	if ( renderer == nullptr )
 	{
 		std::cout << "Could not create renderer!";
@@ -163,6 +169,13 @@ bool Renderer::CreateRenderer()
 	SDL_SetRenderDrawColor( renderer, 70, 20, 70, 255 );
 	SDL_RenderClear( renderer );
 	SDL_RenderPresent( renderer );
+
+
+	SDL_RenderSetLogicalSize( renderer2, background.w, background.h );
+
+	SDL_SetRenderDrawColor( renderer2, 70, 20, 70, 255 );
+	SDL_RenderClear( renderer2 );
+	SDL_RenderPresent( renderer2 );
 
 		return true;
 }
@@ -176,6 +189,10 @@ void Renderer::Setup()
 bool Renderer::CreateWindow()
 {
 	window = SDL_CreateWindow( "DX Ball", 0, 0, background.w, background.h, screenFlags );
+
+	window2 = SDL_CreateWindow( "DX Ball 2", background.w + 1, 0, background.w, background.h, screenFlags );
+
+	std::cout << "windows something, i dont know what, just something : " << window2 << std::endl;
 
 	if ( window == nullptr )
 	{
@@ -343,11 +360,13 @@ void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 void Renderer::Render( )
 {
 	SDL_RenderClear( renderer );
+	SDL_RenderClear( renderer2 );
 
 	RenderForeground();
 	RenderText();
 
 	SDL_RenderPresent( renderer );
+	SDL_RenderPresent( renderer2 );
 }
 void Renderer::RenderForeground()
 {
@@ -388,7 +407,12 @@ void Renderer::RenderForeground()
 void Renderer::RenderText()
 {
 	if ( localPlayerTextTexture )
+	{
 		SDL_RenderCopy( renderer, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
+		SDL_RenderCopy( renderer2, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
+	}
+
+
 
 	if ( localPlayerCaptionTexture )
 		SDL_RenderCopy( renderer, localPlayerCaptionTexture , nullptr, &localPlayerCaptionRect  );
