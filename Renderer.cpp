@@ -111,6 +111,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 
 	if ( !CreateRenderer() )
 	{
+
 		std::cout << "Failed to apply video mode\n";
 		return false;
 	}
@@ -164,7 +165,7 @@ bool Renderer::CreateRenderer()
 
 	SDL_RenderSetLogicalSize( renderer, background.w, background.h );
 
-	SDL_SetRenderDrawColor( renderer, 40, 20, 40, 255 );
+	SDL_SetRenderDrawColor( renderer, 90, 31, 127, 255 );
 	SDL_RenderClear( renderer );
 	SDL_RenderPresent( renderer );
 
@@ -564,6 +565,14 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
 
 			SDL_DestroyTexture( remotePlayerPointsTexture  );
 			remotePlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerPointsRect  );
+
+			// Set remaning text rects based on caption rect
+			remotePlayerPointsRect.x = background.w - remotePlayerPointsRect.w - 20;
+			remotePlayerPointsRect.y = localPlayerPointsRect.y;// remotePlayerLivesRect.y + remotePlayerLivesRect.h  + 20;
+
+			remotePlayerLivesRect.x = remotePlayerPointsRect.x;
+			remotePlayerLivesRect.y = localPlayerLivesRect.y; //remotePlayerCaptionRect.h - 10;
+
 		}
 	}
 }
