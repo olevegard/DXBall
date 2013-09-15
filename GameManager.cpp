@@ -50,11 +50,11 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
 	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
-	renderer.RenderLives ( 0, Player::Local );
-	renderer.RenderPoints( 0, Player::Local );
+	renderer.RenderLives ( localPlayerLives , Player::Local );
+	renderer.RenderPoints( localPlayerPoints, Player::Local );
 
-	renderer.RenderLives ( 0, Player::Remote );
-	renderer.RenderPoints( 0, Player::Remote );
+	renderer.RenderLives ( remotePlayerLives , Player::Remote );
+	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
 
 	return true;
 }
@@ -209,7 +209,6 @@ void GameManager::Run()
 	bool quit = false;
 	SDL_Event event;
 
-	std::cout << "local paddle " << localPaddle << std::endl;
 	double tileWidth = localPaddle->rect.w;
 	double halfTileWidth = tileWidth / 2;
 

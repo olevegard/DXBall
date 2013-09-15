@@ -528,7 +528,7 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 
 			std::stringstream ss;
 			ss << "Lives : " << lifeCount;
-			std::cout << "Rendering lives " << lifeCount << std::endl;
+
 			SDL_DestroyTexture( remotePlayerLivesTexture );
 			remotePlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerLivesRect );
 		}
