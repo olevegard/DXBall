@@ -85,6 +85,8 @@ private:
 	bool LoadFontAndText();
 	SDL_Texture* RenderTextTexture_Solid(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
 
+	void CalculateRemotePlayerTextureRects();
+
 	void CleanUp();
 	void CleanUpSurfaces();
 	void CleanUpLists();
