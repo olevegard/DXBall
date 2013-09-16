@@ -483,6 +483,14 @@ void GameManager::GenerateBoard()
 	short x = 60;
 	short y = 200;
 
+	short countRows = 15;
+	short tileHeight = 25;
+	short boardHeight = ( countRows * tileHeight );
+	short totalVerticalFreeSpace = static_cast< short > (windowSize.h - boardHeight  + 20 );
+	short halfVerticalFreeSpace = static_cast< short > ( totalVerticalFreeSpace / 2 );
+
+	y = halfVerticalFreeSpace;
+
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
