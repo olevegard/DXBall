@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <memory>
+#include <map>
 
 #include "GamePiece.h"
+#include "BonusBox.h"
 
 // Forward declarations
 #include <SDL2/SDL.h>
@@ -18,6 +20,7 @@ struct SDL_Texture;
 struct Ball;
 struct Tile;
 struct Paddle;
+struct BonusBox;
 enum class Player : int;
 
 class Renderer
@@ -37,6 +40,9 @@ public:
 	void AddBall( const std::shared_ptr< Ball > &ball );
 	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 
+	void AddBonusBox( const std::shared_ptr< BonusBox > &bb );
+	void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
+
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
 	void SetRemotePaddle( std::shared_ptr< Paddle >  &paddle );
 
@@ -50,9 +56,12 @@ public:
 	void RenderPoints( unsigned long pointCount, const Player &player  );
 
 	void ForceMouseFocus();
+
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
+
+	void CreateBonusBox( );
 
 	void Setup();
 	bool CreateRenderer();
@@ -105,6 +114,10 @@ private:
 	const int SCREEN_BPP;
 	unsigned int screenFlags;
 	bool fullscreen;
+	SDL_Color backgroundColor;
+
+	SDL_Texture* bonusBoxTexture;
+	SDL_Rect bonusBoxRect;
 
 	SDL_Color tileColors[4];
 	std::vector< SDL_Texture* > tileTextures;
@@ -114,8 +127,11 @@ private:
 
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;
+	std::vector< std::shared_ptr< BonusBox > > bonusBoxList;
+
 	std::shared_ptr< Paddle >  localPaddle;
 	std::shared_ptr< Paddle >  remotePaddle;
+
 
 	SDL_Color    localPlayerColor;
 	SDL_Texture* localPlayerBallTexture;
@@ -129,6 +145,7 @@ private:
 	// =============================================
 	TTF_Font* font;
 	TTF_Font* bigFont;
+	TTF_Font* tinyFont;
 
 	SDL_Color textColor;
 

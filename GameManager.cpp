@@ -114,6 +114,8 @@ void GameManager::AddBall( Player owner )
 	else  if ( owner == Player::Remote )
 	{
 		if (  remotePlayerLives == 0 )
+
+
 		{
 			return;
 		}
@@ -171,6 +173,20 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	--tileCount;
 }
 
+void GameManager::AddBonusBox( double x, double y )
+{
+	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ();
+	bonusBox->rect.x = x;
+	bonusBox->rect.y = y;
+
+	bonusBoxList.push_back( bonusBox );
+	renderer.AddBonusBox( bonusBox );
+
+}
+void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
+{
+	renderer.RemoveBonusBox( bb );
+}
 void GameManager::UpdateBalls( double delta )
 {
 	if ( ballList.size() > 0 )
@@ -302,6 +318,7 @@ void GameManager::Run()
 		double delta = timer.GetDelta( );
 		//std::cout << "Delta : " << delta << std::endl;
 		UpdateBalls( delta );
+		UpdateBonusBoxes( delta );
 		UpdateGUI();
 
 		unsigned int diff = SDL_GetTicks() - ticks;
@@ -362,6 +379,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 		if ( isDestroyed )
 		{
+			AddBonusBox( tile->rect.x, tile->rect.y );
 
 			if (tile->GetTileType() == TileTypes::Explosive )
 				HandleExplosions( tile, ball->GetOwner() );
@@ -450,6 +468,24 @@ std::vector< std::shared_ptr< Tile > > GameManager::FindAllExplosiveTilesExcept(
 	);
 
 	return explodingTileVec;
+}
+void GameManager::UpdateBonusBoxes( double delta )
+{
+	//for ( auto p : bonusBoxList )
+	for ( auto p = bonusBoxList.begin(); p != bonusBoxList.end() ;  )
+	{
+		(*p)->rect.y += ( 0.5 * delta );
+
+		if ( (*p)->rect.CheckTileIntersection( localPaddle->rect ) )
+		{
+			++localPlayerLives;
+			renderer.RemoveBonusBox( *p );
+			p = bonusBoxList.erase( p );
+		} else
+		{
+			++p;
+		}
+	}
 }
 void GameManager::UpdateGUI( )
 {
@@ -902,23 +938,23 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;

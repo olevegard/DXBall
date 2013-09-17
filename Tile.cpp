@@ -22,6 +22,10 @@ Tile::Tile(TileTypes type_, unsigned int tileID_ )
 	{
 		hitsLeft = 821;
 	}
+
+	// int bonus = rand() % 1000;
+	// std::cout << "Bonus type " << bonus << std::endl;
+	bonusType = BonusTypes::Extra_Life;
 }
 Tile::~Tile()
 {

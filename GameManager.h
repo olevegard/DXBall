@@ -34,6 +34,9 @@ class GameManager
 		void AddTile( short posX, short posY, TileTypes tileType );
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
+		void AddBonusBox( double x, double y );
+		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
+
 		void UpdateBalls( double delta );
 		void UpdateGUI( );
 
@@ -57,6 +60,8 @@ class GameManager
 		void GenerateBoard();
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 
+		void UpdateBonusBoxes( double delta );
+
 		Renderer renderer;
 		Timer timer;
 
@@ -72,8 +77,9 @@ class GameManager
 		unsigned int remotePlayerLives;
 		unsigned int remotePlayerActiveBalls;
 
-		std::vector< std::shared_ptr< Ball > > ballList;
-		std::vector< std::shared_ptr< Tile > > tileList;
+		std::vector< std::shared_ptr< Ball     > > ballList;
+		std::vector< std::shared_ptr< Tile     > > tileList;
+		std::vector< std::shared_ptr< BonusBox > > bonusBoxList;
 
 		SDL_Rect windowSize;
 		unsigned int points[4];

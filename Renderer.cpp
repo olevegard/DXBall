@@ -31,6 +31,7 @@
 	,	SCREEN_BPP ( 32 )
 	,	screenFlags( SDL_WINDOW_OPENGL  )
 	,	fullscreen( false )
+	,	backgroundColor{ 0, 0, 0, 255 }// 40, 20, 40, 255
 
 	,	tileColors{ {48, 9, 178, 255}, {255, 55, 13, 255}, {0, 0, 0, 255}, {255, 183, 13, 255} }
 	,	tileTextures{ nullptr, nullptr, nullptr, nullptr }
@@ -39,18 +40,20 @@
 
 	,	ballList(  )
 	,	tileList(  )
-	,	localPaddle( )
+	,	localPaddle( nullptr )
+	,	remotePaddle( nullptr )
 
-	,	localPlayerColor{ 0, 255, 0,255 }
+	,	localPlayerColor{ 0, 140, 0,255 }
 	,	localPlayerBallTexture( nullptr )
 	,	localPlayerPaddle( nullptr )
 
-	,	remotePlayerColor{ 255, 0, 0, 255 }
+	,	remotePlayerColor{ 140, 0, 0, 255 }
 	,	remotePlayerBallTexture( nullptr )
 	,	remotePlayerPaddle( nullptr )
 
 	,	font()
 	,	bigFont()
+	,	tinyFont()
 	,	textColor{ 0, 140, 0, 255 }
 
 	,	localPlayerTextTexture( )
@@ -129,7 +132,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 	if ( !LoadFontAndText() )
 		return false;
 
-
+	CreateBonusBox( );
 	std::cout << "Init done\n";
 	return true;
 }
@@ -164,7 +167,7 @@ bool Renderer::CreateRenderer()
 
 	SDL_RenderSetLogicalSize( renderer, background.w, background.h );
 
-	SDL_SetRenderDrawColor( renderer, 40, 20, 40, 255 );
+	SDL_SetRenderDrawColor( renderer, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a );
 	SDL_RenderClear( renderer );
 	SDL_RenderPresent( renderer );
 
@@ -172,7 +175,7 @@ bool Renderer::CreateRenderer()
 }
 void Renderer::Setup()
 {
-	SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	//SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
 	// Hide cursor
 	SDL_ShowCursor( SDL_DISABLE );
@@ -211,6 +214,9 @@ bool Renderer::SetFullscreen( bool fullscreenOn )
 // ================================ Texture helpers ===========================================
 // ============================================================================================
 
+void Renderer::CreateBonusBox( )
+{
+	}
 void Renderer::FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const
 {
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 255 )  );
@@ -252,6 +258,7 @@ SDL_Texture* Renderer::LoadImage( const std::string &filename )
 
 	// Load the image
 	//loadedImage = IMG_Load( filename.c_str() );
+
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, loadedImage );
 
@@ -306,6 +313,58 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 {
 	ballList.erase( std::find( ballList.begin(), ballList.end(), ball ) );
+}
+
+void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
+{
+	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
+	std::string bonusText = bonusBox->GetName();
+
+	int margin = bonusBoxRect.w / 10;
+	int doubleMargin = margin * 2;
+
+	// Background
+	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, rmask, gmask, bmask, amask);
+	SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, localPlayerColor.r, localPlayerColor.g, localPlayerColor.b, localPlayerColor.a ) );
+
+	// Text
+	SDL_Surface* surface = TTF_RenderText_Solid( tinyFont, bonusText.c_str(), localPlayerColor );
+	SDL_Rect textPosition;
+	textPosition.w = surface->clip_rect.w;
+	textPosition.h = surface->clip_rect.h;
+	textPosition.x = margin + ( ( bonusBoxRect.w - doubleMargin  ) /  2 ) - ( textPosition.w / 2  );
+	textPosition.y = bonusBoxRect.h - surface->clip_rect.h;
+
+	// Icon
+	SDL_Rect logoPosition;
+	logoPosition.x = margin;
+	logoPosition.y = margin;
+	logoPosition.w = bonusBoxRect.w - doubleMargin;
+	logoPosition.h = bonusBoxRect.w - doubleMargin;
+	SDL_Surface* logo = SDL_CreateRGBSurface( 0, logoPosition.w, logoPosition.h, SCREEN_BPP, rmask, gmask, bmask, amask);
+	SDL_FillRect( logo, NULL, SDL_MapRGBA( bonus->format, remotePlayerColor.r, remotePlayerColor.g, remotePlayerColor.b, remotePlayerColor.a ) );
+
+	// Combine
+	SDL_BlitSurface( surface, NULL, bonus, &textPosition);
+	SDL_BlitSurface( logo   , NULL, bonus, &logoPosition);
+
+	bonusBoxTexture = SDL_CreateTextureFromSurface( renderer, bonus );
+
+	bonusBoxRect = bonus->clip_rect;
+	SDL_FreeSurface( surface );
+	SDL_FreeSurface( bonus );
+
+	bonusBox->SetTexture( bonusBoxTexture );
+
+	bonusBoxRect.x = 200;
+	bonusBoxRect.y = 100;
+
+	bonusBoxList.push_back( bonusBox );
+
+}
+void Renderer::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bonusBox )
+{
+	bonusBoxList.erase( std::find( bonusBoxList.begin(), bonusBoxList.end(), bonusBox ) );
 }
 
 void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
@@ -369,6 +428,13 @@ void Renderer::RenderForeground()
 		SDL_Rect remotePaddleRect = remotePaddle->rect.ToSDLRect();
 		SDL_RenderCopy( renderer, remotePlayerPaddle, nullptr, &remotePaddleRect  );
 	}
+
+	for ( std::shared_ptr< BonusBox > gp : bonusBoxList)
+	{
+		SDL_Rect boxRect = gp->rect.ToSDLRect();//bonusBox.ToSDLRect();//bonusBoxRect.ToSDLRect();
+		SDL_Texture* texture = gp->GetTexture();
+		SDL_RenderCopy( renderer, texture, nullptr, &boxRect );
+	}
 }
 void Renderer::RenderText()
 {
@@ -419,7 +485,9 @@ bool Renderer::LoadFontAndText()
 
 	bigFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 57 );
 
-	if ( bigFont == nullptr || font == nullptr )
+	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 12 );
+
+	if ( bigFont == nullptr || font == nullptr || tinyFont == nullptr)
 	{
 		std::cout << "Fonts not initialized properly\n";
 		return false;
