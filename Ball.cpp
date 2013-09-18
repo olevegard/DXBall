@@ -268,10 +268,16 @@ bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball, doub
 	// if the distance from the center of the sphere to the center of the rect is smaller or equal to
 	// the the distance from the center of the rect to the edge
 	if ( distX <= tileHalfWidth )
+	{
+		retDistance = 0.0f;
 		return true;
+	}
 
 	if ( distY <= tileHalfHeight )
+	{
+		retDistance = 0.0f;
 		return true;
+	}
 
 	// Get the distance from center of the sphere, to the edge of the rect squared.
 	double cornerDistance = ( distX - tileHalfWidth ) * ( distX - tileHalfWidth );

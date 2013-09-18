@@ -52,16 +52,19 @@ class GameManager
 	private:
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
+		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
+		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
 
 		void HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
 		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
 		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
+		void RemoveDeadTiles();
 
 		void GenerateBoard();
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 
 		void UpdateBonusBoxes( double delta );
-		void MoveBonusBoxes ( double delta );
+		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
 
 		Renderer renderer;

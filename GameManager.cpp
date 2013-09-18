@@ -348,27 +348,12 @@ void GameManager::Run()
 }
 void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 {
-	std::shared_ptr< Tile > tile;
-	std::shared_ptr< Tile > closestTile;
-	double closest = std::numeric_limits< double >::max();
-
-	double current = current;
-	auto itClosestTile = tileList.end();
-	for ( auto p = tileList.begin(); p != tileList.end() && (*p) != nullptr; ++p  )
-	{
-		tile = (*p);
-		if ( ball->CheckTileSphereIntersection( tile->rect, ball->rect, current ) )
-		{
-			if ( current < closest )
-			{
-				closest = current;
-				closestTile = tile;
-				itClosestTile = p;
-			}
-			break;
-		}
-	}
-
+	std::shared_ptr< Tile > closestTile = FindClosestIntersectingTile( ball );
+	RemoveClosestTile( ball, closestTile );
+}
+void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
+{
+	auto itClosestTile = std::find( tileList.begin(), tileList.end(), tile );
 	if ( tile )
 	{
 		if ( !ball->TileCheck( tile->rect, tile->GetTileID() ) )
@@ -391,31 +376,59 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 			}
 		}
 	}
+
+}
+std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_ptr< Ball > ball )
+{
+	std::shared_ptr< Tile > closestTile;
+	double closest = std::numeric_limits< double >::max();
+	double current = closest;
+
+	for ( auto p : tileList) 
+	{
+		if ( !ball->CheckTileSphereIntersection( p->rect, ball->rect, current ) )
+		{
+			current = std::numeric_limits< double >::max();
+			continue;
+		}
+
+		if ( current < closest )
+		{
+			closest = current;
+			closestTile = p;
+		}
+	}
+
+	return closestTile;
 }
 void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner )
 {
 	std::vector< Rect > rectVec = GenereateExplosionRects( explodingTile );
-	for ( auto p = tileList.begin(); p != tileList.end() ;  )
-	{
-		const std::shared_ptr< Tile > tile = (*p);
-		if ( Rect::CheckTileIntersection( rectVec, tile->rect) )
-		{
-			IncrementPoints( tile->GetTileTypeAsIndex(), true, ballOwner );
-			RemoveTile( tile );
-			p = tileList.erase( p );
-		}
-		else
-		{
-			++p;
-		}
-	}
-}
 
+	auto isDeadFunc = [&]( std::shared_ptr< Tile > curr )
+	{
+		if ( !Rect::CheckTileIntersection( rectVec, curr->rect) )
+			return false;
+
+		IncrementPoints( curr->GetTileTypeAsIndex(), true, ballOwner );
+		renderer.RemoveTile( curr );
+
+		return true;
+	};
+
+	auto newEnd = std::remove_if( tileList.begin(), tileList.end(), isDeadFunc );
+
+	// Remove item returned by remove_if
+	tileList.erase( newEnd, tileList.end( ) );
+}
+void GameManager::RemoveDeadTiles()
+{
+	
+}
 std::vector< Rect > GameManager::GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const
 {
 	std::vector< std::shared_ptr< Tile > > explodeVec = FindAllExplosiveTilesExcept( explodingTile );
 
-	// explodingTile ( the originating point of the explosion ) needs to be added.
 	// The remaning tiles' vects are added if the tile intersects the originating explosions.
 	Rect explodeRect( explodingTile->rect );
 	explodeRect.DoubleRectSizes();
@@ -428,27 +441,28 @@ std::vector< Rect > GameManager::GenereateExplosionRects( const std::shared_ptr<
 	{
 		newExplosion = false;
 
-		for ( auto p = explodeVec.begin(); p != explodeVec.end() ;  )
+		for ( auto p : explodeVec )
 		{
-			if ( Rect::CheckTileIntersection( explodedTileRects, (*p)->rect) )
+			if ( Rect::CheckTileIntersection( explodedTileRects, p->rect) )
 			{
-				Rect r = (*p)->rect;
+				Rect r = p->rect;
 				r.DoubleRectSizes();
 				explodedTileRects.push_back( r );
 
-				p = explodeVec.erase( p );
+				p->Kill();
 				newExplosion = true;
-			} else 
-			{
-				++p;
-
-
 			}
 		}
+
+		// Remove tiles marked as killed
+		auto newEnd = std::remove_if( explodeVec.begin(), explodeVec.end(), []( std::shared_ptr< Tile > curr ){ return !curr->IsAlive(); } );
+		explodeVec.erase( newEnd, explodeVec.end( ) );
 	}
+
 
 	return explodedTileRects;
 }
+
 std::vector< std::shared_ptr< Tile > > GameManager::FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const
 {
 	std::vector< std::shared_ptr< Tile > > explodingTileVec;
@@ -511,7 +525,7 @@ void GameManager::MoveBonusBoxes ( double delta )
 	std::transform( bonusBoxList.begin(), bonusBoxList.end(), bonusBoxList.begin() , func );
 
 }
-void GameManager::RemoveDeadTiles()
+void GameManager::RemoveDeadBonusBoxes()
 {
 	auto isDeadFunc = [&]( std::shared_ptr< BonusBox > curr )
 	{
@@ -526,7 +540,6 @@ void GameManager::RemoveDeadTiles()
 
 	// Remove item returned by remove_if
 	bonusBoxList.erase( newEnd, bonusBoxList.end( ) );
-
 }
 void GameManager::UpdateGUI( )
 {
