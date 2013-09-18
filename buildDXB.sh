@@ -4,6 +4,8 @@
 RunGame=false
 RunGDB=false
 RunValgrind=false
+RunProfiler=false
+
 ClearCompileOutput=false
 ForceFullCompile=false
 
@@ -15,6 +17,7 @@ CompileString="clang++ \
 	Ball.cpp \
 	Paddle.cpp \
 	Renderer.cpp \
+	BonusBox.cpp \
 	GameManager.cpp \
 	math/Vector2f.cpp \
 	math/Rect.cpp  \
@@ -23,12 +26,13 @@ CompileString="clang++ \
 	-lSDL2_ttf \
 	-std=c++11 \
 
-	O3 \
-	-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded \
+	-g \
+	-Weverything  -Wall \
+	-Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded \
 	-Wno-switch-enum -Wno-float-equal -Werror \
 	-o DXBall"
 
-RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 -resolution 1600x900"
+RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 -resolution 960x900 -twoPlayer true"
 GDBString="gdb -ex run --args $RunString"
 ValgindString="valgrind \
 	--suppressions=valgrind/ignore \
@@ -40,6 +44,8 @@ ValgindString="valgrind \
 	--undef-value-errors=yes \
 	--read-var-info=yes \
 	$RunString"
+ProfilerString="valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes $RunString"
+
 # Completely clean console window
 reset
 
@@ -54,22 +60,31 @@ echo "Building..."
 if make; then
 
 	# Check arguments
-	while getopts ":rvgcf" opt; do
+	while getopts ":rvgcfp" opt; do
 		case $opt in
 			r)
 				RunGame=true
 				RunGDB=false
 				RunValgrind=false
+                                RunProfiler=false
 				;;
 			v)
 				RunGame=false
 				RunValgrind=true
 				RunGDB=false
+                                RunProfiler=false
 				;;
 			g)
 				RunGame=false
 				RunGDB=true
 				RunValgrind=false
+                                RunProfiler=false
+				;;
+			p)
+				RunGame=false
+				RunGDB=false
+				RunValgrind=false
+                                RunProfiler=true
 				;;
 			c)
 				ClearCompileOutput=true
@@ -116,6 +131,14 @@ if make; then
 		echo "=============================== DX Balll ==============================="
 		$ValgindString
 	fi
+
+	if $RunProfiler ; then
+		echo -e "\tProilfer mode"
+		echo -e "\tCommand : " $ProfilerString
+		echo "=============================== DX Balll ==============================="
+		$ProfilerString
+	fi
+
 fi # if make
 exit 0
 #gdb -ex run ./DXBall

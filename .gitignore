@@ -14,3 +14,4 @@ Makefile
 /build/Makefile
 /math/unused*
 /math/unused/*
+callgrind*
