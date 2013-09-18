@@ -9,6 +9,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <random>
+
 	GameManager::GameManager()
 	:	renderer()
 	,	timer()
@@ -308,13 +310,9 @@ void GameManager::Run()
 
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;
-
 		}
 
-		if ( remotePaddle )
-		{
-			if ( ballList.size() > 0 ) remotePaddle->rect.x = ballList[0]->rect.x - ( localPaddle->rect.w / 3.5);
-		}
+		AIMove();
 
 		double delta = timer.GetDelta( );
 		//std::cout << "Delta : " << delta << std::endl;
@@ -346,6 +344,43 @@ void GameManager::Run()
 	}
 
 }
+void GameManager::AIMove()
+{
+	if ( !remotePaddle )
+		return;
+
+	if ( ballList.size() == 0 )
+		return;
+
+	std::vector< std::shared_ptr< Ball > >::iterator highest = ballList.end();
+
+	if ( ballList.size() == 1 )
+		highest = ballList.begin();
+	else
+	{
+		// Returning true means ball1 gets selected
+		auto compareBallHeights = []( std::shared_ptr< Ball > ball1, std::shared_ptr< Ball > ball2  )
+		{
+			if ( ball2->GetOwner() == Player::Local )
+				return true;
+
+			if ( ball1->GetOwner() == Player::Local )
+				return false;
+
+			return ( ball1->rect.y < ball2->rect.y);
+		};
+		highest = std::min_element( ballList.begin(), ballList.end(), compareBallHeights );
+	}
+	
+	if ( highest != ballList.end() )
+	{
+		if ( (*highest)->rect.y > ( remotePaddle->rect.y + remotePaddle->rect.h ))
+			return;
+
+		double deadCenter = ( (*highest)->rect.x + (*highest)->rect.w / 2 )  - ( ( localPaddle->rect.w / 2.0) * GenRandomNumber() );
+		remotePaddle->rect.x = deadCenter;
+	}
+}
 void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 {
 	std::shared_ptr< Tile > closestTile = FindClosestIntersectingTile( ball );
@@ -360,7 +395,7 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 			return;
 
 		tile->Hit();
-		
+
 		bool isDestroyed = tile->IsDestroyed();
 		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 		if ( isDestroyed )
@@ -423,7 +458,7 @@ void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile
 }
 void GameManager::RemoveDeadTiles()
 {
-	
+
 }
 std::vector< Rect > GameManager::GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const
 {
@@ -1034,5 +1069,11 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 			remotePlayerPoints += points[ tileType ];
 	}
 }
+double GameManager::GenRandomNumber( )
+{
+	std::random_device rseed;
+	std::mt19937 rgen(rseed());
+	std::uniform_real_distribution<double> rdist( -1.0, 1.0 );
 
-
+	return rdist(rgen);
+}

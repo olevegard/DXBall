@@ -41,6 +41,7 @@ class GameManager
 		void UpdateGUI( );
 
 		void Run();
+		void AIMove();
 
 		void SetTwoPlayerMode( bool isTwoPlayer )
 		{
@@ -50,6 +51,7 @@ class GameManager
 
 		void SetFPSLimit( unsigned short limit );
 	private:
+		double GenRandomNumber( );
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
