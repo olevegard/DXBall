@@ -325,8 +325,12 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 
 	// Background
 	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, rmask, gmask, bmask, amask);
-	SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, localPlayerColor.r, localPlayerColor.g, localPlayerColor.b, localPlayerColor.a ) );
+	if ( bonusBox->GetOwner() == Player::Local )
+		SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, localPlayerColor.r, localPlayerColor.g, localPlayerColor.b, localPlayerColor.a ) );
+	else
+		SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, remotePlayerColor.r, remotePlayerColor.g, remotePlayerColor.b, remotePlayerColor.a ) );
 
+	/*
 	// Text
 	SDL_Surface* surface = TTF_RenderText_Solid( tinyFont, bonusText.c_str(), localPlayerColor );
 	SDL_Rect textPosition;
@@ -334,6 +338,7 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 	textPosition.h = surface->clip_rect.h;
 	textPosition.x = margin + ( ( bonusBoxRect.w - doubleMargin  ) /  2 ) - ( textPosition.w / 2  );
 	textPosition.y = bonusBoxRect.h - surface->clip_rect.h;
+	*/
 
 	// Icon
 	SDL_Rect logoPosition;
@@ -342,16 +347,16 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 	logoPosition.w = bonusBoxRect.w - doubleMargin;
 	logoPosition.h = bonusBoxRect.w - doubleMargin;
 	SDL_Surface* logo = SDL_CreateRGBSurface( 0, logoPosition.w, logoPosition.h, SCREEN_BPP, rmask, gmask, bmask, amask);
-	SDL_FillRect( logo, NULL, SDL_MapRGBA( bonus->format, remotePlayerColor.r, remotePlayerColor.g, remotePlayerColor.b, remotePlayerColor.a ) );
+	SDL_FillRect( logo, NULL, SDL_MapRGBA( bonus->format, tileColors[0].r, tileColors[0].g, tileColors[0].b, tileColors[0].a ) );
 
 	// Combine
-	SDL_BlitSurface( surface, NULL, bonus, &textPosition);
+	//SDL_BlitSurface( surface, NULL, bonus, &textPosition);
 	SDL_BlitSurface( logo   , NULL, bonus, &logoPosition);
 
 	bonusBoxTexture = SDL_CreateTextureFromSurface( renderer, bonus );
 
 	bonusBoxRect = bonus->clip_rect;
-	SDL_FreeSurface( surface );
+	//SDL_FreeSurface( surface );
 	SDL_FreeSurface( bonus );
 
 	bonusBox->SetTexture( bonusBoxTexture );
