@@ -1,6 +1,7 @@
 #pragma once
 #include "GamePiece.h"
 
+#include "math/Vector2f.h"
 struct SDL_Texture;
 struct BonusBox : GamePiece
 {
@@ -14,8 +15,12 @@ struct BonusBox : GamePiece
 	void SetOwner( const Player &hitBy );
 	Player GetOwner() const;
 
+	void SetDirection( const Vector2f &dir );
+	Vector2f GetDirection( ) const;
+
 	private:
 		Player owner;
+		Vector2f direction;
 		std::string effectName;
 		SDL_Texture* texture;
 };

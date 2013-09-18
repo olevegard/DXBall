@@ -38,6 +38,8 @@ struct Ball : GamePiece
 
 	bool CheckTileSphereIntersection( const Rect &tile, const Rect &ball, double &retDistance ) const;
 
+
+	Vector2f GetDirection( ) const;
 	private:
 
 	enum class Corner
@@ -76,7 +78,7 @@ struct Ball : GamePiece
 	bool LineLineIntersectionTestV2( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2, double &ret  ) const;
 	bool CheckDotProducts( double dot, double dotTile, double dotBall ) const;
 
-	Vector2f GetEsimtatedDir( );
+	Vector2f GetEsimtatedDir( ) const;
 
 	Vector2f Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const;
 

@@ -601,13 +601,18 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 
 	return 0;
 }
-Vector2f Ball::GetEsimtatedDir( )
+Vector2f Ball::GetEsimtatedDir( ) const
 {
 	Vector2f ballCurrentPos( rect.x   , rect.y );
 	Vector2f ballPrevPos   ( oldRect.x, oldRect.y );
 
 	return Vector2f( ballCurrentPos - ballPrevPos  );
 }
+Vector2f Ball::GetDirection( ) const
+{
+	return Vector2f( dirX, dirY );
+}
+
 Vector2f Ball::Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const
 
 {

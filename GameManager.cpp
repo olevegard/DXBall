@@ -172,7 +172,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	--tileCount;
 }
 
-void GameManager::AddBonusBox( const Player &hitBy, double x, double y )
+void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y )
 {
 	if ( GenRandomNumber( 1 ) != 0 )
 		return;
@@ -181,7 +181,16 @@ void GameManager::AddBonusBox( const Player &hitBy, double x, double y )
 	bonusBox->rect.x = x;
 	bonusBox->rect.y = y;
 
-	bonusBox->SetOwner( hitBy );
+	Player ballOwner = triggerBall->GetOwner();
+	Vector2f direction = triggerBall->GetDirection();
+
+	if ( ballOwner == Player::Local )
+		direction.y = ( direction.y > 0.0 ) ? direction.y : direction.y * -1.0;
+	else
+		direction.y = ( direction.y < 0.0 ) ? direction.y : direction.y * -1.0;
+
+	bonusBox->SetDirection( direction );
+	bonusBox->SetOwner( ballOwner  );
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -414,7 +423,7 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 		if ( isDestroyed )
 		{
-			AddBonusBox( ball->GetOwner(), tile->rect.x, tile->rect.y );
+			AddBonusBox( ball, tile->rect.x, tile->rect.y );
 
 			if (tile->GetTileType() == TileTypes::Explosive )
 				HandleExplosions( tile, ball->GetOwner() );
@@ -563,10 +572,10 @@ void GameManager::MoveBonusBoxes ( double delta )
 {
 	auto func = [ delta ]( std::shared_ptr< BonusBox > curr )
 	{
-		if ( curr->GetOwner() == Player::Local )
-			curr->rect.y += ( 0.5 * delta );
-		else
-			curr->rect.y -= ( 0.5 * delta );
+		Vector2f direction = curr->GetDirection();
+
+		curr->rect.x += direction.x * delta * 0.7;
+		curr->rect.y += direction.y * delta * 0.7;
 
 		return curr;
 	};
