@@ -38,6 +38,8 @@ class GameManager
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 
 		void UpdateBalls( double delta );
+		void DeleteDeadBalls();
+
 		void UpdateGUI( );
 
 		void Run();

@@ -194,36 +194,49 @@ void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 void GameManager::UpdateBalls( double delta )
 {
 	if ( ballList.size() > 0 )
-	{
 		renderer.RemoveText();
 
-		for ( auto p = ballList.begin(); p != ballList.end() ;  )
+	for ( auto p : ballList )
+	{
+		p->Update( delta );
+		p->BoundCheck( windowSize );
+
+		if ( p->GetOwner() == Player::Local )
 		{
-			(*p)->Update( delta );
-			(*p)->BoundCheck( windowSize );
+			p->PaddleCheck( localPaddle->rect );
+		}
+		else if ( isTwoPlayerMode && p->GetOwner() == Player::Remote )
+		{
+			p->PaddleCheck( remotePaddle->rect );
+		}
 
-			if ( ( *p)->GetOwner() == Player::Local )
-			{
-				(*p)->PaddleCheck( localPaddle->rect );
-			}
-			else if ( isTwoPlayerMode && (*p)->GetOwner() == Player::Remote )
-			{
-				(*p)->PaddleCheck( remotePaddle->rect );
-			}
+		CheckBallTileIntersection( p );
 
-			CheckBallTileIntersection( *p );
-
-			if ( (*p)->DeathCheck( windowSize ) )
-			{
-				RemoveBall( (*p) );
-				p = ballList.erase( p );
-			} else
-			{
-				++p;
-			}
+		if ( p->DeathCheck( windowSize ) )
+		{
+			p->Kill();
 		}
 	}
+
+	DeleteDeadBalls();
 }
+void GameManager::DeleteDeadBalls()
+{
+	auto isDeadFunc = [&]( std::shared_ptr< Ball > ball )
+	{
+		if ( ball->IsAlive() )
+			return false;
+
+		RemoveBall( ball );
+		return true;
+	};
+
+	auto newEnd = std::remove_if( ballList.begin(), ballList.end(), isDeadFunc );
+
+	// Remove item returned by remove_if
+	ballList.erase( newEnd, ballList.end( ) );
+}
+
 void GameManager::Run()
 {
 	bool quit = false;
@@ -241,7 +254,7 @@ void GameManager::Run()
 		bool delay4 = false;
 
 		ticks = SDL_GetTicks();
-		
+
 		while ( SDL_PollEvent( &event ) )
 		{
 			if ( event.type == SDL_QUIT )
