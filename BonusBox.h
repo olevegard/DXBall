@@ -4,24 +4,18 @@
 struct SDL_Texture;
 struct BonusBox : GamePiece
 {
-	BonusBox()
-		:	effectName( "Life" )
-	{
-		rect.x = 100;
-		rect.y = 100;
-		rect.w =  40;
-		rect.h =  40;//84
-	}
+	BonusBox();
 
-	std::string GetName() const
-	{
-		return effectName;
-	}
+	std::string GetName() const;
 
 	void SetTexture( SDL_Texture* generatedTexture );
 	SDL_Texture* GetTexture( ) const;
 
+	void SetOwner( const Player &hitBy );
+	Player GetOwner() const;
+
 	private:
+		Player owner;
 		std::string effectName;
 		SDL_Texture* texture;
 };

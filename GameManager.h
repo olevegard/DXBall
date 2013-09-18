@@ -34,7 +34,7 @@ class GameManager
 		void AddTile( short posX, short posY, TileTypes tileType );
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
-		void AddBonusBox( double x, double y );
+		void AddBonusBox(const Player &hitBy, double x, double y );
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 
 		void UpdateBalls( double delta );

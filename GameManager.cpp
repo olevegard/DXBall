@@ -114,8 +114,6 @@ void GameManager::AddBall( Player owner )
 	else  if ( owner == Player::Remote )
 	{
 		if (  remotePlayerLives == 0 )
-
-
 		{
 			return;
 		}
@@ -133,7 +131,6 @@ void GameManager::AddBall( Player owner )
 
 void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 {
-
 	if ( ball->GetOwner() == Player::Local )
 	{
 		--localPlayerActiveBalls;
@@ -173,11 +170,13 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	--tileCount;
 }
 
-void GameManager::AddBonusBox( double x, double y )
+void GameManager::AddBonusBox( const Player &hitBy, double x, double y )
 {
 	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ();
 	bonusBox->rect.x = x;
 	bonusBox->rect.y = y;
+
+	bonusBox->SetOwner( hitBy );
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -379,7 +378,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 		if ( isDestroyed )
 		{
-			AddBonusBox( tile->rect.x, tile->rect.y );
+			AddBonusBox( ball->GetOwner(), tile->rect.x, tile->rect.y );
 
 			if (tile->GetTileType() == TileTypes::Explosive )
 				HandleExplosions( tile, ball->GetOwner() );
@@ -474,7 +473,12 @@ void GameManager::UpdateBonusBoxes( double delta )
 	//for ( auto p : bonusBoxList )
 	for ( auto p = bonusBoxList.begin(); p != bonusBoxList.end() ;  )
 	{
-		(*p)->rect.y += ( 0.5 * delta );
+		Player owner = (*p)->GetOwner();
+		
+		if ( owner == Player::Local )
+			(*p)->rect.y += ( 0.5 * delta );
+		else if ( owner == Player::Remote )
+			(*p)->rect.y -= ( 0.5 * delta );
 
 		if ( (*p)->rect.CheckTileIntersection( localPaddle->rect ) )
 		{
@@ -495,6 +499,8 @@ void GameManager::UpdateGUI( )
 			renderer.RenderText( "Game Over", Player::Local  );
 		else
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
+
+
 	}
 
 	renderer.RenderPoints( localPlayerPoints, Player::Local );
