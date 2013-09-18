@@ -174,8 +174,9 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const Player &hitBy, double x, double y )
 {
-	if ( hitBy == Player::Remote )
+	if ( GenRandomNumber( 1 ) != 0 )
 		return;
+
 	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ();
 	bonusBox->rect.x = x;
 	bonusBox->rect.y = y;
@@ -377,7 +378,7 @@ void GameManager::AIMove()
 		if ( (*highest)->rect.y > ( remotePaddle->rect.y + remotePaddle->rect.h ))
 			return;
 
-		double deadCenter = ( (*highest)->rect.x + (*highest)->rect.w / 2 )  - ( ( localPaddle->rect.w / 2.0) * GenRandomNumber() );
+		double deadCenter = ( (*highest)->rect.x + (*highest)->rect.w / 2 )  - ( ( localPaddle->rect.w / 2.0) * GenRandomNumber( -1.0, 1.0 ) );
 		remotePaddle->rect.x = deadCenter;
 	}
 }
@@ -659,7 +660,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -680,23 +681,23 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -709,7 +710,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -725,7 +726,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -738,7 +739,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -754,7 +755,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -767,7 +768,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -783,7 +784,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -796,7 +797,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -812,7 +813,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -825,7 +826,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -841,7 +842,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -854,7 +855,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -870,7 +871,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -884,7 +885,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -900,7 +901,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -913,7 +914,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -929,7 +930,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -942,7 +943,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
@@ -958,7 +959,7 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -971,23 +972,23 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Explosive );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -1069,11 +1070,19 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 			remotePlayerPoints += points[ tileType ];
 	}
 }
-double GameManager::GenRandomNumber( )
+double GameManager::GenRandomNumber( double min, double max ) const
 {
 	std::random_device rseed;
 	std::mt19937 rgen(rseed());
-	std::uniform_real_distribution<double> rdist( -1.0, 1.0 );
+	std::uniform_real_distribution<double> rdist( min, max );
+
+	return rdist(rgen);
+}
+int GameManager::GenRandomNumber( int max ) const
+{
+	std::random_device rseed;
+	std::mt19937 rgen(rseed());
+	std::uniform_int_distribution<int> rdist( 0, max );
 
 	return rdist(rgen);
 }

@@ -51,7 +51,8 @@ class GameManager
 
 		void SetFPSLimit( unsigned short limit );
 	private:
-		double GenRandomNumber( );
+		double GenRandomNumber( double min, double max ) const;
+		int GenRandomNumber( int max ) const;
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
