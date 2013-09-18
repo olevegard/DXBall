@@ -25,7 +25,16 @@ struct GamePiece
 
 	TextureType textureType;
 
+	void Kill()
+	{
+		isAlive = false;
+	}
+	bool IsAlive() const
+	{
+		return isAlive;
+	}
 	private:
+	bool isAlive;
 	GamePiece( const GamePiece &gamePiece );
 	GamePiece& operator=( const GamePiece &gamePiece );
 };

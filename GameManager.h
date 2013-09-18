@@ -61,6 +61,8 @@ class GameManager
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 
 		void UpdateBonusBoxes( double delta );
+		void MoveBonusBoxes ( double delta );
+		void RemoveDeadBonusBoxes();
 
 		Renderer renderer;
 		Timer timer;

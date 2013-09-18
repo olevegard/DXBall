@@ -5,6 +5,7 @@
 		:	rect( )
 		,	oldRect( )
 		,	textureType( TextureType::Paddle )
+		,	isAlive( true )
 	{
 
 	}

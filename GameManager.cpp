@@ -172,6 +172,8 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const Player &hitBy, double x, double y )
 {
+	if ( hitBy == Player::Remote )
+		return;
 	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ();
 	bonusBox->rect.x = x;
 	bonusBox->rect.y = y;
@@ -470,26 +472,61 @@ std::vector< std::shared_ptr< Tile > > GameManager::FindAllExplosiveTilesExcept(
 }
 void GameManager::UpdateBonusBoxes( double delta )
 {
-	//for ( auto p : bonusBoxList )
-	for ( auto p = bonusBoxList.begin(); p != bonusBoxList.end() ;  )
+	for ( auto p  : bonusBoxList )
 	{
-		Player owner = (*p)->GetOwner();
-		
-		if ( owner == Player::Local )
-			(*p)->rect.y += ( 0.5 * delta );
-		else if ( owner == Player::Remote )
-			(*p)->rect.y -= ( 0.5 * delta );
-
-		if ( (*p)->rect.CheckTileIntersection( localPaddle->rect ) )
+		if ( p->GetOwner() == Player::Local )
 		{
-			++localPlayerLives;
-			renderer.RemoveBonusBox( *p );
-			p = bonusBoxList.erase( p );
-		} else
+			if ( p->rect.CheckTileIntersection( localPaddle->rect ) )
+			{
+				++localPlayerLives;
+				p->Kill();
+			}
+		}
+		else
 		{
-			++p;
+			if ( p->rect.CheckTileIntersection( remotePaddle->rect ) )
+			{
+				++remotePlayerLives;
+				p->Kill();
+			}
 		}
 	}
+
+	MoveBonusBoxes ( delta );
+	RemoveDeadBonusBoxes();
+}
+
+void GameManager::MoveBonusBoxes ( double delta )
+{
+	auto func = [ delta ]( std::shared_ptr< BonusBox > curr )
+	{
+		if ( curr->GetOwner() == Player::Local )
+			curr->rect.y += ( 0.5 * delta );
+		else
+			curr->rect.y -= ( 0.5 * delta );
+
+		return curr;
+	};
+
+	std::transform( bonusBoxList.begin(), bonusBoxList.end(), bonusBoxList.begin() , func );
+
+}
+void GameManager::RemoveDeadTiles()
+{
+	auto isDeadFunc = [&]( std::shared_ptr< BonusBox > curr )
+	{
+		if ( curr->IsAlive() )
+			return false;
+
+		renderer.RemoveBonusBox( curr );
+		return true;
+	};
+
+	auto newEnd = std::remove_if( bonusBoxList.begin(), bonusBoxList.end(), isDeadFunc );
+
+	// Remove item returned by remove_if
+	bonusBoxList.erase( newEnd, bonusBoxList.end( ) );
+
 }
 void GameManager::UpdateGUI( )
 {
