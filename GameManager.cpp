@@ -174,7 +174,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y )
 {
-	if ( GenRandomNumber( 1 ) != 0 )
+	if ( GenRandomNumber( 100 ) != 0 )
 		return;
 
 	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ();
@@ -570,12 +570,15 @@ void GameManager::UpdateBonusBoxes( double delta )
 
 void GameManager::MoveBonusBoxes ( double delta )
 {
-	auto func = [ delta ]( std::shared_ptr< BonusBox > curr )
+	auto func = [ & ] ( std::shared_ptr< BonusBox > curr )
 	{
 		Vector2f direction = curr->GetDirection();
 
 		curr->rect.x += direction.x * delta * 0.7;
 		curr->rect.y += direction.y * delta * 0.7;
+
+		if ( curr->rect.x < 0.0 || ( curr->rect.x + curr->rect.w ) > windowSize.w )
+			curr->FlipXDir();
 
 		return curr;
 	};
@@ -641,37 +644,35 @@ void GameManager::GenerateBoard()
 
 	y = halfVerticalFreeSpace;
 
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );//Middle
+	AddTile( x, y, TileTypes::Regular );//Middle
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
@@ -694,13 +695,13 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
@@ -723,78 +724,72 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -804,114 +799,114 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
@@ -921,77 +916,83 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Hard );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Hard );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
@@ -1014,13 +1015,13 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Hard );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
@@ -1043,15 +1044,13 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 	x = 60;
 	y += 25;
 
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
-	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
@@ -1070,9 +1069,13 @@ void GameManager::GenerateBoard()
 	x += 65;
 	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
 	x += 65;
-	AddTile( x, y, TileTypes::Unbreakable );
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
+	x += 65;
+	AddTile( x, y, TileTypes::Regular );
 
 }
 

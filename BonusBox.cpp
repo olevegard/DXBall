@@ -41,3 +41,8 @@ Vector2f BonusBox::GetDirection( ) const
 {
 	return direction;
 }
+
+void BonusBox::FlipXDir()
+{
+	direction.x *= -1.0;
+}

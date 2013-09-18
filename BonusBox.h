@@ -17,6 +17,7 @@ struct BonusBox : GamePiece
 
 	void SetDirection( const Vector2f &dir );
 	Vector2f GetDirection( ) const;
+	void FlipXDir();
 
 	private:
 		Player owner;
