@@ -534,6 +534,7 @@ void Renderer::RenderText( const std::string &textToRender, const Player &player
 }
 void Renderer::RemoveText()
 {
+	SDL_DestroyTexture( localPlayerTextTexture );
 	localPlayerTextTexture = nullptr;
 }
 void Renderer::RenderPlayerCaption( const std::string textToRender, const Player &player  )
