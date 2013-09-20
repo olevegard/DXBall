@@ -1,5 +1,7 @@
 
 #pragma once
+
+#include "Tile.h"
 #include <algorithm>
 
 #include <iostream>
@@ -144,511 +146,78 @@ struct Board
 struct BoardLoader
 {
 	//SDL_Rect windowSize;
-	Board board;
+	BoardLoader()
+		:	currentLevel( 0 )
+		,	levels(  )
+	{
+		BuildLevelList();
+	}
 
-	std::vector< TilePosition > GetTiles()
+
+	/*std::vector< TilePosition > GetTiles()
 	{
 		return board.GetTiles();
-	}
-	void GenerateBoard( const SDL_Rect &windowSize )
+	}*/
+
+	void BuildLevelList()
 	{
-		std::ifstream boardFile( "boards/board.txt" );
-		//boardFile.
-		/*	.
-		while ( !boardFile.eof() ) //&& next != '#' )
-		{
-			boardFile >> pos;
-			std::cout << pos;
-			board.AddTile( pos );
-
-			next = static_cast< char > ( boardFile.peek() );
-		}
-		for ( TilePosition pos ; boardFile >> pos ; )
-		{
-			//next = static_cast< char > ( boardFile.peek() );
-			std::cout << "\tLoading tile : " << pos;
-			board.AddTile( pos );
-		}*/
-
-		//board.MoveVertically( 100 );
-		//
-		TilePosition pos;
 		std::string line;
-		//while ( !boardFile.eof( ) && !boardFile.fail() ) //&& next != '#' )
+		std::ifstream boardFile( "boards/boardlist.txt" );
+
 		while ( getline( boardFile, line ) )
 		{
 			if ( line[0] == '#' || line.empty() )
 			{
 				std::cout << "Skipping : " << line << std::endl;
+				std::cout << "===========================================================================\n";
 				continue;
 			} else
 			{
 				std::cout << "Adding : " << line << std::endl;
 			}
 
-			std::stringstream( line ) >> pos;
-			std::cout << "Adding : " << pos;
-			board.AddTile( pos );
-			std::cout << "===========================================================================\n";
-			/*
-			//next =  static_cast< char > ( boardFile.get(next );
-			boardFile.get(next );
-			if ( next == '#' ) 
-				boardFile.get();
-
-			boardFile >> pos;
-			std::cout << pos;
-			board.AddTile( pos );
-			*/
+			levels.push_back( line );
 		}
-		std::cout << windowSize.h;
-
-/*
-		boardFile >> pos;
-		std::cout << "File : " << pos;
-		short x = 60;
-		short y = 200;
-
-		short countRows = 15;
-		short tileHeight = 25;
-		short boardHeight = ( countRows * tileHeight );
-		short totalVerticalFreeSpace = static_cast< short > (windowSize.h - boardHeight  + 20 );
-		short halfVerticalFreeSpace = static_cast< short > ( totalVerticalFreeSpace / 2 );
-
-		y = halfVerticalFreeSpace;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );//Middle
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Hard );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-
-		x = 60;
-		y += 25;
-
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-		x += 65;
-		board.AddTile( x, y, TileTypes::Regular );
-*/
 	}
+
+	Board LoadLevel( const std::string &textFile )
+	{
+		std::string filePath = "boards/";
+		filePath.append( textFile );
+		std::cout << "Loading level : " << filePath << std::endl;
+
+		std::ifstream boardFile( filePath );
+		TilePosition pos;
+		std::string line;
+		Board board;
+		while ( getline( boardFile, line ) )
+		{
+			if ( line[0] == '#' || line.empty() )
+				continue;
+
+			std::stringstream( line ) >> pos;
+			board.AddTile( pos );
+		}
+		return board;
+	}
+	std::vector< TilePosition > GenerateBoard( )
+	{
+		if ( currentLevel >= levels.size() )
+		{
+			std::vector< TilePosition > emptyVec;
+			return emptyVec;
+		}
+
+		std::string level = levels[ currentLevel ];
+
+		Board b = LoadLevel( level  );
+
+		++currentLevel;
+
+		return b.GetTiles();
+	}
+
+	private:
+	size_t currentLevel;
+	std::vector< std::string > levels;
 };

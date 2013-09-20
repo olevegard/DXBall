@@ -312,6 +312,10 @@ void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
+void Renderer::ClearBoard( )
+{
+	tileList.clear();
+}
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
 	ballList.push_back( ball );

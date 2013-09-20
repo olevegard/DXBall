@@ -296,7 +296,7 @@ void GameManager::Run()
 						++localPlayerLives;
 						break;
 					case SDLK_c:
-						std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+						ClearBoard();
 						break;
 					case SDLK_t:
 						std::cout << "Tile respawned\n";
@@ -639,15 +639,17 @@ void GameManager::SetFPSLimit( unsigned short limit )
 }
 void GameManager::GenerateBoard()
 {
-
-	BoardLoader bl;
-	bl.GenerateBoard( windowSize );
-	std::vector<TilePosition> vec = bl.GetTiles();
+	std::vector<TilePosition> vec = boardLoader.GenerateBoard();
 
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 }
 
+void GameManager::ClearBoard()
+{
+	tileList.clear();
+	renderer.ClearBoard();
+}
 void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner )
 {
 	if ( ballOwner == Player::Local )

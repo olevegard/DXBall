@@ -2,6 +2,7 @@
 
 #include "Timer.h"
 #include "Renderer.h"
+#include "BoardLoader.h"
 
 #include <vector>
 
@@ -66,12 +67,14 @@ class GameManager
 		void RemoveDeadTiles();
 
 		void GenerateBoard();
+		void ClearBoard();
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
 
+		BoardLoader boardLoader;
 		Renderer renderer;
 		Timer timer;
 

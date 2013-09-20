@@ -36,6 +36,7 @@ public:
 
 	void AddTile( const std::shared_ptr< Tile > &tile );
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
+	void ClearBoard( );
 
 	void AddBall( const std::shared_ptr< Ball > &ball );
 	void RemoveBall( const std::shared_ptr< Ball >  &ball );

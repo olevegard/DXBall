@@ -1,0 +1,21 @@
+# This is a comment, anything starting with a '#' is ignored
+# Board 1
+#
+# Tiles:
+#	0 : Regular	( destroyed with 1 hit, blue )
+#	1 : Explosibe	( destroyed with 1 hit, destroys nearby tiles, orange )
+#	2 : Hard	( destroyed with 5 hits, white -> black )
+#	3 : Unbreakable ( destroyed with lots and lots of hits, yellow )
+ 60 200 0
+125 200 0
+190 200 0
+255 200 0
+320 200 0
+385 200 0
+450 200 0
+515 200 0
+580 200 0
+645 200 0
+710 200 0
+775 200 0
+840 200 0
