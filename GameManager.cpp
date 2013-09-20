@@ -54,11 +54,14 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
 	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
-	renderer.RenderLives ( localPlayerLives , Player::Local );
-	renderer.RenderPoints( localPlayerPoints, Player::Local );
+	renderer.RenderLives    ( localPlayerLives , Player::Local );
+	renderer.RenderPoints   ( localPlayerPoints, Player::Local );
+	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
 
-	renderer.RenderLives ( remotePlayerLives , Player::Remote );
-	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
+
+	renderer.RenderLives    ( remotePlayerLives , Player::Remote );
+	renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
+	renderer.RenderBallCount( remotePlayerPoints, Player::Remote );
 
 	return true;
 }
@@ -98,9 +101,11 @@ void GameManager::Restart()
 
 	renderer.RenderLives( localPlayerLives, Player::Local );
 	renderer.RenderPoints( localPlayerPoints, Player::Local );
+	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
 
 	renderer.RenderLives( remotePlayerLives, Player::Remote );
 	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
+	renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
 
 	renderer.RenderText( "Press enter to start", Player::Local );
 }
@@ -612,16 +617,15 @@ void GameManager::UpdateGUI( )
 			renderer.RenderText( "Game Over", Player::Local  );
 		else
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
-
-
 	}
 
-	renderer.RenderPoints( localPlayerPoints, Player::Local );
-	renderer.RenderLives( localPlayerLives, Player::Local );
-
+	renderer.RenderPoints   ( localPlayerPoints, Player::Local );
+	renderer.RenderLives    ( localPlayerLives, Player::Local );
+	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
 
 	renderer.RenderLives( remotePlayerLives, Player::Remote );
 	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
+	renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
 
 	renderer.Render( );
 }

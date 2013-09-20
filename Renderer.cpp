@@ -72,6 +72,10 @@
 	,	localPlayerPointsRect( )
 	,	localPlayerPointsValue( 0 )
 
+	,	localPlayerBallsTexture( )
+	,	localPlayerBallsRect( )
+	,	localPlayerBallsValue( 0 )
+
 	,	remotePlayerCaptionTexture( )
 	,	remotePlayerCaptionRect( )
 	,	remotePlayerCaptionValue( "" )
@@ -84,6 +88,9 @@
 	,	remotePlayerPointsRect( )
 	,	remotePlayerPointsValue( 0 )
 
+	,	remotePlayerBallsTexture( )
+	,	remotePlayerBallsRect( )
+	,	remotePlayerBallsValue( 0 )
 {
 }
 
@@ -457,15 +464,21 @@ void Renderer::RenderText()
 	if ( localPlayerPointsTexture  )
 		SDL_RenderCopy( renderer, localPlayerPointsTexture, nullptr, &localPlayerPointsRect);
 
+	if ( localPlayerBallsTexture  )
+		SDL_RenderCopy( renderer, localPlayerBallsTexture, nullptr, &localPlayerBallsRect);
 	// Remote
 	if ( remotePlayerCaptionTexture )
-		SDL_RenderCopy( renderer, remotePlayerCaptionTexture , nullptr, &remotePlayerCaptionRect  );
+		SDL_RenderCopy( renderer, remotePlayerCaptionTexture , nullptr, &remotePlayerCaptionRect );
 
 	if ( remotePlayerLivesTexture  )
 		SDL_RenderCopy( renderer, remotePlayerLivesTexture, nullptr, &remotePlayerLivesRect );
 
 	if ( remotePlayerPointsTexture  )
 		SDL_RenderCopy( renderer, remotePlayerPointsTexture, nullptr, &remotePlayerPointsRect);
+
+	if ( remotePlayerBallsTexture  )
+		SDL_RenderCopy( renderer, remotePlayerBallsTexture, nullptr, &remotePlayerBallsRect);
+
 
 }
 // ==============================================================================================
@@ -562,6 +575,9 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 
 			localPlayerPointsRect.x = localPlayerLivesRect.x;
 			localPlayerPointsRect.y = localPlayerLivesRect.y + localPlayerLivesRect.h ;
+
+			localPlayerBallsRect.x = localPlayerLivesRect.x;
+			localPlayerBallsRect.y = localPlayerPointsRect.y + localPlayerLivesRect.h ;
 		}
 	} else if ( player == Player::Remote )
 	{
@@ -639,8 +655,42 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
 	}
 }
 
+void Renderer::RenderBallCount( unsigned long ballCount, const Player &player  )
+{
+	if ( player == Player::Local )
+	{
+		if ( localPlayerBallsValue != ballCount || localPlayerBallsTexture == nullptr )
+		{
+			localPlayerBallsValue = ballCount;
+
+			std::stringstream ss;
+			ss << "Balls : " <<  ballCount;
+
+			SDL_DestroyTexture( localPlayerBallsTexture  );
+			localPlayerBallsTexture  = RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerBallsRect  );
+
+			localPlayerBallsRect.x = localPlayerLivesRect.x;
+			localPlayerBallsRect.y = localPlayerPointsRect.y + localPlayerLivesRect.h ;
+		}
+	} else if ( player == Player::Remote )
+	{
+		if ( remotePlayerPointsValue != ballCount || remotePlayerBallsTexture == nullptr )
+		{
+			remotePlayerPointsValue = ballCount;
+
+			std::stringstream ss;
+			ss << "Balls : " << ballCount;
+
+			SDL_DestroyTexture( remotePlayerBallsTexture );
+			remotePlayerBallsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerBallsRect  );
+
+			CalculateRemotePlayerTextureRects();
+		}
+	}
+}
 void Renderer::CalculateRemotePlayerTextureRects()
 {
+
 	// Set remaning text rects based on caption rect
 	remotePlayerPointsRect.x = background.w - remotePlayerPointsRect.w - 20;
 	remotePlayerPointsRect.y = localPlayerPointsRect.y;// remotePlayerLivesRect.y + remotePlayerLivesRect.h  + 20;
@@ -648,6 +698,8 @@ void Renderer::CalculateRemotePlayerTextureRects()
 	remotePlayerLivesRect.x = remotePlayerPointsRect.x;
 	remotePlayerLivesRect.y = localPlayerLivesRect.y; //remotePlayerCaptionRect.h - 10;
 
+	remotePlayerBallsRect.x = remotePlayerPointsRect.x;
+	remotePlayerBallsRect.y = remotePlayerPointsRect.y + remotePlayerPointsRect.h ; //remotePlayerCaptionRect.h - 10;
 }
 void Renderer::CleanUp()
 {

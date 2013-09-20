@@ -54,6 +54,7 @@ public:
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
 	void RenderLives( unsigned long lifeCount, const Player &player  );
 	void RenderPoints( unsigned long pointCount, const Player &player  );
+	void RenderBallCount( unsigned long ballCount, const Player &player  );
 
 	void ForceMouseFocus();
 
@@ -132,7 +133,6 @@ private:
 	std::shared_ptr< Paddle >  localPaddle;
 	std::shared_ptr< Paddle >  remotePaddle;
 
-
 	SDL_Color    localPlayerColor;
 	SDL_Texture* localPlayerBallTexture;
 	SDL_Texture* localPlayerPaddle;
@@ -169,6 +169,12 @@ private:
 	SDL_Rect       localPlayerPointsRect;
 	unsigned long  localPlayerPointsValue;
 
+	// balls
+	SDL_Texture*   localPlayerBallsTexture;
+	SDL_Rect       localPlayerBallsRect;
+	unsigned long  localPlayerBallsValue;
+
+
 	// Player name
 	SDL_Texture* remotePlayerCaptionTexture;
 	SDL_Rect     remotePlayerCaptionRect;
@@ -183,5 +189,10 @@ private:
 	SDL_Texture*   remotePlayerPointsTexture;
 	SDL_Rect       remotePlayerPointsRect;
 	unsigned long  remotePlayerPointsValue;
+
+	// balls
+	SDL_Texture*   remotePlayerBallsTexture;
+	SDL_Rect       remotePlayerBallsRect;
+	unsigned long  remotePlayerBallsValue;
 
 };
