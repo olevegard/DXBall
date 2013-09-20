@@ -35,7 +35,7 @@ class GameManager
 		void AddTile( short posX, short posY, TileTypes tileType );
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
-		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y );
+		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 
 		void UpdateBalls( double delta );
@@ -54,14 +54,11 @@ class GameManager
 
 		void SetFPSLimit( unsigned short limit );
 	private:
-		double GenRandomNumber( double min, double max ) const;
-		int GenRandomNumber( int max ) const;
-
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
 		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
 
-		void HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
+		int HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
 		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
 		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
 		void RemoveDeadTiles();

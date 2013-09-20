@@ -6,12 +6,15 @@
 #include "Paddle.h"
 #include "BoardLoader.h"
 
+#include "math/Math.h"
+
 #include <limits>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 
-#include <random>
+#include <cmath>
+
 
 	GameManager::GameManager()
 	:	renderer()
@@ -180,9 +183,21 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 }
 
-void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y )
+void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	if ( GenRandomNumber( 100 ) != 0 )
+	int randMax = 0;
+	if ( tilesDestroyed != 1 )
+	{
+		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
+		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
+		std::cout << "Chance 1 in " << randMax << std::endl;
+	}
+	else
+	{
+		randMax = 100;
+	}
+
+	if ( Math::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) != 1 )
 		return;
 
 	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ();
@@ -239,7 +254,7 @@ void GameManager::UpdateBalls( double delta )
 }
 void GameManager::DeleteDeadBalls()
 {
-	auto isDeadFunc = [&]( std::shared_ptr< Ball > ball )
+	auto isDeadFunc = [=]( std::shared_ptr< Ball > ball )
 	{
 		if ( ball->IsAlive() )
 			return false;
@@ -408,7 +423,7 @@ void GameManager::AIMove()
 		if ( (*highest)->rect.y > ( remotePaddle->rect.y + remotePaddle->rect.h ))
 			return;
 
-		double deadCenter = ( (*highest)->rect.x + (*highest)->rect.w / 2 )  - ( ( localPaddle->rect.w / 2.0) * GenRandomNumber( -1.0, 1.0 ) );
+		double deadCenter = ( (*highest)->rect.x + (*highest)->rect.w / 2 )  - ( ( localPaddle->rect.w / 2.0) * Math::GenRandomNumber( -1.0, 1.0 ) );
 		remotePaddle->rect.x = deadCenter;
 	}
 }
@@ -431,12 +446,15 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 		if ( isDestroyed )
 		{
-			AddBonusBox( ball, tile->rect.x, tile->rect.y );
 
 			if (tile->GetTileType() == TileTypes::Explosive )
-				HandleExplosions( tile, ball->GetOwner() );
+			{
+				int count = HandleExplosions( tile, ball->GetOwner() );
+				AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
+			}
 			else
 			{
+				AddBonusBox( ball, tile->rect.x, tile->rect.y );
 				tileList.erase( itClosestTile );
 				RemoveTile( tile );
 			}
@@ -467,17 +485,20 @@ std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_pt
 
 	return closestTile;
 }
-void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner )
+int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner )
 {
 	std::vector< Rect > rectVec = GenereateExplosionRects( explodingTile );
 
-	auto isDeadFunc = [&]( std::shared_ptr< Tile > curr )
+	int countDestroyedTiles = 0;
+
+	auto isDeadFunc = [=, &countDestroyedTiles ]( std::shared_ptr< Tile > curr )
 	{
 		if ( !Rect::CheckTileIntersection( rectVec, curr->rect) )
 			return false;
 
 		IncrementPoints( curr->GetTileTypeAsIndex(), true, ballOwner );
 		renderer.RemoveTile( curr );
+		++countDestroyedTiles;
 
 		return true;
 	};
@@ -486,6 +507,8 @@ void GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile
 
 	// Remove item returned by remove_if
 	tileList.erase( newEnd, tileList.end( ) );
+
+	return countDestroyedTiles;
 }
 void GameManager::RemoveDeadTiles()
 {
@@ -578,7 +601,7 @@ void GameManager::UpdateBonusBoxes( double delta )
 
 void GameManager::MoveBonusBoxes ( double delta )
 {
-	auto func = [ & ] ( std::shared_ptr< BonusBox > curr )
+	auto func = [ = ] ( std::shared_ptr< BonusBox > curr )
 	{
 		Vector2f direction = curr->GetDirection();
 
@@ -596,7 +619,7 @@ void GameManager::MoveBonusBoxes ( double delta )
 }
 void GameManager::RemoveDeadBonusBoxes()
 {
-	auto isDeadFunc = [&]( std::shared_ptr< BonusBox > curr )
+	auto isDeadFunc = [=]( std::shared_ptr< BonusBox > curr )
 	{
 		if ( curr->IsAlive() )
 			return false;
@@ -678,19 +701,4 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 			remotePlayerPoints += points[ tileType ];
 	}
 }
-double GameManager::GenRandomNumber( double min, double max ) const
-{
-	std::random_device rseed;
-	std::mt19937 rgen(rseed());
-	std::uniform_real_distribution<double> rdist( min, max );
 
-	return rdist(rgen);
-}
-int GameManager::GenRandomNumber( int max ) const
-{
-	std::random_device rseed;
-	std::mt19937 rgen(rseed());
-	std::uniform_int_distribution<int> rdist( 0, max );
-
-	return rdist(rgen);
-}
