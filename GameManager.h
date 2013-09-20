@@ -68,6 +68,8 @@ class GameManager
 
 		void GenerateBoard();
 		void ClearBoard();
+		bool IsLevelDone();
+
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 
 		void UpdateBonusBoxes( double delta );

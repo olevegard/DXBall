@@ -177,6 +177,9 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 	// Decrement tile count
 	--tileCount;
+
+	if ( IsLevelDone() )
+		GenerateBoard();
 }
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y )
@@ -300,7 +303,6 @@ void GameManager::Run()
 						break;
 					case SDLK_t:
 						std::cout << "Tile respawned\n";
-						GenerateBoard();
 						break;
 					case SDLK_1:
 						std::cout << "Delay added\n";
@@ -639,12 +641,17 @@ void GameManager::SetFPSLimit( unsigned short limit )
 }
 void GameManager::GenerateBoard()
 {
+	ClearBoard();
 	std::vector<TilePosition> vec = boardLoader.GenerateBoard();
 
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 }
 
+bool GameManager::IsLevelDone()
+{
+	return std::count_if( tileList.begin(), tileList.end(), []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileTypes::Unbreakable ); } ) == 0;
+}
 void GameManager::ClearBoard()
 {
 	tileList.clear();
