@@ -178,8 +178,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	// Decrement tile count
 	--tileCount;
 
-	if ( IsLevelDone() )
-		GenerateBoard();
 }
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y )
@@ -330,8 +328,7 @@ void GameManager::Run()
 
 			if ( event.type == SDL_WINDOWEVENT)
 			{
-				if ( SDL_WINDOWEVENT_LEAVE )
-					renderer.ForceMouseFocus();
+				//if ( SDL_WINDOWEVENT_LEAVE ) renderer.ForceMouseFocus();
 			}
 
 			if ( event.motion.x != 0 && event.motion.y != 0 )
@@ -352,6 +349,8 @@ void GameManager::Run()
 		UpdateBonusBoxes( delta );
 		UpdateGUI();
 
+		if ( IsLevelDone() )
+			GenerateBoard();
 		unsigned int diff = SDL_GetTicks() - ticks;
 
 		if ( fpsLimit > 0 && diff < frameDuration )
@@ -646,6 +645,7 @@ void GameManager::GenerateBoard()
 
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
+
 }
 
 bool GameManager::IsLevelDone()
@@ -655,6 +655,11 @@ bool GameManager::IsLevelDone()
 void GameManager::ClearBoard()
 {
 	tileList.clear();
+	ballList.clear();
+
+	localPlayerActiveBalls = 0;
+	remotePlayerActiveBalls = 0;
+
 	renderer.ClearBoard();
 }
 void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner )
