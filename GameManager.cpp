@@ -185,16 +185,11 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	int randMax = 0;
+	int randMax = 100;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
 		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
-		std::cout << "Chance 1 in " << randMax << std::endl;
-	}
-	else
-	{
-		randMax = 100;
 	}
 
 	if ( Math::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) != 1 )
