@@ -5,13 +5,15 @@
 #include <SDL2/SDL.h>
 
 #include "math/Vector2f.h"
+#include "math/Math.h"
 
-Ball::Ball()
+Ball::Ball( const SDL_Rect &windowSize, const Player &owner   )
 	:	speed( 0.0705f )
 	,	dirX( -0.83205f )
 	,	dirY(-0.5547f )
 	,	paddleHitInPrevFrame( false )
 	,	debugMode( false )
+	,	ballOwner( owner )
 {
 	rect.w = 20;
 	oldRect.w = 20;
@@ -19,22 +21,31 @@ Ball::Ball()
 	rect.h = 20;
 	oldRect.h = 20;
 
-	Reset();
+	Reset( windowSize );
 }
 
 Ball::~Ball()
 {
 }
 
-void Ball::Reset()
+void Ball::Reset( const SDL_Rect &windowSize )
 {
-	speed = 0.5f;
+	speed = 0.4f * Math::GenRandomNumber( 1 );
 
-	dirX = 0.2;
-	dirY =  -0.87f;
+	// X pos and dirX is the same for both local and remote player
+	dirX = Math::GenRandomNumber( -1.0, 1.0 );
+	rect.x = ( windowSize.w * 0.5 ) - ( rect.w * 0.5 );
 
-	rect.x = 50;
-	rect.y = 175;
+	if ( ballOwner == Player::Local )
+	{
+		dirY = Math::GenRandomNumber( -0.9, -0.1 );
+		rect.y  = windowSize.h - 50;
+	}
+	else if ( ballOwner == Player::Remote )
+	{
+		dirY = Math::GenRandomNumber(  0.1, 0.9 );
+		rect.y = 50;
+	}
 
 	paddleHitInPrevFrame = false;
 
@@ -110,7 +121,7 @@ bool Ball::DeathCheck( const SDL_Rect &boundsRect )
 
 		if (  ( rect.y + rect.h ) > bottom  )
 		{
-			Reset();
+			Reset( boundsRect) ;
 			dirY *= -1.0f;
 			return true;
 		}
@@ -120,7 +131,7 @@ bool Ball::DeathCheck( const SDL_Rect &boundsRect )
 
 		if ( rect.y  < top  )
 		{
-			Reset();
+			Reset( boundsRect );
 			dirY *= -1.0f;
 			return true;
 		}

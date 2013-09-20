@@ -132,9 +132,8 @@ void GameManager::AddBall( Player owner )
 		++remotePlayerActiveBalls;
 	}
 
-	std::shared_ptr< Ball > ball = std::make_shared< Ball >(  );
+	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner );
 	ball->textureType = GamePiece::Ball;
-	ball->SetOwner( owner );
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );

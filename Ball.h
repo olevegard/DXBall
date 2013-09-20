@@ -9,11 +9,11 @@ struct Vector2f;
 enum class Player : int;
 struct Ball : GamePiece
 {
-	Ball();
+	Ball( const SDL_Rect &windowSize, const Player &owner  );
 
 	virtual ~Ball();
 
-	void Reset();
+	void Reset(const SDL_Rect &windowSize );
 	void NormalizeDirection();
 
 	void Update( double tick );
