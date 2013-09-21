@@ -7,7 +7,7 @@
 #include <vector>
 
 // Forward declarations
-enum class TileTypes : int;
+enum class TileType : int;
 enum class Player : int;
 struct GamePiece;
 struct Paddle;
@@ -32,7 +32,7 @@ class GameManager
 		void AddBall( Player owner );
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
-		void AddTile( short posX, short posY, TileTypes tileType );
+		void AddTile( short posX, short posY, TileType tileType );
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );

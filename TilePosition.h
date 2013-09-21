@@ -9,19 +9,19 @@
 struct TilePosition
 {
 	TilePosition();
-	TilePosition( short xPos_, short yPos_, const TileTypes &tt );
+	TilePosition( short xPos_, short yPos_, const TileType &tt );
 
 	short xPos;
 	short yPos;
 
-	TileTypes type;
+	TileType type;
 };
 
 inline std::istream& operator>>( std::istream &is, TilePosition &pos )
 {
 	int type = 0;
 	is >> pos.xPos >> pos.yPos >> type;
-	pos.type = static_cast< TileTypes > ( type );
+	pos.type = static_cast< TileType > ( type );
 
 	if ( type < 0 || type > 5 )
 	{
@@ -37,16 +37,16 @@ inline std::ostream& operator<<( std::ostream &os, const TilePosition &pos )
 
 	switch ( pos.type )
 	{
-		case TileTypes::Regular:
+		case TileType::Regular:
 			os << "Regular";
 			break;
-		case TileTypes::Hard:
+		case TileType::Hard:
 			os << "Hard";
 			break;
-		case TileTypes::Unbreakable:
+		case TileType::Unbreakable:
 			os << "Unbreakable";
 			break;
-		case TileTypes::Explosive:
+		case TileType::Explosive:
 			os << "Explosive";
 			break;
 		default:

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <ostream>
 
-Tile::Tile(TileTypes type_, unsigned int tileID_ )
+Tile::Tile(TileType type_, unsigned int tileID_ )
 	:	type( type_ )
 	,	hitsLeft( 1 )
 	,	tileID( tileID_ )
@@ -12,20 +12,16 @@ Tile::Tile(TileTypes type_, unsigned int tileID_ )
 	type = type_;
 	tileID = tileID_;
 
-	if ( type == TileTypes::Regular || type == TileTypes::Explosive  )
+	if ( type == TileType::Regular || type == TileType::Explosive  )
 	{
 		hitsLeft = 1;
-	} else if ( type == TileTypes::Hard )
+	} else if ( type == TileType::Hard )
 	{
 		hitsLeft = 5;
-	} else if ( type == TileTypes::Unbreakable )
+	} else if ( type == TileType::Unbreakable )
 	{
 		hitsLeft = 821;
 	}
-
-	// int bonus = rand() % 1000;
-	// std::cout << "Bonus type " << bonus << std::endl;
-	bonusType = BonusTypes::Extra_Life;
 }
 Tile::~Tile()
 {

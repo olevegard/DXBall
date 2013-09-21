@@ -3,7 +3,7 @@
 
 struct Board
 {
-	void AddTile( short xPos, short yPos, TileTypes tt )
+	void AddTile( short xPos, short yPos, TileType tt )
 	{
 		tiles.push_back( TilePosition( xPos, yPos, tt  ) );
 	}

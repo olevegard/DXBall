@@ -4,7 +4,7 @@
 	GamePiece::GamePiece()
 		:	rect( )
 		,	oldRect( )
-		,	textureType( TextureType::Paddle )
+		,	textureType( TextureType::e_Paddle )
 		,	isAlive( true )
 	{
 

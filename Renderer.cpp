@@ -427,7 +427,7 @@ void Renderer::RenderForeground()
 	for ( std::shared_ptr< Tile > gp : tileList)
 	{
 		SDL_Rect r = gp->rect.ToSDLRect();
-		if ( gp->GetTileType() == TileTypes::Hard )
+		if ( gp->GetTileType() == TileType::Hard )
 			SDL_RenderCopy( renderer, hardTileTextures[ 5 - gp->GetHitsLeft()], nullptr, &r );
 		else
 			SDL_RenderCopy( renderer, tileTextures[ gp->GetTileTypeAsIndex() ], nullptr, &r );

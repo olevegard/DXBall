@@ -73,7 +73,7 @@ void GameManager::Restart()
 {
 	std::cout << "Restart\n";
 	localPaddle = std::make_shared< Paddle > ();
-	localPaddle->textureType = GamePiece::Paddle;
+	localPaddle->textureType = TextureType::e_Paddle;
 	localPaddle->rect.w = 120;
 	localPaddle->rect.h = 30;
 	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
@@ -82,7 +82,7 @@ void GameManager::Restart()
 	if ( isTwoPlayerMode )
 	{
 		remotePaddle = std::make_shared< Paddle > ();
-		remotePaddle->textureType = GamePiece::Paddle;
+		remotePaddle->textureType = TextureType::e_Paddle;
 		remotePaddle->rect.w = 120;
 		remotePaddle->rect.h = 30;
 		remotePaddle->rect.x = 400;
@@ -133,7 +133,7 @@ void GameManager::AddBall( Player owner )
 	}
 
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner );
-	ball->textureType = GamePiece::Ball;
+	ball->textureType = TextureType::e_Ball;
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
@@ -159,10 +159,10 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	renderer.RemoveBall( ball );
 
 }
-void GameManager::AddTile( short posX, short posY, TileTypes tileType )
+void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
 	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
-	tile->textureType = GamePiece::Tile;
+	tile->textureType = TextureType::e_Tile;
 	tile->rect.x = posX;
 	tile->rect.y = posY;
 	tile->rect.w = 60;
@@ -441,7 +441,7 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 		if ( isDestroyed )
 		{
 
-			if (tile->GetTileType() == TileTypes::Explosive )
+			if (tile->GetTileType() == TileType::Explosive )
 			{
 				int count = HandleExplosions( tile, ball->GetOwner() );
 				AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
@@ -553,7 +553,7 @@ std::vector< std::shared_ptr< Tile > > GameManager::FindAllExplosiveTilesExcept(
 	// A simple lambda to only copy explosive and thoose that are different from explodinTile
 	auto copyExplosive = [ explodingTile ]( std::shared_ptr< Tile > tile )
 	{
-		return  ( tile->GetTileType() == TileTypes::Explosive ) &&
+		return  ( tile->GetTileType() == TileType::Explosive ) &&
 			( tile != explodingTile );
 	};
 
@@ -667,7 +667,7 @@ void GameManager::GenerateBoard()
 
 bool GameManager::IsLevelDone()
 {
-	return std::count_if( tileList.begin(), tileList.end(), []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileTypes::Unbreakable ); } ) == 0;
+	return std::count_if( tileList.begin(), tileList.end(), []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); } ) == 0;
 }
 void GameManager::ClearBoard()
 {

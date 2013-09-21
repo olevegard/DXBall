@@ -2,10 +2,12 @@
 
 #include "GamePiece.h"
 
-#include <string>
+#include "enums/Player.h"
 
 struct SDL_Rect;
 struct Vector2f;
+enum class Side : int;
+enum class Corner : int;
 enum class Player : int;
 struct Ball : GamePiece
 {
@@ -42,24 +44,8 @@ struct Ball : GamePiece
 	Vector2f GetDirection( ) const;
 	private:
 
-	enum class Corner
-	{
-		TopLeft,
-		TopRight,
-		BottomLeft,
-		BottomRight
-	};
-	
-	enum class Side
-	{
-		Top,
-		Bottom,
-		Left,
-		Right,
-		Unknown
-	};
-
-	bool CheckTileIntersection( const Rect &tile, const Rect &ball ) const;
+		
+		bool CheckTileIntersection( const Rect &tile, const Rect &ball ) const;
 	void HandleTileIntersection( const Rect &tile );
 	void HandleTileIntersection2( const Rect &tileRect );
 

@@ -7,6 +7,9 @@
 #include "math/Vector2f.h"
 #include "math/Math.h"
 
+#include "enums/Side.h"
+#include "enums/Corner.h"
+
 Ball::Ball( const SDL_Rect &windowSize, const Player &owner   )
 	:	speed( 0.0705f )
 	,	dirX( -0.83205f )

@@ -2,6 +2,8 @@
 #include "GamePiece.h"
 
 #include "math/Vector2f.h"
+#include "enums/Player.h"
+
 struct SDL_Texture;
 struct BonusBox : GamePiece
 {
