@@ -4,8 +4,10 @@
 
 #include <SDL2/SDL.h>
 
-#include "math/Vector2f.h"
 #include "math/Math.h"
+#include "math/RectHelpers.h"
+#include "math/Vector2f.h"
+#include "math/VectorHelpers.h"
 
 #include "enums/Side.h"
 #include "enums/Corner.h"
@@ -223,9 +225,9 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 	if ( debugMode )
 	{
 		std::cout << "\tTile ID : " << tileID << std::endl;
-		PrintPosition( tileRect,"Tile");
-		PrintPosition( rect    , "Ball cur ");
-		PrintPosition( oldRect , "Ball old ");
+		RectHelpers::PrintPosition( tileRect,"Tile");
+		RectHelpers::PrintPosition( rect    , "Ball cur ");
+		RectHelpers::PrintPosition( oldRect , "Ball old ");
 	}
 	lastTileHit = tileID;
 	FindIntersectingSide( tileRect );
@@ -304,11 +306,7 @@ bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball, doub
 
 	return true;
 }
-void Ball::PrintPosition( const Rect &pos, const std::string &tileName ) const
-{
-	std::cout << "\t" << tileName << " position tl : " << pos.x              << " , " << pos.y             << std::endl;
-	std::cout << "\t" << tileName << " position br : " << ( pos.x + pos.w )  << " , " << ( pos.y + pos.h ) << std::endl << std::endl;
-}
+
 
 bool Ball::LineLineIntersectionTestV2( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2, double &ret ) const
 {
@@ -719,9 +717,9 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 	double oldRight  = oldLeft + rect.w;
 	double oldBottom = oldTop  + rect.h;
 
-	PrintPosition( tileRect,"Tile");
-	PrintPosition( rect    , "Ball cur ");
-	PrintPosition( oldRect , "Ball old ");
+	RectHelpers::PrintPosition( tileRect,"Tile");
+	RectHelpers::PrintPosition( rect    , "Ball cur ");
+	RectHelpers::PrintPosition( oldRect , "Ball old ");
 
 	if ( dirY < 0.0f )
 	{

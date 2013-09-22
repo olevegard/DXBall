@@ -9,7 +9,7 @@ struct BonusBox : GamePiece
 {
 	BonusBox();
 
-	std::string GetName() const;
+	//std::string GetName() const;
 
 	void SetTexture( SDL_Texture* generatedTexture );
 	SDL_Texture* GetTexture( ) const;
@@ -24,6 +24,5 @@ struct BonusBox : GamePiece
 	private:
 		Player owner;
 		Vector2f direction;
-		std::string effectName;
 		SDL_Texture* texture;
 };

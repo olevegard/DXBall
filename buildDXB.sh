@@ -16,6 +16,8 @@ CompileString="clang++ \
 	Tile.cpp \
 	Ball.cpp \
 	Paddle.cpp \
+	TilePosition.cpp \
+	BoardLoader.cpp \
 	Renderer.cpp \
 	BonusBox.cpp \
 	GameManager.cpp \
@@ -30,6 +32,7 @@ CompileString="clang++ \
 	-Weverything  -Wall \
 	-Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded \
 	-Wno-switch-enum -Wno-float-equal -Werror \
+
 	-o DXBall"
 
 RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 -resolution 960x900 -twoPlayer true"
@@ -115,7 +118,9 @@ if make; then
 		echo -e "\tNormal mode"
 		echo -e "\tCommand : " $RunString
 		echo "=============================== DX Balll ==============================="
-		$RunString
+#Run, without bloacking
+		$RunString &
+#$RunString &
 	fi
 
 	if $RunGDB ; then

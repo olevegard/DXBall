@@ -1,5 +1,8 @@
 #pragma once
-// An enire board
+
+#include <vector>
+
+#include "TilePosition.h"
 
 struct Board
 {

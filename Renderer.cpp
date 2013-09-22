@@ -330,7 +330,7 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
 	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
-	std::string bonusText = bonusBox->GetName();
+	//std::string bonusText = bonusBox->GetName();
 
 	int margin = bonusBoxRect.w / 10;
 	int doubleMargin = margin * 2;

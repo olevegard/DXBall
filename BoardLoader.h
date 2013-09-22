@@ -1,8 +1,10 @@
 #pragma once
 
-#include "TilePosition.h"
 #include "Board.h"
 
+#include <string>
+
+struct TilePosition;
 struct BoardLoader
 {
 	BoardLoader();
@@ -12,7 +14,6 @@ struct BoardLoader
 	Board LoadLevel( const std::string &textFile );
 
 	std::vector< TilePosition > GenerateBoard( );
-
 
 	private:
 		size_t currentLevel;

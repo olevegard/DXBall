@@ -1,9 +1,10 @@
 #pragma once
 
-
 #include <vector>
 #include <memory>
 #include <map>
+
+#include <string>
 
 #include "GamePiece.h"
 #include "BonusBox.h"

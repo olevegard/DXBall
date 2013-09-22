@@ -13,7 +13,6 @@ struct GamePiece;
 struct Paddle;
 struct Ball;
 struct Tile;
-
 class GameManager
 {
 	public:

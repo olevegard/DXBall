@@ -1,6 +1,8 @@
 #include "Tile.h"
 
 #include "math/Vector2f.h"
+#include "math/VectorHelpers.h"
+
 #include <iostream>
 #include <ostream>
 

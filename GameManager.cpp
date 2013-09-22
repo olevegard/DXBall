@@ -7,6 +7,7 @@
 #include "BoardLoader.h"
 
 #include "math/Math.h"
+#include "math/RectHelpers.h"
 
 #include <limits>
 #include <vector>
@@ -487,7 +488,7 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 
 	auto isDeadFunc = [=, &countDestroyedTiles ]( std::shared_ptr< Tile > curr )
 	{
-		if ( !Rect::CheckTileIntersection( rectVec, curr->rect) )
+		if ( !RectHelpers::CheckTileIntersection( rectVec, curr->rect) )
 			return false;
 
 		IncrementPoints( curr->GetTileTypeAsIndex(), true, ballOwner );
@@ -526,7 +527,7 @@ std::vector< Rect > GameManager::GenereateExplosionRects( const std::shared_ptr<
 
 		for ( auto p : explodeVec )
 		{
-			if ( Rect::CheckTileIntersection( explodedTileRects, p->rect) )
+			if ( RectHelpers::CheckTileIntersection( explodedTileRects, p->rect) )
 			{
 				Rect r = p->rect;
 				r.DoubleRectSizes();

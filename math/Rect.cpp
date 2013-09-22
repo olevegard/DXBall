@@ -29,17 +29,6 @@ bool Rect::CheckTileIntersection( const Rect &other ) const
 			|| otherBottom < thisTop
 		);
 }
-
-
-bool Rect::CheckTileIntersection( const std::vector< Rect > &rectVec, const Rect &explosion )
-{
-	auto p = [ explosion ]( const Rect &rect )
-	{
-		return ( explosion.CheckTileIntersection( rect ) );
-	};
-
-	return (  std::any_of( rectVec.begin(), rectVec.end(), p ) );
-}
 double Rect::FindDistanceBetweenTiles( const Rect &other ) const
 {
 	Vector2f otherCenter( other.x + ( other.w / 2.0 ) , other.y + ( other.h / 2.0 ) );

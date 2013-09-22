@@ -1,8 +1,5 @@
 #pragma once
 
-#include <ostream>
-#include <vector>
-
 struct SDL_Rect;
 struct Rect
 {
@@ -24,29 +21,9 @@ struct Rect
 
 	}
 
-	/*
-	void Set( const SDL_Rect &r )
-	{
-		this->x = r.x;
-		this->y = r.y;
-		this->w = r.w;
-		this->h = r.h;
-	}
-
-	SDL_Rect GetAsSDL_Rect() const
-	{
-		SDL_Rect r;
-		r.x = static_cast< short > ( this->x );
-		r.y = static_cast< short > ( this->y );
-		r.w = static_cast< unsigned short > ( this->w );
-		r.h = static_cast< unsigned short > ( this->h );
-		return r;
-	}*/
 	SDL_Rect ToSDLRect(  ) const;
 
 	bool CheckTileIntersection( const Rect &other ) const;
-	static bool CheckTileIntersection( const std::vector< Rect > &rectVec, const Rect &explosion );
-	//static bool CheckTileIntersection( const std::vector< Rect > &rect );
 
 	void DoubleRectSizes( );
 
@@ -56,14 +33,7 @@ struct Rect
 
 	double x;
 	double y;
-
 	double w;
-
 	double h;
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const Rect &rect)
-{
-	stream << "Pos ( " << rect.x << " , " << rect.y << " ) Size ( " << rect.w << " , " << rect.h << ")";
-	return stream;
-}

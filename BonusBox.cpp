@@ -1,7 +1,7 @@
 #include "BonusBox.h"
 
 BonusBox::BonusBox()
-	:	effectName( "Life" )
+	//:	effectName( "Life" )
 {
 	rect.x = 100;
 	rect.y = 100;
@@ -9,10 +9,7 @@ BonusBox::BonusBox()
 	rect.h =  40;//84
 }
 
-std::string BonusBox::GetName() const
-{
-	return effectName;
-}
+//std::string BonusBox::GetName() const { return effectName; }
 
 void BonusBox::SetTexture( SDL_Texture* generatedTexture )
 {

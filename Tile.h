@@ -3,7 +3,6 @@
 #include "GamePiece.h"
 #include "enums/TileType.h"
 
-
 struct Tile : GamePiece
 {
 	public:
@@ -16,9 +15,9 @@ struct Tile : GamePiece
 		return type;
 	}
 
-	size_t GetTileTypeAsIndex()
+	unsigned long GetTileTypeAsIndex()
 	{
-		return static_cast<size_t> ( type );
+		return static_cast<unsigned long > ( type );
 	}
 
 	unsigned int GetHitsLeft()
