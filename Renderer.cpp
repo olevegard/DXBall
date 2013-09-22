@@ -10,11 +10,12 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 
 	Renderer::Renderer()
 	:	window( nullptr )
 	,	renderer( nullptr )
-
+	,	gameState( GameState::MainMenu )
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	,	rmask( 0xff000000 )
 	,	gmask( 0x00ff0000 )
@@ -51,10 +52,12 @@
 	,	remotePlayerBallTexture( nullptr )
 	,	remotePlayerPaddle( nullptr )
 
-	,	font()
-	,	bigFont()
 	,	tinyFont()
-	,	textColor{ 0, 140, 0, 255 }
+	,	font()
+	,	mediumFont()
+	,	bigFont()
+
+	,	textColor{ 0, 140, 140, 255 }
 
 	,	localPlayerTextTexture( )
 	,	localPlayerTextRect( )
@@ -127,9 +130,6 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 
 	Setup();
 
-	LoadImages();
-
-	
 	if ( TTF_Init( ) == -1 )
 	{
 		std::cout << "Failed to initialize TTF : " << TTF_GetError() << std::endl;
@@ -139,6 +139,9 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 	if ( !LoadFontAndText() )
 		return false;
 
+
+	LoadImages();
+
 	CreateBonusBox( );
 	std::cout << "Init done\n";
 	return true;
@@ -147,6 +150,33 @@ bool Renderer::LoadImages()
 {
 	localPlayerBallTexture  = InitSurface( background.w, background.h, localPlayerColor );
 	remotePlayerBallTexture = InitSurface( background.w, background.h, remotePlayerColor );
+
+	// Menu mode
+	short margin = 30;
+	mainMenuBackground = LoadImage( "media/background.png" );
+	singlePlayerButtonRect.x = 10;
+	singlePlayerButtonRect.y = background.h - 100;
+	singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", textColor, singlePlayerButtonRect );
+
+	multiPlayerButtonRect.x = singlePlayerButtonRect.x + singlePlayerButtonRect.w + margin;
+	multiPlayerButtonRect.y = singlePlayerButtonRect.y;
+	multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Mulitplayer", textColor, multiPlayerButtonRect );
+
+	optionsButtonRect.x = multiPlayerButtonRect.x + multiPlayerButtonRect.w + margin;
+	optionsButtonRect.y = singlePlayerButtonRect.y;
+	optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", textColor, optionsButtonRect);
+
+	quitButtonRect.x = optionsButtonRect.x + optionsButtonRect.w + margin;
+	quitButtonRect.y = singlePlayerButtonRect.y;
+	quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", textColor, quitButtonRect );
+
+	mainMenuCaptionTexture = RenderTextTexture_Blended( hugeFont, "DX Ball", textColor, mainMenuCaptionRect );
+	mainMenuCaptionRect.x = ( background.w / 2 ) - ( mainMenuCaptionRect.w / 2 );
+	mainMenuCaptionRect.y = 100;
+
+	mainMenuSubCaptionTexture = RenderTextTexture_Blended( mediumFont, "A quite simple clone made by a weird guy", textColor, mainMenuSubCaptionRect );
+	mainMenuSubCaptionRect.x = ( background.w / 2 ) - ( mainMenuSubCaptionRect.w / 2 );
+	mainMenuSubCaptionRect.y = mainMenuCaptionRect.y  + mainMenuCaptionRect.h;//+ margin;
 
 	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileTextures.size() ; ++i )
@@ -173,6 +203,7 @@ bool Renderer::CreateRenderer()
 	}
 
 	SDL_RenderSetLogicalSize( renderer, background.w, background.h );
+
 
 	SDL_SetRenderDrawColor( renderer, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a );
 	SDL_RenderClear( renderer );
@@ -264,25 +295,21 @@ SDL_Texture* Renderer::LoadImage( const std::string &filename )
 	SDL_Surface* loadedImage = nullptr;
 
 	// Load the image
-	//loadedImage = IMG_Load( filename.c_str() );
+	loadedImage = IMG_Load( filename.c_str() );
 
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, loadedImage );
 
-	// If the image loaded
-	if ( loadedImage != nullptr )
-	{
+	// Free the old image
+	SDL_FreeSurface( loadedImage );
 
-	} else
+	// If the image loaded
+	if ( texture == nullptr )
 	{
 		std::cout << "Failed to load " << filename << std::endl;
 	}
 
-	// Free the old image
-	SDL_FreeSurface( loadedImage );
-
-	// Return the optimized image
-	return texture;
+		return texture;
 }
 SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 {
@@ -405,8 +432,25 @@ void Renderer::Render( )
 {
 	SDL_RenderClear( renderer );
 
-	RenderForeground();
-	RenderText();
+	if ( gameState == GameState::MainMenu )
+	{
+		SDL_RenderCopy( renderer, mainMenuBackground       , nullptr, &background );
+		SDL_RenderCopy( renderer, mainMenuCaptionTexture   , nullptr, &mainMenuCaptionRect );
+		SDL_RenderCopy( renderer, mainMenuSubCaptionTexture, nullptr, &mainMenuSubCaptionRect );
+
+
+
+		SDL_RenderCopy( renderer, singlePlayerButtonTexture, nullptr, &singlePlayerButtonRect);
+		SDL_RenderCopy( renderer, multiPlayerButtonTexture , nullptr, &multiPlayerButtonRect );
+		SDL_RenderCopy( renderer, optionsButtonTexture     , nullptr, &optionsButtonRect     );
+		SDL_RenderCopy( renderer, quitButtonTexture        , nullptr, &quitButtonRect        );
+
+	}
+	else
+	{
+		RenderForeground();
+		RenderText();
+	}
 
 	SDL_RenderPresent( renderer );
 }
@@ -456,9 +500,7 @@ void Renderer::RenderForeground()
 void Renderer::RenderText()
 {
 	if ( localPlayerTextTexture )
-	{
 		SDL_RenderCopy( renderer, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
-	}
 
 	if ( localPlayerCaptionTexture )
 		SDL_RenderCopy( renderer, localPlayerCaptionTexture , nullptr, &localPlayerCaptionRect  );
@@ -471,6 +513,7 @@ void Renderer::RenderText()
 
 	if ( localPlayerBallsTexture  )
 		SDL_RenderCopy( renderer, localPlayerBallsTexture, nullptr, &localPlayerBallsRect);
+
 	// Remote
 	if ( remotePlayerCaptionTexture )
 		SDL_RenderCopy( renderer, remotePlayerCaptionTexture , nullptr, &remotePlayerCaptionRect );
@@ -483,7 +526,9 @@ void Renderer::RenderText()
 
 	if ( remotePlayerBallsTexture  )
 		SDL_RenderCopy( renderer, remotePlayerBallsTexture, nullptr, &remotePlayerBallsRect);
-
+}
+void Renderer::RenderMenu()
+{
 
 }
 // ==============================================================================================
@@ -504,13 +549,17 @@ TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
 
 bool Renderer::LoadFontAndText()
 {
+	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 12 );
+
 	font = LoadFont( "media/fonts/sketchy.ttf", 28 );
+
+	mediumFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 41 );
 
 	bigFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 57 );
 
-	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 12 );
+	hugeFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 128 );
 
-	if ( bigFont == nullptr || font == nullptr || tinyFont == nullptr)
+	if ( bigFont == nullptr || font == nullptr || tinyFont == nullptr || mediumFont == nullptr || hugeFont == nullptr )
 	{
 		std::cout << "Fonts not initialized properly\n";
 		return false;
@@ -521,6 +570,26 @@ bool Renderer::LoadFontAndText()
 SDL_Texture* Renderer::RenderTextTexture_Solid(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color, SDL_Rect &rect )
 {
 	SDL_Surface* surface = TTF_RenderText_Solid( textFont, textToRender.c_str(), color );
+
+	if ( surface != nullptr )
+	{
+		rect.w = surface->clip_rect.w;
+		rect.h = surface->clip_rect.h;
+
+		SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, surface );
+
+		SDL_FreeSurface( surface );
+
+		return texture;
+	} else
+	{
+		std::cout << "Failed to create text surface..." << textFont << " " << textToRender << " \n";
+		return nullptr;
+	}
+}
+SDL_Texture* Renderer::RenderTextTexture_Blended(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color, SDL_Rect &rect )
+{
+	SDL_Surface* surface = TTF_RenderText_Blended( textFont, textToRender.c_str(), color );
 
 	if ( surface != nullptr )
 	{

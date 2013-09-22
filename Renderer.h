@@ -1,23 +1,21 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include <map>
 
+#include <memory>
+
 #include <string>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "GamePiece.h"
 #include "BonusBox.h"
 
+#include "enums/GameState.h"
+
 // Forward declarations
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-/*
-struct SDL_Rect;
-struct SDL_Window;
-struct SDL_Surface;
-struct SDL_Texture;
-*/
 struct Ball;
 struct Tile;
 struct Paddle;
@@ -75,6 +73,8 @@ private:
 	void RenderForeground();
 	void RenderText();
 
+	void RenderMenu();
+
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;
 	void FillSurface( SDL_Surface* source, const SDL_Color &color ) const;
 
@@ -95,7 +95,8 @@ private:
 	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
 
 	bool LoadFontAndText();
-	SDL_Texture* RenderTextTexture_Solid(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
+	SDL_Texture* RenderTextTexture_Solid  (  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
+	SDL_Texture* RenderTextTexture_Blended(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
 
 	void CalculateRemotePlayerTextureRects();
 
@@ -107,6 +108,8 @@ private:
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
+
+	GameState gameState;
 
 	unsigned int rmask;
 	unsigned int gmask;
@@ -145,9 +148,11 @@ private:
 
 	// Text
 	// =============================================
-	TTF_Font* font;
-	TTF_Font* bigFont;
 	TTF_Font* tinyFont;
+	TTF_Font* font;
+	TTF_Font* mediumFont;
+	TTF_Font* bigFont;
+	TTF_Font* hugeFont;
 
 	SDL_Color textColor;
 
@@ -196,5 +201,27 @@ private:
 	SDL_Texture*   remotePlayerBallsTexture;
 	SDL_Rect       remotePlayerBallsRect;
 	unsigned long  remotePlayerBallsValue;
+
+	// Menu mode
+	// =============================================
+	SDL_Texture*   mainMenuBackground;
+
+	SDL_Texture*   mainMenuCaptionTexture;
+	SDL_Rect       mainMenuCaptionRect;
+
+	SDL_Texture*   mainMenuSubCaptionTexture;
+	SDL_Rect       mainMenuSubCaptionRect;
+
+	SDL_Texture*   singlePlayerButtonTexture;
+	SDL_Rect       singlePlayerButtonRect;
+
+	SDL_Texture*   multiPlayerButtonTexture;
+	SDL_Rect       multiPlayerButtonRect;
+
+	SDL_Texture*   optionsButtonTexture;
+	SDL_Rect       optionsButtonRect;
+
+	SDL_Texture*   quitButtonTexture;
+	SDL_Rect       quitButtonRect;
 
 };
