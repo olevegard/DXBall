@@ -353,6 +353,8 @@ void GameManager::Run()
 
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;
+
+			menuManager.CheckItemMouseOver( event.motion.x, event.motion.y, renderer );
 		}
 
 		AIMove();
@@ -703,7 +705,7 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 
 void GameManager::CreateMenu()
 {
-	renderer.AddMenuButtons( "Single Player", "Multiplayer", "Options", "Quit" );
+	menuManager.AddMenuElememts( renderer );
 	//std::cout << r.x << std::endl;
 }
 

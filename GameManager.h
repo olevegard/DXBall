@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include "Renderer.h"
 #include "BoardLoader.h"
+#include "MenuManager.h"
 
 #include <vector>
 
@@ -78,6 +79,7 @@ class GameManager
 		BoardLoader boardLoader;
 		Renderer renderer;
 		Timer timer;
+		MenuManager menuManager;
 
 		std::shared_ptr < Paddle > localPaddle;
 		std::shared_ptr < Paddle > remotePaddle;
@@ -102,5 +104,4 @@ class GameManager
 
 		unsigned short fpsLimit;
 		double frameDuration;
-
 };

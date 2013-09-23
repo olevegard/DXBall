@@ -63,12 +63,20 @@ public:
 	void AddQuitButton( const std::string &quitString );
 	void CenterMenuButtons( );
 	void InitGreyAreaRect( );
+	SDL_Rect GetSinglePlayerRect() const;
+	SDL_Rect GetMultiplayerPlayerRect() const;
+	SDL_Rect GetOptionsPlayerRect() const;
+	SDL_Rect GetQuitPlayerRect() const;
+	void SetSinglePlayerUnderline( bool setUnderline );
+	void SetMultiplayerUnderline( bool setUnderline );
+	void SetOptionsUnderline( bool setUnderline );
+	void SetQuitUnderline( bool setUnderline );
 
 	void ForceMouseFocus();
 
-
 	void SetGameState( const GameState &gs );
 	void HideMouseCursor( bool hideCursor );
+
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -107,7 +115,7 @@ private:
 
 	bool LoadFontAndText();
 	SDL_Texture* RenderTextTexture_Solid  (  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
-	SDL_Texture* RenderTextTexture_Blended(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
+	SDL_Texture* RenderTextTexture_Blended(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect, int style = 0);
 
 	void CalculateRemotePlayerTextureRects();
 

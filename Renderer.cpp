@@ -226,7 +226,6 @@ void Renderer::ToggleFullscreen()
 }
 bool Renderer::SetFullscreen( bool fullscreenOn )
 {
-
 	std::cout << "Settting fullscreen...\n";
 	fullscreen = fullscreenOn;
 
@@ -620,9 +619,15 @@ SDL_Texture* Renderer::RenderTextTexture_Solid(  TTF_Font* textFont, const std::
 		return nullptr;
 	}
 }
-SDL_Texture* Renderer::RenderTextTexture_Blended(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color, SDL_Rect &rect )
+SDL_Texture* Renderer::RenderTextTexture_Blended(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color, SDL_Rect &rect, int style /* = 0 */ )
 {
+	if ( style != 0 )
+		TTF_SetFontStyle( textFont, style );
+
 	SDL_Surface* surface = TTF_RenderText_Blended( textFont, textToRender.c_str(), color);
+
+	if ( style != 0 )
+		TTF_SetFontStyle( textFont, TTF_STYLE_NORMAL );
 
 	if ( surface != nullptr )
 	{
@@ -832,6 +837,75 @@ void Renderer::AddQuitButton( const std::string &quitString )
 	CenterMenuButtons();
 }
 
+SDL_Rect Renderer::GetSinglePlayerRect() const
+{
+	return singlePlayerButtonRect;
+}
+SDL_Rect Renderer::GetMultiplayerPlayerRect() const
+{
+	return multiPlayerButtonRect;
+}
+SDL_Rect Renderer::GetOptionsPlayerRect() const
+{
+	return optionsButtonRect;
+}
+SDL_Rect Renderer::GetQuitPlayerRect() const
+{
+	return quitButtonRect;
+}
+
+void Renderer::SetSinglePlayerUnderline( bool setUnderline )
+{
+	SDL_DestroyTexture( singlePlayerButtonTexture );
+
+	if (setUnderline )
+	{
+		SDL_Color clr{ 0, 200, 200, 255};
+		singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", clr, singlePlayerButtonRect, TTF_STYLE_UNDERLINE);
+	} else
+	{
+		singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", textColor, singlePlayerButtonRect);
+	}
+}
+void Renderer::SetMultiplayerUnderline( bool setUnderline )
+{
+	SDL_DestroyTexture( multiPlayerButtonTexture );
+
+	if (setUnderline )
+	{
+		SDL_Color clr{ 0, 200, 200, 255};
+		multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Multiplayer", clr, multiPlayerButtonRect, TTF_STYLE_UNDERLINE);
+	} else
+	{
+		multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Multiplayer", textColor, multiPlayerButtonRect );
+	}
+}
+void Renderer::SetOptionsUnderline( bool setUnderline )
+{
+	SDL_DestroyTexture( optionsButtonTexture );
+
+	if (setUnderline )
+	{
+		SDL_Color clr{ 0, 200, 200, 255};
+		optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", clr, optionsButtonRect, TTF_STYLE_UNDERLINE);
+	} else
+	{
+		optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", textColor, optionsButtonRect );
+	}
+}
+void Renderer::SetQuitUnderline( bool setUnderline )
+{
+	SDL_DestroyTexture( quitButtonTexture );
+
+	if (setUnderline )
+	{
+		SDL_Color clr{ 0, 200, 200, 255};
+		quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", clr, quitButtonRect, TTF_STYLE_UNDERLINE);
+	} else
+	{
+		quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", textColor, quitButtonRect );
+	}
+}
 void Renderer::CenterMenuButtons( )
 {
 	int totoalWidth = ( quitButtonRect.x + quitButtonRect.w  ) - singlePlayerButtonRect.x;
