@@ -203,6 +203,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 	Vector2f direction = triggerBall->GetDirection();
 
 	if ( ballOwner == Player::Local )
+		// Force y dir to be positive ( down )
 		direction.y = ( direction.y > 0.0 ) ? direction.y : direction.y * -1.0;
 	else
 		direction.y = ( direction.y < 0.0 ) ? direction.y : direction.y * -1.0;
@@ -212,7 +213,6 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
-
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
