@@ -50,6 +50,7 @@ class GameManager
 			isTwoPlayerMode = isTwoPlayer;
 		}
 
+		void CreateMenu();
 
 		void SetFPSLimit( unsigned short limit );
 	private:
@@ -71,6 +72,8 @@ class GameManager
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
+
+		void CheckMouseClick( int x, int y );
 
 		BoardLoader boardLoader;
 		Renderer renderer;

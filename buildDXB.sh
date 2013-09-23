@@ -5,6 +5,7 @@ RunGame=false
 RunGDB=false
 RunValgrind=false
 RunProfiler=false
+RunTwoInstances=false
 
 ClearCompileOutput=false
 ForceFullCompile=false
@@ -63,31 +64,42 @@ echo "Building..."
 if make; then
 
 	# Check arguments
-	while getopts ":rvgcfp" opt; do
+	while getopts ":rvgcfpd" opt; do
 		case $opt in
 			r)
 				RunGame=true
 				RunGDB=false
 				RunValgrind=false
-                                RunProfiler=false
+				RunProfiler=false
+				RunTwoInstances=false
+				;;
+			d)
+				RunGame=false
+				RunGDB=false
+				RunValgrind=false
+				RunProfiler=false
+				RunTwoInstances=true
 				;;
 			v)
 				RunGame=false
 				RunValgrind=true
 				RunGDB=false
-                                RunProfiler=false
+				RunProfiler=false
+				RunTwoInstances=false
 				;;
 			g)
 				RunGame=false
 				RunGDB=true
 				RunValgrind=false
-                                RunProfiler=false
+				RunProfiler=false
+				RunTwoInstances=false
 				;;
 			p)
 				RunGame=false
 				RunGDB=false
 				RunValgrind=false
-                                RunProfiler=true
+				RunProfiler=true
+				RunTwoInstances=false
 				;;
 			c)
 				ClearCompileOutput=true
@@ -118,10 +130,16 @@ if make; then
 		echo -e "\tNormal mode"
 		echo -e "\tCommand : " $RunString
 		echo "=============================== DX Balll ==============================="
-#Run, without bloacking
-		$RunString &
-#$RunString &
+		$RunString
 	fi
+	if $RunTwoInstances ; then
+		echo -e "\tNormal mode"
+		echo -e "\tCommand : " $RunString
+		echo "=============================== DX Balll ==============================="
+		$RunString & # Run without blocking
+		$RunString
+	fi
+
 
 	if $RunGDB ; then
 		echo -e "\tDebug mode"

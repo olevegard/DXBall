@@ -62,11 +62,11 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	renderer.RenderPoints   ( localPlayerPoints, Player::Local );
 	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
 
-
 	renderer.RenderLives    ( remotePlayerLives , Player::Remote );
 	renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
 	renderer.RenderBallCount( remotePlayerPoints, Player::Remote );
 
+	CreateMenu();
 	return true;
 }
 
@@ -192,6 +192,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
 	}
 
+	randMax = 100000;
 	if ( Math::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) != 1 )
 		return;
 
@@ -305,6 +306,9 @@ void GameManager::Run()
 						break;
 					case SDLK_r:
 						++localPlayerLives;
+						break;
+					case SDLK_s:
+						renderer.SetGameState( GameState::InGame );
 						break;
 					case SDLK_c:
 						ClearBoard();
@@ -697,3 +701,16 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 	}
 }
 
+void GameManager::CreateMenu()
+{
+	SDL_Rect r = renderer.AddSinglePlayerButton( "Single Player" );
+	renderer.AddMultiplayerButton( "Multiplayer" );
+	renderer.AddOptionsButton( "Options" );
+	renderer.AddQuitButton( "Quit" );
+	std::cout << r.x << std::endl;
+}
+
+void GameManager::CheckMouseClick( int x, int y )
+{
+	std::cout << "mouse click " << x << " , " << y << std::endl;
+}

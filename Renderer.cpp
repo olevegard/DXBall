@@ -16,6 +16,7 @@
 	:	window( nullptr )
 	,	renderer( nullptr )
 	,	gameState( GameState::MainMenu )
+
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	,	rmask( 0xff000000 )
 	,	gmask( 0x00ff0000 )
@@ -33,8 +34,8 @@
 	,	screenFlags( SDL_WINDOW_OPENGL  )
 	,	fullscreen( false )
 	,	backgroundColor{ 0, 0, 0, 255 }// 40, 20, 40, 255
-
-	,	tileColors{ {48, 9, 178, 255}, {255, 55, 13, 255}, {0, 0, 0, 255}, {255, 183, 13, 255} }
+								/*uuuuunnuuuuuusesssd*/
+	,	tileColors{ {48, 9, 178, 255}, {255, 55, 13, 255}, {140, 140, 140, 255}, {255, 183, 13, 255} }
 	,	tileTextures{ nullptr, nullptr, nullptr, nullptr }
 	,	hardTileColors{ { 255, 243, 233, 255}, { 222, 212, 203, 255}, { 191, 183, 175, 255},{ 127, 122, 117, 255}, { 64, 61, 58, 255} }
 	,	hardTileTextures{ nullptr, nullptr, nullptr, nullptr, nullptr }
@@ -94,6 +95,22 @@
 	,	remotePlayerBallsTexture( )
 	,	remotePlayerBallsRect( )
 	,	remotePlayerBallsValue( 0 )
+
+	,	margin( 30 )
+	,	singlePlayerButtonTexture( nullptr )
+	,	singlePlayerButtonRect( )
+
+	,	multiPlayerButtonTexture( nullptr )
+	,	multiPlayerButtonRect(  )
+
+	,	optionsButtonTexture( nullptr )
+	,	optionsButtonRect(  )
+
+	,	quitButtonTexture( nullptr )
+	,	quitButtonRect( )
+
+	,	greyAreaTexture( nullptr )
+	,	greyAreaRect( )
 {
 }
 
@@ -146,48 +163,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 	std::cout << "Init done\n";
 	return true;
 }
-bool Renderer::LoadImages()
-{
-	localPlayerBallTexture  = InitSurface( background.w, background.h, localPlayerColor );
-	remotePlayerBallTexture = InitSurface( background.w, background.h, remotePlayerColor );
 
-	// Menu mode
-	short margin = 30;
-	mainMenuBackground = LoadImage( "media/background.png" );
-	singlePlayerButtonRect.x = 10;
-	singlePlayerButtonRect.y = background.h - 100;
-	singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", textColor, singlePlayerButtonRect );
-
-	multiPlayerButtonRect.x = singlePlayerButtonRect.x + singlePlayerButtonRect.w + margin;
-	multiPlayerButtonRect.y = singlePlayerButtonRect.y;
-	multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Mulitplayer", textColor, multiPlayerButtonRect );
-
-	optionsButtonRect.x = multiPlayerButtonRect.x + multiPlayerButtonRect.w + margin;
-	optionsButtonRect.y = singlePlayerButtonRect.y;
-	optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", textColor, optionsButtonRect);
-
-	quitButtonRect.x = optionsButtonRect.x + optionsButtonRect.w + margin;
-	quitButtonRect.y = singlePlayerButtonRect.y;
-	quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", textColor, quitButtonRect );
-
-	mainMenuCaptionTexture = RenderTextTexture_Blended( hugeFont, "DX Ball", textColor, mainMenuCaptionRect );
-	mainMenuCaptionRect.x = ( background.w / 2 ) - ( mainMenuCaptionRect.w / 2 );
-	mainMenuCaptionRect.y = 100;
-
-	mainMenuSubCaptionTexture = RenderTextTexture_Blended( mediumFont, "A quite simple clone made by a weird guy", textColor, mainMenuSubCaptionRect );
-	mainMenuSubCaptionRect.x = ( background.w / 2 ) - ( mainMenuSubCaptionRect.w / 2 );
-	mainMenuSubCaptionRect.y = mainMenuCaptionRect.y  + mainMenuCaptionRect.h;//+ margin;
-
-	std::cout << "Adding tile surfaces : " << std::endl;
-	for ( size_t i = 0; i < tileTextures.size() ; ++i )
-		SetTileColorSurface( i, tileColors[ i ], tileTextures );
-
-	std::cout << "Adding hard tile surfaces : " << std::endl;
-	for ( size_t i = 0; i < hardTileTextures.size() ; ++i )
-		SetTileColorSurface( i, hardTileColors[ i ], hardTileTextures );
-
-	return true;
-}
 // ============================================================================================
 // ===================================== Setup ================================================
 // ============================================================================================
@@ -251,7 +227,35 @@ bool Renderer::SetFullscreen( bool fullscreenOn )
 // ============================================================================================
 // ================================ Texture helpers ===========================================
 // ============================================================================================
+bool Renderer::LoadImages()
+{
+	localPlayerBallTexture  = InitSurface( background.w, background.h, localPlayerColor );
+	remotePlayerBallTexture = InitSurface( background.w, background.h, remotePlayerColor );
 
+	// Menu mode
+	mainMenuBackground = InitSurface( background.w, background.h, 0, 0, 0 );
+	//mainMenuBackground = LoadImage( "media/background.png" );
+
+	mainMenuCaptionTexture = RenderTextTexture_Blended( hugeFont, "DX Ball", textColor, mainMenuCaptionRect );
+	mainMenuCaptionRect.x = ( background.w / 2 ) - ( mainMenuCaptionRect.w / 2 );
+	mainMenuCaptionRect.y = 0;
+
+	mainMenuSubCaptionTexture = RenderTextTexture_Blended( mediumFont, "A quite simple clone made by a weird guy", textColor, mainMenuSubCaptionRect );
+	mainMenuSubCaptionRect.x = ( background.w / 2 ) - ( mainMenuSubCaptionRect.w / 2 );
+	mainMenuSubCaptionRect.y = mainMenuCaptionRect.y  + mainMenuCaptionRect.h;//+ margin;
+
+	InitGreyAreaRect();
+
+	std::cout << "Adding tile surfaces : " << std::endl;
+	for ( size_t i = 0; i < tileTextures.size() ; ++i )
+		SetTileColorSurface( i, tileColors[ i ], tileTextures );
+
+	std::cout << "Adding hard tile surfaces : " << std::endl;
+	for ( size_t i = 0; i < hardTileTextures.size() ; ++i )
+		SetTileColorSurface( i, hardTileColors[ i ], hardTileTextures );
+
+	return true;
+}
 void Renderer::CreateBonusBox( )
 {
 	}
@@ -359,7 +363,7 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
 	//std::string bonusText = bonusBox->GetName();
 
-	int margin = bonusBoxRect.w / 10;
+	int bonusBoxMargin = bonusBoxRect.w / 10;
 	int doubleMargin = margin * 2;
 
 	// Background
@@ -375,14 +379,14 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 	SDL_Rect textPosition;
 	textPosition.w = surface->clip_rect.w;
 	textPosition.h = surface->clip_rect.h;
-	textPosition.x = margin + ( ( bonusBoxRect.w - doubleMargin  ) /  2 ) - ( textPosition.w / 2  );
+	textPosition.x = bonusBoxMargin + ( ( bonusBoxRect.w - doubleMargin  ) /  2 ) - ( textPosition.w / 2  );
 	textPosition.y = bonusBoxRect.h - surface->clip_rect.h;
 	*/
 
 	// Icon
 	SDL_Rect logoPosition;
-	logoPosition.x = margin;
-	logoPosition.y = margin;
+	logoPosition.x = bonusBoxMargin;
+	logoPosition.y = bonusBoxMargin;
 	logoPosition.w = bonusBoxRect.w - doubleMargin;
 	logoPosition.h = bonusBoxRect.w - doubleMargin;
 	SDL_Surface* logo = SDL_CreateRGBSurface( 0, logoPosition.w, logoPosition.h, SCREEN_BPP, rmask, gmask, bmask, amask);
@@ -424,7 +428,6 @@ void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 	remotePlayerPaddle = InitSurface( localPaddle->rect, remotePlayerColor );
 }
 
-
 // ============================================================================================
 // ================================= Renderering ==============================================
 // ============================================================================================
@@ -432,27 +435,18 @@ void Renderer::Render( )
 {
 	SDL_RenderClear( renderer );
 
-	if ( gameState == GameState::MainMenu )
+		if ( gameState == GameState::MainMenu )
 	{
-		SDL_RenderCopy( renderer, mainMenuBackground       , nullptr, &background );
-		SDL_RenderCopy( renderer, mainMenuCaptionTexture   , nullptr, &mainMenuCaptionRect );
-		SDL_RenderCopy( renderer, mainMenuSubCaptionTexture, nullptr, &mainMenuSubCaptionRect );
-
-
-
-		SDL_RenderCopy( renderer, singlePlayerButtonTexture, nullptr, &singlePlayerButtonRect);
-		SDL_RenderCopy( renderer, multiPlayerButtonTexture , nullptr, &multiPlayerButtonRect );
-		SDL_RenderCopy( renderer, optionsButtonTexture     , nullptr, &optionsButtonRect     );
-		SDL_RenderCopy( renderer, quitButtonTexture        , nullptr, &quitButtonRect        );
-
+		RenderMenu();
 	}
 	else
 	{
+		
+
 		RenderForeground();
 		RenderText();
 	}
-
-	SDL_RenderPresent( renderer );
+		SDL_RenderPresent( renderer );
 }
 void Renderer::RenderForeground()
 {
@@ -529,11 +523,36 @@ void Renderer::RenderText()
 }
 void Renderer::RenderMenu()
 {
+	if( mainMenuBackground )
+		SDL_RenderCopy( renderer, mainMenuBackground       , nullptr, &background );
+
+	if ( greyAreaTexture )
+		SDL_RenderCopy( renderer, greyAreaTexture, nullptr, &greyAreaRect );
+
+	if( mainMenuCaptionTexture )
+		SDL_RenderCopy( renderer, mainMenuCaptionTexture   , nullptr, &mainMenuCaptionRect );
+
+	if( mainMenuSubCaptionTexture )
+		SDL_RenderCopy( renderer, mainMenuSubCaptionTexture, nullptr, &mainMenuSubCaptionRect );
+
+	if( singlePlayerButtonTexture )
+		SDL_RenderCopy( renderer, singlePlayerButtonTexture, nullptr, &singlePlayerButtonRect);
+
+	if( multiPlayerButtonTexture )
+		SDL_RenderCopy( renderer, multiPlayerButtonTexture , nullptr, &multiPlayerButtonRect );
+
+	if( optionsButtonTexture  )
+		SDL_RenderCopy( renderer, optionsButtonTexture     , nullptr, &optionsButtonRect     );
+
+	if( quitButtonTexture  )
+		SDL_RenderCopy( renderer, quitButtonTexture        , nullptr, &quitButtonRect        );
+
 
 }
 // ==============================================================================================
 // ================================= Text handling ==============================================
 // ==============================================================================================
+//
 TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
 {
 	TTF_Font* tempFont = TTF_OpenFont( fontName.c_str(), fontSize );
@@ -557,7 +576,7 @@ bool Renderer::LoadFontAndText()
 
 	bigFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 57 );
 
-	hugeFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 128 );
+	hugeFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 100 );
 
 	if ( bigFont == nullptr || font == nullptr || tinyFont == nullptr || mediumFont == nullptr || hugeFont == nullptr )
 	{
@@ -589,7 +608,7 @@ SDL_Texture* Renderer::RenderTextTexture_Solid(  TTF_Font* textFont, const std::
 }
 SDL_Texture* Renderer::RenderTextTexture_Blended(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color, SDL_Rect &rect )
 {
-	SDL_Surface* surface = TTF_RenderText_Blended( textFont, textToRender.c_str(), color );
+	SDL_Surface* surface = TTF_RenderText_Blended( textFont, textToRender.c_str(), color);
 
 	if ( surface != nullptr )
 	{
@@ -762,9 +781,61 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player  )
 		}
 	}
 }
+
+SDL_Rect Renderer::AddSinglePlayerButton( std::string singlePlayerString )
+{
+	singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, singlePlayerString, textColor, singlePlayerButtonRect );
+
+	singlePlayerButtonRect.x = margin / 2;
+	singlePlayerButtonRect.y = background.h - ( ( background.h - greyAreaRect.h ) / 2)  + ( singlePlayerButtonRect.h );
+
+	return singlePlayerButtonRect;
+}
+void Renderer::AddMultiplayerButton( std::string multiplayerString )
+{
+	multiPlayerButtonRect.x = singlePlayerButtonRect.x + singlePlayerButtonRect.w + margin;
+	multiPlayerButtonRect.y = singlePlayerButtonRect.y;
+	multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, multiplayerString, textColor, multiPlayerButtonRect );
+}
+void Renderer::AddOptionsButton( std::string optionsString )
+{
+	optionsButtonRect.x = multiPlayerButtonRect.x + multiPlayerButtonRect.w + margin;
+	optionsButtonRect.y = singlePlayerButtonRect.y;
+	optionsButtonTexture = RenderTextTexture_Blended( mediumFont, optionsString, textColor, optionsButtonRect);
+}
+void Renderer::AddQuitButton( std::string quitString )
+{
+	quitButtonRect.x = optionsButtonRect.x + optionsButtonRect.w + margin;
+	quitButtonRect.y = singlePlayerButtonRect.y;
+	quitButtonTexture = RenderTextTexture_Blended( mediumFont, quitString, textColor, quitButtonRect );
+	CenterMenuButtons();
+}
+
+void Renderer::CenterMenuButtons( )
+{
+	int totoalWidth = ( quitButtonRect.x + quitButtonRect.w  ) - singlePlayerButtonRect.x;
+	int freeSpace = background.w - totoalWidth;
+	int startingPoint = freeSpace / 2;
+
+	singlePlayerButtonRect.x = startingPoint;
+	multiPlayerButtonRect.x = singlePlayerButtonRect.x + singlePlayerButtonRect.w + margin;
+	optionsButtonRect.x = multiPlayerButtonRect.x + multiPlayerButtonRect.w + margin;
+	quitButtonRect.x = optionsButtonRect.x + optionsButtonRect.w + margin;
+
+}
+void Renderer::InitGreyAreaRect( )
+{
+	greyAreaRect.w = background.w;
+	int heightCutoff = mainMenuSubCaptionRect.y + mainMenuSubCaptionRect.h;
+
+	greyAreaRect.h = background.h - heightCutoff * 2;
+	greyAreaRect.x = 0;
+	greyAreaRect.y = ( background.h - greyAreaRect.h ) / 2;
+
+	greyAreaTexture = InitSurface( background.w, background.h, 120, 120, 120 );
+}
 void Renderer::CalculateRemotePlayerTextureRects()
 {
-
 	// Set remaning text rects based on caption rect
 	remotePlayerPointsRect.x = background.w - remotePlayerPointsRect.w - 20;
 	remotePlayerPointsRect.y = localPlayerPointsRect.y;// remotePlayerLivesRect.y + remotePlayerLivesRect.h  + 20;

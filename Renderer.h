@@ -56,7 +56,19 @@ public:
 	void RenderPoints( unsigned long pointCount, const Player &player  );
 	void RenderBallCount( unsigned long ballCount, const Player &player  );
 
+	SDL_Rect AddSinglePlayerButton( std::string singlePlayerString );
+	void AddMultiplayerButton( std::string multiplayerString );
+	void AddOptionsButton( std::string optionsString );
+	void AddQuitButton( std::string quitString );
+	void CenterMenuButtons( );
+	void InitGreyAreaRect( );
+
 	void ForceMouseFocus();
+
+	void SetGameState( const GameState &gs )
+	{
+		gameState = gs;
+	}
 
 private:
 	Renderer( const Renderer &renderer );
@@ -105,6 +117,7 @@ private:
 	void CleanUpLists();
 	void CleanUpTTF();
 	void QuitSDL();
+
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -204,6 +217,7 @@ private:
 
 	// Menu mode
 	// =============================================
+	short margin;
 	SDL_Texture*   mainMenuBackground;
 
 	SDL_Texture*   mainMenuCaptionTexture;
@@ -224,4 +238,6 @@ private:
 	SDL_Texture*   quitButtonTexture;
 	SDL_Rect       quitButtonRect;
 
+	SDL_Texture*   greyAreaTexture;
+	SDL_Rect       greyAreaRect;
 };
