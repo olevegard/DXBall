@@ -448,14 +448,12 @@ void Renderer::Render( )
 {
 	SDL_RenderClear( renderer );
 
-		if ( gameState == GameState::MainMenu )
+	if ( gameState == GameState::MainMenu )
 	{
 		RenderMenu();
 	}
 	else
 	{
-		
-
 		RenderForeground();
 		RenderText();
 	}
@@ -861,7 +859,7 @@ void Renderer::SetSinglePlayerUnderline( bool setUnderline )
 	if (setUnderline )
 	{
 		SDL_Color clr{ 0, 200, 200, 255};
-		singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", clr, singlePlayerButtonRect, TTF_STYLE_UNDERLINE);
+		singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", clr, singlePlayerButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
 	} else
 	{
 		singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", textColor, singlePlayerButtonRect);
@@ -874,7 +872,7 @@ void Renderer::SetMultiplayerUnderline( bool setUnderline )
 	if (setUnderline )
 	{
 		SDL_Color clr{ 0, 200, 200, 255};
-		multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Multiplayer", clr, multiPlayerButtonRect, TTF_STYLE_UNDERLINE);
+		multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Multiplayer", clr, multiPlayerButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
 	} else
 	{
 		multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Multiplayer", textColor, multiPlayerButtonRect );
@@ -887,7 +885,7 @@ void Renderer::SetOptionsUnderline( bool setUnderline )
 	if (setUnderline )
 	{
 		SDL_Color clr{ 0, 200, 200, 255};
-		optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", clr, optionsButtonRect, TTF_STYLE_UNDERLINE);
+		optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", clr, optionsButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
 	} else
 	{
 		optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", textColor, optionsButtonRect );
@@ -900,7 +898,7 @@ void Renderer::SetQuitUnderline( bool setUnderline )
 	if (setUnderline )
 	{
 		SDL_Color clr{ 0, 200, 200, 255};
-		quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", clr, quitButtonRect, TTF_STYLE_UNDERLINE);
+		quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", clr, quitButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
 	} else
 	{
 		quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", textColor, quitButtonRect );

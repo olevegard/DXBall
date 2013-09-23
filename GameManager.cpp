@@ -353,8 +353,11 @@ void GameManager::Run()
 
 			if ( localPaddle->rect.x  <= 0  )
 				localPaddle->rect.x = 0;
-
-			menuManager.CheckItemMouseOver( event.motion.x, event.motion.y, renderer );
+		
+			if ( event.button.type == SDL_MOUSEBUTTONDOWN )
+				menuManager.CheckItemMouseClick( event.motion.x, event.motion.y );
+			else
+				menuManager.CheckItemMouseOver( event.motion.x, event.motion.y, renderer );
 		}
 
 		AIMove();
