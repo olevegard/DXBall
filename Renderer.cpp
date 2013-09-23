@@ -189,10 +189,9 @@ bool Renderer::CreateRenderer()
 }
 void Renderer::Setup()
 {
-	//SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+	SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-	// Hide cursor
-	SDL_ShowCursor( SDL_DISABLE );
+	HideMouseCursor( false );
 }
 bool Renderer::CreateWindow()
 {
@@ -205,6 +204,21 @@ bool Renderer::CreateWindow()
 	}
 
 	return true;
+}
+void Renderer::SetGameState( const GameState &gs )
+{
+	gameState = gs;
+	if ( gameState == GameState::InGame )
+		HideMouseCursor( true );
+	else
+		HideMouseCursor( false );
+}
+void Renderer::HideMouseCursor( bool hideCursor )
+{
+	if ( hideCursor )
+		SDL_ShowCursor( SDL_DISABLE );
+	else
+		SDL_ShowCursor( SDL_ENABLE );
 }
 void Renderer::ToggleFullscreen()
 {
@@ -782,28 +796,35 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player  )
 	}
 }
 
-SDL_Rect Renderer::AddSinglePlayerButton( std::string singlePlayerString )
+void Renderer::AddMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
+{
+	AddSinglePlayerButton( singlePlayerString );
+	AddMultiplayerButton( multiplayerString );
+	AddOptionsButton( optionsString );
+	AddQuitButton( quitString );
+
+	CenterMenuButtons( );
+}
+void Renderer::AddSinglePlayerButton( const std::string &singlePlayerString )
 {
 	singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, singlePlayerString, textColor, singlePlayerButtonRect );
 
 	singlePlayerButtonRect.x = margin / 2;
 	singlePlayerButtonRect.y = background.h - ( ( background.h - greyAreaRect.h ) / 2)  + ( singlePlayerButtonRect.h );
-
-	return singlePlayerButtonRect;
 }
-void Renderer::AddMultiplayerButton( std::string multiplayerString )
+void Renderer::AddMultiplayerButton( const std::string &multiplayerString )
 {
 	multiPlayerButtonRect.x = singlePlayerButtonRect.x + singlePlayerButtonRect.w + margin;
 	multiPlayerButtonRect.y = singlePlayerButtonRect.y;
 	multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, multiplayerString, textColor, multiPlayerButtonRect );
 }
-void Renderer::AddOptionsButton( std::string optionsString )
+void Renderer::AddOptionsButton( const std::string &optionsString )
 {
 	optionsButtonRect.x = multiPlayerButtonRect.x + multiPlayerButtonRect.w + margin;
 	optionsButtonRect.y = singlePlayerButtonRect.y;
 	optionsButtonTexture = RenderTextTexture_Blended( mediumFont, optionsString, textColor, optionsButtonRect);
 }
-void Renderer::AddQuitButton( std::string quitString )
+void Renderer::AddQuitButton( const std::string &quitString )
 {
 	quitButtonRect.x = optionsButtonRect.x + optionsButtonRect.w + margin;
 	quitButtonRect.y = singlePlayerButtonRect.y;

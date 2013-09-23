@@ -56,20 +56,19 @@ public:
 	void RenderPoints( unsigned long pointCount, const Player &player  );
 	void RenderBallCount( unsigned long ballCount, const Player &player  );
 
-	SDL_Rect AddSinglePlayerButton( std::string singlePlayerString );
-	void AddMultiplayerButton( std::string multiplayerString );
-	void AddOptionsButton( std::string optionsString );
-	void AddQuitButton( std::string quitString );
+	void AddMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
+	void AddSinglePlayerButton( const std::string &singlePlayerString );
+	void AddMultiplayerButton( const std::string &multiplayerString );
+	void AddOptionsButton( const std::string &optionsString );
+	void AddQuitButton( const std::string &quitString );
 	void CenterMenuButtons( );
 	void InitGreyAreaRect( );
 
 	void ForceMouseFocus();
 
-	void SetGameState( const GameState &gs )
-	{
-		gameState = gs;
-	}
 
+	void SetGameState( const GameState &gs );
+	void HideMouseCursor( bool hideCursor );
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );

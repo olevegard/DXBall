@@ -703,11 +703,8 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 
 void GameManager::CreateMenu()
 {
-	SDL_Rect r = renderer.AddSinglePlayerButton( "Single Player" );
-	renderer.AddMultiplayerButton( "Multiplayer" );
-	renderer.AddOptionsButton( "Options" );
-	renderer.AddQuitButton( "Quit" );
-	std::cout << r.x << std::endl;
+	renderer.AddMenuButtons( "Single Player", "Multiplayer", "Options", "Quit" );
+	//std::cout << r.x << std::endl;
 }
 
 void GameManager::CheckMouseClick( int x, int y )
