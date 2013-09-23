@@ -192,7 +192,6 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
 	}
 
-	randMax = 100000;
 	if ( Math::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) != 1 )
 		return;
 
