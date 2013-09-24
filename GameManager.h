@@ -80,8 +80,6 @@ class GameManager
 
 		void DoFPSDelay( unsigned int ticks );
 
-		GameState currentGameState;
-
 		BoardLoader boardLoader;
 		Renderer renderer;
 		Timer timer;

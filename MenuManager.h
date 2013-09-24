@@ -20,12 +20,14 @@ public:
 
 	GameState GetGameState() const;
 	void SetGameState( GameState gs );
+
+	bool HasGameStateChanged();
 private:
 	MenuItemType CheckIntersections( int x, int y );
 	void RemoevAllUnderscores( Renderer &renderer  );
 
 	GameState currentGameState;
-	GameState prevGameState;
+	bool hasGameStateChanged;
 
 	MenuItem singlePlayer;
 	MenuItem multiPlayer;

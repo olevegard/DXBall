@@ -59,9 +59,6 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
 	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
-	currentGameState  = GameState::MainMenu;
-
-
 	CreateMenu();
 
 	return true;
@@ -259,6 +256,7 @@ void GameManager::Run()
 	SDL_Event event;
 
 	unsigned int ticks;
+
 	while ( !quit )
 	{
 		ticks = SDL_GetTicks();
@@ -302,15 +300,19 @@ void GameManager::Run()
 			{
 				//if ( SDL_WINDOWEVENT_LEAVE ) renderer.ForceMouseFocus();
 			}
-
-			HandleMouseEvent( event.button );
-			currentGameState = menuManager.GetGameState();
+			if ( event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP )
+				HandleMouseEvent( event.button );
 		}
-
-		if ( menuManager.GetGameState() == GameState::Quit )
-			quit = true;
-		else if ( menuManager.GetGameState() == GameState::InGame )
-			renderer.SetGameState( GameState::InGame );
+		if ( menuManager.HasGameStateChanged() )
+		{
+			if ( menuManager.GetGameState() == GameState::Quit )
+				quit = true;
+			else if ( menuManager.GetGameState() == GameState::InGame )
+			{
+				Restart();
+				renderer.SetGameState( GameState::InGame );
+			}
+		}
 
 		Update( timer.GetDelta( ) );
 
@@ -330,13 +332,20 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
+	if ( menuManager.GetGameState() != GameState::InGame )
+	{
+		renderer.Render( );
+		return;
+	}
+
 	AIMove();
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
-	UpdateGUI();
 
 	if ( IsLevelDone() )
 		GenerateBoard();
+
+	UpdateGUI();
 }
 void GameManager::AIMove()
 {
@@ -654,13 +663,10 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 			remotePlayerPoints += points[ tileType ];
 	}
 }
-
 void GameManager::CreateMenu()
 {
 	menuManager.AddMenuElememts( renderer );
-	//std::cout << r.x << std::endl;
 }
-
 void GameManager::SetLocalPaddlePosition( int x, int y )
 {
 	if ( x != 0 && y != 0 )
@@ -675,15 +681,15 @@ void GameManager::SetLocalPaddlePosition( int x, int y )
 }
 void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
-	if ( currentGameState == GameState::InGame )
+	if ( menuManager.GetGameState() == GameState::InGame )
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 
 	if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 	{
-		if ( menuManager.CheckItemMouseClick( buttonEvent.x, buttonEvent.y ) && menuManager.GetGameState() == GameState::InGame )
-			Restart();
+		menuManager.CheckItemMouseClick( buttonEvent.x, buttonEvent.y );
 	}
 	else
+	{
 		menuManager.CheckItemMouseOver( buttonEvent.x, buttonEvent.y, renderer );
-
+	}
 }

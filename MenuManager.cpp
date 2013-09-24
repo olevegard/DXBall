@@ -5,11 +5,14 @@
 #include "math/RectHelpers.h"
 
 MenuManager::MenuManager()
-	:	singlePlayer( "Single Player", SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::SinglePlayer )
+	:	currentGameState( GameState::MainMenu )
+
+	,	hasGameStateChanged( false )
+
+	,	singlePlayer( "Single Player", SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::SinglePlayer )
 	,	multiPlayer ( "Multiplayer"  , SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::MultiPlayer )
 	,	options     ( "Options"      , SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::Options )
 	,	quit        ( "Quit"         , SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::Quit )
-	//,	currentState( GameState::MainMenu )
 {
 
 }
@@ -96,8 +99,17 @@ GameState MenuManager::GetGameState() const
 
 void MenuManager::SetGameState( GameState gs )
 {
-	prevGameState = currentGameState;
+	hasGameStateChanged = true;
 	currentGameState = gs;
 }
+bool MenuManager::HasGameStateChanged()
+{
+	if ( hasGameStateChanged )
+	{
+		hasGameStateChanged = false;
+		return true;
+	}
 
+	return false;
+}
 
