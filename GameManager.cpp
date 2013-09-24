@@ -58,15 +58,10 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
 	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
-	renderer.RenderLives    ( localPlayerLives , Player::Local );
-	renderer.RenderPoints   ( localPlayerPoints, Player::Local );
-	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
-
-	renderer.RenderLives    ( remotePlayerLives , Player::Remote );
-	renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
-	renderer.RenderBallCount( remotePlayerPoints, Player::Remote );
+	UpdateGUI();
 
 	CreateMenu();
+
 	return true;
 }
 
@@ -103,15 +98,7 @@ void GameManager::Restart()
 	remotePlayerLives = 3;
 	remotePlayerActiveBalls = 0;
 
-	renderer.RenderLives( localPlayerLives, Player::Local );
-	renderer.RenderPoints( localPlayerPoints, Player::Local );
-	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
-
-	renderer.RenderLives( remotePlayerLives, Player::Remote );
-	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
-	renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
-
-	renderer.RenderText( "Press enter to start", Player::Local );
+	UpdateGUI();
 }
 
 void GameManager::AddBall( Player owner )
@@ -269,17 +256,9 @@ void GameManager::Run()
 	bool quit = false;
 	SDL_Event event;
 
-	double tileWidth = localPaddle->rect.w;
-	double halfTileWidth = tileWidth / 2;
-
 	unsigned int ticks;
 	while ( !quit )
 	{
-		bool delay1 = false;
-		bool delay2 = false;
-		bool delay3 = false;
-		bool delay4 = false;
-
 		ticks = SDL_GetTicks();
 
 		while ( SDL_PollEvent( &event ) )
@@ -307,31 +286,10 @@ void GameManager::Run()
 						++localPlayerLives;
 						break;
 					case SDLK_s:
+						renderer.SetGameState( GameState::InGame );
 						break;
 					case SDLK_c:
 						ClearBoard();
-						break;
-					case SDLK_t:
-						std::cout << "Tile respawned\n";
-						break;
-					case SDLK_1:
-						std::cout << "Delay added\n";
-						delay1 = true;
-						break;
-					case SDLK_2:
-						std::cout << "Delay added\n";
-						delay2 = true;
-						break;
-					case SDLK_3:
-						std::cout << "Delay added\n";
-						delay3 = true;
-						break;
-					case SDLK_4:
-						std::cout << "Delay added\n";
-						delay4 = true;
-						break;
-					case SDLK_p:
-						//std::cin.ignore();
 						break;
 					default:
 						break;
@@ -343,19 +301,7 @@ void GameManager::Run()
 				//if ( SDL_WINDOWEVENT_LEAVE ) renderer.ForceMouseFocus();
 			}
 
-			if ( event.motion.x != 0 && event.motion.y != 0 )
-				localPaddle->rect.x = static_cast< double > ( event.motion.x ) - halfTileWidth;
-
-			if ( ( localPaddle->rect.x + tileWidth ) > windowSize.w )
-				localPaddle->rect.x = static_cast< double > ( windowSize.w ) - tileWidth;
-
-			if ( localPaddle->rect.x  <= 0  )
-				localPaddle->rect.x = 0;
-		
-			if ( event.button.type == SDL_MOUSEBUTTONDOWN )
-				menuManager.CheckItemMouseClick( event.motion.x, event.motion.y );
-			else
-				menuManager.CheckItemMouseOver( event.motion.x, event.motion.y, renderer );
+			HandleMouseEvent( event.button );
 		}
 
 		if ( menuManager.GetGameState() == GameState::Quit )
@@ -363,39 +309,31 @@ void GameManager::Run()
 		else if ( menuManager.GetGameState() == GameState::InGame )
 			renderer.SetGameState( GameState::InGame );
 
-		AIMove();
+		Update( timer.GetDelta( ) );
 
-		double delta = timer.GetDelta( );
-		//std::cout << "Delta : " << delta << std::endl;
-		UpdateBalls( delta );
-		UpdateBonusBoxes( delta );
-		UpdateGUI();
-
-		if ( IsLevelDone() )
-			GenerateBoard();
-		unsigned int diff = SDL_GetTicks() - ticks;
-
-		if ( fpsLimit > 0 && diff < frameDuration )
-		{
-			unsigned short delay = static_cast< unsigned short > ( ( frameDuration  - diff  ) + 0.5 );
-
-			if ( diff < 60 )
-			{
-				SDL_Delay( delay );
-			}
-		}
-		/*
-		if ( delay1 )
-			SDL_Delay( 1 );
-		if ( delay2 )
-			SDL_Delay( 2 );
-		if ( delay3 )
-			SDL_Delay( 5 );
-		if ( delay4 )
-			SDL_Delay( 10 );
-		*/
+		DoFPSDelay( ticks );
 	}
 
+}
+void GameManager::DoFPSDelay( unsigned int ticks )
+{
+	unsigned int diff = SDL_GetTicks() - ticks;
+	unsigned short delay = static_cast< unsigned short > ( ( frameDuration  - diff  ) + 0.5 );
+
+	if ( diff < fpsLimit ) 
+	{
+		SDL_Delay( delay );
+	}
+}
+void GameManager::Update( double delta )
+{
+	AIMove();
+	UpdateBalls( delta );
+	UpdateBonusBoxes( delta );
+	UpdateGUI();
+
+	if ( IsLevelDone() )
+		GenerateBoard();
 }
 void GameManager::AIMove()
 {
@@ -424,7 +362,7 @@ void GameManager::AIMove()
 		};
 		highest = std::min_element( ballList.begin(), ballList.end(), compareBallHeights );
 	}
-	
+
 	if ( highest != ballList.end() )
 	{
 		if ( (*highest)->rect.y > ( remotePaddle->rect.y + remotePaddle->rect.h ))
@@ -715,7 +653,25 @@ void GameManager::CreateMenu()
 	//std::cout << r.x << std::endl;
 }
 
-void GameManager::CheckMouseClick( int x, int y )
+void GameManager::SetLocalPaddlePosition( int x, int y )
 {
-	std::cout << "mouse click " << x << " , " << y << std::endl;
+	if ( x != 0 && y != 0 )
+		localPaddle->rect.x = static_cast< double > ( x ) - ( localPaddle->rect.w / 2 );
+
+	if ( ( localPaddle->rect.x + localPaddle->rect.w ) > windowSize.w )
+		localPaddle->rect.x = static_cast< double > ( windowSize.w ) - localPaddle->rect.w;
+
+	if ( localPaddle->rect.x  <= 0  )
+		localPaddle->rect.x = 0;
+
+}
+void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
+{
+	SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
+
+	if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
+		menuManager.CheckItemMouseClick( buttonEvent.x, buttonEvent.y );
+	else
+		menuManager.CheckItemMouseOver( buttonEvent.x, buttonEvent.y, renderer );
+
 }

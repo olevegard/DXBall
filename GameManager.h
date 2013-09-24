@@ -19,10 +19,6 @@ class GameManager
 	public:
 		GameManager();
 
-		~GameManager()
-		{
-
-		}
 		bool Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
 
 		void SetSize( const SDL_Rect &size );
@@ -46,35 +42,43 @@ class GameManager
 		void Run();
 		void AIMove();
 
+		void CreateMenu();
+
+		void SetFPSLimit( unsigned short limit );
 		void SetTwoPlayerMode( bool isTwoPlayer )
 		{
 			isTwoPlayerMode = isTwoPlayer;
 		}
-
-		void CreateMenu();
-
-		void SetFPSLimit( unsigned short limit );
 	private:
+		// Tile collisions
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
 		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
 
+		// Explotion related
 		int HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
 		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
 		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
 		void RemoveDeadTiles();
-
+	
+		// Board handling
 		void GenerateBoard();
 		void ClearBoard();
 		bool IsLevelDone();
 
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 
+		void Update( double delta );
+
+		// Bonus boxes
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
 
-		void CheckMouseClick( int x, int y );
+		void SetLocalPaddlePosition( int x, int y );
+		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
+
+		void DoFPSDelay( unsigned int ticks );
 
 		BoardLoader boardLoader;
 		Renderer renderer;
