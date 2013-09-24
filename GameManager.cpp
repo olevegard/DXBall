@@ -307,7 +307,6 @@ void GameManager::Run()
 						++localPlayerLives;
 						break;
 					case SDLK_s:
-						renderer.SetGameState( GameState::InGame );
 						break;
 					case SDLK_c:
 						ClearBoard();
@@ -358,6 +357,11 @@ void GameManager::Run()
 			else
 				menuManager.CheckItemMouseOver( event.motion.x, event.motion.y, renderer );
 		}
+
+		if ( menuManager.GetGameState() == GameState::Quit )
+			quit = true;
+		else if ( menuManager.GetGameState() == GameState::InGame )
+			renderer.SetGameState( GameState::InGame );
 
 		AIMove();
 

@@ -5,5 +5,7 @@ enum class GameState
 	MainMenu,
 	InGame,
 	Paused,
-	GameOver
+	GameOver,
+	Options,
+	Quit
 };

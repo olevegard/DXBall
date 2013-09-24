@@ -45,9 +45,26 @@ void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer )
 			break;
 	}
 }
-bool MenuManager::CheckItemMouseClick( int x, int y )
+bool MenuManager::CheckItemMouseClick( int x, int y)
 {
-	return CheckIntersections( x, y) != MenuItemType::Unknown;
+	switch ( CheckIntersections( x, y))
+	{
+		case MenuItemType::SinglePlayer:
+			currentGameState = GameState::InGame;
+			break;
+		case MenuItemType::MultiPlayer:
+			break;
+		case MenuItemType::Options:
+			break;
+		case MenuItemType::Quit:
+			currentGameState = GameState::Quit;
+			break;
+		case MenuItemType::Unknown:
+			return false;
+	}
+
+
+	return true;
 }
 MenuItemType MenuManager::CheckIntersections( int x, int y )
 {
