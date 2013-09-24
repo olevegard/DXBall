@@ -54,11 +54,13 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 
 	std::cout << localPlayerName << " vs " << remotePlayerName << std::endl;
 
-	Restart();
+	UpdateGUI();
+
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
 	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
-	UpdateGUI();
+	currentGameState  = GameState::MainMenu;
+
 
 	CreateMenu();
 
@@ -103,6 +105,9 @@ void GameManager::Restart()
 
 void GameManager::AddBall( Player owner )
 {
+	if ( menuManager.GetGameState() != GameState::InGame )
+		return;
+
 	if ( owner == Player::Local )
 	{
 		if (  localPlayerLives == 0 )
@@ -125,7 +130,6 @@ void GameManager::AddBall( Player owner )
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
-
 }
 
 void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
@@ -145,7 +149,6 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	}
 
 	renderer.RemoveBall( ball );
-
 }
 void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
@@ -167,7 +170,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 	// Decrement tile count
 	--tileCount;
-
 }
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
@@ -302,6 +304,7 @@ void GameManager::Run()
 			}
 
 			HandleMouseEvent( event.button );
+			currentGameState = menuManager.GetGameState();
 		}
 
 		if ( menuManager.GetGameState() == GameState::Quit )
@@ -613,12 +616,17 @@ void GameManager::GenerateBoard()
 
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
-
 }
 
 bool GameManager::IsLevelDone()
 {
-	return std::count_if( tileList.begin(), tileList.end(), []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); } ) == 0;
+	if ( menuManager.GetGameState() == GameState::InGame )
+	{
+		auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); };
+		return std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable )  == 0;
+	}
+
+	return false;
 }
 void GameManager::ClearBoard()
 {
@@ -667,10 +675,14 @@ void GameManager::SetLocalPaddlePosition( int x, int y )
 }
 void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
-	SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
+	if ( currentGameState == GameState::InGame )
+		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 
 	if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
-		menuManager.CheckItemMouseClick( buttonEvent.x, buttonEvent.y );
+	{
+		if ( menuManager.CheckItemMouseClick( buttonEvent.x, buttonEvent.y ) && menuManager.GetGameState() == GameState::InGame )
+			Restart();
+	}
 	else
 		menuManager.CheckItemMouseOver( buttonEvent.x, buttonEvent.y, renderer );
 

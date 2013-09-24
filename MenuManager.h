@@ -18,16 +18,15 @@ public:
 
 	bool CheckItemMouseClick( int x, int y);
 
-	GameState GetGameState() const
-	{
-		return currentGameState;
-	}
-
+	GameState GetGameState() const;
+	void SetGameState( GameState gs );
 private:
 	MenuItemType CheckIntersections( int x, int y );
 	void RemoevAllUnderscores( Renderer &renderer  );
 
 	GameState currentGameState;
+	GameState prevGameState;
+
 	MenuItem singlePlayer;
 	MenuItem multiPlayer;
 	MenuItem options;

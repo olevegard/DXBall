@@ -50,14 +50,14 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 	switch ( CheckIntersections( x, y))
 	{
 		case MenuItemType::SinglePlayer:
-			currentGameState = GameState::InGame;
+			SetGameState( GameState::InGame );
 			break;
 		case MenuItemType::MultiPlayer:
 			break;
 		case MenuItemType::Options:
 			break;
 		case MenuItemType::Quit:
-			currentGameState = GameState::Quit;
+			SetGameState( GameState::Quit );
 			break;
 		case MenuItemType::Unknown:
 			return false;
@@ -89,3 +89,15 @@ void MenuManager::RemoevAllUnderscores( Renderer &renderer )
 	renderer.SetOptionsUnderline( false );
 	renderer.SetQuitUnderline( false );
 }
+GameState MenuManager::GetGameState() const
+{
+	return currentGameState;
+}
+
+void MenuManager::SetGameState( GameState gs )
+{
+	prevGameState = currentGameState;
+	currentGameState = gs;
+}
+
+
