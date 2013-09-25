@@ -336,6 +336,7 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 	if ( diff < fpsLimit ) 
 	{
 		SDL_Delay( delay );
+
 	}
 }
 void GameManager::Update( double delta )
@@ -691,13 +692,15 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
 	if ( menuManager.GetGameState() == GameState::InGame )
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
-
-	if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
+	else if ( menuManager.GetGameState() == GameState::MainMenu )
 	{
-		menuManager.CheckItemMouseClick( buttonEvent.x, buttonEvent.y );
-	}
-	else
-	{
-		menuManager.CheckItemMouseOver( buttonEvent.x, buttonEvent.y, renderer );
+		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
+		{
+			menuManager.CheckItemMouseClick( buttonEvent.x, buttonEvent.y );
+		}
+		else
+		{
+			menuManager.CheckItemMouseOver( buttonEvent.x, buttonEvent.y, renderer );
+		}
 	}
 }
