@@ -64,9 +64,10 @@ public:
 	void RemoveText();
 
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
-	void RenderLives( unsigned long lifeCount, const Player &player  );
-	void RenderPoints( unsigned long pointCount, const Player &player  );
-	void RenderBallCount( unsigned long ballCount, const Player &player  );
+	void RenderLives( unsigned long lifeCount, const Player &player, bool force = false   );
+	void RenderPoints( unsigned long pointCount, const Player &player, bool force = false   );
+	void RenderBallCount( unsigned long ballCount, const Player &player, bool force = false  );
+	void ResetText();
 
 	// Main menu
 	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
@@ -103,7 +104,12 @@ private:
 	void RenderForeground();
 	void RenderText();
 
-	void RenderMenu();
+	void RenderLobby();
+
+	// Render main menu
+	void RenderMainMenuHeader();
+	void RenderMainMenuImage();
+	void RenderMainMenuFooter();
 	void RenderMenuItem( const MenuItem &menuItem ) const;
 
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;

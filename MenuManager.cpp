@@ -6,6 +6,7 @@
 
 MenuManager::MenuManager()
 	:	currentGameState( GameState::MainMenu )
+	,	prevGameState( GameState::Quit )
 
 	,	hasGameStateChanged( false )
 
@@ -70,6 +71,7 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 			SetGameState( GameState::InGame );
 			break;
 		case MenuItemType::MultiPlayer:
+			SetGameState( GameState::Lobby );
 			break;
 		case MenuItemType::Options:
 			break;
@@ -110,6 +112,7 @@ GameState MenuManager::GetGameState() const
 void MenuManager::SetGameState( GameState gs )
 {
 	hasGameStateChanged = true;
+	prevGameState = currentGameState;
 	currentGameState = gs;
 }
 bool MenuManager::HasGameStateChanged()
@@ -121,4 +124,13 @@ bool MenuManager::HasGameStateChanged()
 	}
 
 	return false;
+}
+GameState MenuManager::GoBackToPreviousMenuState()
+{
+	if ( currentGameState == GameState::MainMenu )
+		SetGameState( GameState::Quit );
+	else
+		SetGameState( prevGameState );
+
+	return currentGameState;
 }

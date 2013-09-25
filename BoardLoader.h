@@ -15,6 +15,11 @@ struct BoardLoader
 
 	std::vector< TilePosition > GenerateBoard( );
 
+	void Reset( )
+	{
+		currentLevel = 0;
+	}
+
 	private:
 		size_t currentLevel;
 		std::vector< std::string > levelTextFiles;

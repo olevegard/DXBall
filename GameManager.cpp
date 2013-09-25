@@ -87,6 +87,7 @@ void GameManager::Restart()
 
 	tileCount = 0;
 
+	boardLoader.Reset();
 	GenerateBoard();
 
 	localPlayerPoints = 0;
@@ -96,6 +97,8 @@ void GameManager::Restart()
 	remotePlayerPoints = 0;
 	remotePlayerLives = 3;
 	remotePlayerActiveBalls = 0;
+
+	renderer.ResetText();
 
 	UpdateGUI();
 }
@@ -278,15 +281,20 @@ void GameManager::Run()
 						AddBall( Player::Remote );
 						AddBall( Player::Local );
 						break;
-					case SDLK_q:
 					case SDLK_ESCAPE:
-						quit = true;
+						menuManager.GoBackToPreviousMenuState();
 						break;
 					case SDLK_r:
 						++localPlayerLives;
 						break;
 					case SDLK_s:
-						renderer.SetGameState( GameState::InGame );
+						menuManager.SetGameState( GameState::InGame );
+						break;
+					case SDLK_m:
+						menuManager.SetGameState( GameState::Lobby );
+						break;
+					case SDLK_q:
+						menuManager.SetGameState( GameState::Quit );
 						break;
 					case SDLK_c:
 						ClearBoard();
@@ -305,12 +313,12 @@ void GameManager::Run()
 		}
 		if ( menuManager.HasGameStateChanged() )
 		{
+			renderer.SetGameState( menuManager.GetGameState() );
 			if ( menuManager.GetGameState() == GameState::Quit )
 				quit = true;
 			else if ( menuManager.GetGameState() == GameState::InGame )
 			{
 				Restart();
-				renderer.SetGameState( GameState::InGame );
 			}
 		}
 
@@ -604,8 +612,8 @@ void GameManager::UpdateGUI( )
 	renderer.RenderLives    ( localPlayerLives, Player::Local );
 	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
 
-	renderer.RenderLives( remotePlayerLives, Player::Remote );
-	renderer.RenderPoints( remotePlayerPoints, Player::Remote );
+	renderer.RenderLives    ( remotePlayerLives, Player::Remote );
+	renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
 	renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
 
 	renderer.Render( );

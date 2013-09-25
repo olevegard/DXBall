@@ -440,14 +440,23 @@ void Renderer::Render( )
 
 	if ( gameState == GameState::MainMenu )
 	{
-		RenderMenu();
+		//if( mainMenuBackground ) SDL_RenderCopy( renderer, mainMenuBackground       , nullptr, &background );
+		RenderMainMenuHeader();
+		RenderMainMenuImage();
+		RenderMainMenuFooter();
 	}
-	else
+	else if ( gameState == GameState::Lobby )
+	{
+		RenderMainMenuHeader();
+		RenderLobby();
+	}
+	else if ( gameState == GameState::InGame )
 	{
 		RenderForeground();
 		RenderText();
 	}
-		SDL_RenderPresent( renderer );
+
+	SDL_RenderPresent( renderer );
 }
 void Renderer::RenderForeground()
 {
@@ -522,20 +531,52 @@ void Renderer::RenderText()
 	if ( remotePlayerBallsTexture  )
 		SDL_RenderCopy( renderer, remotePlayerBallsTexture, nullptr, &remotePlayerBallsRect);
 }
-void Renderer::RenderMenu()
+void Renderer::RenderLobby()
 {
-	if( mainMenuBackground )
-		SDL_RenderCopy( renderer, mainMenuBackground       , nullptr, &background );
-
 	if ( greyAreaTexture )
 		SDL_RenderCopy( renderer, greyAreaTexture, nullptr, &greyAreaRect );
 
+	SDL_Rect r{ 200, 400, 0, 0 };
+	SDL_Texture* text = nullptr;
+
+	// Render text
+	text = RenderTextTexture_Blended( mediumFont, "Available games", textColor, r );
+	r.x = ( greyAreaRect.w - r.w) / 2 ;
+	r.y = greyAreaRect.y + 10;
+	SDL_RenderCopy( renderer, text, nullptr, &r);
+	SDL_DestroyTexture( text );
+
+	// Render game list box
+	r.y += r.h;
+	r.h = greyAreaRect.h - 150;
+	r.w = static_cast< int > ( r.h * 1.777 );
+	r.x = ( greyAreaRect.w - r.w) / 2 ;
+	text = InitSurface( r.w, r.h,  0, 0, 0 );
+	SDL_SetTextureAlphaMod( text, 255 );
+	SDL_RenderCopy( renderer, text, nullptr, &r);
+	SDL_DestroyTexture( text );
+
+	r.y += r.h + 10;
+	text = RenderTextTexture_Blended( mediumFont, "Update", textColor, r );
+	SDL_RenderCopy( renderer, text, nullptr, &r);
+	SDL_DestroyTexture( text );
+}
+
+void Renderer::RenderMainMenuHeader()
+{
 	if( mainMenuCaptionTexture )
 		SDL_RenderCopy( renderer, mainMenuCaptionTexture   , nullptr, &mainMenuCaptionRect );
 
 	if( mainMenuSubCaptionTexture )
 		SDL_RenderCopy( renderer, mainMenuSubCaptionTexture, nullptr, &mainMenuSubCaptionRect );
-
+}
+void Renderer::RenderMainMenuImage()
+{
+	if ( greyAreaTexture )
+		SDL_RenderCopy( renderer, greyAreaTexture, nullptr, &greyAreaRect );
+}
+void Renderer::RenderMainMenuFooter()
+{
 	RenderMenuItem( singlePlayerText );
 	RenderMenuItem( multiplayerPlayerText );
 	RenderMenuItem( optionsButton );
@@ -692,12 +733,12 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 		}
 	}
 }
-void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
+void Renderer::RenderLives( unsigned long lifeCount, const Player &player, bool force /* = false */ )
 {
 
 	if ( player == Player::Local )
 	{
-		if ( localPlayerLivesValue != lifeCount ||   localPlayerLivesTexture == nullptr )
+		if ( localPlayerLivesValue != lifeCount ||   localPlayerLivesTexture == nullptr || force )
 		{
 			localPlayerLivesValue  = lifeCount;
 
@@ -709,7 +750,7 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 		}
 	} else if ( player == Player::Remote )
 	{
-		if ( remotePlayerLivesValue != lifeCount ||   remotePlayerLivesTexture == nullptr )
+		if ( remotePlayerLivesValue != lifeCount ||   remotePlayerLivesTexture == nullptr || force )
 		{
 			remotePlayerLivesValue  = lifeCount;
 
@@ -721,11 +762,11 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player  )
 		}
 	}
 }
-void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
+void Renderer::RenderPoints( unsigned long pointCount, const Player &player, bool force /* = false */   )
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerPointsValue != pointCount || localPlayerPointsTexture == nullptr )
+		if ( localPlayerPointsValue != pointCount || localPlayerPointsTexture == nullptr || force )
 		{
 			localPlayerPointsValue  = pointCount;
 
@@ -737,7 +778,7 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
 		}
 	} else if ( player == Player::Remote )
 	{
-		if ( remotePlayerPointsValue != pointCount || remotePlayerPointsTexture == nullptr )
+		if ( remotePlayerPointsValue != pointCount || remotePlayerPointsTexture == nullptr || force )
 		{
 			remotePlayerPointsValue  = pointCount;
 
@@ -752,11 +793,11 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player  )
 	}
 }
 
-void Renderer::RenderBallCount( unsigned long ballCount, const Player &player  )
+void Renderer::RenderBallCount( unsigned long ballCount, const Player &player, bool force /* = false */   )
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerBallsValue != ballCount || localPlayerBallsTexture == nullptr )
+		if ( localPlayerBallsValue != ballCount || localPlayerBallsTexture == nullptr  || force )
 		{
 			localPlayerBallsValue = ballCount;
 
@@ -771,7 +812,7 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player  )
 		}
 	} else if ( player == Player::Remote )
 	{
-		if ( remotePlayerPointsValue != ballCount || remotePlayerBallsTexture == nullptr )
+		if ( remotePlayerPointsValue != ballCount || remotePlayerBallsTexture == nullptr || force )
 		{
 			remotePlayerPointsValue = ballCount;
 
@@ -785,7 +826,15 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player  )
 		}
 	}
 }
-
+void Renderer::ResetText()
+{
+	RenderPoints( 0, Player::Local, true );
+	RenderPoints( 0, Player::Remote, true );
+	RenderLives( 0, Player::Local, true );
+	RenderLives( 0, Player::Remote, true );
+	RenderBallCount( 0, Player::Local, true );
+	RenderBallCount( 0, Player::Remote, true );
+}
 void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
 {
 	AddMainMenuButton( singlePlayerString, MenuItemType::SinglePlayer );
