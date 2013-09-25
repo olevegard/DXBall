@@ -10,10 +10,10 @@ MenuManager::MenuManager()
 
 	,	hasGameStateChanged( false )
 
-	,	singlePlayer( "Single Player", SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::SinglePlayer )
-	,	multiPlayer ( "Multiplayer"  , SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::MultiPlayer )
-	,	options     ( "Options"      , SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::Options )
-	,	quit        ( "Quit"         , SDL_Rect{ 10, 100, 100, 100 }, MenuItemType::Quit )
+	,	singlePlayer( "Single Player", SDL_Rect{ 10, 100, 100, 100 }, MainMenuItemType::SinglePlayer )
+	,	multiPlayer ( "Multiplayer"  , SDL_Rect{ 10, 100, 100, 100 }, MainMenuItemType::MultiPlayer )
+	,	options     ( "Options"      , SDL_Rect{ 10, 100, 100, 100 }, MainMenuItemType::Options )
+	,	quit        ( "Quit"         , SDL_Rect{ 10, 100, 100, 100 }, MainMenuItemType::Quit )
 {
 
 }
@@ -29,36 +29,36 @@ void MenuManager::AddMenuElememts( Renderer &renderer )
 
 void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer )
 {
-	MenuItemType mouseOver = CheckIntersections( x, y );
+	MainMenuItemType mouseOver = CheckIntersections( x, y );
 
 	renderer.SetMainMenuItemUnderline( true, mouseOver );
 	switch ( mouseOver )
 	{
-		case MenuItemType::SinglePlayer:
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Options );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Quit );
+		case MainMenuItemType::SinglePlayer:
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
 			break;
-		case MenuItemType::MultiPlayer:
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Options );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Quit );
+		case MainMenuItemType::MultiPlayer:
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
 			break;
-		case MenuItemType::Options:
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Quit );
+		case MainMenuItemType::Options:
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
 			break;
-		case MenuItemType::Quit:
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Options );
+		case MainMenuItemType::Quit:
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
 			break;
-		case MenuItemType::Unknown:
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Options );
-			renderer.SetMainMenuItemUnderline( false, MenuItemType::Quit );
+		case MainMenuItemType::Unknown:
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
+			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
 			break;
 	}
 
@@ -67,38 +67,38 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 {
 	switch ( CheckIntersections( x, y))
 	{
-		case MenuItemType::SinglePlayer:
+		case MainMenuItemType::SinglePlayer:
 			SetGameState( GameState::InGame );
 			break;
-		case MenuItemType::MultiPlayer:
+		case MainMenuItemType::MultiPlayer:
 			SetGameState( GameState::Lobby );
 			break;
-		case MenuItemType::Options:
+		case MainMenuItemType::Options:
 			break;
-		case MenuItemType::Quit:
+		case MainMenuItemType::Quit:
 			SetGameState( GameState::Quit );
 			break;
-		case MenuItemType::Unknown:
+		case MainMenuItemType::Unknown:
 			return false;
 	}
 
 	return true;
 }
-MenuItemType MenuManager::CheckIntersections( int x, int y )
+MainMenuItemType MenuManager::CheckIntersections( int x, int y )
 {
 	if ( RectHelpers::CheckMouseIntersection( x, y, singlePlayer.GetRect() ) )
-		return MenuItemType::SinglePlayer;
+		return MainMenuItemType::SinglePlayer;
 
 	if ( RectHelpers::CheckMouseIntersection( x, y, multiPlayer.GetRect() ) )
-		return MenuItemType::MultiPlayer;
+		return MainMenuItemType::MultiPlayer;
 
 	if ( RectHelpers::CheckMouseIntersection( x, y, options.GetRect() ) )
-		return MenuItemType::Options;
+		return MainMenuItemType::Options;
 
 	if ( RectHelpers::CheckMouseIntersection( x, y, quit.GetRect() ) )
-		return MenuItemType::Quit;
+		return MainMenuItemType::Quit;
 
-	return MenuItemType::Unknown;
+	return MainMenuItemType::Unknown;
 }
 void MenuManager::RemoevAllUnderscores( Renderer &renderer )
 {

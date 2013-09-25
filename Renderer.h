@@ -23,7 +23,7 @@
 
 #include "enums/GameState.h"
 
-#include "MenuItem.h"
+#include "MainMenuItem.h"
 
 // Forward declarations
 struct Ball;
@@ -71,11 +71,11 @@ public:
 
 	// Main menu
 	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
-	void AddMainMenuButton( const std::string &singlePlayerString, const MenuItemType &mit );
-	MenuItem AddMenuButtonHelper( MenuItem menuItem, std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
+	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
+	MainMenuItem AddMenuButtonHelper( MainMenuItem MainmenuItem, std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
 
-	void SetMainMenuItemUnderline( bool setUnderline, const MenuItemType &mit  );
-	MenuItem SetUnderlineHelper( MenuItem menuItem, bool setUnderline );
+	void SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemType &mit  );
+	MainMenuItem SetUnderlineHelper( MainMenuItem menuItem, bool setUnderline );
 
 	void RemoveMainMenuItemsUnderlines( );
 	void CenterMainMenuButtons( );
@@ -110,7 +110,7 @@ private:
 	void RenderMainMenuHeader();
 	void RenderMainMenuImage();
 	void RenderMainMenuFooter();
-	void RenderMenuItem( const MenuItem &menuItem ) const;
+	void RenderMenuItem( const MainMenuItem &menuItem ) const;
 
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;
 	void FillSurface( SDL_Surface* source, const SDL_Color &color ) const;
@@ -244,10 +244,10 @@ private:
 	short margin;
 	SDL_Texture*   mainMenuBackground;
 
-	MenuItem	singlePlayerText;
-	MenuItem	multiplayerPlayerText;
-	MenuItem	optionsButton;
-	MenuItem	quitButton;
+	MainMenuItem	singlePlayerText;
+	MainMenuItem	multiplayerPlayerText;
+	MainMenuItem	optionsButton;
+	MainMenuItem	quitButton;
 
 	SDL_Texture*   mainMenuCaptionTexture;
 	SDL_Rect       mainMenuCaptionRect;

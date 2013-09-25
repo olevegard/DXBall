@@ -1,12 +1,12 @@
 #pragma once
 
-#include "enums/MenuItemType.h"
+#include "enums/MainMenuItemType.h"
 #include <SDL2/SDL.h>
 #include <iostream>
 
-struct MenuItem
+struct MainMenuItem
 {
-	MenuItem( std::string name, SDL_Rect r, MenuItemType mit)
+	MainMenuItem( std::string name, SDL_Rect r, MainMenuItemType mit)
 	{
 		itemName = name;
 		itemRect = r;
@@ -94,7 +94,7 @@ struct MenuItem
 	bool isSelected;
 	std::string itemName;
 	SDL_Rect itemRect;
-	MenuItemType menuItemType;
+	MainMenuItemType menuItemType;
 	SDL_Texture* texture;
 
 };

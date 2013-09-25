@@ -1,6 +1,6 @@
 #pragma once
 
-enum class MenuItemType
+enum class MainMenuItemType
 {
 	SinglePlayer,
 	MultiPlayer,

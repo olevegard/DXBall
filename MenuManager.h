@@ -1,9 +1,9 @@
 #pragma once
 
-#include "MenuItem.h"
+#include "MainMenuItem.h"
 
 #include "enums/GameState.h"
-#include "enums/MenuItemType.h"
+#include "enums/MainMenuItemType.h"
 
 class Renderer;
 class MenuManager
@@ -25,15 +25,15 @@ public:
 
 	GameState GoBackToPreviousMenuState();
 private:
-	MenuItemType CheckIntersections( int x, int y );
+	MainMenuItemType CheckIntersections( int x, int y );
 	void RemoevAllUnderscores( Renderer &renderer  );
 
 	GameState currentGameState;
 	GameState prevGameState;
 	bool hasGameStateChanged;
 
-	MenuItem singlePlayer;
-	MenuItem multiPlayer;
-	MenuItem options;
-	MenuItem quit;
+	MainMenuItem singlePlayer;
+	MainMenuItem multiPlayer;
+	MainMenuItem options;
+	MainMenuItem quit;
 };
