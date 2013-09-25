@@ -6,6 +6,7 @@ enum class GameState
 	Lobby,
 	InGame,
 	Paused,
+	InGameMenu,
 	GameOver,
 	Options,
 	Quit

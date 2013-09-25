@@ -282,9 +282,10 @@ void GameManager::Run()
 						AddBall( Player::Local );
 						break;
 					case SDLK_ESCAPE:
-						menuManager.GoBackToPreviousMenuState();
+						//menuManager.GoBackToPreviousMenuState();
+						menuManager.GoToMenu();
 						break;
-					case SDLK_r:
+					case SDLK_l:
 						++localPlayerLives;
 						break;
 					case SDLK_s:
@@ -295,6 +296,12 @@ void GameManager::Run()
 						break;
 					case SDLK_q:
 						menuManager.SetGameState( GameState::Quit );
+						break;
+					case SDLK_p:
+						menuManager.SetGameState( GameState::Paused );
+						break;
+					case SDLK_r:
+						menuManager.SetGameState( GameState::InGame );
 						break;
 					case SDLK_c:
 						ClearBoard();
@@ -316,7 +323,7 @@ void GameManager::Run()
 			renderer.SetGameState( menuManager.GetGameState() );
 			if ( menuManager.GetGameState() == GameState::Quit )
 				quit = true;
-			else if ( menuManager.GetGameState() == GameState::InGame )
+			else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() != GameState::Paused )
 			{
 				Restart();
 			}

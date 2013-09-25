@@ -108,7 +108,10 @@ GameState MenuManager::GetGameState() const
 {
 	return currentGameState;
 }
-
+GameState MenuManager::GetPrevGameState() const
+{
+	return prevGameState;
+}
 void MenuManager::SetGameState( GameState gs )
 {
 	hasGameStateChanged = true;
@@ -129,6 +132,17 @@ GameState MenuManager::GoBackToPreviousMenuState()
 {
 	if ( currentGameState == GameState::MainMenu )
 		SetGameState( GameState::Quit );
+	else
+		SetGameState( prevGameState );
+
+	return currentGameState;
+}
+GameState MenuManager::GoToMenu()
+{
+	if ( currentGameState == GameState::MainMenu )
+		SetGameState( GameState::Quit );
+	else if ( prevGameState == GameState::Paused )
+		SetGameState( GameState::MainMenu );
 	else
 		SetGameState( prevGameState );
 

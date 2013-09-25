@@ -21,9 +21,12 @@ public:
 	GameState GetGameState() const;
 	void SetGameState( GameState gs );
 
+	GameState GetPrevGameState() const;
+
 	bool HasGameStateChanged();
 
 	GameState GoBackToPreviousMenuState();
+	GameState GoToMenu();
 private:
 	MainMenuItemType CheckIntersections( int x, int y );
 	void RemoevAllUnderscores( Renderer &renderer  );

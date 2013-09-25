@@ -450,7 +450,7 @@ void Renderer::Render( )
 		RenderMainMenuHeader();
 		RenderLobby();
 	}
-	else if ( gameState == GameState::InGame )
+	else if ( gameState == GameState::InGame || gameState == GameState::Paused )
 	{
 		RenderForeground();
 		RenderText();
