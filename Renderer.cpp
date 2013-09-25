@@ -3,6 +3,7 @@
 #include "Ball.h"
 #include "Tile.h"
 #include "Paddle.h"
+#include "enums/MenuItemType.h"
 
 #include <sstream>
 #include <iostream>
@@ -97,17 +98,10 @@
 	,	remotePlayerBallsValue( 0 )
 
 	,	margin( 30 )
-	,	singlePlayerButtonTexture( nullptr )
-	,	singlePlayerButtonRect( )
-
-	,	multiPlayerButtonTexture( nullptr )
-	,	multiPlayerButtonRect(  )
-
-	,	optionsButtonTexture( nullptr )
-	,	optionsButtonRect(  )
-
-	,	quitButtonTexture( nullptr )
-	,	quitButtonRect( )
+	,	singlePlayerText     ( "Single Player", {0,0, 10,10 }, MenuItemType::SinglePlayer )
+	,	multiplayerPlayerText( "Multiplayer"  , {0,0, 10,10 }, MenuItemType::MultiPlayer  )
+	,	optionsButton        ( "Options"      , {0,0, 10,10 }, MenuItemType::Options      )
+	,	quitButton           ( "Quit"         , {0,0, 10,10 }, MenuItemType::Quit         )
 
 	,	greyAreaTexture( nullptr )
 	,	greyAreaRect( )
@@ -159,7 +153,6 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 
 	LoadImages();
 
-	CreateBonusBox( );
 	std::cout << "Init done\n";
 	return true;
 }
@@ -269,9 +262,6 @@ bool Renderer::LoadImages()
 
 	return true;
 }
-void Renderer::CreateBonusBox( )
-{
-	}
 void Renderer::FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const
 {
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 255 )  );
@@ -330,10 +320,7 @@ SDL_Texture* Renderer::LoadImage( const std::string &filename )
 }
 SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 {
-	if ( surface )
-	{
-		//surface = SDL_DisplayFormat( surface );
-	} else 
+	if ( !surface )
 	{
 		std::cout << "Cannot set display format : nullptr\n";
 	}
@@ -549,19 +536,18 @@ void Renderer::RenderMenu()
 	if( mainMenuSubCaptionTexture )
 		SDL_RenderCopy( renderer, mainMenuSubCaptionTexture, nullptr, &mainMenuSubCaptionRect );
 
-	if( singlePlayerButtonTexture )
-		SDL_RenderCopy( renderer, singlePlayerButtonTexture, nullptr, &singlePlayerButtonRect);
-
-	if( multiPlayerButtonTexture )
-		SDL_RenderCopy( renderer, multiPlayerButtonTexture , nullptr, &multiPlayerButtonRect );
-
-	if( optionsButtonTexture  )
-		SDL_RenderCopy( renderer, optionsButtonTexture     , nullptr, &optionsButtonRect     );
-
-	if( quitButtonTexture  )
-		SDL_RenderCopy( renderer, quitButtonTexture        , nullptr, &quitButtonRect        );
-
-
+	RenderMenuItem( singlePlayerText );
+	RenderMenuItem( multiplayerPlayerText );
+	RenderMenuItem( optionsButton );
+	RenderMenuItem( quitButton );
+}
+void Renderer::RenderMenuItem( const MenuItem &menuItem ) const
+{
+	if( menuItem.GetTexture() != nullptr )
+	{
+		SDL_Rect r = menuItem.GetRect();
+		SDL_RenderCopy( renderer, menuItem.GetTexture(), nullptr, &r );
+	}
 }
 // ==============================================================================================
 // ================================= Text handling ==============================================
@@ -577,9 +563,7 @@ TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
 	}
 
 	return tempFont;
-
 }
-
 bool Renderer::LoadFontAndText()
 {
 	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 12 );
@@ -802,122 +786,122 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player  )
 	}
 }
 
-void Renderer::AddMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
+void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
 {
-	AddSinglePlayerButton( singlePlayerString );
-	AddMultiplayerButton( multiplayerString );
-	AddOptionsButton( optionsString );
-	AddQuitButton( quitString );
+	AddMainMenuButton( singlePlayerString, MenuItemType::SinglePlayer );
+	AddMainMenuButton( multiplayerString, MenuItemType::MultiPlayer );
+	AddMainMenuButton( optionsString, MenuItemType::Options );
+	AddMainMenuButton( quitString, MenuItemType::Quit );
 
-	CenterMenuButtons( );
+	CenterMainMenuButtons( );
 }
-void Renderer::AddSinglePlayerButton( const std::string &singlePlayerString )
+void Renderer::AddMainMenuButton( const std::string &menuItemString, const MenuItemType &mit )
 {
-	singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, singlePlayerString, textColor, singlePlayerButtonRect );
+	switch ( mit )
+	{
+		case MenuItemType::SinglePlayer:
+			singlePlayerText = AddMenuButtonHelper( singlePlayerText, menuItemString, { 0, 0, 0, 0 }  );
+			singlePlayerText.SetRectXY( margin / 2,background.h - ( ( background.h - greyAreaRect.h ) / 2)  + ( singlePlayerText.GetRectH( )) );
+			break;
+		case MenuItemType::MultiPlayer:
+			multiplayerPlayerText = AddMenuButtonHelper( multiplayerPlayerText, menuItemString, singlePlayerText.GetRect() );
+			break;
+		case MenuItemType::Options:
+			optionsButton = AddMenuButtonHelper( optionsButton, menuItemString, multiplayerPlayerText.GetRect());
+			break;
+		case MenuItemType::Quit:
+			quitButton = AddMenuButtonHelper( quitButton, menuItemString, optionsButton.GetRect());
+			break;
+		case MenuItemType::Unknown:
+			break;
+	}
+}
+MenuItem Renderer::AddMenuButtonHelper( MenuItem menuItem, std::string menuItemString, const SDL_Rect &singlePlayerRect )
+{
+	SDL_Rect r;
+	menuItem.SetTexture( RenderTextTexture_Blended( mediumFont, menuItemString, textColor, r ) );
+	r.x = singlePlayerRect.x + singlePlayerRect.w + margin;
+	r.y = singlePlayerRect.y;
 
-	singlePlayerButtonRect.x = margin / 2;
-	singlePlayerButtonRect.y = background.h - ( ( background.h - greyAreaRect.h ) / 2)  + ( singlePlayerButtonRect.h );
-}
-void Renderer::AddMultiplayerButton( const std::string &multiplayerString )
-{
-	multiPlayerButtonRect.x = singlePlayerButtonRect.x + singlePlayerButtonRect.w + margin;
-	multiPlayerButtonRect.y = singlePlayerButtonRect.y;
-	multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, multiplayerString, textColor, multiPlayerButtonRect );
-}
-void Renderer::AddOptionsButton( const std::string &optionsString )
-{
-	optionsButtonRect.x = multiPlayerButtonRect.x + multiPlayerButtonRect.w + margin;
-	optionsButtonRect.y = singlePlayerButtonRect.y;
-	optionsButtonTexture = RenderTextTexture_Blended( mediumFont, optionsString, textColor, optionsButtonRect);
-}
-void Renderer::AddQuitButton( const std::string &quitString )
-{
-	quitButtonRect.x = optionsButtonRect.x + optionsButtonRect.w + margin;
-	quitButtonRect.y = singlePlayerButtonRect.y;
-	quitButtonTexture = RenderTextTexture_Blended( mediumFont, quitString, textColor, quitButtonRect );
-	CenterMenuButtons();
-}
+	menuItem.SetRect( r );
+	menuItem.SetName( menuItemString );
 
+	return menuItem;
+}
+void Renderer::SetMainMenuItemUnderline( bool setUnderline, const MenuItemType &mit  )
+{
+	switch ( mit )
+	{
+		case MenuItemType::SinglePlayer:
+			singlePlayerText = SetUnderlineHelper( singlePlayerText, setUnderline );
+			break;
+		case MenuItemType::MultiPlayer:
+			multiplayerPlayerText = SetUnderlineHelper( multiplayerPlayerText, setUnderline );
+			break;
+		case MenuItemType::Options:
+			optionsButton = SetUnderlineHelper( optionsButton, setUnderline );
+			break;
+		case MenuItemType::Quit:
+			quitButton = SetUnderlineHelper( quitButton, setUnderline );
+			break;
+		case MenuItemType::Unknown:
+			break;
+	}
+}
+MenuItem Renderer::SetUnderlineHelper( MenuItem menuItem, bool setUnderline )
+{
+	if ( menuItem.HasValidTexture() && ( setUnderline == menuItem.IsSelected() ) )
+		return menuItem;
+
+	SDL_Color clr = textColor;
+	int style = 0;
+
+	if ( setUnderline )
+	{
+		clr = SDL_Color{ 0, 200, 200, 255};
+		style = TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC;
+	}
+
+	SDL_Rect r = menuItem.GetRect();	
+	menuItem.SetTexture( RenderTextTexture_Blended( mediumFont, menuItem.GetName(), clr, r, style ) );
+	menuItem.SetRect( r );
+	menuItem.SetSelcted( setUnderline );
+
+	return menuItem;
+}
+void Renderer::RemoveMainMenuItemsUnderlines( )
+{
+	SetMainMenuItemUnderline( false, MenuItemType::SinglePlayer );
+	SetMainMenuItemUnderline( false, MenuItemType::MultiPlayer );
+	SetMainMenuItemUnderline( false, MenuItemType::Options );
+	SetMainMenuItemUnderline( false, MenuItemType::Quit );
+}
 SDL_Rect Renderer::GetSinglePlayerRect() const
 {
-	return singlePlayerButtonRect;
+	return singlePlayerText.GetRect();
 }
 SDL_Rect Renderer::GetMultiplayerPlayerRect() const
 {
-	return multiPlayerButtonRect;
+	return multiplayerPlayerText.GetRect();
 }
 SDL_Rect Renderer::GetOptionsPlayerRect() const
 {
-	return optionsButtonRect;
+	return optionsButton.GetRect();
 }
 SDL_Rect Renderer::GetQuitPlayerRect() const
 {
-	return quitButtonRect;
+	return quitButton.GetRect();
 }
-
-void Renderer::SetSinglePlayerUnderline( bool setUnderline )
+void Renderer::CenterMainMenuButtons( )
 {
-	SDL_DestroyTexture( singlePlayerButtonTexture );
-
-	if (setUnderline )
-	{
-		SDL_Color clr{ 0, 200, 200, 255};
-		singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", clr, singlePlayerButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
-	} else
-	{
-		singlePlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Single Player", textColor, singlePlayerButtonRect);
-	}
-}
-void Renderer::SetMultiplayerUnderline( bool setUnderline )
-{
-	SDL_DestroyTexture( multiPlayerButtonTexture );
-
-	if (setUnderline )
-	{
-		SDL_Color clr{ 0, 200, 200, 255};
-		multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Multiplayer", clr, multiPlayerButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
-	} else
-	{
-		multiPlayerButtonTexture = RenderTextTexture_Blended( mediumFont, "Multiplayer", textColor, multiPlayerButtonRect );
-	}
-}
-void Renderer::SetOptionsUnderline( bool setUnderline )
-{
-	SDL_DestroyTexture( optionsButtonTexture );
-
-	if (setUnderline )
-	{
-		SDL_Color clr{ 0, 200, 200, 255};
-		optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", clr, optionsButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
-	} else
-	{
-		optionsButtonTexture = RenderTextTexture_Blended( mediumFont, "Options", textColor, optionsButtonRect );
-	}
-}
-void Renderer::SetQuitUnderline( bool setUnderline )
-{
-	SDL_DestroyTexture( quitButtonTexture );
-
-	if (setUnderline )
-	{
-		SDL_Color clr{ 0, 200, 200, 255};
-		quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", clr, quitButtonRect, TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC );
-	} else
-	{
-		quitButtonTexture = RenderTextTexture_Blended( mediumFont, "Quit", textColor, quitButtonRect );
-	}
-}
-void Renderer::CenterMenuButtons( )
-{
-	int totoalWidth = ( quitButtonRect.x + quitButtonRect.w  ) - singlePlayerButtonRect.x;
+	int totoalWidth = quitButton.GetEndX() - singlePlayerText.GetRectX();
 	int freeSpace = background.w - totoalWidth;
 	int startingPoint = freeSpace / 2;
 
-	singlePlayerButtonRect.x = startingPoint;
-	multiPlayerButtonRect.x = singlePlayerButtonRect.x + singlePlayerButtonRect.w + margin;
-	optionsButtonRect.x = multiPlayerButtonRect.x + multiPlayerButtonRect.w + margin;
-	quitButtonRect.x = optionsButtonRect.x + optionsButtonRect.w + margin;
-
+	singlePlayerText.SetRectX( startingPoint );
+	multiplayerPlayerText.SetRectX( singlePlayerText.GetEndX() + margin );
+	optionsButton.SetRectX( multiplayerPlayerText.GetEndX() + margin );
+	quitButton.SetRectX( optionsButton.GetEndX() + margin );
 }
 void Renderer::InitGreyAreaRect( )
 {

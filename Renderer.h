@@ -1,3 +1,11 @@
+// ==========================================
+// || Renderer.h - Ole Vegard Mythe Moland ||
+// ==========================================
+// A rather large class focusd on rendering objects.
+// It creates the windows, a renderer.
+// It also creates ( or loads ) all textures including fonts
+// All rendering happens within this class.
+
 #pragma once
 
 #include <vector>
@@ -15,12 +23,15 @@
 
 #include "enums/GameState.h"
 
+#include "MenuItem.h"
+
 // Forward declarations
 struct Ball;
 struct Tile;
 struct Paddle;
 struct BonusBox;
 enum class Player : int;
+enum class MenuItemType : int;
 
 class Renderer
 {
@@ -48,6 +59,7 @@ public:
 
 	void Render( );
 
+	// Ingame text
 	void RenderText( const std::string &textToRender, const Player &player );
 	void RemoveText();
 
@@ -56,21 +68,22 @@ public:
 	void RenderPoints( unsigned long pointCount, const Player &player  );
 	void RenderBallCount( unsigned long ballCount, const Player &player  );
 
-	void AddMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
-	void AddSinglePlayerButton( const std::string &singlePlayerString );
-	void AddMultiplayerButton( const std::string &multiplayerString );
-	void AddOptionsButton( const std::string &optionsString );
-	void AddQuitButton( const std::string &quitString );
-	void CenterMenuButtons( );
+	// Main menu
+	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
+	void AddMainMenuButton( const std::string &singlePlayerString, const MenuItemType &mit );
+	MenuItem AddMenuButtonHelper( MenuItem menuItem, std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
+
+	void SetMainMenuItemUnderline( bool setUnderline, const MenuItemType &mit  );
+	MenuItem SetUnderlineHelper( MenuItem menuItem, bool setUnderline );
+
+	void RemoveMainMenuItemsUnderlines( );
+	void CenterMainMenuButtons( );
+
 	void InitGreyAreaRect( );
 	SDL_Rect GetSinglePlayerRect() const;
 	SDL_Rect GetMultiplayerPlayerRect() const;
 	SDL_Rect GetOptionsPlayerRect() const;
 	SDL_Rect GetQuitPlayerRect() const;
-	void SetSinglePlayerUnderline( bool setUnderline );
-	void SetMultiplayerUnderline( bool setUnderline );
-	void SetOptionsUnderline( bool setUnderline );
-	void SetQuitUnderline( bool setUnderline );
 
 	void ForceMouseFocus();
 
@@ -80,8 +93,6 @@ public:
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
-
-	void CreateBonusBox( );
 
 	void Setup();
 	bool CreateRenderer();
@@ -93,6 +104,7 @@ private:
 	void RenderText();
 
 	void RenderMenu();
+	void RenderMenuItem( const MenuItem &menuItem ) const;
 
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;
 	void FillSurface( SDL_Surface* source, const SDL_Color &color ) const;
@@ -124,7 +136,6 @@ private:
 	void CleanUpLists();
 	void CleanUpTTF();
 	void QuitSDL();
-
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -227,23 +238,16 @@ private:
 	short margin;
 	SDL_Texture*   mainMenuBackground;
 
+	MenuItem	singlePlayerText;
+	MenuItem	multiplayerPlayerText;
+	MenuItem	optionsButton;
+	MenuItem	quitButton;
+
 	SDL_Texture*   mainMenuCaptionTexture;
 	SDL_Rect       mainMenuCaptionRect;
 
 	SDL_Texture*   mainMenuSubCaptionTexture;
 	SDL_Rect       mainMenuSubCaptionRect;
-
-	SDL_Texture*   singlePlayerButtonTexture;
-	SDL_Rect       singlePlayerButtonRect;
-
-	SDL_Texture*   multiPlayerButtonTexture;
-	SDL_Rect       multiPlayerButtonRect;
-
-	SDL_Texture*   optionsButtonTexture;
-	SDL_Rect       optionsButtonRect;
-
-	SDL_Texture*   quitButtonTexture;
-	SDL_Rect       quitButtonRect;
 
 	SDL_Texture*   greyAreaTexture;
 	SDL_Rect       greyAreaRect;
