@@ -16,8 +16,9 @@ public:
 	void AddMenuElememts( Renderer &renderer );
 	void AddPauseMenuElememts( Renderer &renderer );
 
-	void CheckItemMouseOver( int x, int y, Renderer &renderer );
-	void CheckItemMouseOver_Pause( int x, int y, Renderer &renderer );
+	void CheckItemMouseOver( int x, int y, Renderer &renderer ) const;
+	void CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) const;
+	void CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer ) const;
 
 	bool CheckItemMouseClick( int x, int y);
 	//bool CheckItemMouseClick_Pause( int x, int y);
@@ -33,8 +34,8 @@ public:
 	GameState GoBackToPreviousMenuState();
 	GameState GoToMenu();
 private:
-	MainMenuItemType CheckIntersections( int x, int y );
-	PauseMenuItemType CheckIntersections_Pause( int x, int y );
+	MainMenuItemType CheckIntersections( int x, int y ) const;
+	PauseMenuItemType CheckIntersections_Pause( int x, int y ) const;
 
 	void RemoevAllUnderscores( Renderer &renderer  );
 

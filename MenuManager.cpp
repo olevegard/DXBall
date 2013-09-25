@@ -39,14 +39,18 @@ void MenuManager::AddPauseMenuElememts( Renderer &renderer )
 	pauseMainMenuButton.SetRect( renderer.GetPauseMainMenuRect() );
 	pauseQuitButton.SetRect( renderer.GetPauseQuitRect() );
 }
-void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer )
+void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer ) const
 {
 	if ( currentGameState == GameState::Paused )
 	{
 		CheckItemMouseOver_Pause( x, y, renderer );
-		return;
+	} else if ( currentGameState == GameState::MainMenu )
+	{
+		CheckItemMouseOver_MainMenu( x, y, renderer );
 	}
-
+}
+void MenuManager::CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer ) const
+{
 	MainMenuItemType mouseOver = CheckIntersections( x, y );
 
 	renderer.SetMainMenuItemUnderline( true, mouseOver );
@@ -81,7 +85,7 @@ void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer )
 	}
 
 }
-void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer )
+void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) const 
 {
 	PauseMenuItemType mouseOver = CheckIntersections_Pause( x, y );
 
@@ -126,27 +130,29 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 			case PauseMenuItemType::Unknown:
 				return false;
 		}
-	}
-	switch ( CheckIntersections( x, y))
+	} else if ( currentGameState == GameState::MainMenu )
 	{
-		case MainMenuItemType::SinglePlayer:
-			SetGameState( GameState::InGame );
-			break;
-		case MainMenuItemType::MultiPlayer:
-			SetGameState( GameState::Lobby );
-			break;
-		case MainMenuItemType::Options:
-			break;
-		case MainMenuItemType::Quit:
-			SetGameState( GameState::Quit );
-			break;
-		case MainMenuItemType::Unknown:
-			return false;
+		switch ( CheckIntersections( x, y))
+		{
+			case MainMenuItemType::SinglePlayer:
+				SetGameState( GameState::InGame );
+				break;
+			case MainMenuItemType::MultiPlayer:
+				SetGameState( GameState::Lobby );
+				break;
+			case MainMenuItemType::Options:
+				break;
+			case MainMenuItemType::Quit:
+				SetGameState( GameState::Quit );
+				break;
+			case MainMenuItemType::Unknown:
+				return false;
+		}
 	}
 
 	return true;
 }
-MainMenuItemType MenuManager::CheckIntersections( int x, int y )
+MainMenuItemType MenuManager::CheckIntersections( int x, int y ) const
 {
 	if ( RectHelpers::CheckMouseIntersection( x, y, singlePlayer.GetRect() ) )
 		return MainMenuItemType::SinglePlayer;
@@ -162,7 +168,7 @@ MainMenuItemType MenuManager::CheckIntersections( int x, int y )
 
 	return MainMenuItemType::Unknown;
 }
-PauseMenuItemType MenuManager::CheckIntersections_Pause( int x, int y )
+PauseMenuItemType MenuManager::CheckIntersections_Pause( int x, int y ) const
 {
 	if ( RectHelpers::CheckMouseIntersection( x, y, pauseResumeButton.GetRect() ) )
 		return PauseMenuItemType::Resume;
