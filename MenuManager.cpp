@@ -89,7 +89,6 @@ void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer )
 	switch ( mouseOver )
 	{
 		case PauseMenuItemType::Resume:
-			std::cout << "mouse over resume " << std::endl;
 			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::MainMenu );
 			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Quit );
 			break;
@@ -188,11 +187,21 @@ GameState MenuManager::GetPrevGameState() const
 {
 	return prevGameState;
 }
-void MenuManager::SetGameState( GameState gs )
+void MenuManager::SetGameState( const GameState &gs )
 {
+	if ( !IsGameStateChangeValid( gs ) )
+		return;
+
 	hasGameStateChanged = true;
 	prevGameState = currentGameState;
 	currentGameState = gs;
+}
+bool MenuManager::IsGameStateChangeValid( const GameState &gs) const
+{
+	if ( gs == GameState::Paused && currentGameState == GameState::MainMenu )
+		return false;
+
+	return true;
 }
 bool MenuManager::HasGameStateChanged()
 {
@@ -217,10 +226,8 @@ GameState MenuManager::GoToMenu()
 {
 	if ( currentGameState == GameState::MainMenu )
 		SetGameState( GameState::Quit );
-	else if ( prevGameState == GameState::Paused )
-		SetGameState( GameState::MainMenu );
 	else
-		SetGameState( prevGameState );
+		SetGameState( GameState::MainMenu );
 
 	return currentGameState;
 }

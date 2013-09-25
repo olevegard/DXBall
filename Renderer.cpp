@@ -496,8 +496,8 @@ void Renderer::RenderForeground()
 	// Draw paddles
 	if ( localPaddle )
 	{
-		//SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
-		//SDL_RenderCopy( renderer, localPlayerPaddle, nullptr, &localPaddleRect  );
+		SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
+		SDL_RenderCopy( renderer, localPlayerPaddle, nullptr, &localPaddleRect  );
 	}
 
 	if ( remotePaddle )
@@ -1014,6 +1014,7 @@ void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemT
 		case PauseMenuItemType::Unknown:
 			break;
 	}
+
 }
 SDL_Rect Renderer::GetPauseResumeRect() const
 {

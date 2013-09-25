@@ -23,7 +23,8 @@ public:
 	//bool CheckItemMouseClick_Pause( int x, int y);
 
 	GameState GetGameState() const;
-	void SetGameState( GameState gs );
+	void SetGameState( const GameState &gs );
+	bool IsGameStateChangeValid( const GameState &gs) const;
 
 	GameState GetPrevGameState() const;
 
