@@ -207,6 +207,9 @@ bool MenuManager::IsGameStateChangeValid( const GameState &gs) const
 	if ( gs == GameState::Paused && currentGameState == GameState::MainMenu )
 		return false;
 
+	if ( gs == currentGameState )
+		return false;
+
 	return true;
 }
 bool MenuManager::HasGameStateChanged()

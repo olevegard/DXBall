@@ -209,6 +209,9 @@ void Renderer::SetGameState( const GameState &gs )
 		HideMouseCursor( true );
 	else
 		HideMouseCursor( false );
+
+	if ( gameState == GameState::Paused )
+		RenderText("Paused", Player::Local);
 }
 void Renderer::HideMouseCursor( bool hideCursor )
 {

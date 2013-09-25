@@ -94,8 +94,6 @@ public:
 	SDL_Rect GetPauseMainMenuRect() const;
 	SDL_Rect GetPauseQuitRect() const;
 
-
-
 	void ForceMouseFocus();
 
 	void SetGameState( const GameState &gs );

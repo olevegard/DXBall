@@ -15,3 +15,5 @@ Makefile
 /math/unused*
 /math/unused/*
 callgrind*
+*.sh
+notes/*
