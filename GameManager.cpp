@@ -682,6 +682,7 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 void GameManager::CreateMenu()
 {
 	menuManager.AddMenuElememts( renderer );
+	menuManager.AddPauseMenuElememts( renderer );
 }
 void GameManager::SetLocalPaddlePosition( int x, int y )
 {
@@ -699,7 +700,8 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
 	if ( menuManager.GetGameState() == GameState::InGame )
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
-	else if ( menuManager.GetGameState() == GameState::MainMenu )
+
+	else if ( menuManager.GetGameState() == GameState::MainMenu  || menuManager.GetGameState() == GameState::Paused )
 	{
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{

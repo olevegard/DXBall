@@ -4,5 +4,6 @@ enum class PauseMenuItemType
 {
 	Resume,
 	MainMenu,
-	Quit
+	Quit,
+	Unknown
 };

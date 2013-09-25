@@ -22,14 +22,16 @@ CompileString="clang++ \
 	Renderer.cpp \
 	BonusBox.cpp \
 	GameManager.cpp \
+	MenuManager.cpp \
 	math/Vector2f.cpp \
 	math/Rect.cpp  \
 
 	-lSDL2 \
 	-lSDL2_ttf \
+	-lSDL2_image \
 	-std=c++11 \
 
-	-g \
+	-O3 \
 	-Weverything  -Wall \
 	-Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded \
 	-Wno-switch-enum -Wno-float-equal -Werror \

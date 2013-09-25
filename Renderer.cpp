@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Paddle.h"
 #include "enums/MainMenuItemType.h"
+#include "enums/PauseMenuItemType.h"
 
 #include <sstream>
 #include <iostream>
@@ -98,13 +99,17 @@
 	,	remotePlayerBallsValue( 0 )
 
 	,	margin( 30 )
-	,	singlePlayerText     ( "Single Player", {0,0, 10,10 }, MainMenuItemType::SinglePlayer )
-	,	multiplayerPlayerText( "Multiplayer"  , {0,0, 10,10 }, MainMenuItemType::MultiPlayer  )
-	,	optionsButton        ( "Options"      , {0,0, 10,10 }, MainMenuItemType::Options      )
-	,	quitButton           ( "Quit"         , {0,0, 10,10 }, MainMenuItemType::Quit         )
+	,	singlePlayerText     ( "Single Player" )
+	,	multiplayerPlayerText( "Multiplayer"   )
+	,	optionsButton        ( "Options"       )
+	,	quitButton           ( "Quit"          )
 
 	,	greyAreaTexture( nullptr )
 	,	greyAreaRect( )
+
+	,	pauseResumeButton( "Resume" )
+	,	pauseMainMenuButton( "Main Menu" )
+	,	pauseQuitButton( "Quit" )
 {
 }
 
@@ -152,7 +157,6 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 
 
 	LoadImages();
-
 	std::cout << "Init done\n";
 	return true;
 }
@@ -438,24 +442,32 @@ void Renderer::Render( )
 {
 	SDL_RenderClear( renderer );
 
-	if ( gameState == GameState::MainMenu )
+	switch ( gameState )
 	{
-		//if( mainMenuBackground ) SDL_RenderCopy( renderer, mainMenuBackground       , nullptr, &background );
-		RenderMainMenuHeader();
-		RenderMainMenuImage();
-		RenderMainMenuFooter();
+		case GameState::MainMenu:
+			RenderMainMenuHeader();
+			RenderMainMenuImage();
+			RenderMainMenuFooter();
+			break;
+		case GameState::Lobby:
+			RenderMainMenuHeader();
+			RenderLobby();
+			break;
+		case GameState::InGame:
+			RenderForeground();
+			RenderText();
+			break;
+		case GameState::Paused:
+			RenderForeground();
+			RenderText();
+			RenderMenuItem( pauseResumeButton );
+			RenderMenuItem( pauseMainMenuButton );
+			RenderMenuItem( pauseQuitButton );
+			break;
+		default:
+			break;
 	}
-	else if ( gameState == GameState::Lobby )
-	{
-		RenderMainMenuHeader();
-		RenderLobby();
-	}
-	else if ( gameState == GameState::InGame || gameState == GameState::Paused )
-	{
-		RenderForeground();
-		RenderText();
-	}
-
+		
 	SDL_RenderPresent( renderer );
 }
 void Renderer::RenderForeground()
@@ -484,8 +496,8 @@ void Renderer::RenderForeground()
 	// Draw paddles
 	if ( localPaddle )
 	{
-		SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
-		SDL_RenderCopy( renderer, localPlayerPaddle, nullptr, &localPaddleRect  );
+		//SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
+		//SDL_RenderCopy( renderer, localPlayerPaddle, nullptr, &localPaddleRect  );
 	}
 
 	if ( remotePaddle )
@@ -582,7 +594,7 @@ void Renderer::RenderMainMenuFooter()
 	RenderMenuItem( optionsButton );
 	RenderMenuItem( quitButton );
 }
-void Renderer::RenderMenuItem( const MainMenuItem &menuItem ) const
+void Renderer::RenderMenuItem( const MenuItem &menuItem ) const
 {
 	if( menuItem.GetTexture() != nullptr )
 	{
@@ -865,7 +877,7 @@ void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainM
 			break;
 	}
 }
-MainMenuItem Renderer::AddMenuButtonHelper( MainMenuItem menuItem, std::string menuItemString, const SDL_Rect &singlePlayerRect )
+MenuItem Renderer::AddMenuButtonHelper( MenuItem menuItem, std::string menuItemString, const SDL_Rect &singlePlayerRect )
 
 {
 	SDL_Rect r;
@@ -898,7 +910,7 @@ void Renderer::SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemTy
 			break;
 	}
 }
-MainMenuItem Renderer::SetUnderlineHelper( MainMenuItem menuItem, bool setUnderline )
+MenuItem Renderer::SetUnderlineHelper( MenuItem menuItem, bool setUnderline )
 {
 	if ( menuItem.HasValidTexture() && ( setUnderline == menuItem.IsSelected() ) )
 		return menuItem;
@@ -964,6 +976,60 @@ void Renderer::InitGreyAreaRect( )
 
 	greyAreaTexture = InitSurface( background.w, background.h, 120, 120, 120 );
 }
+void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
+{
+	pauseResumeButton = AddMenuButtonHelper( pauseResumeButton, resumeString, { 0, 0, 0, 0 }  );
+	pauseResumeButton .SetRectXY( margin / 2, background.h - pauseResumeButton.GetRectH() );
+
+	pauseMainMenuButton = AddMenuButtonHelper( pauseMainMenuButton, mainMenuString, pauseResumeButton.GetRect()  );
+
+	pauseQuitButton = AddMenuButtonHelper( pauseQuitButton, quitString, pauseMainMenuButton.GetRect()  );
+
+	CenterPauseButtons();
+}
+void Renderer::CenterPauseButtons( )
+{
+	int totoalWidth = pauseQuitButton.GetEndX() - pauseResumeButton.GetRectX();
+	int freeSpace = background.w - totoalWidth;
+	int startingPoint = freeSpace / 2;
+
+	pauseResumeButton.SetRectX( startingPoint );
+	pauseMainMenuButton.SetRectX( pauseResumeButton.GetEndX() + margin );
+	pauseQuitButton.SetRectX( pauseMainMenuButton.GetEndX() + margin );
+}
+
+void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemType &mit  )
+{
+	switch ( mit )
+	{
+		case PauseMenuItemType::Resume:
+			pauseResumeButton = SetUnderlineHelper( pauseResumeButton, setUnderline );
+			break;
+		case PauseMenuItemType::MainMenu:
+			pauseMainMenuButton = SetUnderlineHelper( pauseMainMenuButton, setUnderline );
+			break;
+		case PauseMenuItemType::Quit:
+			pauseQuitButton = SetUnderlineHelper( pauseQuitButton, setUnderline );
+			break;
+		case PauseMenuItemType::Unknown:
+			break;
+	}
+}
+SDL_Rect Renderer::GetPauseResumeRect() const
+{
+	return pauseResumeButton.GetRect();
+}
+
+SDL_Rect Renderer::GetPauseMainMenuRect() const
+{
+	return pauseMainMenuButton.GetRect();
+}
+
+SDL_Rect Renderer::GetPauseQuitRect() const
+{
+	return pauseQuitButton.GetRect();
+}
+
 void Renderer::CalculateRemotePlayerTextureRects()
 {
 	// Set remaning text rects based on caption rect

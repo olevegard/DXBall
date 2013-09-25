@@ -22,8 +22,10 @@
 #include "BonusBox.h"
 
 #include "enums/GameState.h"
+#include "enums/MainMenuItemType.h"
 
 #include "MainMenuItem.h"
+#include "PauseMenuItem.h"
 
 // Forward declarations
 struct Ball;
@@ -72,19 +74,27 @@ public:
 	// Main menu
 	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
-	MainMenuItem AddMenuButtonHelper( MainMenuItem MainmenuItem, std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
+	MenuItem AddMenuButtonHelper( MenuItem mainmenuItem, std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
 
 	void SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemType &mit  );
-	MainMenuItem SetUnderlineHelper( MainMenuItem menuItem, bool setUnderline );
-
+	MenuItem SetUnderlineHelper( MenuItem menuItem, bool setUnderline );
 	void RemoveMainMenuItemsUnderlines( );
 	void CenterMainMenuButtons( );
-
 	void InitGreyAreaRect( );
 	SDL_Rect GetSinglePlayerRect() const;
 	SDL_Rect GetMultiplayerPlayerRect() const;
 	SDL_Rect GetOptionsPlayerRect() const;
 	SDL_Rect GetQuitPlayerRect() const;
+
+	// Pause menu
+	void AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString );
+	void CenterPauseButtons( );
+	void SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemType &mit  );
+	SDL_Rect GetPauseResumeRect() const;
+	SDL_Rect GetPauseMainMenuRect() const;
+	SDL_Rect GetPauseQuitRect() const;
+
+
 
 	void ForceMouseFocus();
 
@@ -110,7 +120,7 @@ private:
 	void RenderMainMenuHeader();
 	void RenderMainMenuImage();
 	void RenderMainMenuFooter();
-	void RenderMenuItem( const MainMenuItem &menuItem ) const;
+	void RenderMenuItem( const MenuItem &menuItem ) const;
 
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;
 	void FillSurface( SDL_Surface* source, const SDL_Color &color ) const;
@@ -239,15 +249,16 @@ private:
 	SDL_Rect       remotePlayerBallsRect;
 	unsigned long  remotePlayerBallsValue;
 
-	// Menu mode
-	// =============================================
 	short margin;
+
+	// Main menu mode
+	// =============================================
 	SDL_Texture*   mainMenuBackground;
 
-	MainMenuItem	singlePlayerText;
-	MainMenuItem	multiplayerPlayerText;
-	MainMenuItem	optionsButton;
-	MainMenuItem	quitButton;
+	MenuItem	singlePlayerText;
+	MenuItem	multiplayerPlayerText;
+	MenuItem	optionsButton;
+	MenuItem	quitButton;
 
 	SDL_Texture*   mainMenuCaptionTexture;
 	SDL_Rect       mainMenuCaptionRect;
@@ -257,4 +268,10 @@ private:
 
 	SDL_Texture*   greyAreaTexture;
 	SDL_Rect       greyAreaRect;
+
+	// Pause menu mode
+	// =============================================
+	MenuItem 	pauseResumeButton;
+	MenuItem 	pauseMainMenuButton;
+	MenuItem 	pauseQuitButton;
 };

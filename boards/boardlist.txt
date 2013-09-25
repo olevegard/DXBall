@@ -1,2 +1,2 @@
-board.txt
 board-2.txt
+board.txt

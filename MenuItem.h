@@ -5,12 +5,12 @@
 
 struct MenuItem
 {
-	MenuItem( std::string name, SDL_Rect r )
+	MenuItem( std::string name)
+		:	itemName( name )
+		,	itemRect( {0,0,0,0} )
+		,	texture( nullptr )
+		,	isSelected( false )
 	{
-		itemName = name;
-		itemRect = r;
-		texture = nullptr;
-		isSelected = false;
 	}
 
 	MenuItem() = delete;
@@ -91,10 +91,10 @@ struct MenuItem
 		return itemName;
 	}
 	private:
-	bool isSelected;
 	std::string itemName;
 	SDL_Rect itemRect;
 	SDL_Texture* texture;
+	bool isSelected;
 
 };
 
