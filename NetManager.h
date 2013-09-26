@@ -15,20 +15,16 @@ class NetManager
 
 			if ( isServer )
 			{
-				std::cout << "Initing game server..." << std::endl;
 				gameServer.Init( "127.0.0.1", 2002, true );
 
-				std::cout << "Accepting..." << std::endl;
 				gameServer.StartServer();
-
-				std::cout << "Reading message..." << std::endl;
 				gameServer.ReadMessages();
 			} else 
 			{
-				std::cout << "Initing game client..." << std::endl;
+				// Temporary code to give the server some time to start up...
+				SDL_Delay( 100 );
 				gameClient.Init( "127.0.0.1", 2002, false );
 
-				std::cout << "Sending message..." << std::endl;
 				gameClient.Send( "Hello" );
 			}
 

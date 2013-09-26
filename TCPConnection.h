@@ -76,6 +76,7 @@ public:
 			return;
 		}
 
+		std::cout << "Sending message " << str << std::endl;
 		void* messageData = ConvertStringToVoidPtr(str);
 		int messageSize = static_cast< int > ( str.length() );
 

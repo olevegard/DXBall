@@ -64,6 +64,10 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	return true;
 }
 
+void GameManager::SetIsServer( bool isServer )
+{
+	netManager.Init( isServer );
+}
 void GameManager::Restart()
 {
 	std::cout << "Restart\n";

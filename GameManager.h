@@ -51,10 +51,7 @@ class GameManager
 			isTwoPlayerMode = isTwoPlayer;
 		}
 
-		void SetIsServer( bool isServer )
-		{
-			netManager.Init( isServer );
-		}
+		void SetIsServer( bool isServer );
 	private:
 		// Tile collisions
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );

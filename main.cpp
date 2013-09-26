@@ -18,16 +18,6 @@ bool StrToBool( const std::string &str );
 
 int main( int argc, char* args[] )
 {
-	NetManager netMan;
-	std::cout << "Init" << std::endl;
-	netMan.Init();
-	netMan.Sent( "this is a message" );
-	netMan.Close();
-
-	//netMan.AcceptConnection();
-	GameManager gameMan;
-
-
 	std::string localPlayerName  = "Player 1";
 	std::string remotePlayerName = "Player 2";
 	unsigned short fpsLimit = 100;
@@ -39,6 +29,7 @@ int main( int argc, char* args[] )
 
 	bool startFS = false;
 	bool startTwoPlayer = false;
+	bool isServer = false;
 
 	std::cout << "Args : \n";
 
@@ -62,6 +53,8 @@ int main( int argc, char* args[] )
 				startFS = StrToBool( args[ i + 1 ]);
 			else if ( str == "-twoplayer" && argc > ( i + 1 ) )
 				startTwoPlayer = StrToBool( args[ i + 1 ]);
+			else if ( str == "-server" && argc > ( i + 1 ) )
+				isServer = StrToBool( args[ i + 1 ]);
 		}
 	}
 	localPlayerName = ReplaceUnderscores( localPlayerName );
@@ -74,13 +67,16 @@ int main( int argc, char* args[] )
 	std::cout << "Resolution       : " << resolution.w << "x" << resolution.h  << std::endl;
 	std::cout << "Fullscreen       : " << std::boolalpha << startFS << std::endl;
 	std::cout << "2 player mode    : " << std::boolalpha << startTwoPlayer << std::endl;
+	std::cout << "Is server        : " << std::boolalpha << isServer << std::endl;
 	std::cout << "============================\n";
 
+	GameManager gameMan;
 	gameMan.SetTwoPlayerMode( startTwoPlayer );
 	if ( !gameMan.Init( localPlayerName, remotePlayerName , resolution, startFS  ) )
 		return 1;
 
 	gameMan.SetFPSLimit( fpsLimit );
+	gameMan.SetIsServer( isServer );
 
 	gameMan.Run();
 }
