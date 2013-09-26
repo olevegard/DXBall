@@ -608,6 +608,8 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 		case Side::Unknown :
 			std::cout << "Uknown collosion\n";
 			//std::cin.ignore();
+			dirX *= -1.0f;
+			dirY *= -1.0f;
 			break;
 	}
 
@@ -626,7 +628,6 @@ Vector2f Ball::GetDirection( ) const
 }
 
 Vector2f Ball::Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const
-
 {
 	switch ( side )
 	{
