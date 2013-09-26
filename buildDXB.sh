@@ -1,6 +1,7 @@
 #!/bin/bash
 
 
+
 RunGame=false
 RunGDB=false
 RunValgrind=false
@@ -39,6 +40,8 @@ CompileString="clang++ \
 	-o DXBall"
 
 RunString="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 -resolution 960x900 -twoPlayer true"
+RunStringServer="./DXBall -lPlayer Me -rPlayer You -fpsLimit 0 -resolution 960x900 -twoPlayer true -server true"
+
 GDBString="gdb -ex run --args $RunString"
 ValgindString="valgrind \
 	--suppressions=valgrind/ignore \
@@ -138,8 +141,9 @@ if make; then
 		echo -e "\tNormal mode"
 		echo -e "\tCommand : " $RunString
 		echo "=============================== DX Balll ==============================="
-		$RunString & # Run without blocking
-		$RunString
+		#$RunStringServer &
+		gnome-terminal -e "$RunString"&   # Run without blocking
+		gnome-terminal -e "$RunStringServer"&   # Run without blocking
 	fi
 
 

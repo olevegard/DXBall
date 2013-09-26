@@ -2,6 +2,7 @@
 
 #include "Timer.h"
 #include "Renderer.h"
+#include "NetManager.h"
 #include "BoardLoader.h"
 #include "MenuManager.h"
 
@@ -49,6 +50,11 @@ class GameManager
 		{
 			isTwoPlayerMode = isTwoPlayer;
 		}
+
+		void SetIsServer( bool isServer )
+		{
+			netManager.Init( isServer );
+		}
 	private:
 		// Tile collisions
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
@@ -84,6 +90,7 @@ class GameManager
 		Renderer renderer;
 		Timer timer;
 		MenuManager menuManager;
+		NetManager netManager;
 
 		std::shared_ptr < Paddle > localPaddle;
 		std::shared_ptr < Paddle > remotePaddle;

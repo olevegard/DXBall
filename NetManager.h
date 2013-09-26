@@ -5,7 +5,7 @@
 class NetManager
 {
 	public:
-		void Init()
+		void Init( bool isServer )
 		{
 			if ( SDLNet_Init() < 0 )
 			{
@@ -13,13 +13,32 @@ class NetManager
 				return;
 			}
 
-			gameServer.Init( "127.0.0.1", 2002 );
+			if ( isServer )
+			{
+				std::cout << "Initing game server..." << std::endl;
+				gameServer.Init( "127.0.0.1", 2002, true );
+
+				std::cout << "Accepting..." << std::endl;
+				gameServer.StartServer();
+
+				std::cout << "Reading message..." << std::endl;
+				gameServer.ReadMessages();
+			} else 
+			{
+				std::cout << "Initing game client..." << std::endl;
+				gameClient.Init( "127.0.0.1", 2002, false );
+
+				std::cout << "Sending message..." << std::endl;
+				gameClient.Send( "Hello" );
+			}
+
 			//
 			//gameServer.Close();
 		}
 		void AcceptConnection()
 		{
 			gameServer.AcceptConnection();
+
 		}
 		void Sent( std::string str )
 		{
@@ -32,4 +51,5 @@ class NetManager
 		}
 	private:
 		TCPConnection gameServer;
+		TCPConnection gameClient;
 };	

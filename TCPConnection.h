@@ -8,11 +8,11 @@
 class TCPConnection
 {
 public:
-	bool Init( const std::string &host, unsigned short port )
+	bool Init( const std::string &host, unsigned short port, bool server )
 	{
 		isConnected = false;
 
-
+		isServer = server;
 		hostName = host;
 		portNr = port;
 		std::cout << "Initialising" << std::endl;
@@ -28,12 +28,20 @@ public:
 	}
 	bool ResolveHost()
 	{
-		if ( SDLNet_ResolveHost( &ipAddress, hostName.c_str(), portNr ) == -1 )
+		int success = 0;
+
+		if ( isServer )
+			success = SDLNet_ResolveHost( &ipAddress, nullptr, portNr );
+		else
+			success = SDLNet_ResolveHost( &ipAddress, hostName.c_str(), portNr );
+
+		if ( success == -1 )
 		{
 			std::cout << "Failed to open port host :"
 				"\nIP Adress : " << hostName <<
 				"\nPort : " << portNr <<
-				"\nError : " << SDLNet_GetError()
+				"\nError : " << SDLNet_GetError() <<
+				"\nLine : " << __LINE__
 				<< std::endl;
 			return false;
 		}
@@ -50,7 +58,8 @@ public:
 			std::cout << "Failed to open port host :"
 				"\nIP Adress : " << hostName <<
 				"\nPort : " << portNr <<
-				"\nError : " << SDLNet_GetError()
+				"\nError : " << SDLNet_GetError() <<
+				"\nLine : " << __LINE__
 				<< std::endl;
 			return false;
 
@@ -84,6 +93,12 @@ public:
 	}
 	bool StartServer( )
 	{
+		if (!isServer )
+		{
+			std::cout << "Not in server mode, can't start server" << std::endl;
+			return false;
+		}
+
 		bool quit = false;
 		while ( !quit )
 		{
@@ -91,11 +106,12 @@ public:
 			{
 				if ( GetPeerAddress() )
 				{
-					quit = false;
+					quit = true;
 					isConnected = true;
 					return true;
 				}
 			}
+			SDL_Delay( 20 );
 		}
 		return false;
 	}
@@ -115,11 +131,12 @@ public:
 	}
 	bool GetPeerAddress()
 	{
-		ipRemote = SDLNet_TCP_GetPeerAddress( tcpSocket );
+		ipRemote = SDLNet_TCP_GetPeerAddress( connectedSocket );
 
 		if ( ipRemote == nullptr ) 
 		{
 			std::cout << "Failed to get peer addres : " << hostName << " : " << portNr << std::endl;
+			std::cout << "\tServer : " << std::boolalpha << isServer << std::endl;
 			isConnected = false;	
 			return false;
 		}
@@ -129,6 +146,24 @@ public:
 		isConnected = true;	
 		return true;
 	}
+	bool ReadMessages()
+	{
+		char buffer[512];
+		int byteCount = SDLNet_TCP_Recv( connectedSocket, buffer, 512 );
+
+		if ( byteCount > 0 )
+		{
+			buffer[byteCount] = '\n';
+			std::cout << "Received : " << buffer << std::endl;
+			return true;
+		} else if ( byteCount == 0 )
+		{
+			isConnected = false;
+			return false;
+		}
+
+		return false;
+	}
 
 private:
 	void* ConvertStringToVoidPtr( const std::string &str )
@@ -137,6 +172,7 @@ private:
 
 		return const_cast< char* > ( charPtr );
 	}
+	bool isServer;
 	std::string hostName;
 	unsigned short portNr;
 	bool isConnected;
