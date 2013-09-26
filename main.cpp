@@ -1,9 +1,11 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <future>
 
 #include "GameManager.h"
 #include "math/Rect.h"
+#include "NetManager.h"
 
 std::string Replace( const std::string &str, char replace, char replaceWith );
 std::string ReplaceUnderscores( const std::string &str );
@@ -16,7 +18,15 @@ bool StrToBool( const std::string &str );
 
 int main( int argc, char* args[] )
 {
+	NetManager netMan;
+	std::cout << "Init" << std::endl;
+	netMan.Init();
+	netMan.Sent( "this is a message" );
+	netMan.Close();
+
+	//netMan.AcceptConnection();
 	GameManager gameMan;
+
 
 	std::string localPlayerName  = "Player 1";
 	std::string remotePlayerName = "Player 2";
