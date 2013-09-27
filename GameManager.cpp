@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <sstream>
 
+#include <future>
+
 #include <cmath>
 
 
@@ -215,18 +217,19 @@ void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 }
 void GameManager::UpdateBalls( double delta )
 {
-	//netManager.Update();
-	std::stringstream ss;
-	ss << localPaddle->rect.x;
-	if ( netManager.IsServer() )
-		netManager.SendMessage( ss.str() );
-	else
+	if ( netManager.IsConnected() )
+	{
+		std::stringstream ss;
+		ss << localPaddle->rect.x;
 		netManager.SendMessage( ss.str() );
 
-	std::string message = netManager.ReadMessage();
+		std::string message = netManager.ReadMessage();
 
-	int xpos = std::atoi( message.c_str() );
-	remotePaddle->rect.x = xpos;
+		int xpos = std::atoi( message.c_str() );
+		remotePaddle->rect.x = xpos;
+		//std::future< int > fut( std::async( [](){ return 2; } ) );std::cout << "Future : " << fut.get() << std::endl;
+		std::cout << "Delta : " << delta << "\r";
+	}
 
 	if ( ballList.size() > 0 )
 		renderer.RemoveText();

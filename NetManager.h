@@ -76,6 +76,14 @@ class NetManager
 		{
 			return isServer;
 		}
+		bool IsConnected()
+		{
+			if ( isServer )
+				return gameServer.IsConnected();
+			else
+				return gameClient.IsConnected();
+
+		}
 	private:
 		bool isServer;
 		TCPConnection gameServer;

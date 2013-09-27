@@ -78,21 +78,20 @@ public:
 
 		void* messageData = ConvertStringToVoidPtr(str);
 		int messageSize = static_cast< int > ( str.length() );
+		int bytesSent = 0;
 		if ( isServer )
 		{
-			if ( SDLNet_TCP_Send( serverSocket,  messageData,  messageSize) < messageSize ) 
-			{
-				std::cout << "Send failed : " << SDLNet_GetError() << std::endl;
-				std::cin.ignore();
-			}
-
+			bytesSent = SDLNet_TCP_Send( serverSocket,  messageData,  messageSize);
 		}
 		else
 		{
-			if ( SDLNet_TCP_Send( tcpSocket,  messageData,  messageSize) < messageSize ) 
-			{
-				std::cout << "Send failed : " << SDLNet_GetError() << std::endl;
-			}
+			bytesSent = SDLNet_TCP_Send( tcpSocket,  messageData,  messageSize);
+		}
+
+		if ( bytesSent < messageSize )
+		{
+			std::cout << "Send failed : " << SDLNet_GetError() << std::endl;
+			isConnected = false;
 		}
 
 	}
@@ -161,7 +160,7 @@ public:
 	{
 		char buffer[512];
 		int byteCount  = 0;
-		std::string received;
+		std::string received("");
 
 		if ( !isConnected )
 			return received;
@@ -192,6 +191,10 @@ public:
 		}
 
 		return received;
+	}
+	bool IsConnected()
+	{
+		return isConnected;
 	}
 
 private:
