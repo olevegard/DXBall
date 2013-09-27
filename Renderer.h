@@ -41,7 +41,7 @@ public:
 	Renderer();
 	~Renderer();
 
-	bool Init( const SDL_Rect &r, bool startFS);
+	bool Init( const SDL_Rect &r, bool startFS, bool isServer);
 
 	void ToggleFullscreen();
 	bool SetFullscreen( bool fullscreenOn );
@@ -106,7 +106,7 @@ private:
 	void Setup();
 	bool CreateRenderer();
 
-	bool CreateWindow();
+	bool CreateWindow( bool server );
 	void SetFlags_VideoMode();
 
 	void RenderForeground();

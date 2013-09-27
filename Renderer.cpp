@@ -119,7 +119,7 @@ Renderer::~Renderer()
 
 	QuitSDL();
 }
-bool Renderer::Init( const SDL_Rect &rect, bool startFS )
+bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 {
 	fullscreen = startFS;
@@ -132,7 +132,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS )
 	}
 
 	// Set up screen
-	if ( !CreateWindow() )
+	if ( !CreateWindow( server ) )
 	{
 		std::cout << "Failed to apply video mode\n";
 		return false;
@@ -190,9 +190,12 @@ void Renderer::Setup()
 
 	HideMouseCursor( false );
 }
-bool Renderer::CreateWindow()
+bool Renderer::CreateWindow(bool server )
 {
-	window = SDL_CreateWindow( "DX Ball", 0, 0, background.w, background.h, screenFlags );
+	if ( server )
+		window = SDL_CreateWindow( "Server", background.w, 0, background.w, background.h, screenFlags );
+	else
+		window = SDL_CreateWindow( "Client", 0, 0, background.w, background.h, screenFlags );
 
 	if ( window == nullptr )
 	{

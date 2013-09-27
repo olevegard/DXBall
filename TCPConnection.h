@@ -76,13 +76,23 @@ public:
 			return;
 		}
 
-		std::cout << "Sending message " << str << std::endl;
 		void* messageData = ConvertStringToVoidPtr(str);
 		int messageSize = static_cast< int > ( str.length() );
-
-		if ( SDLNet_TCP_Send( tcpSocket,  messageData,  messageSize) < messageSize ) 
+		if ( isServer )
 		{
-			std::cout << "Send failed : " << SDLNet_GetError() << std::endl;
+			if ( SDLNet_TCP_Send( serverSocket,  messageData,  messageSize) < messageSize ) 
+			{
+				std::cout << "Send failed : " << SDLNet_GetError() << std::endl;
+				std::cin.ignore();
+			}
+
+		}
+		else
+		{
+			if ( SDLNet_TCP_Send( tcpSocket,  messageData,  messageSize) < messageSize ) 
+			{
+				std::cout << "Send failed : " << SDLNet_GetError() << std::endl;
+			}
 		}
 
 	}
@@ -119,9 +129,9 @@ public:
 
 	bool AcceptConnection()
 	{
-		connectedSocket = SDLNet_TCP_Accept( tcpSocket );
+		serverSocket = SDLNet_TCP_Accept( tcpSocket );
 
-		if ( connectedSocket  == nullptr ) 
+		if ( serverSocket  == nullptr ) 
 		{
 			std::cout << "Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
 			isConnected = false;	
@@ -132,7 +142,7 @@ public:
 	}
 	bool GetPeerAddress()
 	{
-		ipRemote = SDLNet_TCP_GetPeerAddress( connectedSocket );
+		IPaddress* ipRemote = SDLNet_TCP_GetPeerAddress( serverSocket );
 
 		if ( ipRemote == nullptr ) 
 		{
@@ -147,23 +157,41 @@ public:
 		isConnected = true;	
 		return true;
 	}
-	bool ReadMessages()
+	std::string ReadMessages()
 	{
 		char buffer[512];
-		int byteCount = SDLNet_TCP_Recv( connectedSocket, buffer, 512 );
+		int byteCount  = 0;
+		std::string received;
+
+		if ( !isConnected )
+			return received;
+
+		if ( isServer )
+			byteCount = SDLNet_TCP_Recv( serverSocket, buffer, 512 );
+		else
+			byteCount = SDLNet_TCP_Recv( tcpSocket, buffer, 512 );
 
 		if ( byteCount > 0 )
 		{
-			buffer[byteCount] = '\n';
-			std::cout << "Received : " << buffer << std::endl;
-			return true;
+			buffer[byteCount] = '\0';
+			received = buffer;
+			//std::cout << "Received : " << received << "|\nsize : " << byteCount << std::endl;
+		// A bytecount of 0 means the connection has been terminated
 		} else if ( byteCount == 0 )
 		{
+			std::cout << "Connection terminated" << std::endl;
 			isConnected = false;
-			return false;
+		// A bytecount of < 0 means an error occured
+		} else if ( byteCount < 0 )
+		{
+			std::cout << "Read failed!" <<
+				"\nSocket : " << ( isServer ? serverSocket : tcpSocket )  << 
+				"\nByte count : " << byteCount << 
+				"\nERrror : " << SDLNet_GetError() << 
+				std::endl;
 		}
 
-		return false;
+		return received;
 	}
 
 private:
@@ -178,7 +206,6 @@ private:
 	unsigned short portNr;
 	bool isConnected;
 	IPaddress ipAddress;
-	IPaddress* ipRemote;
 	TCPsocket tcpSocket;
-	TCPsocket connectedSocket;
+	TCPsocket serverSocket;
 };

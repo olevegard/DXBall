@@ -1,3 +1,4 @@
+barcode.txt
 hk.txt
 helloworld.txt
 board-2.txt

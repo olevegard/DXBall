@@ -13,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 
 #include <cmath>
 
@@ -48,8 +49,9 @@
 bool GameManager::Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS )
 {
 	windowSize = size;
+	bool server = localPlayerName ==  "server";
 
-	if ( !renderer.Init( windowSize, startFS ) )
+	if ( !renderer.Init( windowSize, startFS, server ) )
 		return false;
 
 	std::cout << localPlayerName << " vs " << remotePlayerName << std::endl;
@@ -213,6 +215,19 @@ void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 }
 void GameManager::UpdateBalls( double delta )
 {
+	//netManager.Update();
+	std::stringstream ss;
+	ss << localPaddle->rect.x;
+	if ( netManager.IsServer() )
+		netManager.SendMessage( ss.str() );
+	else
+		netManager.SendMessage( ss.str() );
+
+	std::string message = netManager.ReadMessage();
+
+	int xpos = std::atoi( message.c_str() );
+	remotePaddle->rect.x = xpos;
+
 	if ( ballList.size() > 0 )
 		renderer.RemoveText();
 
@@ -358,7 +373,7 @@ void GameManager::Update( double delta )
 		return;
 	}
 
-	AIMove();
+	//AIMove();
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
 
