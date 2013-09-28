@@ -56,6 +56,7 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 			continue;
 
 		std::stringstream( line ) >> pos;
+		std::cout << "\tAddiing tile...\n";
 		board.AddTile( pos );
 	}
 	return board;

@@ -192,10 +192,10 @@ void Renderer::Setup()
 }
 bool Renderer::CreateWindow(bool server )
 {
-	if ( server )
-		window = SDL_CreateWindow( "Server", background.w, 0, background.w, background.h, screenFlags );
+	if ( !server )
+		window = SDL_CreateWindow( "Client", background.w, 0, background.w, background.h, screenFlags );
 	else
-		window = SDL_CreateWindow( "Client", 0, 0, background.w, background.h, screenFlags );
+		window = SDL_CreateWindow( "Server", background.w, 1080 - background.h, background.w, background.h, screenFlags );
 
 	if ( window == nullptr )
 	{

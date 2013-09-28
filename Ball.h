@@ -42,6 +42,7 @@ struct Ball : GamePiece
 
 
 	Vector2f GetDirection( ) const;
+	void SetDirection( const Vector2f &newDir );
 	private:
 
 		

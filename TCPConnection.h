@@ -16,6 +16,7 @@ public:
 		hostName = host;
 		portNr = port;
 		std::cout << "Initialising" << std::endl;
+		socketSet = SDLNet_AllocSocketSet( 1 );
 
 		if ( !ResolveHost() )
 			return false;
@@ -53,6 +54,9 @@ public:
 	{
 		tcpSocket = SDLNet_TCP_Open( &ipAddress );
 
+		if ( !isServer )
+			SDLNet_TCP_AddSocket( socketSet, tcpSocket );
+
 		if ( tcpSocket == nullptr )
 		{
 			std::cout << "Failed to open port host :"
@@ -75,10 +79,11 @@ public:
 			std::cout << "Error! Not connected " << std::endl;
 			return;
 		}
-
+		
 		void* messageData = ConvertStringToVoidPtr(str);
 		int messageSize = static_cast< int > ( str.length() );
 		int bytesSent = 0;
+
 		if ( isServer )
 		{
 			bytesSent = SDLNet_TCP_Send( serverSocket,  messageData,  messageSize);
@@ -116,6 +121,7 @@ public:
 			{
 				if ( GetPeerAddress() )
 				{
+					SDLNet_TCP_AddSocket( socketSet, serverSocket );
 					quit = true;
 					isConnected = true;
 					return true;
@@ -158,7 +164,12 @@ public:
 	}
 	std::string ReadMessages()
 	{
+		if ( !CheckForActivity() )
+			return "";
+
 		char buffer[512];
+		memset( buffer, 0, 512 );
+
 		int byteCount  = 0;
 		std::string received("");
 
@@ -172,9 +183,10 @@ public:
 
 		if ( byteCount > 0 )
 		{
+			//memset( &buffer[byteCount], 0, static_cast< size_t > (512 - byteCount ) );
 			buffer[byteCount] = '\0';
 			received = buffer;
-			//std::cout << "Received : " << received << "|\nsize : " << byteCount << std::endl;
+
 		// A bytecount of 0 means the connection has been terminated
 		} else if ( byteCount == 0 )
 		{
@@ -191,6 +203,21 @@ public:
 		}
 
 		return received;
+	}
+	bool CheckForActivity()
+	{
+		int countReady = SDLNet_CheckSockets( socketSet, 0 );
+
+		if ( countReady < 0 )
+		{
+			std::cout << "Error! " << SDLNet_GetError() << std::endl;
+			return false;
+		}
+
+		if ( isServer )
+			return SDLNet_SocketReady( serverSocket ) != 0;
+		else 
+			return SDLNet_SocketReady( tcpSocket ) != 0;
 	}
 	bool IsConnected()
 	{
@@ -209,6 +236,8 @@ private:
 	unsigned short portNr;
 	bool isConnected;
 	IPaddress ipAddress;
+
 	TCPsocket tcpSocket;
 	TCPsocket serverSocket;
+	SDLNet_SocketSet socketSet;
 };

@@ -39,8 +39,8 @@ CompileString="clang++ \
 
 	-o DXBall"
 
-RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x900 -twoPlayer true"
-RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x900 -twoPlayer true -server true"
+RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x400 -twoPlayer true"
+RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x400 -twoPlayer true -server true"
 
 GDBString="gdb -ex run --args $RunString"
 ValgindString="valgrind \

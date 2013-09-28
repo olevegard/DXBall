@@ -9,6 +9,7 @@
 #include <vector>
 
 // Forward declarations
+class TCPMessage;
 enum class TileType : int;
 enum class Player : int;
 struct GamePiece;
@@ -26,7 +27,7 @@ class GameManager
 
 		void Restart();
 
-		void AddBall( Player owner );
+		std::shared_ptr<Ball> AddBall( Player owner );
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void AddTile( short posX, short posY, TileType tileType );
@@ -42,6 +43,7 @@ class GameManager
 
 		void Run();
 		void AIMove();
+		void AIMove_Local();
 
 		void CreateMenu();
 
@@ -77,6 +79,19 @@ class GameManager
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
+		
+		// Network
+		void PrintSend( const TCPMessage &msg ) const;
+		void PrintRecv( const TCPMessage &msg ) const;
+
+		void UpdateNetwork();
+		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
+		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
+		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
+
+		void SendPaddlePosMessage( );
+
+
 
 		void SetLocalPaddlePosition( int x, int y );
 		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );

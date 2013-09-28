@@ -35,7 +35,7 @@ Ball::~Ball()
 
 void Ball::Reset( const SDL_Rect &windowSize )
 {
-	speed = 0.4f * Math::GenRandomNumber( 1 );
+	speed = 0.2f * Math::GenRandomNumber( 1 );
 
 	// X pos and dirX is the same for both local and remote player
 	dirX = Math::GenRandomNumber( -1.0, 1.0 );
@@ -49,7 +49,7 @@ void Ball::Reset( const SDL_Rect &windowSize )
 	else if ( ballOwner == Player::Remote )
 	{
 		dirY = Math::GenRandomNumber(  0.1, 0.9 );
-		rect.y = 50;
+		rect.y = 100;
 	}
 
 	paddleHitInPrevFrame = false;
@@ -154,7 +154,10 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 			paddleHitInPrevFrame = true;
 			HandlePaddleHit( paddleRect );
 			if ( ballOwner == Player::Remote )
+			{
 				dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
+			}
+				
 			return true;
 		} else
 		{
@@ -627,6 +630,11 @@ Vector2f Ball::GetDirection( ) const
 	return Vector2f( dirX, dirY );
 }
 
+void Ball::SetDirection( const Vector2f &newDir )
+{
+	dirX = newDir.x;
+	dirY = newDir.y;
+}
 Vector2f Ball::Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const
 {
 	switch ( side )
