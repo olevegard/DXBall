@@ -56,8 +56,6 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	if ( !renderer.Init( windowSize, startFS, server ) )
 		return false;
 
-	std::cout << localPlayerName << " vs " << remotePlayerName << std::endl;
-
 	UpdateGUI();
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
@@ -139,8 +137,6 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner )
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
-
-	std::cout << "Adding balll....\n";
 
 	if ( owner == Player::Local ) 
 		SendBallSpawnMessage( ball );
@@ -311,7 +307,7 @@ void GameManager::UpdateNetwork()
 					}
 				}  else
 				{
-					std::cout << __LINE__ << " : Message received " << msg << std::endl;
+					std::cout << __LINE__ << " : UpdateNetwork message received " << msg << std::endl;
 				}
 			}
 		}
