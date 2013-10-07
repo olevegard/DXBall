@@ -27,7 +27,7 @@ class GameManager
 
 		void Restart();
 
-		std::shared_ptr<Ball> AddBall( Player owner );
+		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void AddTile( short posX, short posY, TileType tileType );
@@ -91,10 +91,10 @@ class GameManager
 
 		void SendPaddlePosMessage( );
 
-
-
 		void SetLocalPaddlePosition( int x, int y );
 		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
+
+		std::shared_ptr< Ball > GetBallFromID( unsigned int ID );
 
 		void DoFPSDelay( unsigned int ticks );
 
@@ -124,6 +124,7 @@ class GameManager
 		unsigned int points[4];
 
 		unsigned int tileCount;
+		unsigned int ballCount;
 
 		unsigned short fpsLimit;
 		double frameDuration;

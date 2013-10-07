@@ -39,6 +39,7 @@
 
 	,	points{ 20, 50, 100, 500 }
 	,	tileCount( 0 )
+	,	ballCount( 0 )
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
 {
@@ -92,6 +93,7 @@ void GameManager::Restart()
 	}
 
 	tileCount = 0;
+	ballCount = 0;
 
 	boardLoader.Reset();
 	GenerateBoard();
@@ -109,7 +111,7 @@ void GameManager::Restart()
 	UpdateGUI();
 }
 
-std::shared_ptr<Ball> GameManager::AddBall( Player owner )
+std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
 	if ( menuManager.GetGameState() != GameState::InGame )
 		return nullptr;
@@ -132,7 +134,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner )
 		++remotePlayerActiveBalls;
 	}
 
-	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner );
+	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
 	ball->textureType = TextureType::e_Ball;
 
 	ballList.push_back( ball );
@@ -146,6 +148,9 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner )
 
 void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 {
+	if ( !ball )
+		return;
+
 	if ( ball->GetOwner() == Player::Local )
 	{
 		--localPlayerActiveBalls;
@@ -285,7 +290,7 @@ void GameManager::UpdateNetwork()
 				}
 				else if ( msg.msgType == MessageType::BallSpawned )
 				{
-					std::shared_ptr< Ball > ball = AddBall( Player::Remote );
+					std::shared_ptr< Ball > ball = AddBall( Player::Remote, msg.objectID );
 					ball->rect.x = msg.xPos;
 					ball->rect.y = msg.yPos;
 					ball->SetDirection( Vector2f( msg.xDir, msg.yDir ) );
@@ -293,7 +298,11 @@ void GameManager::UpdateNetwork()
 				{
 					if ( ballList.size() > 0 )
 					{
-						std::shared_ptr< Ball > ball = ballList[0];
+						std::shared_ptr< Ball > ball = GetBallFromID( msg.objectID );
+
+						if ( ball )
+							return;
+
 						ball->rect.x = msg.xPos;
 						ball->rect.y = msg.yPos;
 						ball->SetDirection( Vector2f( msg.xDir, msg.yDir ) );
@@ -302,8 +311,8 @@ void GameManager::UpdateNetwork()
 				{
 					if ( ballList.size() > 0 )
 					{
-						std::shared_ptr< Ball > ball = ballList[0];
-						RemoveBall( ball );
+						RemoveBall( GetBallFromID( msg.objectID ));
+
 					}
 				}  else
 				{
@@ -405,7 +414,16 @@ void GameManager::DeleteDeadBalls()
 	// Remove item returned by remove_if
 	ballList.erase( newEnd, ballList.end( ) );
 }
+std::shared_ptr< Ball > GameManager::GetBallFromID( unsigned int ID )
+{
+	auto func = [ID]( std::shared_ptr< Ball > p){ return ID == p->GetBallID();  };
+	auto it = std::find_if( ballList.begin(), ballList.end(), func );
 
+	if ( it == ballList.end() )
+		return nullptr;
+
+	return (*it);
+}
 void GameManager::Run()
 {
 	bool quit = false;
@@ -432,7 +450,7 @@ void GameManager::Run()
 					case SDLK_RETURN:
 					case SDLK_b:
 						//AddBall( Player::Remote );
-						AddBall( Player::Local );
+						AddBall( Player::Local, ++ballCount );
 						break;
 					case SDLK_ESCAPE:
 						//menuManager.GoBackToPreviousMenuState();

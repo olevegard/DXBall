@@ -11,16 +11,12 @@ class TCPMessage
 	public:
 		TCPMessage()
 			:	msgType( MessageType::PaddlePosition )
+			,	objectID( 0 )
 			,	xPos(0.0)
 			,	yPos(0.0)
 			,	xDir(0.0)
 			,	yDir(0.0)
 	{}
-		MessageType msgType;	
-	double xPos;
-	double yPos;
-	double xDir;
-	double yDir;
 	double GetXPos()  const
 	{
 		return xPos;
@@ -28,7 +24,7 @@ class TCPMessage
 	std::string Print() const
 	{
 		std::stringstream ss;
-		ss << "Type : " << GetTypeAsString() << " : " << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+		ss << "Type : " << GetTypeAsString() << " - " << objectID << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
 		return ss.str();
 	}
 	std::string GetTypeAsString() const
@@ -49,16 +45,20 @@ class TCPMessage
 
 		return "Unknown";
 	}
-
+	MessageType msgType;	
+	unsigned int objectID;
+	double xPos;
+	double yPos;
+	double xDir;
+	double yDir;
 };
-
-
 
 inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 {
 	int type;
 	is >> type;
 	msg.msgType = static_cast< MessageType > ( type );
+	is >> msg.objectID;
 
 	if ( type == MessageType::BallKilled )
 		return is;
@@ -77,12 +77,20 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &pos )
 {
 	os << pos.msgType;
 	os << " ";
+	os << pos.objectID;
+	os << " ";
+
+	// Ball killed only needs message type and ID
 	if ( pos.msgType == MessageType::BallKilled )
 		return os;
+
 	os << pos.xPos;
 	os << " ";
+
+	// Paddle position always has the same Y-pos
 	if ( pos.msgType == MessageType::PaddlePosition )
 		return os;
+
 	os << pos.yPos;
 	os << " ";
 	os << pos.xDir;
