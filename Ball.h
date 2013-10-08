@@ -102,6 +102,10 @@ inline bool operator==( const Ball &ball, unsigned int ID)
 {
 	return ball.GetBallID() == ID;
 }
+inline bool operator==( unsigned int ID, const Ball &ball )
+{
+	return ball.GetBallID() == ID;
+}
 inline bool operator!=( const Ball &ball1, const Ball &ball2)
 {
 	return !(ball1 == ball2);

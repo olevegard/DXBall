@@ -52,7 +52,7 @@ void Ball::Reset( const SDL_Rect &windowSize )
 	else if ( ballOwner == Player::Remote )
 	{
 		dirY = Math::GenRandomNumber(  0.1, 0.9 );
-		rect.y = 100;
+		rect.y = 150;
 	}
 
 	paddleHitInPrevFrame = false;
