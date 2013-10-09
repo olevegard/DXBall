@@ -37,6 +37,7 @@ class GameManager
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 
 		void UpdateBalls( double delta );
+		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
 		void DeleteDeadBalls();
 
 		void UpdateGUI( );
@@ -89,12 +90,15 @@ class GameManager
 		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
 
+		void SendTileHitMessage( unsigned int tileID );
+
 		void SendPaddlePosMessage( );
 
 		void SetLocalPaddlePosition( int x, int y );
 		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
 
 		std::shared_ptr< Ball > GetBallFromID( unsigned int ID );
+		std::shared_ptr< Tile > GetTileFromID( unsigned int ID );
 
 		void DoFPSDelay( unsigned int ticks );
 

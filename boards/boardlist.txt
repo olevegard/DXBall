@@ -1,4 +1,5 @@
 empty.txt
+barcode2.txt
 barcode.txt
 hk.txt
 helloworld.txt

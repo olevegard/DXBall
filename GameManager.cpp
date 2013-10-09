@@ -118,7 +118,6 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 
 	if ( owner == Player::Local )
 	{
-
 		if (  localPlayerLives == 0 )
 		{
 			return nullptr;
@@ -140,7 +139,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
 
-	if ( owner == Player::Local ) 
+	if ( owner == Player::Local )
 		SendBallSpawnMessage( ball );
 
 	++ballCount;
@@ -173,6 +172,8 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	renderer.RemoveBall( ball );
 	UpdateGUI();
 }
+
+
 void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
 	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
@@ -189,7 +190,11 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
+	if ( tile == nullptr )
+		return;
+
 	renderer.RemoveTile( tile );
+
 
 	// Decrement tile count
 	--tileCount;
@@ -238,6 +243,10 @@ void GameManager::UpdateBalls( double delta )
 	for ( auto p : ballList )
 	{
 		p->Update( delta );
+
+		if ( p->GetOwner() == Player::Remote )
+			continue;
+
 		if ( p->BoundCheck( windowSize ) )
 		{
 			if ( p->GetOwner() == Player::Local )
@@ -250,13 +259,14 @@ void GameManager::UpdateBalls( double delta )
 		{
 			if ( p->PaddleCheck( localPaddle->rect ) )
 				SendBallDataMessage( p );
+
+			CheckBallTileIntersection( p );
 		}
 		else if ( isTwoPlayerMode && p->GetOwner() == Player::Remote )
 		{
 			p->PaddleCheck( remotePaddle->rect );
 		}
 
-		CheckBallTileIntersection( p );
 
 		if ( p->DeathCheck( windowSize ) )
 		{
@@ -331,6 +341,21 @@ void GameManager::UpdateNetwork()
 						RemoveBall( GetBallFromID( msg.objectID ));
 
 					}
+				} else if ( msg.msgType == MessageType::TileHit )
+				{
+					PrintRecv( msg );
+					if ( tileList.size() > 0 )
+					{
+						std::shared_ptr< Tile > tile = GetTileFromID( msg.objectID );
+						tile->Hit();
+
+						if ( tile->IsDestroyed() )
+						{
+							auto itClosestTile = std::find( tileList.begin(), tileList.end(), tile );
+							tileList.erase( itClosestTile );
+							RemoveTile( tile );
+						}
+					}
 				}  else
 				{
 					std::cout << __LINE__ << " : UpdateNetwork message received " << msg << std::endl;
@@ -346,6 +371,7 @@ void GameManager::SendPaddlePosMessage( )
 	// Sending
 	//
 	TCPMessage msg;
+
 	std::stringstream ss;
 	msg.msgType = MessageType::PaddlePosition;
 	msg.xPos = localPaddle->rect.x;
@@ -409,6 +435,18 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 
 	//PrintSend(msg);
 }
+void GameManager::SendTileHitMessage( unsigned int tileID )
+{
+	TCPMessage msg;
+	std::stringstream ss;
+
+	msg.msgType = MessageType::TileHit;
+	msg.objectID = tileID;
+
+	ss << msg;
+	netManager.SendMessage( ss.str() );
+
+}
 void GameManager::PrintSend( const TCPMessage &msg ) const
 {
 	std::cout << "Sending : " << msg.Print();
@@ -419,7 +457,6 @@ void GameManager::PrintRecv( const TCPMessage &msg ) const
 }
 void GameManager::DeleteDeadBalls()
 {
-
 	auto isDeadFunc = [=]( std::shared_ptr< Ball > ball )
 	{
 		if ( ball->IsAlive() )
@@ -451,6 +488,16 @@ std::shared_ptr< Ball > GameManager::GetBallFromID( unsigned int ID )
 	//if ( it == ballList.end() ) return nullptr;
 
 	//return (*it);
+}
+std::shared_ptr< Tile > GameManager::GetTileFromID( unsigned int ID )
+{
+	for ( auto p : tileList )
+	{
+		if ( ID == p->GetTileID() )
+			return p;
+	}
+
+	return nullptr;
 }
 void GameManager::Run()
 {
@@ -652,33 +699,41 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 }
 void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
-	auto itClosestTile = std::find( tileList.begin(), tileList.end(), tile );
 	if ( tile )
 	{
 		if ( !ball->TileCheck( tile->rect, tile->GetTileID() ) )
 			return;
 
+		if ( ball->GetOwner() == Player::Local ) SendBallDataMessage( ball );
+
 		tile->Hit();
 
-		bool isDestroyed = tile->IsDestroyed();
-		IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
-		if ( isDestroyed )
-		{
+		//if ( ball->GetOwner() == Player::Local ) 
+			//SendTileHitMessage( tile->GetTileID() );
 
-			if (tile->GetTileType() == TileType::Explosive )
-			{
-				int count = HandleExplosions( tile, ball->GetOwner() );
-				AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
-			}
-			else
-			{
-				AddBonusBox( ball, tile->rect.x, tile->rect.y );
-				tileList.erase( itClosestTile );
-				RemoveTile( tile );
-			}
+		UpdateTileHit( ball, tile );
+	}
+}
+void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
+{
+	bool isDestroyed = tile->IsDestroyed();
+	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
+	if ( isDestroyed )
+	{
+
+		if (tile->GetTileType() == TileType::Explosive )
+		{
+			int count = HandleExplosions( tile, ball->GetOwner() );
+			AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
+		}
+		else
+		{
+			AddBonusBox( ball, tile->rect.x, tile->rect.y );
+			auto itClosestTile = std::find( tileList.begin(), tileList.end(), tile );
+			tileList.erase( itClosestTile );
+			RemoveTile( tile );
 		}
 	}
-
 }
 std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_ptr< Ball > ball )
 {
@@ -892,8 +947,8 @@ bool GameManager::IsLevelDone()
 {
 	if ( menuManager.GetGameState() == GameState::InGame )
 	{
-		//auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); };
-		//return std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable )  == 0;
+		auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); };
+		return std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable )  == 0;
 	}
 
 	return false;
