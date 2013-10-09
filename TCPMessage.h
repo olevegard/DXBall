@@ -28,7 +28,7 @@ class TCPMessage
 		return ss.str();
 	}
 	std::string GetTypeAsString() const
-	{	
+	{
 		switch ( msgType )
 		{
 			case MessageType::PaddlePosition:
@@ -45,7 +45,7 @@ class TCPMessage
 
 		return "Unknown";
 	}
-	MessageType msgType;	
+	MessageType msgType;
 	unsigned int objectID;
 	double xPos;
 	double yPos;
@@ -69,7 +69,6 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	is >> msg.yPos;
 	is >> msg.xDir;
 	is >> msg.yDir;
-
 
 	return is;
 }
