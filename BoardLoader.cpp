@@ -45,6 +45,7 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 	std::string filePath = "boards/";
 	filePath.append( textFile );
 	std::cout << "Loading level : " << filePath << std::endl;
+	std::cout << "\tIsServer : " << std::boolalpha << isServer << std::endl;
 
 	std::ifstream boardFile( filePath );
 	TilePosition pos;
@@ -61,7 +62,7 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 	}
 	return board;
 }
-std::vector< TilePosition > BoardLoader::GenerateBoard( )
+std::vector< TilePosition > BoardLoader::GenerateBoard( const SDL_Rect &rect )
 {
 	if ( currentLevel >= levelTextFiles.size() )
 	{
@@ -75,5 +76,6 @@ std::vector< TilePosition > BoardLoader::GenerateBoard( )
 	levels.push_back( b );
 	++currentLevel;
 
-	return b.GetTiles();
+	b.CenterAndFlip( rect, isServer );
+	return b.GetTiles( );
 }

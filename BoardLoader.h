@@ -4,6 +4,7 @@
 
 #include <string>
 
+struct SDL_Rect;
 struct TilePosition;
 struct BoardLoader
 {
@@ -13,15 +14,21 @@ struct BoardLoader
 
 	Board LoadLevel( const std::string &textFile );
 
-	std::vector< TilePosition > GenerateBoard( );
+	std::vector< TilePosition > GenerateBoard( const SDL_Rect &rect );
 
 	void Reset( )
 	{
 		currentLevel = 0;
 	}
 
+	void SetIsServer( bool server )
+	{
+		isServer = server;
+	}
+
 	private:
 		size_t currentLevel;
 		std::vector< std::string > levelTextFiles;
 		std::vector< Board > levels;
+		bool isServer;
 };

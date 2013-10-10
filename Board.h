@@ -53,6 +53,7 @@ struct Board
 		countRows= std::count_if( tiles.begin(), tiles.end(), count_Func );
 		std::cout << "Count : " << countRows << std::endl;
 	}*/
+	void CenterAndFlip( const SDL_Rect &rect, bool isServer );
 
 	std::vector< TilePosition > GetTiles()
 	{

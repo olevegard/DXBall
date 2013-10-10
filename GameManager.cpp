@@ -70,6 +70,7 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 void GameManager::SetIsServer( bool isServer )
 {
 	netManager.Init( isServer );
+	boardLoader.SetIsServer( isServer );
 }
 void GameManager::Restart()
 {
@@ -248,30 +249,15 @@ void GameManager::UpdateBalls( double delta )
 			continue;
 
 		if ( p->BoundCheck( windowSize ) )
-		{
-			if ( p->GetOwner() == Player::Local )
-			{
-				SendBallDataMessage( p );
-			}
-		}
+			SendBallDataMessage( p );
 
-		if ( p->GetOwner() == Player::Local )
-		{
-			if ( p->PaddleCheck( localPaddle->rect ) )
-				SendBallDataMessage( p );
+		if ( p->PaddleCheck( localPaddle->rect ) )
+			SendBallDataMessage( p );
 
-			CheckBallTileIntersection( p );
-		}
-		else if ( isTwoPlayerMode && p->GetOwner() == Player::Remote )
-		{
-			p->PaddleCheck( remotePaddle->rect );
-		}
-
+		CheckBallTileIntersection( p );
 
 		if ( p->DeathCheck( windowSize ) )
-		{
 			p->Kill();
-		}
 	}
 
 	DeleteDeadBalls();
@@ -445,7 +431,6 @@ void GameManager::SendTileHitMessage( unsigned int tileID )
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
-
 }
 void GameManager::PrintSend( const TCPMessage &msg ) const
 {
@@ -708,8 +693,7 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 
 		tile->Hit();
 
-		//if ( ball->GetOwner() == Player::Local ) 
-			//SendTileHitMessage( tile->GetTileID() );
+		SendTileHitMessage( tile->GetTileID() );
 
 		UpdateTileHit( ball, tile );
 	}
@@ -937,7 +921,7 @@ void GameManager::SetFPSLimit( unsigned short limit )
 void GameManager::GenerateBoard()
 {
 	ClearBoard();
-	std::vector<TilePosition> vec = boardLoader.GenerateBoard();
+	std::vector<TilePosition> vec = boardLoader.GenerateBoard( windowSize );
 
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
