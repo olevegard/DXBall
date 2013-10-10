@@ -335,7 +335,10 @@ void GameManager::UpdateNetwork()
 						std::shared_ptr< Tile > tile = GetTileFromID( msg.objectID );
 						tile->Hit();
 
-						if ( tile->IsDestroyed() )
+						bool isDestroyed = tile->IsDestroyed();
+						IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, Player::Remote );
+
+						if ( isDestroyed )
 						{
 							auto itClosestTile = std::find( tileList.begin(), tileList.end(), tile );
 							tileList.erase( itClosestTile );
