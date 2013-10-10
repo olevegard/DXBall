@@ -35,38 +35,13 @@ void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
 	double diff = newTop - heighestTile;
 	std::cout << "New top : " << newTop << std::endl;
 	std::cout << "Diff : " << diff << std::endl;
-	// Size : 150
-	// Top : 50
-	// Bottom : 200
-	// Middle : 175
 
 	//for ( auto &p : tiles ) p.yPos += 50;
 	for ( auto &p : tiles ) p.yPos += (diff - 10);
 
-	heighestTile = rect.h;
-	lowestTile = 0.0;
-
-	for ( const auto &p : tiles )
-	{
-		if ( p.yPos < heighestTile )
-			heighestTile = p.yPos;
-
-		if ( p.yPos > lowestTile )
-			lowestTile = p.yPos;
-	}
-
-	std::cout <<"=================================AFTER MOVE========================";
-	std::cout << "Lowset tile : " << lowestTile + 20 << "\nHighest tile : " << heighestTile << std::endl;
 	if ( !isServer )
 	{	
-		std::vector<TilePosition> tileCopy( tiles.size() );
-		std::reverse_copy( tiles.begin(), tiles.end(), tileCopy.begin() );
-		size_t listSize = tiles.size();
-		for ( size_t i = 0; i < listSize ; ++i )
-		{
-			tiles[i].yPos = tileCopy[i].yPos;
-		}
+		for ( size_t i = 0; i < tiles.size() ; ++i )
+			tiles[i].yPos = static_cast< short > (rect.h ) - tiles[i].yPos;
 	}
 }
-
-
