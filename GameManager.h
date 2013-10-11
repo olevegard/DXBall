@@ -54,7 +54,7 @@ class GameManager
 			isTwoPlayerMode = isTwoPlayer;
 		}
 
-		void SetIsServer( bool isServer );
+		void InitNetManager( bool isServer, std::string ip, unsigned short port );
 	private:
 		// Tile collisions
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );

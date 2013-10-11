@@ -67,9 +67,9 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	return true;
 }
 
-void GameManager::SetIsServer( bool isServer )
+void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short port )
 {
-	netManager.Init( isServer );
+	netManager.Init( isServer, ip, port );
 	boardLoader.SetIsServer( isServer );
 }
 void GameManager::Restart()

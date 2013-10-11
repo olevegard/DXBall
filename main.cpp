@@ -26,6 +26,8 @@ int main( int argc, char* args[] )
 	resolution.y = 0;
 	resolution.w = 1920 / 2;
 	resolution.h = 1080 / 2;
+	std::string ip = "127.0.0.1";
+	unsigned short port = 2002;
 
 	bool startFS = false;
 	bool startTwoPlayer = false;
@@ -55,6 +57,10 @@ int main( int argc, char* args[] )
 				startTwoPlayer = StrToBool( args[ i + 1 ]);
 			else if ( str == "-server" && argc > ( i + 1 ) )
 				isServer = StrToBool( args[ i + 1 ]);
+			else if ( str == "-ip" && argc > ( i + 1 ) )
+				ip = args[ i + 1 ];
+			else if ( str == "-port" && argc > ( i + 1 ) )
+				port = static_cast<unsigned short > ( std::stoi( args[ i + 1 ] ) );
 		}
 	}
 	localPlayerName = ReplaceUnderscores( localPlayerName );
@@ -68,6 +74,8 @@ int main( int argc, char* args[] )
 	std::cout << "Fullscreen       : " << std::boolalpha << startFS << std::endl;
 	std::cout << "2 player mode    : " << std::boolalpha << startTwoPlayer << std::endl;
 	std::cout << "Is server        : " << std::boolalpha << isServer << std::endl;
+	std::cout << "IP               : " << ip << std::endl;
+	std::cout << "Port             : " << port << std::endl;
 	std::cout << "============================\n";
 
 	GameManager gameMan;
@@ -76,7 +84,7 @@ int main( int argc, char* args[] )
 		return 1;
 
 	gameMan.SetFPSLimit( fpsLimit );
-	gameMan.SetIsServer( isServer );
+	gameMan.InitNetManager( isServer, ip, port );
 
 	gameMan.Run();
 }

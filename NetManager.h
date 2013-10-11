@@ -5,7 +5,7 @@
 class NetManager
 {
 	public:
-		void Init( bool server )
+		void Init( bool server, std::string ip = "127.0.0.1", unsigned short port = 2002 )
 		{
 			isServer = server;
 			if ( SDLNet_Init() < 0 )
@@ -16,19 +16,14 @@ class NetManager
 
 			if ( isServer )
 			{
-				gameServer.Init( "127.0.0.1", 2002, true );
-
+				gameServer.Init( ip, port, true );
 				gameServer.StartServer();
-			} else 
+			} else
 			{
 				// Temporary code to give the server some time to start up...
 				SDL_Delay( 100 );
-				gameClient.Init( "127.0.0.1", 2002, false );
-
+				gameClient.Init( ip, port, false );
 			}
-
-			//
-			//gameServer.Close();
 		}
 		void AcceptConnection()
 		{
