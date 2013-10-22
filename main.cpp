@@ -1,7 +1,6 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
-#include <future>
 
 #include "GameManager.h"
 #include "math/Rect.h"
