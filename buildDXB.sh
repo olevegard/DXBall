@@ -160,6 +160,8 @@ if make; then
 			echo "=============================== DX Balll ==============================="
 			gnome-terminal -e "$RunString"&   # Run without blocking
 			gnome-terminal -e "$RunStringServer"&   # Run without blocking
+			xterm -e "$RunString"&   # Run without blocking
+			xterm -e "$RunStringServer"&   # Run without blocking
 		fi
 	else
 		if $RunGDB ; then
