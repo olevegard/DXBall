@@ -40,14 +40,16 @@ int main( int argc, char* args[] )
 		{
 			std::string str = ToLower( args[i] );
 
-			std::cout << "\t" << i << " : " <<  str << " = " << args[ i + 1 ]  << std::endl;
+			std::cout << "\t" << i << " : " <<  str << " = " << args[ i + 1 ]
+				<< std::endl;
 
 			if ( str == "-lplayer" && argc > ( i + 1 )  )
 				localPlayerName = args[i + 1 ];
 			else if ( str == "-rplayer" && argc > ( i + 1 )  )
 				remotePlayerName = args[i + 1 ];
 			else if ( str == "-fpslimit" && argc > ( i + 1 )  )
-				fpsLimit = static_cast< unsigned short > ( std::stoi( args[i + 1] ) );
+				fpsLimit = static_cast< unsigned short >
+					( std::stoi( args[i + 1] ) );
 			else if ( str == "-resolution" && argc > ( i + 1 )  )
 				resolution = SetResolution( args[i + 1 ] );
 			else if ( str == "-startfs" && argc > ( i + 1 ) )
@@ -59,9 +61,11 @@ int main( int argc, char* args[] )
 			else if ( str == "-ip" && argc > ( i + 1 ) )
 				ip = args[ i + 1 ];
 			else if ( str == "-port" && argc > ( i + 1 ) )
-				port = static_cast<unsigned short > ( std::stoi( args[ i + 1 ] ) );
+				port = static_cast<unsigned short >
+					( std::stoi( args[ i + 1 ] ) );
 		}
 	}
+
 	localPlayerName = ReplaceUnderscores( localPlayerName );
 	remotePlayerName =  ReplaceUnderscores( remotePlayerName );
 
@@ -69,7 +73,7 @@ int main( int argc, char* args[] )
 	std::cout << "Local player     : " << "\'" << localPlayerName << "\'"  << std::endl;
 	std::cout << "Rmote player     : " << "\'" << remotePlayerName << "\'"  << std::endl;
 	std::cout << "Frame rate limit : " << fpsLimit << std::endl;
-	std::cout << "Resolution       : " << resolution.w << "x" << resolution.h  << std::endl;
+	std::cout << "Resolution       : " << resolution.w << "x" << resolution.h << std::endl;
 	std::cout << "Fullscreen       : " << std::boolalpha << startFS << std::endl;
 	std::cout << "2 player mode    : " << std::boolalpha << startTwoPlayer << std::endl;
 	std::cout << "Is server        : " << std::boolalpha << isServer << std::endl;
@@ -87,7 +91,6 @@ int main( int argc, char* args[] )
 
 	gameMan.Run();
 }
-
 bool StrToBool( const std::string &str )
 {
 	std::string toBool = ToLower(str);
@@ -114,32 +117,26 @@ SDL_Rect SetResolution( const std::string &str )
 
 	return r;
 }
-
 std::string Replace( const std::string &str, char replace, char replaceWith )
 {
 	std::string retStr = str;
 
 	auto func = [ replace, replaceWith ] ( char c )
 	{
-		// If ( c == '_' ) c = ' ';
-
 		return ( c != replace ) ?  c : replaceWith;
 	
 	};
 	std::transform( retStr.begin(), retStr.end(), retStr.begin(), func);
 	return retStr;
 }
-
 std::string ReplaceUnderscores( const std::string &str )
 {
 	return Replace( str, '_', ' ' );
 }
-
 std::string ToLower( const std::string &str )
 {
 	std::string retStr = str;
 	std::transform( retStr.begin(), retStr.end(), retStr.begin(), ::tolower );
 
 	return retStr;
-
 }
