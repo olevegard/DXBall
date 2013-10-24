@@ -27,18 +27,26 @@ CompileString="clang++ \
 	math/Vector2f.cpp \
 	math/Rect.cpp  \
 
-	-lSDL2 \
-	-lSDL2_ttf \
-	-lSDL2_image \
 	-std=c++11 \
 
-	-O3 \
 	-Weverything  -Wall \
 	-Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded \
 	-Wno-switch-enum -Wno-float-equal -Werror \
 
-	-o DXBall"
+	-fsanitize=address-full
+	-fsanitize=undefined
+	-fsanitize=null
 
+
+	-c"
+
+	#-fsanitize=memory
+	#-fsanitize=behavior
+	#-o DXBall
+	#-O3 \
+	#-lSDL2 \
+	#-lSDL2_ttf \
+	#-lSDL2_image \
 RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer true"
 RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -twoPlayer true -server true"
 
@@ -133,7 +141,7 @@ if make; then
 	if $ForceFullCompile ; then
 		echo "========================================================================"
 		echo $CompileString
-		$CompileString
+		$CompileString && echo 'Compile success!!!!'
 	fi
 
 	if $ClearCompileOutput ; then
@@ -152,15 +160,18 @@ if make; then
 			echo -e "\tDebug mode"
 			echo -e "\tCommand : " $GDBString
 			echo "=============================== DX Balll ==============================="
-			gnome-terminal -e "$GDBString"&
-			gnome-terminal -e "$GDBStringServer"&
+			#gnome-terminal -e "$GDBString"&
+			#gnome-terminal -e "$GDBStringServer"&
+
+			xterm -e "$GDBString"&   # Run without blocking
+			xterm -e "$RunStringServer"&   # Run without blocking
 		else
 			echo -e "\tNormal mode"
 			echo -e "\tCommand : " $RunString
 			echo "=============================== DX Balll ==============================="
 			gnome-terminal -e "$RunString"&   # Run without blocking
 			gnome-terminal -e "$RunStringServer"&   # Run without blocking
-			xterm -e "$GDBString"&   # Run without blocking
+			xterm -e "$RunString"&   # Run without blocking
 			xterm -e "$RunStringServer"&   # Run without blocking
 		fi
 	else
