@@ -87,7 +87,7 @@ if make; then
 				RunProfiler=false
 				RunTwoInstances=true
 				;;
-			D)
+			D)#Rum two instances in debug
 				RunGame=false
 				RunGDB=true
 				RunValgrind=false
@@ -160,7 +160,7 @@ if make; then
 			echo "=============================== DX Balll ==============================="
 			gnome-terminal -e "$RunString"&   # Run without blocking
 			gnome-terminal -e "$RunStringServer"&   # Run without blocking
-			xterm -e "$RunString"&   # Run without blocking
+			xterm -e "$GDBString"&   # Run without blocking
 			xterm -e "$RunStringServer"&   # Run without blocking
 		fi
 	else
