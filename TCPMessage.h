@@ -24,7 +24,7 @@ class TCPMessage
 	std::string Print() const
 	{
 		std::stringstream ss;
-		ss << "Type : " << GetTypeAsString() << "| Object ID :  " << objectID;
+		ss << "Type : " << std::left << std::setw( 10 ) << GetTypeAsString() << "| Object ID :  " << objectID;
 		if ( msgType == MessageType::BallKilled || msgType == MessageType::TileHit )
 		{
 			ss << "\n";
