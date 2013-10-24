@@ -163,16 +163,25 @@ if make; then
 			#gnome-terminal -e "$GDBString"&
 			#gnome-terminal -e "$GDBStringServer"&
 
-			xterm -e "$GDBString"&   # Run without blocking
-			xterm -e "$RunStringServer"&   # Run without blocking
+			#Run in terminal ( explanation below )
+			xterm -fa default -fs 13 -geometry 95x15+0+0   -e "$GDBString"&
+			xterm -fa default -fs 13 -geometry 95x15+0+600 -e "$RunStringServer"&
 		else
 			echo -e "\tNormal mode"
 			echo -e "\tCommand : " $RunString
 			echo "=============================== DX Balll ==============================="
 			gnome-terminal -e "$RunString"&   # Run without blocking
 			gnome-terminal -e "$RunStringServer"&   # Run without blocking
-			xterm -geometry 150x30+0+0   -e "$RunString"&   # Run without blocking
-			xterm -geometry 150x30+0+540 -e "$RunStringServer"&   # Run without blocking
+
+			# Run in a new terminal window with :
+				# font      = default
+				# font size = 13
+				# size      = 95x15 ( font size )
+				# position  = 95x15 ( pixels? )
+				# program args
+				# non-blocking
+			xterm -fa default -fs 13 -geometry 95x15+0+0   -e "$RunString"&
+			xterm -fa default -fs 13 -geometry 95x15+0+600 -e "$RunStringServer"&
 		fi
 	else
 		if $RunGDB ; then
