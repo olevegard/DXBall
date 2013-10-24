@@ -180,8 +180,8 @@ if make; then
 				# position  = 95x15 ( pixels? )
 				# program args
 				# non-blocking
-			xterm -fa default -fs 13 -geometry 95x15+0+0   -e "$RunString"&
-			xterm -fa default -fs 13 -geometry 95x15+0+600 -e "$RunStringServer"&
+			xterm -fa default -fs 12 -geometry 95x15+1000+600   -e "$RunString"&
+			xterm -fa default -fs 12 -geometry 95x15+0+600 -e "$RunStringServer"&
 		fi
 	else
 		if $RunGDB ; then
