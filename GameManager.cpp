@@ -77,7 +77,7 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short port )
 {
 	netManager.Init( isServer, ip, port );
-	boardLoader.SetIsServer( isServer );
+	boardLoader.SetIsServer( !isTwoPlayerMode || isServer );
 }
 void GameManager::Restart()
 {
@@ -359,6 +359,9 @@ void GameManager::UpdateNetwork()
 
 void GameManager::SendPaddlePosMessage( )
 {
+	if ( !isTwoPlayerMode )
+		return;
+
 	// Sending
 	TCPMessage msg;
 
@@ -372,6 +375,9 @@ void GameManager::SendPaddlePosMessage( )
 }
 void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 {
+	if ( !isTwoPlayerMode )
+		return;
+
 	TCPMessage msg;
 
 	Rect r = ball->rect;
@@ -393,6 +399,9 @@ void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 }
 void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 {
+	if ( !isTwoPlayerMode )
+		return;
+
 	TCPMessage msg;
 
 	Rect r = ball->rect;
@@ -414,6 +423,9 @@ void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 }
 void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 {
+	if ( !isTwoPlayerMode )
+		return;
+
 	TCPMessage msg;
 	std::stringstream ss;
 
@@ -427,6 +439,9 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 }
 void GameManager::SendTileHitMessage( unsigned int tileID )
 {
+	if ( !isTwoPlayerMode )
+		return;
+
 	TCPMessage msg;
 	std::stringstream ss;
 
@@ -597,7 +612,9 @@ void GameManager::Update( double delta )
 	if ( netManager.IsServer() )
 		AIMove_Local();
 
-	UpdateNetwork();
+	if ( isTwoPlayerMode )
+		UpdateNetwork();
+
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
 
