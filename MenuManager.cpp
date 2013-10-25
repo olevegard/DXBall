@@ -196,7 +196,10 @@ GameState MenuManager::GetPrevGameState() const
 void MenuManager::SetGameState( const GameState &gs )
 {
 	if ( !IsGameStateChangeValid( gs ) )
+	{
+		std::cout << "MenuManager.cpp@" << __LINE__ << " : GameState Invalid\n";
 		return;
+	}
 
 	hasGameStateChanged = true;
 	prevGameState = currentGameState;

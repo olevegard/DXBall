@@ -40,16 +40,14 @@ int main( int argc, char* args[] )
 		{
 			std::string str = ToLower( args[i] );
 
-			std::cout << "\t" << i << " : " <<  str << " = " << args[ i + 1 ]
-				<< std::endl;
+			std::cout << "\t" << i << " : " <<  str << " = " << args[ i + 1 ] << std::endl;
 
 			if ( str == "-lplayer" && argc > ( i + 1 )  )
 				localPlayerName = args[i + 1 ];
 			else if ( str == "-rplayer" && argc > ( i + 1 )  )
 				remotePlayerName = args[i + 1 ];
 			else if ( str == "-fpslimit" && argc > ( i + 1 )  )
-				fpsLimit = static_cast< unsigned short >
-					( std::stoi( args[i + 1] ) );
+				fpsLimit = static_cast< unsigned short >( std::stoi( args[i + 1] ) );
 			else if ( str == "-resolution" && argc > ( i + 1 )  )
 				resolution = SetResolution( args[i + 1 ] );
 			else if ( str == "-startfs" && argc > ( i + 1 ) )
@@ -61,8 +59,7 @@ int main( int argc, char* args[] )
 			else if ( str == "-ip" && argc > ( i + 1 ) )
 				ip = args[ i + 1 ];
 			else if ( str == "-port" && argc > ( i + 1 ) )
-				port = static_cast<unsigned short >
-					( std::stoi( args[ i + 1 ] ) );
+				port = static_cast<unsigned short >( std::stoi( args[ i + 1 ] ) );
 		}
 	}
 
@@ -83,13 +80,13 @@ int main( int argc, char* args[] )
 
 	GameManager gameMan;
 	gameMan.SetTwoPlayerMode( startTwoPlayer );
-	if ( !gameMan.Init( localPlayerName, remotePlayerName , resolution, startFS  ) )
+	if ( !gameMan.Init( localPlayerName, remotePlayerName, resolution, startFS  ) )
 		return 1;
 
 	gameMan.SetFPSLimit( fpsLimit );
 	gameMan.InitNetManager( isServer, ip, port );
-
 	gameMan.Run();
+	return 0;
 }
 bool StrToBool( const std::string &str )
 {

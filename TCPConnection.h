@@ -19,10 +19,16 @@ public:
 		socketSet = SDLNet_AllocSocketSet( 1 );
 
 		if ( !ResolveHost() )
+		{
+			std::cout << "TCPConnection@" << __LINE__ << ": Resolve Host failed!" << std::endl;
 			return false;
+		}
 
 		if ( !OpenConnectionToHost() )
+		{
+			std::cout << "TCPConnection@" << __LINE__ << ": Open Connection To  Host failed!" << std::endl;
 			return false;
+		}
 
 		isConnected = true;
 		return true;

@@ -64,6 +64,13 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 
 	CreateMenu();
 
+	localPaddle = std::make_shared< Paddle > ();
+	localPaddle->textureType = TextureType::e_Paddle;
+	localPaddle->rect.w = 120;
+	localPaddle->rect.h = 30;
+	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
+	renderer.SetLocalPaddle( localPaddle );
+
 	return true;
 }
 
@@ -75,12 +82,6 @@ void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short 
 void GameManager::Restart()
 {
 	std::cout << "Restart\n";
-	localPaddle = std::make_shared< Paddle > ();
-	localPaddle->textureType = TextureType::e_Paddle;
-	localPaddle->rect.w = 120;
-	localPaddle->rect.h = 30;
-	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
-	renderer.SetLocalPaddle( localPaddle );
 
 	if ( isTwoPlayerMode )
 	{
@@ -196,7 +197,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 	renderer.RemoveTile( tile );
 
-
 	// Decrement tile count
 	--tileCount;
 }
@@ -301,7 +301,7 @@ void GameManager::UpdateNetwork()
 					ball->SetDirection( Vector2f( msg.xDir, msg.yDir ) );
 				}else if ( msg.msgType == MessageType::BallData )
 				{
-					PrintRecv( msg );
+					//PrintRecv( msg );
 					if ( ballList.size() > 0 )
 					{
 						std::shared_ptr< Ball > ball = GetBallFromID( msg.objectID );
@@ -358,7 +358,6 @@ void GameManager::UpdateNetwork()
 void GameManager::SendPaddlePosMessage( )
 {
 	// Sending
-	//
 	TCPMessage msg;
 
 	std::stringstream ss;
@@ -367,7 +366,7 @@ void GameManager::SendPaddlePosMessage( )
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	//PrintSend(msg);
+	PrintSend(msg);
 }
 void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 {
@@ -493,7 +492,6 @@ void GameManager::Run()
 	SDL_Event event;
 
 	unsigned int ticks;
-
 	while ( !quit )
 	{
 		ticks = SDL_GetTicks();
@@ -550,11 +548,14 @@ void GameManager::Run()
 				//if ( SDL_WINDOWEVENT_LEAVE ) renderer.ForceMouseFocus();
 			}
 			if ( event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP )
+			{
 				HandleMouseEvent( event.button );
+			}
 		}
 		if ( menuManager.HasGameStateChanged() )
 		{
 			renderer.SetGameState( menuManager.GetGameState() );
+
 			if ( menuManager.GetGameState() == GameState::Quit )
 				quit = true;
 			else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() != GameState::Paused )
@@ -578,7 +579,6 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 	if ( diff < fpsLimit ) 
 	{
 		SDL_Delay( delay );
-
 	}
 }
 void GameManager::Update( double delta )
@@ -675,7 +675,9 @@ void GameManager::AIMove_Local()
 	if ( ( highest->rect.y + highest->rect.h ) <  localPaddle->rect.y  )
 		return;
 
-	double deadCenter = ( highest->rect.x + highest->rect.w / 2 )  - ( ( localPaddle->rect.w / 2.0) * Math::GenRandomNumber( -1.0, 1.0 ) );
+	double deadCenter = ( highest->rect.x + highest->rect.w / 2 ) -
+						( ( localPaddle->rect.w / 2.0) *
+						Math::GenRandomNumber( -1.0, 1.0 ) );
 
 	localPaddle->rect.x = deadCenter;
 	SendPaddlePosMessage();
@@ -707,7 +709,6 @@ void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< 
 	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 	if ( isDestroyed )
 	{
-
 		if (tile->GetTileType() == TileType::Explosive )
 		{
 			int count = HandleExplosions( tile, ball->GetOwner() );
