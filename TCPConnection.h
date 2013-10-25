@@ -187,14 +187,15 @@ public:
 		else
 			byteCount = SDLNet_TCP_Recv( tcpSocket, buffer, 512 );
 
+	
 		if ( byteCount > 0 )
 		{
 			//memset( &buffer[byteCount], 0, static_cast< size_t > (512 - byteCount ) );
 			buffer[byteCount] = '\0';
 			received = buffer;
-
+		}
 		// A bytecount of 0 means the connection has been terminated
-		} else if ( byteCount == 0 )
+		else if ( byteCount == 0 )
 		{
 			std::cout << "Connection terminated" << std::endl;
 			isConnected = false;

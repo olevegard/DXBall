@@ -70,6 +70,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 {
 	int type;
 	is >> type;
+
 	msg.msgType = static_cast< MessageType > ( type );
 	is >> msg.objectID;
 

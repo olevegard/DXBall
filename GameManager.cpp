@@ -267,26 +267,27 @@ void GameManager::UpdateNetwork()
 	if ( netManager.IsConnected()  && localPaddle )
 	{
 		TCPMessage msg;
-		std::stringstream ss;
 
 		// Reading
 		bool stop = false;
 		while ( !stop )
 		{
-			std::string str =netManager.ReadMessage(); 
+			std::string str = netManager.ReadMessage(); 
+
 			if ( str == "" )
 			{
 				stop = true;
 				break;
 			}
 
-			ss.str( str );
+			std::stringstream ss;
+			ss << str;
+
 			while ( ss >> msg )
 			{
-
 				if ( msg.msgType == MessageType::PaddlePosition )
 				{
-					//PrintRecv( msg );
+					PrintRecv( msg );
 					if ( msg.xPos > 0 && msg.xPos < windowSize.w )
 					{
 						remotePaddle->rect.x = msg.xPos;
@@ -294,14 +295,14 @@ void GameManager::UpdateNetwork()
 				}
 				else if ( msg.msgType == MessageType::BallSpawned )
 				{
-					//PrintRecv( msg );
+					PrintRecv( msg );
 					std::shared_ptr< Ball > ball = AddBall( Player::Remote, msg.objectID );
 					ball->rect.x = msg.xPos;
 					ball->rect.y = msg.yPos;
 					ball->SetDirection( Vector2f( msg.xDir, msg.yDir ) );
 				}else if ( msg.msgType == MessageType::BallData )
 				{
-					//PrintRecv( msg );
+					PrintRecv( msg );
 					if ( ballList.size() > 0 )
 					{
 						std::shared_ptr< Ball > ball = GetBallFromID( msg.objectID );
@@ -314,6 +315,7 @@ void GameManager::UpdateNetwork()
 						ball->rect.x = msg.xPos;
 						ball->rect.y = msg.yPos;
 						//double distX = ( ball->rect.x - msg.xPos);
+						//
 						//double distY = ( ball->rect.y - msg.yPos);
 						//std::cout << "Dist : " << distX << " , " << distY << std::endl;
 
@@ -321,7 +323,7 @@ void GameManager::UpdateNetwork()
 					}
 				} else if ( msg.msgType == MessageType::BallKilled )
 				{
-					//PrintRecv( msg );
+					PrintRecv( msg );
 					if ( ballList.size() > 0 )
 					{
 						RemoveBall( GetBallFromID( msg.objectID ));
@@ -697,6 +699,7 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 		if ( ball->GetOwner() == Player::Local ) SendBallDataMessage( ball );
 
 		tile->Hit();
+		std::cout << "Tile Hit : " << tile->GetTileID() << std::endl;
 
 		SendTileHitMessage( tile->GetTileID() );
 
