@@ -1,4 +1,3 @@
-
 #include "GameManager.h"
 
 #include "Ball.h"
@@ -272,7 +271,7 @@ void GameManager::UpdateNetwork()
 		bool stop = false;
 		while ( !stop )
 		{
-			std::string str = netManager.ReadMessage(); 
+			std::string str = netManager.ReadMessage();
 
 			if ( str == "" )
 			{
@@ -285,56 +284,55 @@ void GameManager::UpdateNetwork()
 
 			while ( ss >> msg )
 			{
-				if ( msg.msgType == MessageType::PaddlePosition )
+				MessageType type = msg.GetType();
+				if ( type == MessageType::PaddlePosition )
 				{
 					PrintRecv( msg );
-					if ( msg.xPos > 0 && msg.xPos < windowSize.w )
+					double xPos = msg.GetXPos();
+					if ( xPos > 0 && xPos < windowSize.w )
 					{
-						remotePaddle->rect.x = msg.xPos;
+						remotePaddle->rect.x = xPos;
 					}
 				}
-				else if ( msg.msgType == MessageType::BallSpawned )
+				else if ( type == MessageType::BallSpawned )
 				{
 					PrintRecv( msg );
-					std::shared_ptr< Ball > ball = AddBall( Player::Remote, msg.objectID );
-					ball->rect.x = msg.xPos;
-					ball->rect.y = msg.yPos;
-					ball->SetDirection( Vector2f( msg.xDir, msg.yDir ) );
-				}else if ( msg.msgType == MessageType::BallData )
+					std::shared_ptr< Ball > ball = AddBall( Player::Remote, msg.GetObjectID() );
+
+					ball->rect.x = msg.GetXPos();
+					ball->rect.y = msg.GetYPos();
+					ball->SetDirection( Vector2f( msg.GetXDir(), msg.GetYDir() ) );
+				}else if ( type == MessageType::BallData )
 				{
 					PrintRecv( msg );
 					if ( ballList.size() > 0 )
 					{
-						std::shared_ptr< Ball > ball = GetBallFromID( msg.objectID );
+						std::shared_ptr< Ball > ball = GetBallFromID( msg.GetObjectID() );
 
 						if ( !ball )
 						{
+							std::cout << "Could not find ball with ID : " << msg.GetObjectID() << std::endl;
 							continue;
 						}
 
-						ball->rect.x = msg.xPos;
-						ball->rect.y = msg.yPos;
-						//double distX = ( ball->rect.x - msg.xPos);
-						//
-						//double distY = ( ball->rect.y - msg.yPos);
-						//std::cout << "Dist : " << distX << " , " << distY << std::endl;
-
-						ball->SetDirection( Vector2f( msg.xDir, msg.yDir ) );
+						ball->rect.x = msg.GetXPos();
+						ball->rect.y = msg.GetYPos();
+						ball->SetDirection( Vector2f( msg.GetXDir(), msg.GetYDir() ) );
 					}
-				} else if ( msg.msgType == MessageType::BallKilled )
+				} else if ( type == MessageType::BallKilled )
 				{
 					PrintRecv( msg );
 					if ( ballList.size() > 0 )
 					{
-						RemoveBall( GetBallFromID( msg.objectID ));
+						RemoveBall( GetBallFromID( msg.GetObjectID() ));
 
 					}
-				} else if ( msg.msgType == MessageType::TileHit )
+				} else if ( type == MessageType::TileHit )
 				{
 					PrintRecv( msg );
 					if ( tileList.size() > 0 )
 					{
-						std::shared_ptr< Tile > tile = GetTileFromID( msg.objectID );
+						std::shared_ptr< Tile > tile = GetTileFromID( msg.GetObjectID() );
 						tile->Hit();
 
 						bool isDestroyed = tile->IsDestroyed();
@@ -366,8 +364,8 @@ void GameManager::SendPaddlePosMessage( )
 	TCPMessage msg;
 
 	std::stringstream ss;
-	msg.msgType = MessageType::PaddlePosition;
-	msg.xPos = localPaddle->rect.x;
+	msg.SetMessageType( MessageType::PaddlePosition );
+	msg.SetXPos( localPaddle->rect.x );
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
@@ -383,14 +381,14 @@ void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 	Rect r = ball->rect;
 	std::stringstream ss;
 
-	msg.msgType = MessageType::BallSpawned;
-	msg.objectID = ball->GetBallID();
+	msg.SetMessageType( MessageType::BallSpawned );
+	msg.SetObjectID( ball->GetBallID() );
 
-	msg.xPos = r.x;
-	msg.yPos = windowSize.h - r.y;
+	msg.SetXPos( r.x );
+	msg.SetYPos( windowSize.h - r.y );
 
-	msg.xDir = ball->GetDirection().x;
-	msg.yDir = ball->GetDirection().y * -1.0;
+	msg.SetXDir( ball->GetDirection().x );
+	msg.SetYDir( ball->GetDirection().y * -1.0 );
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
@@ -407,14 +405,14 @@ void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 	Rect r = ball->rect;
 	std::stringstream ss;
 
-	msg.msgType = MessageType::BallData;
+	msg.SetMessageType( MessageType::BallData );
 
-	msg.objectID = ball->GetBallID();
-	msg.xPos = r.x;
-	msg.yPos = windowSize.h - r.y;
+	msg.SetObjectID(  ball->GetBallID() );
+	msg.SetXPos( r.x );
+	msg.SetYPos(  windowSize.h - r.y );
 
-	msg.xDir = ball->GetDirection().x;
-	msg.yDir = ball->GetDirection().y * -1.0;
+	msg.SetXDir( ball->GetDirection().x );
+	msg.SetYDir( ball->GetDirection().y * -1.0 );
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
@@ -429,8 +427,8 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 	TCPMessage msg;
 	std::stringstream ss;
 
-	msg.msgType = MessageType::BallKilled;
-	msg.objectID = ball->GetBallID();
+	msg.SetMessageType( MessageType::BallKilled );
+	msg.SetObjectID(  ball->GetBallID() );
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
@@ -445,8 +443,8 @@ void GameManager::SendTileHitMessage( unsigned int tileID )
 	TCPMessage msg;
 	std::stringstream ss;
 
-	msg.msgType = MessageType::TileHit;
-	msg.objectID = tileID;
+	msg.SetMessageType( MessageType::TileHit );
+	msg.SetObjectID( tileID );
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
@@ -593,7 +591,7 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 	unsigned int diff = SDL_GetTicks() - ticks;
 	unsigned short delay = static_cast< unsigned short > ( ( frameDuration  - diff  ) + 0.5 );
 
-	if ( diff < fpsLimit ) 
+	if ( diff < fpsLimit )
 	{
 		SDL_Delay( delay );
 	}
@@ -716,7 +714,6 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 		if ( ball->GetOwner() == Player::Local ) SendBallDataMessage( ball );
 
 		tile->Hit();
-		std::cout << "Tile Hit : " << tile->GetTileID() << std::endl;
 
 		SendTileHitMessage( tile->GetTileID() );
 
@@ -749,7 +746,7 @@ std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_pt
 	double closest = std::numeric_limits< double >::max();
 	double current = closest;
 
-	for ( auto p : tileList) 
+	for ( auto p : tileList)
 	{
 		if ( !ball->CheckTileSphereIntersection( p->rect, ball->rect, current ) )
 		{

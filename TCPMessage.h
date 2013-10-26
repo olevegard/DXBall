@@ -9,108 +9,99 @@
 class TCPMessage
 {
 	public:
-		TCPMessage()
-			:	msgType( MessageType::PaddlePosition )
-			,	objectID( 0 )
-			,	xPos(0.0)
-			,	yPos(0.0)
-			,	xDir(0.0)
-			,	yDir(0.0)
-	{}
-	double GetXPos()  const
-	{
-		return xPos;
-	}
-	std::string Print() const
-	{
-		std::stringstream ss;
-		ss << "Type : " << std::left << std::setw( 10 ) << GetTypeAsString() << "| Object ID :  " << objectID;
-		if ( msgType == MessageType::BallKilled || msgType == MessageType::TileHit )
-		{
-			ss << "\n";
-		} else if ( msgType == MessageType::PaddlePosition )
-		{
-			ss << " : "  << xPos << "\n";
-		} else
-		{
-			ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
-		}
+		TCPMessage();
+		std::string Print() const;
 
-		return ss.str();
-	}
-	std::string GetTypeAsString() const
-	{
-		switch ( msgType )
-		{
-			case MessageType::PaddlePosition:
-				return "Paddle Position";
-			case MessageType::BallSpawned:
-				return "Ball Spawned";
-			case MessageType::BallData:
-				return "Ball Data";
-			case MessageType::BallKilled:
-				return "Ball Killed";
-			case MessageType::TileHit:
-				return "Tile Hit";
-			default:
-				break;
-		}
+		// Getters
+		std::string GetTypeAsString() const;
+		int GetTypeAsInt() const;
+		MessageType GetType() const;
+		unsigned int GetObjectID() const;
+		double GetXPos() const;
+		double GetYPos() const;
+		double GetXDir() const;
+		double GetYDir() const;
 
-		return "Unknown";
-	}
-	MessageType msgType;
-	unsigned int objectID;
-	double xPos;
-	double yPos;
-	double xDir;
-	double yDir;
+		// Setters
+		void SetMessageType( MessageType msgType_ );
+		void SetMessageType( int  msgType_ );
+		void SetObjectID( unsigned int objectID_ );
+		void SetXPos( double xPos_ );
+		void SetYPos( double yPos_ );
+		void SetXDir( double xDir_ );
+		void SetYDir( double yDir_ );
+
+	private:
+		MessageType msgType;
+		unsigned int objectID;
+		double xPos;
+		double yPos;
+		double xDir;
+		double yDir;
 };
 
 inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 {
-	int type;
+	int type = 0;
+	unsigned int objectID = 0;
+
 	is >> type;
+	is >> objectID;
 
-	msg.msgType = static_cast< MessageType > ( type );
-	is >> msg.objectID;
+	msg.SetMessageType( type );
+	msg.SetObjectID( objectID );
 
+	// BallKilled and Tile Hit only needs message type and ID
 	if ( type == MessageType::BallKilled || type == MessageType::TileHit )
 		return is;
 
-	is >> msg.xPos;
+	double xPos = 0.0;
+	is >> xPos;
+	msg.SetXPos( xPos );
 
+	// Paddle position only has xPos
 	if ( type == MessageType::PaddlePosition )
 		return is;
 
-	is >> msg.yPos;
-	is >> msg.xDir;
-	is >> msg.yDir;
+	double yPos = 0.0;
+	double xDir = 0.0;
+	double yDir = 0.0;
+
+	is >> yPos;
+	is >> xDir;
+	is >> yDir;
+
+	msg.SetYPos( yPos );
+	msg.SetXDir( xDir );
+	msg.SetYDir( yDir );
 
 	return is;
 }
 inline std::ostream& operator<<( std::ostream &os, const TCPMessage &pos )
 {
-	os << pos.msgType;
+	MessageType type = pos.GetType();
+
+	os << pos.GetTypeAsInt();
 	os << " ";
-	os << pos.objectID;
+	os << pos.GetObjectID();
 	os << " ";
 
-	// Ball killed only needs message type and ID
-	if ( pos.msgType == MessageType::BallKilled || pos.msgType == MessageType::TileHit )
+	// BallKilled and Tile Hit only needs message type and ID
+	if ( type == MessageType::BallKilled || type == MessageType::TileHit )
 		return os;
 
-	os << pos.xPos;
+	os << pos.GetXPos();
 	os << " ";
 
-	// Paddle position always has the same Y-pos
-	if ( pos.msgType == MessageType::PaddlePosition )
+	// Paddle position only has xPos
+	if ( type == MessageType::PaddlePosition )
 		return os;
 
-	os << pos.yPos;
+	os << pos.GetYPos();
 	os << " ";
-	os << pos.xDir;
+	os << pos.GetXDir();
 	os << " ";
-	os << pos.yDir;
+	os << pos.GetYDir();
 	os << " ";
 	return os;
 }
