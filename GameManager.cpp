@@ -179,10 +179,11 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
 	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
 	tile->textureType = TextureType::e_Tile;
-	tile->rect.x = posX;
-	tile->rect.y = posY;
-	tile->rect.w = 60;
-	tile->rect.h = 20;
+	double scale = 0.75;
+	tile->rect.x = ( posX * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
+	tile->rect.y = ( posY * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
+	tile->rect.w = 60 * scale;
+	tile->rect.h = 20 * scale;
 
 	tileList.push_back( tile );
 
@@ -206,6 +207,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
+
 		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
 	}
 
