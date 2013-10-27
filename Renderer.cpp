@@ -37,9 +37,9 @@
 	,	fullscreen( false )
 	,	backgroundColor{ 0, 0, 0, 255 }// 40, 20, 40, 255
 								/*uuuuunnuuuuuusesssd*/
-	,	tileColors{ {48, 9, 178, 255}, {255, 55, 13, 255}, {140, 140, 140, 255}, {255, 183, 13, 255} }
+	,	tileColors{ {102, 0, 0, 255}, {255, 55, 13, 255}, {140, 140, 140, 255}, {255, 183, 13, 255} }
 	,	tileTextures{ nullptr, nullptr, nullptr, nullptr }
-	,	hardTileColors{ { 255, 243, 233, 255}, { 222, 212, 203, 255}, { 191, 183, 175, 255},{ 127, 122, 117, 255}, { 64, 61, 58, 255} }
+	,	hardTileColors{ { 255, 145, 0, 255}, { 200, 100, 0, 255}, { 150, 60, 0, 255},{ 50, 40, 0, 255}, { 20, 15, 0, 255} }
 	,	hardTileTextures{ nullptr, nullptr, nullptr, nullptr, nullptr }
 
 	,	ballList(  )
@@ -166,8 +166,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 // ============================================================================================
 bool Renderer::CreateRenderer()
 {
-	renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );//SDL_RENDERER_PREVENTVSYNC 
-
+	renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );//SDL_RENDERER_PREVENTVSYNC
 
 	if ( renderer == nullptr )
 	{
@@ -371,7 +370,6 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
 	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
-	//std::string bonusText = bonusBox->GetName();
 
 	int bonusBoxMargin = bonusBoxRect.w / 10;
 	int doubleMargin = bonusBoxMargin * 2;
@@ -382,20 +380,6 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 		SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, localPlayerColor.r, localPlayerColor.g, localPlayerColor.b, localPlayerColor.a ) );
 	else
 		SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, remotePlayerColor.r, remotePlayerColor.g, remotePlayerColor.b, remotePlayerColor.a ) );
-
-	/*
-	// Text
-	SDL_Surface* surface = TTF_RenderText_Solid( tinyFont, bonusText.c_str(), localPlayerColor );
-	SDL_Rect textPosition;
-	textPosition.w = surface->clip_rect.w;
-	textPosition.h = surface->clip_rect.h;
-	textPosition.x = bonusBoxMargin + ( ( bonusBoxRect.w - doubleMargin  ) /  2 ) - ( textPosition.w / 2  );
-	textPosition.y = bonusBoxRect.h - surface->clip_rect.h;
-	
-	// Add tect rect to the surface
-	SDL_BlitSurface( surface, NULL, bonus, &textPosition);
-	SDL_FreeSurface( surface );
-	*/
 
 	// Icon
 	SDL_Rect logoPosition;
@@ -473,12 +457,11 @@ void Renderer::Render( )
 		default:
 			break;
 	}
-		
+
 	SDL_RenderPresent( renderer );
 }
 void Renderer::RenderForeground()
 {
-
 	// Draw balls
 	for ( std::shared_ptr< Ball > gp : ballList )
 	{
@@ -930,7 +913,7 @@ MenuItem Renderer::SetUnderlineHelper( MenuItem menuItem, bool setUnderline )
 		style = TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC;
 	}
 
-	SDL_Rect r = menuItem.GetRect();	
+	SDL_Rect r = menuItem.GetRect();
 	menuItem.SetTexture( RenderTextTexture_Blended( mediumFont, menuItem.GetName(), clr, r, style ) );
 	menuItem.SetRect( r );
 	menuItem.SetSelcted( setUnderline );
@@ -1057,7 +1040,7 @@ void Renderer::CleanUp()
 }
 void Renderer::CleanUpSurfaces()
 {
-	// Free tile 
+	// Free tile
 	for ( auto p : tileTextures )
 	{
 		SDL_DestroyTexture( p );
@@ -1102,11 +1085,11 @@ void Renderer::PrintSDL_TTFVersion()
 
 	const SDL_version *link_version = TTF_Linked_Version();
 
-	printf("Compiled with SDL_ttf version: %d.%d.%d\n", 
+	printf("Compiled with SDL_ttf version: %d.%d.%d\n",
 			compile_version.major,
 			compile_version.minor,
 			compile_version.patch);
-	printf("Running with SDL_ttf version: %d.%d.%d\n", 
+	printf("Running with SDL_ttf version: %d.%d.%d\n",
 			link_version->major,
 			link_version->minor,
 			link_version->patch);
