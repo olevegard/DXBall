@@ -66,7 +66,7 @@ class GameManager
 		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
 		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
 		void RemoveDeadTiles();
-	
+
 		// Board handling
 		void GenerateBoard();
 		void ClearBoard();
@@ -80,7 +80,7 @@ class GameManager
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
-		
+
 		// Network
 		void PrintSend( const TCPMessage &msg ) const;
 		void PrintRecv( const TCPMessage &msg ) const;
@@ -94,13 +94,18 @@ class GameManager
 
 		void SendPaddlePosMessage( );
 
-		void SetLocalPaddlePosition( int x, int y );
-		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
-
 		std::shared_ptr< Ball > GetBallFromID( unsigned int ID );
 		std::shared_ptr< Tile > GetTileFromID( unsigned int ID );
 
+		// Paddles
+		void SetLocalPaddlePosition( int x, int y );
+		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
+
 		void DoFPSDelay( unsigned int ticks );
+
+		// Scaling
+		void SetScale( double scale );
+		void ApplyScale( );
 
 		BoardLoader boardLoader;
 		Renderer renderer;
@@ -125,6 +130,7 @@ class GameManager
 		std::vector< std::shared_ptr< BonusBox > > bonusBoxList;
 
 		SDL_Rect windowSize;
+		double scale;
 		unsigned int points[4];
 
 		unsigned int tileCount;

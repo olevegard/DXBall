@@ -21,6 +21,11 @@ struct GamePiece
 	{
 		return isAlive;
 	}
+	void SetScale( double scale )
+	{
+		rect.w *= scale;
+		rect.h *= scale;
+	}
 	private:
 	bool isAlive;
 	GamePiece( const GamePiece &gamePiece );

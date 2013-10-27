@@ -35,6 +35,7 @@
 
 	,	ballList()
 	,	windowSize()
+	,	scale( 0.65 )
 
 	,	points{ 20, 50, 100, 500 }
 	,	tileCount( 0 )
@@ -68,6 +69,9 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	localPaddle->rect.w = 120;
 	localPaddle->rect.h = 30;
 	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
+	localPaddle->SetScale( scale );
+
+
 	renderer.SetLocalPaddle( localPaddle );
 
 	return true;
@@ -90,6 +94,9 @@ void GameManager::Restart()
 		remotePaddle->rect.h = 30;
 		remotePaddle->rect.x = 400;
 		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
+		remotePaddle->SetScale( 0.65 );
+
+
 		renderer.SetRemotePaddle( remotePaddle );
 	}
 
@@ -137,6 +144,10 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
 	ball->textureType = TextureType::e_Ball;
 
+
+	if ( scale != 1.0 )
+		ball->SetScale( scale );
+
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
 
@@ -179,7 +190,7 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
 	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
 	tile->textureType = TextureType::e_Tile;
-	double scale = 0.75;
+
 	tile->rect.x = ( posX * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
 	tile->rect.y = ( posY * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
 	tile->rect.w = 60 * scale;
@@ -1027,3 +1038,24 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 	}
 }
 
+
+void GameManager::SetScale( double scale_ )
+{
+	scale = scale_;
+	ApplyScale();
+}
+void GameManager::ApplyScale()
+{
+	localPaddle->SetScale( scale );
+	remotePaddle->SetScale( scale );
+
+	for ( auto& p : tileList )
+	{
+		p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
+		p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
+		p->SetScale( scale );
+	}
+
+	for ( auto& p : ballList )
+		p->SetScale( scale );
+}
