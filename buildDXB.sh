@@ -46,7 +46,8 @@ CompileString="clang++ \
 	#-lSDL2 \
 	#-lSDL2_ttf \
 	#-lSDL2_image \
-RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer true"
+RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer false"
+RunStringClient="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer true"
 RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -twoPlayer true -server true"
 
 GDBString="gdb -ex run --args $RunString"
@@ -169,7 +170,7 @@ if make; then
 			echo -e "\tNormal mode"
 			echo -e "\tCommand : " $RunString
 			echo "=============================== DX Balll ==============================="
-			gnome-terminal -e "$RunString"&   # Run without blocking
+			gnome-terminal -e "$RunStringClient"&   # Run without blocking
 			gnome-terminal -e "$RunStringServer"&   # Run without blocking
 
 			# Run in a new terminal window with :
@@ -179,8 +180,8 @@ if make; then
 				# position  = 95x15 ( pixels? )
 				# program args
 				# non-blocking
-			xterm -fa default -fs 12 -geometry 95x15+1000+600 -e "$RunString"&
-			xterm -fa default -fs 12 -geometry 95x15+0+600 -e "$RunStringServer" &
+			xterm -fa default -fs 12 -geometry 95x15+1000+600 -e "$RunStringClient" &
+			xterm -fa default -fs 12 -geometry 95x15+0+600    -e "$RunStringServer" &
 		fi
 	else
 		if $RunGDB ; then
