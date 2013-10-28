@@ -131,6 +131,11 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 		return false;
 	}
 
+	if ( fullscreen )
+		screenFlags = SDL_WINDOW_FULLSCREEN;
+	else
+		screenFlags = SDL_WINDOW_OPENGL;
+
 	// Set up screen
 	if ( !CreateWindow( server ) )
 	{
