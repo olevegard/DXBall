@@ -1,5 +1,13 @@
-![IMG](olevegard.github.com/DXBall/screenshots/screenshot1.png
 DXBall
+	A simple DX Ball clone using SDL 2
+![IMG](olevegard.github.com/DXBall/screenshots/screenshot1.png)
+		Features:
+			-Multiplayer
+			-Configurable colours
+			-Bonuses
+			-Resizeable boards
+			-Level editor
+			-Probably more...
 Compiling:
 
 UPDATE :
