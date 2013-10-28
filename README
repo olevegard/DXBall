@@ -1,6 +1,8 @@
 DXBall
 	A simple DX Ball clone using SDL 2
-![IMG](https://github.com/olevegard/DXBall/blob/master/screenshots/screenshot1.png)
+[![DXBall screenshot](https://github.com/olevegard/DXBall/raw/master/screenshots/screenshot1.png)]
+
+https://github.com/altercation/solarized/raw/master/img/solarized-yinyang.png
 		Features:
 			-Multiplayer
 			-Configurable colours
