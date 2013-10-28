@@ -25,8 +25,17 @@ struct BoardLoader
 	{
 		isServer = server;
 	}
-
+	double GetResolutionX() const
+	{
+		return currentResX;
+	}
+	double GetResolutionY() const
+	{
+		return currentResY;
+	}
 	private:
+		double currentResX;
+		double currentResY;
 		size_t currentLevel;
 		std::vector< std::string > levelTextFiles;
 		std::vector< Board > levels;

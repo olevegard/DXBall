@@ -53,11 +53,23 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 	Board board;
 	while ( getline( boardFile, line ) )
 	{
+		std::stringstream ss( line );
+		if ( line.find( "RES" ) != std::string::npos )
+		{
+			std::string str;
+			double resX = 0.0;
+			double resY = 0.0;
+
+			ss >> str  >> resX >> resY;;
+			std::cout << "Resolution : X : " << resX << " , " << resY <<  std::endl;
+			board.SetResolution( resX, resY );
+			continue;
+		}
+
 		if ( line[0] == '#' || line.empty() )
 			continue;
 
-		std::stringstream( line ) >> pos;
-		std::cout << "\tAddiing tile...\n";
+		ss >> pos;
 		board.AddTile( pos );
 	}
 	return board;
@@ -74,6 +86,10 @@ std::vector< TilePosition > BoardLoader::GenerateBoard( const SDL_Rect &rect )
 
 	Board b = LoadLevel( level  );
 	levels.push_back( b );
+
+	currentResX = b.GetResolutionX();
+	currentResY = b.GetResolutionY();
+
 	++currentLevel;
 
 	b.CenterAndFlip( rect, isServer );

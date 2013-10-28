@@ -1,4 +1,5 @@
-pumpkin.txt
+pumpkin1920.txt
+pumpkin1280.txt
 hk.txt
 empty.txt
 barcode.txt

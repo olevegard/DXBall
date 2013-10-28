@@ -14,6 +14,20 @@ struct Board
 	{
 		tiles.push_back( pos );
 	}
+	void SetResolution( double resX_, double resY_ )
+	{
+		resX = resX_;
+		resY = resY_;
+	}
+	double GetResolutionX( ) const
+	{
+		return resX;
+	}
+
+	double GetResolutionY( ) const
+	{
+		return resY;
+	}
 
 	/*
 	void TransformBoard( const SDL_Rect &windowSize )
@@ -65,4 +79,6 @@ struct Board
 	//short startY;
 
 	std::vector< TilePosition > tiles;
+	double resX;
+	double resY;
 };

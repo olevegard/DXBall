@@ -35,7 +35,7 @@
 
 	,	ballList()
 	,	windowSize()
-	,	scale( 0.65 )
+	,	scale( 1.0 )
 
 	,	points{ 20, 50, 100, 500 }
 	,	tileCount( 0 )
@@ -959,6 +959,13 @@ void GameManager::GenerateBoard()
 
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
+
+	double boardResX = boardLoader.GetResolutionX();
+	//double boardResY = boardLoader.GetResolutionY();
+	std::cout << "Board resolution X : " << boardResX << std::endl;
+	std::cout << "Window resolution X : " << windowSize.w << std::endl;
+	std::cout << "Scale : " << windowSize.w / boardResX << std::endl;
+	SetScale( windowSize.w / boardResX );
 }
 
 bool GameManager::IsLevelDone()
@@ -1047,15 +1054,31 @@ void GameManager::SetScale( double scale_ )
 void GameManager::ApplyScale()
 {
 	localPaddle->SetScale( scale );
-	remotePaddle->SetScale( scale );
+	localPaddle->rect.y += 20;
+	//remotePaddle->SetScale( scale );
 
 	for ( auto& p : tileList )
 	{
-		p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
-		p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
+		if ( scale < 1.0 )
+		{
+			p->rect.x = ( p->rect.x * scale );// + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
+			p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
+			//p->rect.x += 90;//185;
+		} else if ( scale > 1.0 )
+		{
+			p->rect.x = ( p->rect.x * scale );// + ( ( windowSize.w + ( windowSize.w * (  scale ) ) ) * 0.5 );
+			p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * (  scale ) ) ) * 0.5 );
+		}
+		//p->rect.x += 400;
+
+
+		p->ResetScale();
 		p->SetScale( scale );
 	}
 
 	for ( auto& p : ballList )
+	{
+		p->ResetScale();
 		p->SetScale( scale );
+	}
 }
