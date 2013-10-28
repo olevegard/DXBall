@@ -961,11 +961,13 @@ void GameManager::GenerateBoard()
 		AddTile( tile.xPos, tile.yPos, tile.type );
 
 	double boardResX = boardLoader.GetResolutionX();
-	//double boardResY = boardLoader.GetResolutionY();
-	std::cout << "Board resolution X : " << boardResX << std::endl;
-	std::cout << "Window resolution X : " << windowSize.w << std::endl;
-	std::cout << "Scale : " << windowSize.w / boardResX << std::endl;
-	SetScale( windowSize.w / boardResX );
+	if ( boardResX != 0 )
+	{
+		std::cout << "Board resolution X : " << boardResX << std::endl;
+		std::cout << "Window resolution X : " << windowSize.w << std::endl;
+		std::cout << "Scale : " << windowSize.w / boardResX << std::endl;
+		SetScale( windowSize.w / boardResX );
+	}
 }
 
 bool GameManager::IsLevelDone()
