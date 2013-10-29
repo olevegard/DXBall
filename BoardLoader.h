@@ -33,7 +33,12 @@ struct BoardLoader
 	{
 		return currentResY;
 	}
+	double GetScale()
+	{
+		return scale;
+	}
 	private:
+		double scale;
 		double currentResX;
 		double currentResY;
 		size_t currentLevel;

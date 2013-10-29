@@ -29,8 +29,10 @@ struct GamePiece
 	}
 	void ResetScale()
 	{
-		rect.w *= ( 1.0 / scale );
-		rect.h *= ( 1.0 / scale );
+		//rect.w *= ( 1.0 / scale );
+		//rect.h *= ( 1.0 / scale );
+		rect.w = 60;
+		rect.h = 20;
 	}
 	private:
 	GamePiece( const GamePiece &gamePiece );

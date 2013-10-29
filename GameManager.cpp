@@ -96,7 +96,6 @@ void GameManager::Restart()
 		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
 		remotePaddle->SetScale( 0.65 );
 
-
 		renderer.SetRemotePaddle( remotePaddle );
 	}
 
@@ -191,8 +190,8 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
 	tile->textureType = TextureType::e_Tile;
 
-	tile->rect.x = ( posX * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
-	tile->rect.y = ( posY * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
+	tile->rect.x = posX;//( posX * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
+	tile->rect.y = posY;//( posY * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
 	tile->rect.w = 60 * scale;
 	tile->rect.h = 20 * scale;
 
@@ -300,7 +299,7 @@ void GameManager::UpdateNetwork()
 				MessageType type = msg.GetType();
 				if ( type == MessageType::PaddlePosition )
 				{
-					PrintRecv( msg );
+					//PrintRecv( msg );
 					double xPos = msg.GetXPos();
 					if ( xPos > 0 && xPos < windowSize.w )
 					{
@@ -309,7 +308,7 @@ void GameManager::UpdateNetwork()
 				}
 				else if ( type == MessageType::BallSpawned )
 				{
-					PrintRecv( msg );
+					//PrintRecv( msg );
 					std::shared_ptr< Ball > ball = AddBall( Player::Remote, msg.GetObjectID() );
 
 					ball->rect.x = msg.GetXPos();
@@ -317,7 +316,7 @@ void GameManager::UpdateNetwork()
 					ball->SetDirection( Vector2f( msg.GetXDir(), msg.GetYDir() ) );
 				}else if ( type == MessageType::BallData )
 				{
-					PrintRecv( msg );
+					//PrintRecv( msg );
 					if ( ballList.size() > 0 )
 					{
 						std::shared_ptr< Ball > ball = GetBallFromID( msg.GetObjectID() );
@@ -334,7 +333,7 @@ void GameManager::UpdateNetwork()
 					}
 				} else if ( type == MessageType::BallKilled )
 				{
-					PrintRecv( msg );
+					//PrintRecv( msg );
 					if ( ballList.size() > 0 )
 					{
 						RemoveBall( GetBallFromID( msg.GetObjectID() ));
@@ -342,7 +341,7 @@ void GameManager::UpdateNetwork()
 					}
 				} else if ( type == MessageType::TileHit )
 				{
-					PrintRecv( msg );
+					//PrintRecv( msg );
 					if ( tileList.size() > 0 )
 					{
 						std::shared_ptr< Tile > tile = GetTileFromID( msg.GetObjectID() );
@@ -382,7 +381,7 @@ void GameManager::SendPaddlePosMessage( )
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	PrintSend(msg);
+	//PrintSend(msg);
 }
 void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 {
@@ -960,14 +959,7 @@ void GameManager::GenerateBoard()
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 
-	double boardResX = boardLoader.GetResolutionX();
-	if ( boardResX != 0 )
-	{
-		std::cout << "Board resolution X : " << boardResX << std::endl;
-		std::cout << "Window resolution X : " << windowSize.w << std::endl;
-		std::cout << "Scale : " << windowSize.w / boardResX << std::endl;
-		SetScale( windowSize.w / boardResX );
-	}
+	SetScale( boardLoader.GetScale()  );
 }
 
 bool GameManager::IsLevelDone()
@@ -1053,26 +1045,19 @@ void GameManager::SetScale( double scale_ )
 	scale = scale_;
 	ApplyScale();
 }
-void GameManager::ApplyScale()
+void GameManager::ApplyScale( )
 {
-	localPaddle->SetScale( scale );
-	localPaddle->rect.y += 20;
-	//remotePaddle->SetScale( scale );
-
 	for ( auto& p : tileList )
 	{
 		if ( scale < 1.0 )
 		{
-			p->rect.x = ( p->rect.x * scale );// + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
+			p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
 			p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
-			//p->rect.x += 90;//185;
 		} else if ( scale > 1.0 )
 		{
-			p->rect.x = ( p->rect.x * scale );// + ( ( windowSize.w + ( windowSize.w * (  scale ) ) ) * 0.5 );
+			p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w + ( windowSize.w * (  scale ) ) ) * 0.5 );
 			p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * (  scale ) ) ) * 0.5 );
 		}
-		//p->rect.x += 400;
-
 
 		p->ResetScale();
 		p->SetScale( scale );

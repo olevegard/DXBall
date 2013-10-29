@@ -62,7 +62,7 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 
 			ss >> str  >> resX >> resY;;
 			std::cout << "Resolution : X : " << resX << " , " << resY <<  std::endl;
-			board.SetResolution( resX, resY );
+			//board.SetResolution( resX, resY );
 			continue;
 		}
 
@@ -87,11 +87,13 @@ std::vector< TilePosition > BoardLoader::GenerateBoard( const SDL_Rect &rect )
 	Board b = LoadLevel( level  );
 	levels.push_back( b );
 
+	b.CenterAndFlip( rect, isServer );
 	currentResX = b.GetResolutionX();
 	currentResY = b.GetResolutionY();
 
+	scale = b.FindMaxScale( rect );
+
 	++currentLevel;
 
-	b.CenterAndFlip( rect, isServer );
 	return b.GetTiles( );
 }

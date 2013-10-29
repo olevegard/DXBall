@@ -46,8 +46,8 @@ CompileString="clang++ \
 	#-lSDL2 \
 	#-lSDL2_ttf \
 	#-lSDL2_image \
-RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1280x720 -twoPlayer false"
-#RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1920x1080 -twoPlayer false -startfs false"
+#RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1280x720 -twoPlayer false"
+RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1920x1080 -twoPlayer false -startfs true"
 RunStringClient="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer true"
 RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -twoPlayer true -server true"
 
