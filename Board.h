@@ -44,12 +44,7 @@ struct Board
 	{
 		tiles.push_back( pos );
 	}
-	/*
-	void SetResolution( double resX_, double resY_ )
-	{
-		resX = resX_;
-		resY = resY_;
-	}*/
+
 	double GetResolutionX( ) const
 	{
 		return boardWidth;
@@ -59,58 +54,22 @@ struct Board
 	{
 		return boardHeight;
 	}
-	double FindMaxScale( const SDL_Rect &rect );
 
-	/*
-	   void TransformBoard( const SDL_Rect &windowSize )
-	   {
-	   short tileHeight = 25;
-	   short boardHeight = ( countRows * tileHeight );
+	void CalcMaxScale( const SDL_Rect &rect );
 
-	   short totalVerticalFreeSpace = static_cast< short > (windowSize.h - boardHeight  + 20 );
-	   short halfVerticalFreeSpace = static_cast< short > ( totalVerticalFreeSpace / 2 );
-	   }*/
-
-	/*
-	   void MoveVertically( short amount )
-	   {
-	   auto moveDown_Func = [amount]( TilePosition tt )
-	   {
-	   tt.yPos += amount;
-	   return tt;
-	   };
-
-	   std::transform( tiles.begin(), tiles.end(),tiles.begin(),  moveDown_Func );
-
-	   }
-	   void CountRows( )
-	   {
-	   std::vector<int> yValues;
-	   auto count_Func = [&]( TilePosition tt )
-	   {
-	   if ( std::find( yValues.begin(), yValues.end(), tt.yPos ) == yValues.end() )
-	   {
-	   yValues.push_back( tt.yPos );
-	   return true;
-	   }
-
-	   return false;
-	   };
-	   countRows= std::count_if( tiles.begin(), tiles.end(), count_Func );
-	   std::cout << "Count : " << countRows << std::endl;
-	   }*/
 	void CenterAndFlip( const SDL_Rect &rect, bool isServer );
 
 	std::vector< TilePosition > GetTiles()
 	{
 		return tiles;
 	}
+	double GetScale() const
+	{
+		return scale;
+	}
 	private:
-	//long countRows;
-	//short startX;
-	//short startY;
-
 	std::vector< TilePosition > tiles;
+	double scale;
 	double boardWidth;
 	double boardHeight;
 };

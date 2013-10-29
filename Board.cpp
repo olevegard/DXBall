@@ -5,15 +5,14 @@
 #include <iostream>
 #include <algorithm>
 
-double Board::FindMaxScale( const SDL_Rect &rect )
+void Board::CalcMaxScale( const SDL_Rect &rect )
 {
 	Edges edges = FindEdges( rect );
 
 	double distToBottom = rect.h - edges.bottom;
 	double minDistToBottom = 150;
 
-	double scale = (  boardWidth - ( ( minDistToBottom - distToBottom ) * 2 )) / boardWidth ;
-	return scale;
+	scale = (  boardWidth - ( ( minDistToBottom - distToBottom ) * 2 )) / boardWidth ;
 }
 void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
 {
@@ -28,28 +27,12 @@ void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
 	double distToRight = rect.w - ( edges.right );
 	double boardMoveX = ( distToRight - edges.left ) / 2.0;
 
-	std::cout << "Screen size... "		<< rect.w << " x " << rect.h  << std::endl;
-	std::cout	<< "Top : "				<< edges.top
-		<< "\nBottom : "		<< edges.bottom
-		<< "\nBoard height :"	<< boardHeight
-		<< "\nBoard widhth :"	<< boardWidth
-
-		<< "\nDist to top :"	<< edges.top
-		<< "\nDist to bottom :"	<< distToBottom
-		<< "\nBoard move Y : "	<< boardMoveY
-
-		<< "\nDist to left :"	<< edges.left
-		<< "\nDist to right :"	<< distToRight
-		<< "\nBoard move X : "	<< boardMoveX
-		<< std::endl;
-
 	for ( auto &p : tiles )
 	{
 		p.xPos += boardMoveX;
 		p.yPos += boardMoveY;
 	}
 
-	std::cout << "Is Server ? " << std::boolalpha << isServer << std::endl;
 	if ( !isServer )
 		FlipBoard( rect.h / 2.0 );
 }

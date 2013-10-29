@@ -14,7 +14,9 @@ struct BoardLoader
 
 	Board LoadLevel( const std::string &textFile );
 
-	std::vector< TilePosition > GenerateBoard( const SDL_Rect &rect );
+	Board GenerateBoard( const SDL_Rect &rect );
+
+	bool IsLastLevel() const;
 
 	void Reset( )
 	{
@@ -25,22 +27,7 @@ struct BoardLoader
 	{
 		isServer = server;
 	}
-	double GetResolutionX() const
-	{
-		return currentResX;
-	}
-	double GetResolutionY() const
-	{
-		return currentResY;
-	}
-	double GetScale()
-	{
-		return scale;
-	}
 	private:
-		double scale;
-		double currentResX;
-		double currentResY;
 		size_t currentLevel;
 		std::vector< std::string > levelTextFiles;
 		std::vector< Board > levels;

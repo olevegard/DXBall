@@ -7,7 +7,10 @@
 
 #include "math/Math.h"
 #include "math/RectHelpers.h"
+#include "Board.h"
+
 #include "TCPMessage.h"
+
 #include "enums/MessageType.h"
 
 #include <limits>
@@ -71,7 +74,6 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
 	localPaddle->SetScale( scale );
 
-
 	renderer.SetLocalPaddle( localPaddle );
 
 	return true;
@@ -84,8 +86,6 @@ void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short 
 }
 void GameManager::Restart()
 {
-	std::cout << "Restart\n";
-
 	if ( isTwoPlayerMode )
 	{
 		remotePaddle = std::make_shared< Paddle > ();
@@ -323,7 +323,7 @@ void GameManager::UpdateNetwork()
 
 						if ( !ball )
 						{
-							std::cout << "Could not find ball with ID : " << msg.GetObjectID() << std::endl;
+							std::cout << "GameManager@" << __LINE__ << " Could not find ball with ID : " << msg.GetObjectID() << std::endl;
 							continue;
 						}
 
@@ -359,7 +359,7 @@ void GameManager::UpdateNetwork()
 					}
 				}  else
 				{
-					std::cout << __LINE__ << " : UpdateNetwork message received " << msg << std::endl;
+					std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << msg << std::endl;
 				}
 			}
 		}
@@ -487,8 +487,6 @@ void GameManager::DeleteDeadBalls()
 }
 std::shared_ptr< Ball > GameManager::GetBallFromID( unsigned int ID )
 {
-	//auto func = [ID]( std::shared_ptr< Ball > p){ return ID == p->GetBallID();  };
-	//auto it = std::find_if( ballList.begin(), ballList.end(), func );
 	for ( auto p : ballList )
 	{
 		if ( ID == p->GetBallID() )
@@ -498,10 +496,6 @@ std::shared_ptr< Ball > GameManager::GetBallFromID( unsigned int ID )
 	}
 
 	return nullptr;
-
-	//if ( it == ballList.end() ) return nullptr;
-
-	//return (*it);
 }
 std::shared_ptr< Tile > GameManager::GetTileFromID( unsigned int ID )
 {
@@ -610,13 +604,11 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
-
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
 		renderer.Render( );
 		return;
 	}
-
 
 	//AIMove();
 	if ( netManager.IsServer() )
@@ -954,12 +946,22 @@ void GameManager::SetFPSLimit( unsigned short limit )
 void GameManager::GenerateBoard()
 {
 	ClearBoard();
-	std::vector<TilePosition> vec = boardLoader.GenerateBoard( windowSize );
+
+	if ( !boardLoader.IsLastLevel() )
+	{
+		std::cout << "Last level\n";
+		return;
+	}
+
+	Board b = boardLoader.GenerateBoard( windowSize );
+	std::vector<TilePosition> vec = b.GetTiles();
 
 	for ( const auto &tile : vec )
-		AddTile( tile.xPos, tile.yPos, tile.type );
+	{
+		AddTile( ( tile.xPos + 10 ), tile.yPos, tile.type );
+	}
 
-	SetScale( boardLoader.GetScale()  );
+	SetScale( b.GetScale()  );
 }
 
 bool GameManager::IsLevelDone()
@@ -1053,10 +1055,6 @@ void GameManager::ApplyScale( )
 		{
 			p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
 			p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
-		} else if ( scale > 1.0 )
-		{
-			p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w + ( windowSize.w * (  scale ) ) ) * 0.5 );
-			p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * (  scale ) ) ) * 0.5 );
 		}
 
 		p->ResetScale();

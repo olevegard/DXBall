@@ -11,6 +11,9 @@
 #include <fstream>
 #include <sstream>
 
+
+#include <SDL2/SDL.h>
+
 BoardLoader::BoardLoader()
 	:	currentLevel( 0 )
 	,	levelTextFiles( 0 )
@@ -54,17 +57,6 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 	while ( getline( boardFile, line ) )
 	{
 		std::stringstream ss( line );
-		if ( line.find( "RES" ) != std::string::npos )
-		{
-			std::string str;
-			double resX = 0.0;
-			double resY = 0.0;
-
-			ss >> str  >> resX >> resY;;
-			std::cout << "Resolution : X : " << resX << " , " << resY <<  std::endl;
-			//board.SetResolution( resX, resY );
-			continue;
-		}
 
 		if ( line[0] == '#' || line.empty() )
 			continue;
@@ -74,26 +66,22 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 	}
 	return board;
 }
-std::vector< TilePosition > BoardLoader::GenerateBoard( const SDL_Rect &rect )
-{
-	if ( currentLevel >= levelTextFiles.size() )
-	{
-		std::vector< TilePosition > emptyVec;
-		return emptyVec;
-	}
 
+bool BoardLoader::IsLastLevel() const
+{
+	return ! ( currentLevel >= levelTextFiles.size() );
+}
+Board BoardLoader::GenerateBoard( const SDL_Rect &rect )
+{
 	std::string level = levelTextFiles[ currentLevel ];
 
 	Board b = LoadLevel( level  );
 	levels.push_back( b );
 
 	b.CenterAndFlip( rect, isServer );
-	currentResX = b.GetResolutionX();
-	currentResY = b.GetResolutionY();
-
-	scale = b.FindMaxScale( rect );
+	b.CalcMaxScale( rect );
 
 	++currentLevel;
 
-	return b.GetTiles( );
+	return b;
 }
