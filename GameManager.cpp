@@ -951,7 +951,14 @@ void GameManager::RemoveDeadBonusBoxes()
 }
 void GameManager::UpdateGUI( )
 {
-	if ( localPlayerActiveBalls == 0 )
+	if ( IsLevelDone() && !boardLoader.IsLastLevel() )
+	{
+		if ( localPlayerPoints > remotePlayerPoints )
+			renderer.RenderText( "Yay, you won :D", Player::Local  );
+		else
+			renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
+	}
+	else if ( localPlayerActiveBalls == 0 )
 	{
 		if ( localPlayerLives == 0 )
 			renderer.RenderText( "Game Over", Player::Local  );
