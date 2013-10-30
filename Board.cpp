@@ -5,15 +5,7 @@
 #include <iostream>
 #include <algorithm>
 
-void Board::CalcMaxScale( const SDL_Rect &rect )
-{
-	Edges edges = FindEdges( rect );
 
-	double distToBottom = rect.h - edges.bottom;
-	double minDistToBottom = 150;
-
-	scale = (  boardWidth - ( ( minDistToBottom - distToBottom ) * 2 )) / boardWidth ;
-}
 void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
 {
 	Edges edges = FindEdges( rect );
@@ -74,4 +66,37 @@ Edges Board::FindEdges( const SDL_Rect &rect )
 	edges.right += 60;
 
 	return edges;
+}
+void Board::CalcMaxScale( const SDL_Rect &rect )
+{
+	Edges edges = FindEdges( rect );
+
+	double distToBottom = rect.h - edges.bottom;
+	double minDistToBottom = 150;
+
+	scale = (  boardWidth - ( ( minDistToBottom - distToBottom ) * 2 )) / boardWidth ;
+}
+void Board::AddTile( short xPos, short yPos, TileType tt )
+{
+	tiles.push_back( TilePosition( xPos, yPos, tt  ) );
+}
+void Board::AddTile( TilePosition pos )
+{
+	tiles.push_back( pos );
+}
+double Board::GetResolutionX( ) const
+{
+	return boardWidth;
+}
+double Board::GetResolutionY( ) const
+{
+	return boardHeight;
+}
+std::vector< TilePosition > Board::GetTiles()
+{
+	return tiles;
+}
+double Board::GetScale() const
+{
+	return scale;
 }

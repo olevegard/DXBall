@@ -33,41 +33,23 @@ struct Edges
 
 struct Board
 {
+	void AddTile( short xPos, short yPos, TileType tt );
+	void AddTile( TilePosition pos );
+
+	double GetResolutionX( ) const;
+	double GetResolutionY( ) const;
+
+	std::vector< TilePosition > GetTiles();
+
+	double GetScale() const;
+
+	void CalcMaxScale( const SDL_Rect &rect );
+	void CenterAndFlip( const SDL_Rect &rect, bool isServer );
+
+	private:
 	Edges FindEdges( const SDL_Rect &rect );
 	void FlipBoard( double height );
 
-	void AddTile( short xPos, short yPos, TileType tt )
-	{
-		tiles.push_back( TilePosition( xPos, yPos, tt  ) );
-	}
-	void AddTile( TilePosition pos )
-	{
-		tiles.push_back( pos );
-	}
-
-	double GetResolutionX( ) const
-	{
-		return boardWidth;
-	}
-
-	double GetResolutionY( ) const
-	{
-		return boardHeight;
-	}
-
-	void CalcMaxScale( const SDL_Rect &rect );
-
-	void CenterAndFlip( const SDL_Rect &rect, bool isServer );
-
-	std::vector< TilePosition > GetTiles()
-	{
-		return tiles;
-	}
-	double GetScale() const
-	{
-		return scale;
-	}
-	private:
 	std::vector< TilePosition > tiles;
 	double scale;
 	double boardWidth;
