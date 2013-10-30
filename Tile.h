@@ -32,8 +32,6 @@ struct Tile : GamePiece
 
 	bool CheckExplosion( const Rect &explodingTile );
 
-	void ExpandRect( Rect &explodingTile ) const;
-
 	void Hit();
 
 	unsigned int GetTileID() const

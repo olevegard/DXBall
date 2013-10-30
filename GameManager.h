@@ -36,15 +36,27 @@ class GameManager
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 
+		// Ipdate
+		void Run();
+		void UpdateGUI( );
+
+		// Ball checks
 		void UpdateBalls( double delta );
 		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
 		void DeleteDeadBalls();
 
-		void UpdateGUI( );
+		// Input
+		void HandleEvent( const SDL_Event &event );
+		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
+		void HandleKeyboardEvent( const SDL_Event &event );
 
-		void Run();
+		// Game status
+		void HandleStatusChange( );
+
+		// AI
 		void AIMove();
-		void AIMove_Local();
+		std::shared_ptr< Ball > FindHighestBall();
+		bool IsTimeForAIMove( std::shared_ptr< Ball > highest ) const;
 
 		void CreateMenu();
 
@@ -65,7 +77,6 @@ class GameManager
 		int HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
 		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
 		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
-		void RemoveDeadTiles();
 
 		// Board handling
 		void GenerateBoard();
@@ -86,20 +97,26 @@ class GameManager
 		void PrintRecv( const TCPMessage &msg ) const;
 
 		void UpdateNetwork();
+
+		void HandleRecieveMessage( const TCPMessage &message );
+		void RecieveBallSpawnMessage( const TCPMessage &message );
+		void RecieveBallDataMessage( const TCPMessage &message );
+		void RecieveBallKillMessage( const TCPMessage &message );
+		void RecieveTileHitMessage( const TCPMessage &message );
+		void RecievePaddlePosMessage( const TCPMessage &message );
+
 		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
-
 		void SendTileHitMessage( unsigned int tileID );
-
 		void SendPaddlePosMessage( );
 
+		bool runGame;
 		std::shared_ptr< Ball > GetBallFromID( unsigned int ID );
 		std::shared_ptr< Tile > GetTileFromID( unsigned int ID );
 
 		// Paddles
 		void SetLocalPaddlePosition( int x, int y );
-		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
 
 		void DoFPSDelay( unsigned int ticks );
 

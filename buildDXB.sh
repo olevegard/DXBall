@@ -167,8 +167,9 @@ if make; then
 			#gnome-terminal -e "$GDBStringServer"&
 
 			#Run in terminal ( explanation below )
-			xterm -fa default -fs 12 -geometry 95x15+1000+600   -e "$GDBStringClient"&
-			xterm -fa default -fs 12 -geometry 95x15+0+600 -e "$RunStringServer"&
+			xterm -fa default -fs 12 -geometry 95x15+0+600 -e "$GDBStringServer"&
+			sleep 1
+			xterm -fa default -fs 12 -geometry 95x15+1000+600   -e "$RunStringClient"&
 		else
 			echo -e "\tNormal mode"
 			echo -e "\tCommand : " $RunString
