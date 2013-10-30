@@ -16,7 +16,7 @@ void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
 	double distToBottom = rect.h - ( edges.bottom );
 	double boardMoveY = ( distToBottom - edges.top ) / 2.0;
 
-	double distToRight = rect.w - ( edges.right );
+	double distToRight = rect.w - ( edges.right  );
 	double boardMoveX = ( distToRight - edges.left ) / 2.0;
 
 	for ( auto &p : tiles )
@@ -27,6 +27,34 @@ void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
 
 	if ( !isServer )
 		FlipBoard( rect.h / 2.0 );
+}
+void Board::CalcMaxScale( const SDL_Rect &rect )
+{
+	Edges edges = FindEdges( rect );
+
+	double distToBottom = rect.h - edges.bottom;
+	double minDistToBottom = 100;
+
+	scale = (  boardHeight - ( ( minDistToBottom - distToBottom ) * 2 )) / boardHeight;
+
+	if ( scale > 1.0 )
+	{
+		double scaleX = 0.0;
+		if ( edges.left != 0 && ( edges.right != rect.w ) )
+		{
+			//double distToLeft = rect.w - edges.right;
+			double distToLeft =  edges.left;
+			double minDistToRight = 0;
+
+			scaleX = (  boardWidth - ( ( minDistToRight - distToLeft ) * 2 )) / boardWidth;
+		} else
+		{
+			scaleX = 1.0;
+		}
+
+		scale = ( scale > scaleX ) ? scaleX : scale;
+		scale = ( scale < 1.0 ) ? scale : 1.0;
+	}
 }
 void Board::FlipBoard( double middle )
 {
@@ -67,15 +95,7 @@ Edges Board::FindEdges( const SDL_Rect &rect )
 
 	return edges;
 }
-void Board::CalcMaxScale( const SDL_Rect &rect )
-{
-	Edges edges = FindEdges( rect );
 
-	double distToBottom = rect.h - edges.bottom;
-	double minDistToBottom = 150;
-
-	scale = (  boardWidth - ( ( minDistToBottom - distToBottom ) * 2 )) / boardWidth ;
-}
 void Board::AddTile( short xPos, short yPos, TileType tt )
 {
 	tiles.push_back( TilePosition( xPos, yPos, tt  ) );
