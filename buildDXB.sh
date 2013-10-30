@@ -49,10 +49,12 @@ CompileString="clang++ \
 #RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1280x720 -twoPlayer false"
 RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1920x1080 -twoPlayer false -startfs true"
 RunStringClient="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer true"
+#RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 1280x720 -twoPlayer true -server true"
 RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -twoPlayer true -server true"
 
 GDBString="gdb -ex run --args $RunString"
 GDBStringServer="gdb -ex run --args $RunStringServer"
+GDBStringClient="gdb -ex run --args $RunStringClient"
 ValgindString="valgrind \
 	--suppressions=valgrind/ignore \
 	--tool=memcheck \
@@ -165,7 +167,7 @@ if make; then
 			#gnome-terminal -e "$GDBStringServer"&
 
 			#Run in terminal ( explanation below )
-			xterm -fa default -fs 12 -geometry 95x15+1000+600   -e "$GDBString"&
+			xterm -fa default -fs 12 -geometry 95x15+1000+600   -e "$GDBStringClient"&
 			xterm -fa default -fs 12 -geometry 95x15+0+600 -e "$RunStringServer"&
 		else
 			echo -e "\tNormal mode"

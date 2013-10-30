@@ -202,6 +202,8 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
+	std::cout << "Removing ID From renderer : " << tile->GetTileID() << std::endl;
+
 	if ( tile == nullptr )
 		return;
 
@@ -229,6 +231,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 	bonusBox->rect.y = y;
 
 	Player ballOwner = triggerBall->GetOwner();
+
 	Vector2f direction = triggerBall->GetDirection();
 
 	if ( ballOwner == Player::Local )
@@ -345,10 +348,16 @@ void GameManager::UpdateNetwork()
 					if ( tileList.size() > 0 )
 					{
 						std::shared_ptr< Tile > tile = GetTileFromID( msg.GetObjectID() );
-						tile->Hit();
 
+						tile->Hit();
 						bool isDestroyed = tile->IsDestroyed();
 						IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, Player::Remote );
+
+						if ( tile->GetTileType() == TileType::Explosive )
+						{
+							HandleExplosions( tile, Player::Remote );
+							continue;
+						}
 
 						if ( isDestroyed )
 						{
@@ -957,11 +966,9 @@ void GameManager::GenerateBoard()
 	std::vector<TilePosition> vec = b.GetTiles();
 
 	for ( const auto &tile : vec )
-	{
-		AddTile( ( tile.xPos + 10 ), tile.yPos, tile.type );
-	}
+		AddTile( ( tile.xPos  ), tile.yPos, tile.type );
 
-	SetScale( b.GetScale()  );
+	SetScale( b.GetScale() );
 }
 
 bool GameManager::IsLevelDone()
