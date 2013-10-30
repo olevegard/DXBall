@@ -352,7 +352,11 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 	}
 
 	ball->rect.x = message.GetXPos();
-	ball->rect.y = message.GetYPos();
+
+	// Need to add ball's height, because ball it traveling in oposite direction.
+	// The board is also flipped, so the ball will have the oposite horizontal collision edge.
+	ball->rect.y = message.GetYPos() - ball->rect.h;
+
 	ball->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() ) );
 }
 void GameManager::RecieveBallKillMessage( const TCPMessage &message )
@@ -987,11 +991,10 @@ void GameManager::GenerateBoard()
 	std::vector<TilePosition> vec = b.GetTiles();
 
 	for ( const auto &tile : vec )
-		AddTile( ( tile.xPos  ), tile.yPos, tile.type );
+		AddTile( tile.xPos, tile.yPos, tile.type );
 
 	SetScale( b.GetScale() );
 }
-
 bool GameManager::IsLevelDone()
 {
 	if ( menuManager.GetGameState() == GameState::InGame )
