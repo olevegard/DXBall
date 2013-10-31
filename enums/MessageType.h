@@ -11,9 +11,11 @@ enum MessageType
 
 	TileHit,
 
+	GameSettings,	// Contains resolution of the remote player. Sent during beggining and when resolution chages.
+
 	BonusSpawned,
 
-	GeneralUpade,	// Contains lifes, points and number of active balls.
+	GeneralUpade,	// Contains lifes, points and number of active balls. [ Not needed atm ]
 
-	BoardUpdate	// Contains number of tiles, and position and type information about all tiles. 
+	BoardUpdate	// Contains number of tiles, and position and type information about all tiles.
 };

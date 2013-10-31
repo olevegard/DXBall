@@ -98,13 +98,17 @@ class GameManager
 
 		void UpdateNetwork();
 
+		// Recieve messages
 		void HandleRecieveMessage( const TCPMessage &message );
+		void RecieveGameSettingsMessage( const TCPMessage &message);
 		void RecieveBallSpawnMessage( const TCPMessage &message );
 		void RecieveBallDataMessage( const TCPMessage &message );
 		void RecieveBallKillMessage( const TCPMessage &message );
 		void RecieveTileHitMessage( const TCPMessage &message );
 		void RecievePaddlePosMessage( const TCPMessage &message );
 
+		// Send messages
+		void SendGameSettingsMessage();
 		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
@@ -148,6 +152,7 @@ class GameManager
 
 		SDL_Rect windowSize;
 		double scale;
+		double remoteResolutionScale;
 		unsigned int points[4];
 
 		unsigned int tileCount;

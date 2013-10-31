@@ -45,7 +45,10 @@ struct Ball : GamePiece
 	{
 		ballID = ID;
 	}
-
+	void SetRemoteScale( double scale_ )
+	{
+		speed *= scale_;
+	}
 	bool CheckTileSphereIntersection( const Rect &tile, const Rect &ball, double &retDistance ) const;
 
 
@@ -53,44 +56,44 @@ struct Ball : GamePiece
 	void SetDirection( const Vector2f &newDir );
 	private:
 
-		bool CheckTileIntersection( const Rect &tile, const Rect &ball ) const;
-		void HandleTileIntersection( const Rect &tile );
-		void HandleTileIntersection2( const Rect &tileRect );
+	bool CheckTileIntersection( const Rect &tile, const Rect &ball ) const;
+	void HandleTileIntersection( const Rect &tile );
+	void HandleTileIntersection2( const Rect &tileRect );
 
-		bool LineLineIntersectionTest( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2  ) const;
-
-
-		void HandlePaddleHit( const Rect &paddleRect );
-		double CalculatePaddleHitPosition( const Rect &paddleRect ) const;
-		void  CalculateNewBallDirection( double  hitPosition );
+	bool LineLineIntersectionTest( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2  ) const;
 
 
-		// Find intersectin side
-		// ==================================
-		int FindIntersectingSide( const Rect &tileRect );
-		bool LineLineIntersectionTestV2( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2, double &ret  ) const;
-		bool CheckDotProducts( double dot, double dotTile, double dotBall ) const;
+	void HandlePaddleHit( const Rect &paddleRect );
+	double CalculatePaddleHitPosition( const Rect &paddleRect ) const;
+	void  CalculateNewBallDirection( double  hitPosition );
 
-		Vector2f GetEsimtatedDir( ) const;
 
-		Vector2f Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const;
+	// Find intersectin side
+	// ==================================
+	int FindIntersectingSide( const Rect &tileRect );
+	bool LineLineIntersectionTestV2( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2, double &ret  ) const;
+	bool CheckDotProducts( double dot, double dotTile, double dotBall ) const;
 
-		double speed;
+	Vector2f GetEsimtatedDir( ) const;
 
-		double dirX;
-		double dirY;
+	Vector2f Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const;
 
-		unsigned int lastTileHit;
-		bool paddleHitInPrevFrame;
+	double speed;
 
-		unsigned int ballID;
+	double dirX;
+	double dirY;
 
-		bool debugMode;
+	unsigned int lastTileHit;
+	bool paddleHitInPrevFrame;
 
-		Player ballOwner;
+	unsigned int ballID;
 
-		Ball( const Ball &other) = delete;
-		Ball& operator=( const Ball &other) = delete;
+	bool debugMode;
+
+	Player ballOwner;
+
+	Ball( const Ball &other) = delete;
+	Ball& operator=( const Ball &other) = delete;
 
 };
 

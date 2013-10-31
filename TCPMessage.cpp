@@ -16,10 +16,16 @@ std::string TCPMessage::Print() const
 	if ( msgType == MessageType::BallKilled || msgType == MessageType::TileHit )
 	{
 		ss << "\n";
-	} else if ( msgType == MessageType::PaddlePosition )
+	}
+	else if ( msgType == MessageType::PaddlePosition )
 	{
 		ss << " : "  << xPos << "\n";
-	} else
+	}
+	else if ( msgType == MessageType::GameSettings )
+	{
+		ss << " : "  << xPos << " , " << yPos << "\n";
+	}
+	else
 	{
 		ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
 	}
@@ -41,6 +47,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Ball Killed";
 		case MessageType::TileHit:
 			return "Tile Hit";
+		case MessageType::GameSettings:
+			return "Game Settings";
 		default:
 			break;
 	}

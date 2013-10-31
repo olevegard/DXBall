@@ -64,10 +64,16 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		return is;
 
 	double yPos = 0.0;
+	is >> yPos;
+	msg.SetYPos( yPos );
+
+	// Game Settings only has xPos and yPos
+	if ( type == MessageType::GameSettings )
+		return is;
+
 	double xDir = 0.0;
 	double yDir = 0.0;
 
-	is >> yPos;
 	is >> xDir;
 	is >> yDir;
 
@@ -99,6 +105,11 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &pos )
 
 	os << pos.GetYPos();
 	os << " ";
+
+	// Game Settings only has xPos and yPos
+	if ( type == MessageType::GameSettings )
+		return os;
+
 	os << pos.GetXDir();
 	os << " ";
 	os << pos.GetYDir();
