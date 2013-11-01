@@ -701,7 +701,7 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 }
 void GameManager::HandleGameKeys( const SDL_Event &event )
 {
-	if ( menuManager.GetGameState() != GameState::InGame || !isResolutionScaleRecieved )
+	if ( menuManager.GetGameState() != GameState::InGame || ( isTwoPlayerMode && !isResolutionScaleRecieved ) )
 		return;
 
 	if ( event.type == SDL_KEYDOWN )
@@ -1012,7 +1012,7 @@ void GameManager::RemoveDeadBonusBoxes()
 }
 void GameManager::UpdateGUI( )
 {
-	if ( !isResolutionScaleRecieved )
+	if ( isTwoPlayerMode && !isResolutionScaleRecieved )
 	{
 		renderer.RenderText( "Waiting for other player...", Player::Local  );
 	}
