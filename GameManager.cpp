@@ -99,7 +99,6 @@ void GameManager::Restart()
 		remotePaddle->SetScale( 0.65 );
 
 		renderer.SetRemotePaddle( remotePaddle );
-		SendGameSettingsMessage();
 	}
 
 	tileCount = 0;
@@ -330,16 +329,22 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
+			std::cin.ignore();
 			break;
 	}
 }
 
 void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 {
-	remoteResolutionScale = windowSize.w / message.GetXPos();
-	std::cout << "Scale : " << remoteResolutionScale << std::endl;
-
+	remoteResolutionScale = windowSize.w / message.GetXSize();
 	PrintRecv( message );
+
+	std::cout << "Remote board scale : " << message.GetBoardScale()
+			  << " * " << remoteResolutionScale
+			  << " = " << message.GetBoardScale() * remoteResolutionScale  << std::endl;
+
+	if ( !netManager.IsServer() )
+		SetScale( message.GetBoardScale() * remoteResolutionScale );
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
@@ -366,21 +371,8 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 		return;
 	}
 
-	//ball->rect.x = message.GetXPos() * remoteResolutionScale;
 	ball->rect.x = message.GetXPos() * remoteResolutionScale;
-	std::cout << "Remote pos X : " << message.GetXPos()
-			  << " * " << remoteResolutionScale
-			  <<  " = " << message.GetXPos() * remoteResolutionScale << std::endl;
 
-
-	std::cout << "Remote pos Y : " << message.GetYPos()
-			  << " * " << remoteResolutionScale
-			  <<  " = " << message.GetYPos() * remoteResolutionScale << std::endl;
-
-	double xRatio = message.GetXPos() / 1920;
-	double yRatio = message.GetYPos() / 1280;
-	std::cout <<  "Ratio : " << xRatio << " , " << yRatio << std::endl;
-	std::cout << "= " << windowSize.w * xRatio << " , " << windowSize.h * yRatio << std::endl;
 	// Need to add ball's height, because ball it traveling in oposite direction.
 	// The board is also flipped, so the ball will have the oposite horizontal collision edge.
 	//ball->rect.y = ( message.GetYPos() - ball->rect.h ) * remoteResolutionScale;
@@ -461,12 +453,10 @@ void GameManager::SendGameSettingsMessage()
 	msg.SetMessageType( MessageType::GameSettings );
 	msg.SetObjectID( 0 );
 
-	msg.SetXPos( windowSize.w );
-	msg.SetYPos( windowSize.h );
+	msg.SetXSize( windowSize.w );
+	msg.SetYSize( windowSize.h );
 
-
-	msg.SetXPos( windowSize.w );
-	msg.SetYPos( windowSize.h );
+	msg.SetBoardScale( scale  );
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
@@ -535,7 +525,7 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	//PrintSend(msg);
+	PrintSend(msg);
 }
 void GameManager::SendTileHitMessage( unsigned int tileID )
 {
@@ -704,7 +694,7 @@ void GameManager::HandleKeyboardEvent( const SDL_Event &event )
 				menuManager.SetGameState( GameState::InGame );
 				break;
 			case SDLK_c:
-				ClearBoard();
+				SendGameSettingsMessage();
 				break;
 			default:
 				break;
@@ -1055,7 +1045,8 @@ void GameManager::GenerateBoard()
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 
-	SetScale( b.GetScale() );
+	if ( netManager.IsServer() )
+		SetScale( b.GetScale() );
 }
 bool GameManager::IsLevelDone()
 {
@@ -1121,6 +1112,7 @@ void GameManager::SetScale( double scale_ )
 	std::cout << "Scale : " << scale_ << std::endl;
 	scale = scale_;
 	ApplyScale();
+	SendGameSettingsMessage();
 }
 void GameManager::ApplyScale( )
 {

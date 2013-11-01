@@ -23,7 +23,7 @@ std::string TCPMessage::Print() const
 	}
 	else if ( msgType == MessageType::GameSettings )
 	{
-		ss << " : "  << xPos << " , " << yPos << "\n";
+		ss << " : "  << xSize << " , " << ySize << " board scale : " << boardScale <<  "\n";
 	}
 	else
 	{
@@ -83,6 +83,18 @@ double TCPMessage::GetYDir() const
 {
 	return yDir;
 }
+double TCPMessage::GetXSize() const
+{
+	return xSize;
+}
+double TCPMessage::GetYSize() const
+{
+	return ySize;
+}
+double TCPMessage::GetBoardScale() const
+{
+	return boardScale;
+}
 // Setters
 void TCPMessage::SetMessageType( MessageType msgType_ )
 {
@@ -111,4 +123,16 @@ void TCPMessage::SetXDir( double xDir_ )
 void TCPMessage::SetYDir( double yDir_ )
 {
 	yDir = yDir_;
+}
+void TCPMessage::SetXSize( double xSize_ )
+{
+	xSize = xSize_;
+}
+void TCPMessage::SetYSize( double ySize_ )
+{
+	ySize = ySize_;
+}
+void TCPMessage::SetBoardScale( double boardScale_)
+{
+	boardScale = boardScale_;
 }

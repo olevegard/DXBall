@@ -21,6 +21,9 @@ class TCPMessage
 		double GetYPos() const;
 		double GetXDir() const;
 		double GetYDir() const;
+		double GetXSize() const;
+		double GetYSize() const;
+		double GetBoardScale() const;
 
 		// Setters
 		void SetMessageType( MessageType msgType_ );
@@ -30,14 +33,23 @@ class TCPMessage
 		void SetYPos( double yPos_ );
 		void SetXDir( double xDir_ );
 		void SetYDir( double yDir_ );
-
+		void SetXSize( double xSize_ );
+		void SetYSize( double ySize_ );
+		void SetBoardScale( double boardScale_);
 	private:
 		MessageType msgType;
 		unsigned int objectID;
+
 		double xPos;
 		double yPos;
+
 		double xDir;
 		double yDir;
+
+		double xSize;
+		double ySize;
+
+		double boardScale;
 };
 
 inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
@@ -50,6 +62,26 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 	msg.SetMessageType( type );
 	msg.SetObjectID( objectID );
+
+
+	// Game Settings uses xSize and ySize
+	if ( type == MessageType::GameSettings )
+	{
+		double xSize = 0.0;
+		double ySize = 0.0;
+		double boardScale = 0.0;
+
+		is >> xSize;
+		is >> ySize;
+
+		msg.SetXSize( xSize );
+		msg.SetYSize( ySize );
+
+		is >> boardScale;
+		msg.SetBoardScale( boardScale );
+
+		return is;
+	}
 
 	// BallKilled and Tile Hit only needs message type and ID
 	if ( type == MessageType::BallKilled || type == MessageType::TileHit )
@@ -67,9 +99,6 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	is >> yPos;
 	msg.SetYPos( yPos );
 
-	// Game Settings only has xPos and yPos
-	if ( type == MessageType::GameSettings )
-		return is;
 
 	double xDir = 0.0;
 	double yDir = 0.0;
@@ -83,36 +112,49 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 	return is;
 }
-inline std::ostream& operator<<( std::ostream &os, const TCPMessage &pos )
+inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 {
-	MessageType type = pos.GetType();
+	MessageType type = message.GetType();
 
-	os << pos.GetTypeAsInt();
+	os << message.GetTypeAsInt();
 	os << " ";
-	os << pos.GetObjectID();
+	os << message.GetObjectID();
 	os << " ";
+
+	// Game Settings uses xSize and ySize
+	if ( type == MessageType::GameSettings )
+	{
+		os << message.GetXSize();
+		os << " ";
+		os << message.GetYSize();
+		os << " ";
+
+		os << message.GetBoardScale();
+
+		return os;
+	}
 
 	// BallKilled and Tile Hit only needs message type and ID
 	if ( type == MessageType::BallKilled || type == MessageType::TileHit )
 		return os;
 
-	os << pos.GetXPos();
+	os << message.GetXPos();
 	os << " ";
 
 	// Paddle position only has xPos
 	if ( type == MessageType::PaddlePosition )
 		return os;
 
-	os << pos.GetYPos();
+	os << message.GetYPos();
 	os << " ";
 
 	// Game Settings only has xPos and yPos
 	if ( type == MessageType::GameSettings )
 		return os;
 
-	os << pos.GetXDir();
+	os << message.GetXDir();
 	os << " ";
-	os << pos.GetYDir();
+	os << message.GetYDir();
 	os << " ";
 	return os;
 }
