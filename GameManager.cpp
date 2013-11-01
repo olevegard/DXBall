@@ -96,7 +96,7 @@ void GameManager::Restart()
 		remotePaddle->rect.h = 30;
 		remotePaddle->rect.x = 400;
 		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
-		remotePaddle->SetScale( 0.65 );
+		remotePaddle->SetScale( scale );
 
 		renderer.SetRemotePaddle( remotePaddle );
 	}
