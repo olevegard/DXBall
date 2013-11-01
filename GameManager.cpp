@@ -40,9 +40,11 @@
 	,	ballList()
 	,	windowSize()
 	,	scale( 1.0 )
-	,	remoteResolutionScale( 1.0 )
-
 	,	points{ 20, 50, 100, 500 }
+
+	,	remoteResolutionScale( 1.0 )
+	,	isResolutionScaleRecieved( false )
+
 	,	tileCount( 0 )
 	,	ballCount( 0 )
 	,	fpsLimit( 60 )
@@ -100,6 +102,7 @@ void GameManager::Restart()
 
 		renderer.SetRemotePaddle( remotePaddle );
 	}
+	isResolutionScaleRecieved = false;
 
 	tileCount = 0;
 	ballCount = 0;
@@ -345,6 +348,8 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 
 	if ( !netManager.IsServer() )
 		SetScale( message.GetBoardScale() * remoteResolutionScale );
+
+	isResolutionScaleRecieved = true;
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
@@ -426,7 +431,7 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 }
 void GameManager::SendPaddlePosMessage( )
 {
-	if ( !isTwoPlayerMode )
+	if ( !isTwoPlayerMode || !netManager.IsConnected()  || !isResolutionScaleRecieved )
 		return;
 
 	// Sending
@@ -438,7 +443,7 @@ void GameManager::SendPaddlePosMessage( )
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	//PrintSend(msg);
+	PrintSend(msg);
 }
 
 void GameManager::SendGameSettingsMessage()

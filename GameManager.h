@@ -152,8 +152,10 @@ class GameManager
 
 		SDL_Rect windowSize;
 		double scale;
-		double remoteResolutionScale;
 		unsigned int points[4];
+
+		double remoteResolutionScale;
+		bool isResolutionScaleRecieved;
 
 		unsigned int tileCount;
 		unsigned int ballCount;

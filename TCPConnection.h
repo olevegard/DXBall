@@ -30,6 +30,7 @@ private:
 	unsigned short portNr;
 	bool isConnected;
 	IPaddress ipAddress;
+	int bufferSize;
 
 	TCPsocket tcpSocket;
 	TCPsocket serverSocket;
