@@ -63,54 +63,73 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	msg.SetMessageType( type );
 	msg.SetObjectID( objectID );
 
-
-	// Game Settings uses xSize and ySize
-	if ( type == MessageType::GameSettings )
+	switch ( type )
 	{
-		double xSize = 0.0;
-		double ySize = 0.0;
-		double boardScale = 0.0;
+		// BallKilled and Tile Hit only needs message type and ID
+		case BallKilled:
+		case BallSpawned:
+		case TileHit:
+			return is;
+			// Game Settings uses xSize and ySize
+		case GameSettings:
+			{
+				double xSize = 0.0;
+				double ySize = 0.0;
+				double boardScale = 0.0;
 
-		is >> xSize;
-		is >> ySize;
+				is >> xSize;
+				is >> ySize;
 
-		msg.SetXSize( xSize );
-		msg.SetYSize( ySize );
+				msg.SetXSize( xSize );
+				msg.SetYSize( ySize );
 
-		is >> boardScale;
-		msg.SetBoardScale( boardScale );
+				is >> boardScale;
+				msg.SetBoardScale( boardScale );
 
-		return is;
+				return is;
+			}
+			// Paddle position only has xPos
+		case PaddlePosition:
+			{
+				double xPos = 0.0;
+
+				is >> xPos;
+
+				msg.SetXPos( xPos );
+				return is;
+			}
+			// BallData has both pos and dir
+		case BallData:
+			{
+				double xPos = 0.0;
+				double yPos = 0.0;
+
+				is >> xPos;
+				is >> yPos;
+
+				msg.SetXPos( xPos );
+				msg.SetYPos( yPos );
+
+				double xDir = 0.0;
+				double yDir = 0.0;
+
+				is >> xDir;
+				is >> yDir;
+
+				msg.SetYPos( yPos );
+				msg.SetXDir( xDir );
+				msg.SetYDir( yDir );
+
+				return is;
+			}
+		default:
+			{
+				std::cout << "Wrong message type : " << type << std::endl;
+				std::cin.ignore();
+				return is;
+			}
 	}
 
-	// BallKilled and Tile Hit only needs message type and ID
-	if ( type == MessageType::BallKilled || type == MessageType::TileHit )
-		return is;
-
-	double xPos = 0.0;
-	is >> xPos;
-	msg.SetXPos( xPos );
-
-	// Paddle position only has xPos
-	if ( type == MessageType::PaddlePosition )
-		return is;
-
-	double yPos = 0.0;
-	is >> yPos;
-	msg.SetYPos( yPos );
-
-
-	double xDir = 0.0;
-	double yDir = 0.0;
-
-	is >> xDir;
-	is >> yDir;
-
-	msg.SetYPos( yPos );
-	msg.SetXDir( xDir );
-	msg.SetYDir( yDir );
-
-	return is;
 }
 inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 {
@@ -121,40 +140,47 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 	os << message.GetObjectID();
 	os << " ";
 
-	// Game Settings uses xSize and ySize
-	if ( type == MessageType::GameSettings )
+	switch ( type )
 	{
-		os << message.GetXSize();
-		os << " ";
-		os << message.GetYSize();
-		os << " ";
+		// BallKilled and Tile Hit only needs message type and ID
+		case BallKilled:
+		case BallSpawned:
+		case TileHit:
+			break;
+			// Game Settings uses xSize and ySize
+		case GameSettings:
+			os << message.GetXSize();
+			os << " ";
+			os << message.GetYSize();
+			os << " ";
 
-		os << message.GetBoardScale();
+			os << message.GetBoardScale();
+			os << " ";
 
-		return os;
+			break;
+			// Paddle position only has xPos
+		case PaddlePosition:
+			os << message.GetXPos();
+			os << " ";
+
+			break;
+			// BallData has both pos and dir
+		case BallData:
+			os << message.GetXPos();
+			os << " ";
+			os << message.GetYPos();
+			os << " ";
+
+			os << message.GetXDir();
+			os << " ";
+			os << message.GetYDir();
+			os << " ";
+
+			break;
+		default:
+			std::cout << "Wrong message type : " << type << std::endl;
+			std::cin.ignore();
+			break;
 	}
-
-	// BallKilled and Tile Hit only needs message type and ID
-	if ( type == MessageType::BallKilled || type == MessageType::TileHit )
-		return os;
-
-	os << message.GetXPos();
-	os << " ";
-
-	// Paddle position only has xPos
-	if ( type == MessageType::PaddlePosition )
-		return os;
-
-	os << message.GetYPos();
-	os << " ";
-
-	// Game Settings only has xPos and yPos
-	if ( type == MessageType::GameSettings )
-		return os;
-
-	os << message.GetXDir();
-	os << " ";
-	os << message.GetYDir();
-	os << " ";
 	return os;
 }
