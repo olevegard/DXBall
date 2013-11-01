@@ -443,7 +443,7 @@ void GameManager::SendPaddlePosMessage( )
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	PrintSend(msg);
+	//PrintSend(msg);
 }
 
 void GameManager::SendGameSettingsMessage()
@@ -466,7 +466,7 @@ void GameManager::SendGameSettingsMessage()
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	PrintSend(msg);
+	//PrintSend(msg);
 }
 void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 {
@@ -612,7 +612,6 @@ void GameManager::Run()
 		DoFPSDelay( ticks );
 	}
 }
-
 void GameManager::HandleStatusChange( )
 {
 	if ( menuManager.HasGameStateChanged() )
@@ -664,6 +663,11 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 }
 void GameManager::HandleKeyboardEvent( const SDL_Event &event )
 {
+	HandleMenuKeys( event );
+	HandleGameKeys( event );
+}
+void GameManager::HandleMenuKeys( const SDL_Event &event )
+{
 	if ( event.type == SDL_KEYDOWN )
 	{
 		switch  ( event.key.keysym.sym )
@@ -671,17 +675,8 @@ void GameManager::HandleKeyboardEvent( const SDL_Event &event )
 			case SDLK_F11:
 				renderer.ToggleFullscreen();
 				break;
-			case SDLK_RETURN:
-			case SDLK_b:
-				//AddBall( Player::Remote );
-				AddBall( Player::Local, ballCount );
-				break;
 			case SDLK_ESCAPE:
-				//menuManager.GoBackToPreviousMenuState();
 				menuManager.GoToMenu();
-				break;
-			case SDLK_l:
-				++localPlayerLives;
 				break;
 			case SDLK_s:
 				menuManager.SetGameState( GameState::InGame );
@@ -698,14 +693,30 @@ void GameManager::HandleKeyboardEvent( const SDL_Event &event )
 			case SDLK_r:
 				menuManager.SetGameState( GameState::InGame );
 				break;
-			case SDLK_c:
-				SendGameSettingsMessage();
-				break;
 			default:
 				break;
 		}
 	}
 
+}
+void GameManager::HandleGameKeys( const SDL_Event &event )
+{
+	if ( menuManager.GetGameState() != GameState::InGame || !isResolutionScaleRecieved )
+		return;
+
+	if ( event.type == SDL_KEYDOWN )
+	{
+		switch  ( event.key.keysym.sym )
+		{
+			case SDLK_RETURN:
+			case SDLK_b:
+				//AddBall( Player::Remote );
+				AddBall( Player::Local, ballCount );
+				break;
+			default:
+				break;
+		}
+	}
 }
 void GameManager::DoFPSDelay( unsigned int ticks )
 {
@@ -1001,7 +1012,11 @@ void GameManager::RemoveDeadBonusBoxes()
 }
 void GameManager::UpdateGUI( )
 {
-	if ( IsLevelDone() && !boardLoader.IsLastLevel() )
+	if ( !isResolutionScaleRecieved )
+	{
+		renderer.RenderText( "Waiting for other player...", Player::Local  );
+	}
+	else if ( IsLevelDone() && !boardLoader.IsLastLevel() )
 	{
 		if ( localPlayerPoints > remotePlayerPoints )
 			renderer.RenderText( "Yay, you won :D", Player::Local  );

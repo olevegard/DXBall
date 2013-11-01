@@ -49,6 +49,8 @@ class GameManager
 		void HandleEvent( const SDL_Event &event );
 		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
 		void HandleKeyboardEvent( const SDL_Event &event );
+		void HandleMenuKeys( const SDL_Event &event );
+		void HandleGameKeys( const SDL_Event &event );
 
 		// Game status
 		void HandleStatusChange( );
