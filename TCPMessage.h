@@ -67,10 +67,9 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
 		case BallKilled:
-		case BallSpawned:
 		case TileHit:
 			return is;
-			// Game Settings uses xSize and ySize
+		// Game Settings uses xSize and ySize
 		case GameSettings:
 			{
 				double xSize = 0.0;
@@ -88,7 +87,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				return is;
 			}
-			// Paddle position only has xPos
+		// Paddle position only has xPos
 		case PaddlePosition:
 			{
 				double xPos = 0.0;
@@ -98,7 +97,8 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				msg.SetXPos( xPos );
 				return is;
 			}
-			// BallData has both pos and dir
+		// BallData has both pos and dir
+		case BallSpawned:
 		case BallData:
 			{
 				double xPos = 0.0;
@@ -116,7 +116,6 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				is >> xDir;
 				is >> yDir;
 
-				msg.SetYPos( yPos );
 				msg.SetXDir( xDir );
 				msg.SetYDir( yDir );
 
@@ -144,10 +143,9 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
 		case BallKilled:
-		case BallSpawned:
 		case TileHit:
 			break;
-			// Game Settings uses xSize and ySize
+		// Game Settings uses xSize and ySize
 		case GameSettings:
 			os << message.GetXSize();
 			os << " ";
@@ -158,13 +156,14 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			os << " ";
 
 			break;
-			// Paddle position only has xPos
+		// Paddle position only has xPos
 		case PaddlePosition:
 			os << message.GetXPos();
 			os << " ";
 
 			break;
-			// BallData has both pos and dir
+		// BallData has both pos and dir
+		case BallSpawned:
 		case BallData:
 			os << message.GetXPos();
 			os << " ";
