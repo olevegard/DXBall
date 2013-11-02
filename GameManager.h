@@ -20,13 +20,22 @@ class GameManager
 {
 	public:
 		GameManager();
-
+		// Startup options
 		bool Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
+		void SetFPSLimit( unsigned short limit );
+		void SetTwoPlayerMode( bool isTwoPlayer )
+		{
+			isTwoPlayerMode = isTwoPlayer;
+		}
 
-		void SetSize( const SDL_Rect &size );
 
-		void Restart();
+		// Ipdate
+		void Run();
+		void UpdateGUI( );
 
+		void InitNetManager( bool isServer, std::string ip, unsigned short port );
+	private:
+		// Add / Remoe game objects
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
@@ -35,10 +44,6 @@ class GameManager
 
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
-
-		// Ipdate
-		void Run();
-		void UpdateGUI( );
 
 		// Ball checks
 		void UpdateBalls( double delta );
@@ -54,6 +59,7 @@ class GameManager
 
 		// Game status
 		void HandleStatusChange( );
+		void Restart();
 
 		// AI
 		void AIMove();
@@ -62,14 +68,6 @@ class GameManager
 
 		void CreateMenu();
 
-		void SetFPSLimit( unsigned short limit );
-		void SetTwoPlayerMode( bool isTwoPlayer )
-		{
-			isTwoPlayerMode = isTwoPlayer;
-		}
-
-		void InitNetManager( bool isServer, std::string ip, unsigned short port );
-	private:
 		// Tile collisions
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
@@ -117,7 +115,6 @@ class GameManager
 		void SendTileHitMessage( unsigned int tileID );
 		void SendPaddlePosMessage( );
 
-		bool runGame;
 		std::shared_ptr< Ball > GetBallFromID( unsigned int ID );
 		std::shared_ptr< Tile > GetTileFromID( unsigned int ID );
 
@@ -131,6 +128,7 @@ class GameManager
 		void ApplyScale( );
 		void ResetScale( );
 
+		bool runGame;
 		BoardLoader boardLoader;
 		Renderer renderer;
 		Timer timer;
