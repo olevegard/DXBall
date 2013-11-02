@@ -85,8 +85,12 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 
 void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short port )
 {
-	netManager.Init( isServer, ip, port );
 	boardLoader.SetIsServer( !isTwoPlayerMode || isServer );
+
+	if ( !isTwoPlayerMode )
+		return;
+
+	netManager.Init( isServer, ip, port );
 }
 void GameManager::Restart()
 {
@@ -346,7 +350,7 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 			  << " * " << remoteResolutionScale
 			  << " = " << message.GetBoardScale() * remoteResolutionScale  << std::endl;
 
-	if ( !netManager.IsServer() )
+	if ( !netManager.IsServer() || !isTwoPlayerMode )
 		SetScale( message.GetBoardScale() * remoteResolutionScale );
 
 	isResolutionScaleRecieved = true;
@@ -644,7 +648,7 @@ void GameManager::HandleEvent( const SDL_Event &event )
 }
 void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
-	if ( menuManager.GetGameState() == GameState::InGame && !netManager.IsServer() )
+	if ( menuManager.GetGameState() == GameState::InGame && ( !isTwoPlayerMode || netManager.IsServer() ) )
 	{
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 	}
@@ -739,11 +743,13 @@ void GameManager::Update( double delta )
 		return;
 	}
 
-	if ( netManager.IsServer() )
-		AIMove();
-
 	if ( isTwoPlayerMode )
+	{
+		if ( netManager.IsServer() )
+			AIMove();
+
 		UpdateNetwork();
+	}
 
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
