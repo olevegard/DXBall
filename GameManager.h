@@ -26,6 +26,7 @@ class GameManager
 		void SetTwoPlayerMode( bool isTwoPlayer )
 		{
 			isTwoPlayerMode = isTwoPlayer;
+			renderer.SetIsTwoPlayerMode( isTwoPlayer );
 		}
 
 
@@ -127,6 +128,11 @@ class GameManager
 		void SetScale( double scale );
 		void ApplyScale( );
 		void ResetScale( );
+
+		// Rendering
+		void RendererScores();
+		void RenderInGame();
+		void RenderEndGame();
 
 		bool runGame;
 		BoardLoader boardLoader;

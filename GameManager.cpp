@@ -67,7 +67,8 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	UpdateGUI();
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
-	renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
+	if ( isTwoPlayerMode )
+		renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
 	CreateMenu();
 
@@ -648,7 +649,7 @@ void GameManager::HandleEvent( const SDL_Event &event )
 }
 void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
-	if ( menuManager.GetGameState() == GameState::InGame && ( !isTwoPlayerMode || netManager.IsServer() ) )
+	if ( menuManager.GetGameState() == GameState::InGame && ( !isTwoPlayerMode || !netManager.IsServer() ) )
 	{
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 	}
@@ -739,7 +740,8 @@ void GameManager::Update( double delta )
 {
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
-		renderer.Render( );
+		//renderer.Render( );
+		UpdateGUI();
 		return;
 	}
 
@@ -1021,36 +1023,60 @@ void GameManager::RemoveDeadBonusBoxes()
 }
 void GameManager::UpdateGUI( )
 {
+	if ( menuManager.GetGameState() == GameState::InGame )
+		RenderInGame();
+	else if ( menuManager.GetGameState() == GameState::GameOver )
+		RenderEndGame();
+
+	RendererScores();
+
+	renderer.Render( );
+}
+
+void GameManager::RendererScores()
+{
+	renderer.RenderPoints   ( localPlayerPoints, Player::Local );
+	renderer.RenderLives    ( localPlayerLives, Player::Local );
+	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
+
+	if ( isTwoPlayerMode )
+	{
+		renderer.RenderLives    ( remotePlayerLives, Player::Remote );
+		renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
+		renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
+	}
+}
+void GameManager::RenderInGame()
+{
 	if ( isTwoPlayerMode && !isResolutionScaleRecieved )
 	{
 		renderer.RenderText( "Waiting for other player...", Player::Local  );
+		return;
 	}
-	else if ( IsLevelDone() && !boardLoader.IsLastLevel() )
+
+	if ( localPlayerActiveBalls == 0 )
+	{
+		if ( localPlayerLives == 0 )
+			renderer.RenderText( "No more levels!", Player::Local  );
+		else
+			renderer.RenderText( "Press enter to launch ball", Player::Local  );
+	}
+}
+void GameManager::RenderEndGame()
+{
+	if ( isTwoPlayerMode )
 	{
 		if ( localPlayerPoints > remotePlayerPoints )
 			renderer.RenderText( "Yay, you won :D", Player::Local  );
 		else
 			renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
 	}
-	else if ( localPlayerActiveBalls == 0 )
+	else
 	{
-		if ( localPlayerLives == 0 )
-			renderer.RenderText( "Game Over", Player::Local  );
-		else
-			renderer.RenderText( "Press enter to launch ball", Player::Local  );
+		renderer.RenderText( "Game Over!", Player::Local  );
 	}
-
-	renderer.RenderPoints   ( localPlayerPoints, Player::Local );
-	renderer.RenderLives    ( localPlayerLives, Player::Local );
-	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
-
-	renderer.RenderLives    ( remotePlayerLives, Player::Remote );
-	renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
-	renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
-
-	renderer.Render( );
 }
-void GameManager::SetFPSLimit( unsigned short limit )
+void GameManager::GameManager::SetFPSLimit( unsigned short limit )
 {
 	fpsLimit  = limit;
 	if ( fpsLimit > 0.0f )
@@ -1064,7 +1090,8 @@ void GameManager::GenerateBoard()
 
 	if ( !boardLoader.IsLastLevel() )
 	{
-		std::cout << "GameMAanager@" << __LINE__ << " Last level..\n";
+		std::cout << "GameManager@" << __LINE__ << " Last level..\n";
+		menuManager.SetGameState( GameState::GameOver );
 		return;
 	}
 

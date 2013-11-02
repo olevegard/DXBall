@@ -47,6 +47,7 @@
 	,	localPaddle( nullptr )
 	,	remotePaddle( nullptr )
 
+	,	isTwoPlayerMode( false )
 	,	localPlayerColor{ 0, 140, 0,255 }
 	,	localPlayerBallTexture( nullptr )
 	,	localPlayerPaddle( nullptr )
@@ -459,6 +460,9 @@ void Renderer::Render( )
 			RenderMenuItem( pauseMainMenuButton );
 			RenderMenuItem( pauseQuitButton );
 			break;
+		case GameState::GameOver:
+			RenderText();
+			break;
 		default:
 			break;
 	}
@@ -525,6 +529,8 @@ void Renderer::RenderText()
 		SDL_RenderCopy( renderer, localPlayerBallsTexture, nullptr, &localPlayerBallsRect);
 
 	// Remote
+	if ( !isTwoPlayerMode )
+		return;
 	if ( remotePlayerCaptionTexture )
 		SDL_RenderCopy( renderer, remotePlayerCaptionTexture , nullptr, &remotePlayerCaptionRect );
 

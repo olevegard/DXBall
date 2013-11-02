@@ -99,6 +99,11 @@ public:
 	void SetGameState( const GameState &gs );
 	void HideMouseCursor( bool hideCursor );
 
+	void SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
+	{
+		isTwoPlayerMode = isTwoPlayerMode_;
+	}
+
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -183,6 +188,7 @@ private:
 	std::shared_ptr< Paddle >  localPaddle;
 	std::shared_ptr< Paddle >  remotePaddle;
 
+	bool isTwoPlayerMode;
 	SDL_Color    localPlayerColor;
 	SDL_Texture* localPlayerBallTexture;
 	SDL_Texture* localPlayerPaddle;
