@@ -113,7 +113,8 @@ void GameManager::Restart()
 	ballCount = 0;
 
 	boardLoader.Reset();
-	GenerateBoard();
+	if ( !isTwoPlayerMode || netManager.IsServer() )
+		GenerateBoard();
 
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
@@ -348,7 +349,10 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 	PrintRecv( message );
 
 	if ( !netManager.IsServer() || !isTwoPlayerMode )
+	{
+		GenerateBoard();
 		SetScale( message.GetBoardScale() * remoteResolutionScale );
+	}
 
 	isResolutionScaleRecieved = true;
 }
@@ -752,7 +756,7 @@ void GameManager::Update( double delta )
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
 
-	if ( IsLevelDone() )
+	if ( ( !isTwoPlayerMode || netManager.IsServer() ) &&  IsLevelDone() )
 	{
 		std::cout << "GameMAanager@" << __LINE__ << " Level is done..\n";
 		GenerateBoard();
