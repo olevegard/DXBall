@@ -347,10 +347,6 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 	remoteResolutionScale = windowSize.w / message.GetXSize();
 	PrintRecv( message );
 
-	std::cout << "Remote board scale : " << message.GetBoardScale()
-			  << " * " << remoteResolutionScale
-			  << " = " << message.GetBoardScale() * remoteResolutionScale  << std::endl;
-
 	if ( !netManager.IsServer() || !isTwoPlayerMode )
 		SetScale( message.GetBoardScale() * remoteResolutionScale );
 
@@ -1164,7 +1160,7 @@ void GameManager::SetLocalPaddlePosition( int x, int y )
 }
 void GameManager::SetScale( double scale_ )
 {
-	std::cout << "Scale : " << scale_ << std::endl;
+	std::cout << "GameManager.cpp@" << __LINE__ << " Scale : " << scale_ << std::endl;
 	scale = scale_;
 	ApplyScale();
 	SendGameSettingsMessage();

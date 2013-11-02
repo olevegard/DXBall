@@ -10,18 +10,17 @@ bool TCPConnection::Init( const std::string &host, unsigned short port, bool ser
 	isServer = server;
 	hostName = host;
 	portNr = port;
-	std::cout << "Initialising" << std::endl;
 	socketSet = SDLNet_AllocSocketSet( 1 );
 
 	if ( !ResolveHost() )
 	{
-		std::cout << "TCPConnection@" << __LINE__ << ": Resolve Host failed!" << std::endl;
+		std::cout << "TCPConnection@" << __LINE__ << " Resolve Host failed!" << std::endl;
 		return false;
 	}
 
 	if ( !OpenConnectionToHost() )
 	{
-		std::cout << "TCPConnection@" << __LINE__ << ": Open Connection To  Host failed!" << std::endl;
+		std::cout << "TCPConnection@" << __LINE__ << " Open Connection To  Host failed!" << std::endl;
 		return false;
 	}
 
@@ -40,7 +39,7 @@ bool TCPConnection::ResolveHost()
 
 	if ( success == -1 )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Failed to open port host :"
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Failed to open port host :"
 			"\nIP Adress : " << hostName <<
 			"\nPort : " << portNr <<
 			"\nError : " << SDLNet_GetError() <<
@@ -61,7 +60,7 @@ bool TCPConnection::OpenConnectionToHost( )
 
 	if ( tcpSocket == nullptr )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Failed to open port host :"
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Failed to open port host :"
 			"\nIP Adress : " << hostName <<
 			"\nPort : " << portNr <<
 			"\nError : " << SDLNet_GetError() <<
@@ -77,7 +76,7 @@ void TCPConnection::Send( std::string str )
 {
 	if ( !isConnected  )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Error! Not connected " << std::endl;
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Error! Not connected " << std::endl;
 		return;
 	}
 
@@ -96,7 +95,7 @@ void TCPConnection::Send( std::string str )
 
 	if ( bytesSent < messageSize )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Send failed : " << SDLNet_GetError() << std::endl;
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Send failed : " << SDLNet_GetError() << std::endl;
 		isConnected = false;
 	}
 }
@@ -109,7 +108,7 @@ bool TCPConnection::StartServer( )
 {
 	if (!isServer )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Not in server mode, can't start server" << std::endl;
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Not in server mode, can't start server" << std::endl;
 		return false;
 	}
 
@@ -137,7 +136,7 @@ bool TCPConnection::AcceptConnection()
 
 	if ( serverSocket  == nullptr )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
 		isConnected = false;
 		return false;
 	}
@@ -151,14 +150,14 @@ bool TCPConnection::SetServerSocket()
 	if ( ipRemote == nullptr )
 	{
 		std::cout  << "TCPConnection.cpp@" << __LINE__
-			<< "Failed to get peer addres : " << hostName << " : " << portNr
+			<< " Failed to get peer addres : " << hostName << " : " << portNr
 			<< "\n\tServer : " << std::boolalpha << isServer << std::endl;
 		isConnected = false;
 		return false;
 	}
 
 	std::cout << "TCPConnection.cpp@" << __LINE__
-		<< "Host connected : "
+		<< " Host connected : "
 		<< SDLNet_Read32( &ipRemote->host )
 		<< " : " << SDLNet_Read32( &ipRemote->host ) << std::endl;
 
@@ -193,7 +192,7 @@ std::string TCPConnection::ReadMessages()
 		if ( byteCount >= bufferSize )
 		{
 			std::cout << "TCPConnection.cpp@" << __LINE__
-				<< "Too much data received : " << byteCount
+				<< " Too much data received : " << byteCount
 				<< " / " << bufferSize
 				<< std::endl;
 		}
@@ -202,12 +201,12 @@ std::string TCPConnection::ReadMessages()
 	// A bytecount of 0 means the connection has been terminated
 	else if ( byteCount == 0 )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Connection terminated" << std::endl;
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Connection terminated" << std::endl;
 		isConnected = false;
 		// A bytecount of < 0 means an error occured
 	} else if ( byteCount < 0 )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Read failed!" <<
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Read failed!" <<
 			"\nSocket : " << ( isServer ? serverSocket : tcpSocket )  <<
 			"\nByte count : " << byteCount <<
 			"\nERrror : " << SDLNet_GetError() <<
@@ -222,7 +221,7 @@ bool TCPConnection::CheckForActivity() const
 
 	if ( countReady < 0 )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << "Error! " << SDLNet_GetError() << std::endl;
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Error! " << SDLNet_GetError() << std::endl;
 		return false;
 	}
 

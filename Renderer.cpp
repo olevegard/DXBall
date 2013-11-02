@@ -128,7 +128,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
 	{
-		std::cout << "Failed to initialize SDL : " << SDL_GetError() << std::endl;
+		std::cout << "Renderer@" << __LINE__  << " Failed to initialize SDL : " << SDL_GetError() << std::endl;
 		return false;
 	}
 
@@ -140,13 +140,13 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 	// Set up screen
 	if ( !CreateWindow( server ) )
 	{
-		std::cout << "Failed to apply video mode\n";
+		std::cout << "Renderer@" << __LINE__  << " Failed to apply video mode\n";
 		return false;
 	}
 
 	if ( !CreateRenderer() )
 	{
-		std::cout << "Failed to apply video mode\n";
+		std::cout << "Renderer@" << __LINE__  << " Failed to apply video mode\n";
 		return false;
 	}
 
@@ -154,16 +154,14 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 	if ( TTF_Init( ) == -1 )
 	{
-		std::cout << "Failed to initialize TTF : " << TTF_GetError() << std::endl;
+		std::cout << "Renderer@" << __LINE__  << " Failed to initialize TTF : " << TTF_GetError() << std::endl;
 		return false;
 	}
 
 	if ( !LoadFontAndText() )
 		return false;
 
-
 	LoadImages();
-	std::cout << "Init done\n";
 	return true;
 }
 
@@ -176,7 +174,7 @@ bool Renderer::CreateRenderer()
 
 	if ( renderer == nullptr )
 	{
-		std::cout << "Could not create renderer!";
+		std::cout << "Renderer@" << __LINE__  << " Could not create renderer!";
 		return false;
 	}
 
@@ -204,7 +202,7 @@ bool Renderer::CreateWindow(bool server )
 
 	if ( window == nullptr )
 	{
-		std::cout << "Failed to apply video mode\n";
+		std::cout << "Renderer@" << __LINE__  << " Failed to apply video mode\n";
 		return false;
 	}
 
@@ -234,15 +232,15 @@ void Renderer::ToggleFullscreen()
 }
 bool Renderer::SetFullscreen( bool fullscreenOn )
 {
-	std::cout << "Settting fullscreen...\n";
+	std::cout << "Renderer@" << __LINE__  << " Settting fullscreen...\n";
 	fullscreen = fullscreenOn;
 
 	if ( SDL_SetWindowFullscreen( window, (fullscreen ) ? SDL_WINDOW_FULLSCREEN : 0 ) )
 	{
-		std::cout << "Failed to set fullscreen mode to " << std::boolalpha << fullscreen << std::endl;
+		std::cout << "Renderer@" << __LINE__  << " Failed to set fullscreen mode to " << std::boolalpha << fullscreen << std::endl;
 		return false;
 	}
-	std::cout << "Error : " << SDL_GetError() << std::endl;
+	std::cout << "Renderer@" << __LINE__  << " Error : " << SDL_GetError() << std::endl;
 	return true;
 }
 // ============================================================================================
@@ -267,11 +265,9 @@ bool Renderer::LoadImages()
 
 	InitGreyAreaRect();
 
-	std::cout << "Adding tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < tileTextures.size() ; ++i )
 		SetTileColorSurface( i, tileColors[ i ], tileTextures );
 
-	std::cout << "Adding hard tile surfaces : " << std::endl;
 	for ( size_t i = 0; i < hardTileTextures.size() ; ++i )
 		SetTileColorSurface( i, hardTileColors[ i ], hardTileTextures );
 
@@ -328,7 +324,7 @@ SDL_Texture* Renderer::LoadImage( const std::string &filename )
 	// If the image loaded
 	if ( texture == nullptr )
 	{
-		std::cout << "Failed to load " << filename << std::endl;
+		std::cout << "Renderer@" << __LINE__  << " Failed to load " << filename << std::endl;
 	}
 
 		return texture;
@@ -337,7 +333,7 @@ SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 {
 	if ( !surface )
 	{
-		std::cout << "Cannot set display format : nullptr\n";
+		std::cout << "Renderer@" << __LINE__  << " Cannot set display format : nullptr\n";
 	}
 
 	return surface;
@@ -612,7 +608,7 @@ TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
 
 	if ( tempFont == nullptr )
 	{
-		std::cout << "Failed to open font : " << fontName << " : " << TTF_GetError() << std::endl;
+		std::cout << "Renderer@" << __LINE__  << " Failed to open font : " << fontName << " : " << TTF_GetError() << std::endl;
 	}
 
 	return tempFont;
@@ -631,7 +627,7 @@ bool Renderer::LoadFontAndText()
 
 	if ( bigFont == nullptr || font == nullptr || tinyFont == nullptr || mediumFont == nullptr || hugeFont == nullptr )
 	{
-		std::cout << "Fonts not initialized properly\n";
+		std::cout << "Renderer@" << __LINE__  << " Fonts not initialized properly\n";
 		return false;
 	}
 
@@ -653,7 +649,7 @@ SDL_Texture* Renderer::RenderTextTexture_Solid(  TTF_Font* textFont, const std::
 		return texture;
 	} else
 	{
-		std::cout << "Failed to create text surface..." << textFont << " " << textToRender << " \n";
+		std::cout << "Renderer@" << __LINE__  << " Failed to create text surface..." << textFont << " " << textToRender << " \n";
 		return nullptr;
 	}
 }
@@ -679,7 +675,7 @@ SDL_Texture* Renderer::RenderTextTexture_Blended(  TTF_Font* textFont, const std
 		return texture;
 	} else
 	{
-		std::cout << "Failed to create text surface..." << textFont << " " << textToRender << " \n";
+		std::cout << "Renderer@" << __LINE__  << " Failed to create text surface..." << textFont << " " << textToRender << " \n";
 		return nullptr;
 	}
 }

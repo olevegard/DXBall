@@ -160,7 +160,7 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 			{
 				dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
 			}
-				
+
 			return true;
 		} else
 		{
@@ -279,7 +279,7 @@ bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball, doub
 	double distX = fabs( ballCenterX - tileCenterX );
 	double distY = fabs( ballCenterY - tileCenterY );
 
-	// If distance from center of sphere to center of rect is larger than 
+	// If distance from center of sphere to center of rect is larger than
 	// the sum of the raidus of the ball and the distance from the center of the rect to the edge
 	if ( distX > ( tileHalfWidth + ballRadius ) )
 		return false;
@@ -612,7 +612,7 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			dirX = ( dirX > 0.0f ) ? dirX * -1.0f : dirX;
 			break;
 		case Side::Unknown :
-			std::cout << "Uknown collosion\n";
+			std::cout << "Ball.cpp@" << __LINE__ << " Uknown collosion\n";
 			//std::cin.ignore();
 			dirX *= -1.0f;
 			dirY *= -1.0f;
@@ -759,7 +759,7 @@ void Ball::HandleTileIntersection2( const Rect &tileRect )
 		{
 			std::cout << "\t\tMissed bottom" << std::endl;
 		}
-	} else 
+	} else
 	{
 		std::cout << "\tChecking collision top : \n\n";
 		double distTop = tileTop - oldBottom;
