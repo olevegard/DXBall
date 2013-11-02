@@ -713,6 +713,9 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				//AddBall( Player::Remote );
 				AddBall( Player::Local, ballCount );
 				break;
+			case SDLK_u:
+				ResetScale();
+				break;
 			default:
 				break;
 		}
@@ -1067,6 +1070,8 @@ void GameManager::GenerateBoard()
 
 	if ( netManager.IsServer() )
 		SetScale( b.GetScale() );
+	else if ( !isTwoPlayerMode )
+		SetScale( 2.0  );
 }
 bool GameManager::IsLevelDone()
 {
@@ -1124,9 +1129,6 @@ void GameManager::SetLocalPaddlePosition( int x, int y )
 		SendPaddlePosMessage();
 	}
 }
-
-
-
 void GameManager::SetScale( double scale_ )
 {
 	std::cout << "Scale : " << scale_ << std::endl;
@@ -1138,11 +1140,8 @@ void GameManager::ApplyScale( )
 {
 	for ( auto& p : tileList )
 	{
-		if ( scale < 1.0 )
-		{
-			p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
-			p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
-		}
+		p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
+		p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
 
 		p->ResetScale();
 		p->SetScale( scale );
@@ -1154,3 +1153,22 @@ void GameManager::ApplyScale( )
 		p->SetScale( scale );
 	}
 }
+void GameManager::ResetScale( )
+{
+	double tempScale = 1.0 / scale;
+	scale = 1.0;
+
+	for ( auto& p : tileList )
+	{
+		p->rect.x = ( p->rect.x * tempScale ) + ( ( windowSize.w - ( windowSize.w * tempScale ) ) * 0.5 );
+		p->rect.y = ( p->rect.y * tempScale ) + ( ( windowSize.h - ( windowSize.h * tempScale ) ) * 0.5 );
+
+		p->SetScale( tempScale );
+	}
+
+	for ( auto& p : ballList )
+	{
+		p->SetScale( tempScale );
+	}
+}
+

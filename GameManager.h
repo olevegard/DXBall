@@ -129,6 +129,7 @@ class GameManager
 		// Scaling
 		void SetScale( double scale );
 		void ApplyScale( );
+		void ResetScale( );
 
 		BoardLoader boardLoader;
 		Renderer renderer;
