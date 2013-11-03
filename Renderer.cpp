@@ -6,6 +6,8 @@
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 
+#include "ConfigLoader.h"
+
 #include <sstream>
 #include <iostream>
 #include <algorithm>
@@ -121,7 +123,6 @@ Renderer::~Renderer()
 	QuitSDL();
 }
 bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
-
 {
 	fullscreen = startFS;
 	background = rect;
@@ -161,6 +162,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 	if ( !LoadFontAndText() )
 		return false;
 
+	LoadColors();
 	LoadImages();
 	return true;
 }
@@ -273,6 +275,23 @@ bool Renderer::LoadImages()
 
 	return true;
 }
+
+void Renderer::LoadColors()
+{
+	ConfigLoader cfgldr;
+
+	cfgldr.LoadConfig();
+
+	tileColors[0] = cfgldr.GetTileColor( TileType::Regular );
+	tileColors[1] = cfgldr.GetTileColor( TileType::Explosive );
+	tileColors[2] = cfgldr.GetTileColor( TileType::Unbreakable );
+
+	hardTileColors[0] = cfgldr.GetTileColor( TileType::Hard, 0 );
+	hardTileColors[1] = cfgldr.GetTileColor( TileType::Hard, 1 );
+	hardTileColors[2] = cfgldr.GetTileColor( TileType::Hard, 2 );
+	hardTileColors[3] = cfgldr.GetTileColor( TileType::Hard, 3 );
+	hardTileColors[4] = cfgldr.GetTileColor( TileType::Hard, 4 );
+}
 void Renderer::FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const
 {
 	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 255 )  );
@@ -327,7 +346,7 @@ SDL_Texture* Renderer::LoadImage( const std::string &filename )
 		std::cout << "Renderer@" << __LINE__  << " Failed to load " << filename << std::endl;
 	}
 
-		return texture;
+	return texture;
 }
 SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 {

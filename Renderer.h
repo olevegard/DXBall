@@ -138,6 +138,7 @@ private:
 	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list );
 
 	bool LoadImages();
+	void LoadColors();
 
 	void PrintSDL_TTFVersion();
 
