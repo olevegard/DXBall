@@ -1084,6 +1084,11 @@ void GameManager::GameManager::SetFPSLimit( unsigned short limit )
 	else
 		frameDuration = 0.0;
 }
+void GameManager::SetTwoPlayerMode( bool isTwoPlayer )
+{
+	isTwoPlayerMode = isTwoPlayer;
+	renderer.SetIsTwoPlayerMode( isTwoPlayer );
+}
 void GameManager::GenerateBoard()
 {
 	ClearBoard();

@@ -23,12 +23,7 @@ class GameManager
 		// Startup options
 		bool Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
 		void SetFPSLimit( unsigned short limit );
-		void SetTwoPlayerMode( bool isTwoPlayer )
-		{
-			isTwoPlayerMode = isTwoPlayer;
-			renderer.SetIsTwoPlayerMode( isTwoPlayer );
-		}
-
+		void SetTwoPlayerMode( bool isTwoPlayer );
 
 		// Ipdate
 		void Run();
