@@ -22,8 +22,11 @@ class GameManager
 		GameManager();
 		// Startup options
 		bool Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
+
+		// Setters
 		void SetFPSLimit( unsigned short limit );
 		void SetTwoPlayerMode( bool isTwoPlayer );
+		void SetAIControlled( bool isAIControlled_ );
 
 		// Ipdate
 		void Run();
@@ -129,6 +132,7 @@ class GameManager
 		void RenderInGame();
 		void RenderEndGame();
 
+		// Variables
 		bool runGame;
 		BoardLoader boardLoader;
 		Renderer renderer;
@@ -139,6 +143,7 @@ class GameManager
 		std::shared_ptr < Paddle > localPaddle;
 		std::shared_ptr < Paddle > remotePaddle;
 
+		bool isAIControlled;
 		bool isTwoPlayerMode;
 		unsigned int localPlayerPoints;
 		unsigned int localPlayerLives;

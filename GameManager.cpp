@@ -28,6 +28,7 @@
 	,	timer()
 	,	localPaddle()
 
+	,	isAIControlled( false )
 	,	isTwoPlayerMode( false )
 	,	localPlayerPoints( 0 )
 	,	localPlayerLives( 3 )
@@ -649,7 +650,7 @@ void GameManager::HandleEvent( const SDL_Event &event )
 }
 void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
-	if ( menuManager.GetGameState() == GameState::InGame && ( !isTwoPlayerMode || !netManager.IsServer() ) )
+	if ( menuManager.GetGameState() == GameState::InGame && !isAIControlled )
 	{
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 	}
@@ -713,6 +714,9 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 	{
 		switch  ( event.key.keysym.sym )
 		{
+			case SDLK_a:
+				SetAIControlled( true );
+				break;
 			case SDLK_RETURN:
 			case SDLK_b:
 				//AddBall( Player::Remote );
@@ -747,7 +751,7 @@ void GameManager::Update( double delta )
 
 	if ( isTwoPlayerMode )
 	{
-		if ( netManager.IsServer() )
+		if ( isAIControlled )
 			AIMove();
 
 		UpdateNetwork();
@@ -780,6 +784,9 @@ void GameManager::AIMove()
 }
 bool GameManager::IsTimeForAIMove( std::shared_ptr< Ball > highest ) const
 {
+	if ( !isAIControlled )
+		return false;
+
 	if ( !localPaddle )
 		return false;
 
@@ -796,6 +803,11 @@ bool GameManager::IsTimeForAIMove( std::shared_ptr< Ball > highest ) const
 		return false;
 
 	return true;
+}
+
+void GameManager::SetAIControlled( bool isAIControlled_ )
+{
+	isAIControlled = isAIControlled_;
 }
 std::shared_ptr< Ball > GameManager::FindHighestBall()
 {

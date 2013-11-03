@@ -31,6 +31,7 @@ int main( int argc, char* args[] )
 	bool startFS = false;
 	bool startTwoPlayer = false;
 	bool isServer = false;
+	bool isAIControlled = false;
 
 	std::cout << "Args : \n";
 
@@ -60,6 +61,8 @@ int main( int argc, char* args[] )
 				ip = args[ i + 1 ];
 			else if ( str == "-port" && argc > ( i + 1 ) )
 				port = static_cast<unsigned short >( std::stoi( args[ i + 1 ] ) );
+			else if ( str == "-aicontrolled" && argc > ( i + 1 ) )
+				isAIControlled = StrToBool( args[ i + 1 ]);
 		}
 	}
 
@@ -76,6 +79,7 @@ int main( int argc, char* args[] )
 	std::cout << "Is server        : " << std::boolalpha << isServer << std::endl;
 	std::cout << "IP               : " << ip << std::endl;
 	std::cout << "Port             : " << port << std::endl;
+	std::cout << "AI Controlled    : " << isAIControlled << std::endl;
 	std::cout << "============================\n";
 
 	GameManager gameMan;
@@ -84,6 +88,7 @@ int main( int argc, char* args[] )
 		return 1;
 
 	gameMan.SetFPSLimit( fpsLimit );
+	gameMan.SetAIControlled( isAIControlled );
 	gameMan.InitNetManager( isServer, ip, port );
 	gameMan.Run();
 	return 0;
@@ -121,7 +126,7 @@ std::string Replace( const std::string &str, char replace, char replaceWith )
 	auto func = [ replace, replaceWith ] ( char c )
 	{
 		return ( c != replace ) ?  c : replaceWith;
-	
+
 	};
 	std::transform( retStr.begin(), retStr.end(), retStr.begin(), func);
 	return retStr;
