@@ -282,6 +282,13 @@ void Renderer::LoadColors()
 
 	cfgldr.LoadConfig();
 
+	textColor = cfgldr.GetTextColor();
+	backgroundColor = cfgldr.GetBackgroundColor();
+	SDL_SetRenderDrawColor( renderer, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a );
+
+	localPlayerColor = cfgldr.GetLocalPlayerColor();
+	remotePlayerColor = cfgldr.GetRemotePlayerColor();
+
 	tileColors[0] = cfgldr.GetTileColor( TileType::Regular );
 	tileColors[1] = cfgldr.GetTileColor( TileType::Explosive );
 	tileColors[2] = cfgldr.GetTileColor( TileType::Unbreakable );

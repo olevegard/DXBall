@@ -19,7 +19,44 @@ class ConfigLoader
 		while ( getline( configFile, configLine ) )
 		{
 
-			if ( configLine[0] == '#' || configLine.empty() )
+			// local_player_color
+			if (  configLine.find( "local_player_color" ) != std::string::npos )
+			{
+				std::stringstream ss(configLine);
+				std::string str;
+				ss >> str;
+				ss >> localPlayerColor;
+				std::cout << "\n\tlocal player color : " << localPlayerColor;
+				continue;
+			}
+			else if (  configLine.find( "remote_player_color" ) != std::string::npos )
+			{
+				std::stringstream ss(configLine);
+				std::string str;
+				ss >> str;
+				ss >> remotePlayerColor;
+				std::cout << "\n\tremote player color : " << remotePlayerColor;
+				continue;
+			}
+			else if (  configLine.find( "background_color" ) != std::string::npos )
+			{
+				std::stringstream ss(configLine);
+				std::string str;
+				ss >> str;
+				ss >> backgroundColor;
+				std::cout << "\n\tbackground color : " << backgroundColor;
+				continue;
+			}
+			else if (  configLine.find( "text_color" ) != std::string::npos )
+			{
+				std::stringstream ss(configLine);
+				std::string str;
+				ss >> str;
+				ss >> textColor;
+				std::cout << "\n\ttext color : " << textColor;
+				continue;
+			}
+			else if ( configLine[0] == '#' || configLine.empty() )
 				continue;
 
 			configLine = RemoveCharacterFromString( configLine, '|' );
@@ -42,6 +79,25 @@ class ConfigLoader
 		}
 		return SDL_Color{ 255, 255, 255, 255 };
 	}
+	SDL_Color GetLocalPlayerColor() const
+	{
+		return localPlayerColor;
+	}
+
+	SDL_Color GetRemotePlayerColor() const
+	{
+		return remotePlayerColor;
+	}
+
+	SDL_Color GetBackgroundColor() const
+	{
+		return backgroundColor;
+	}
+
+	SDL_Color GetTextColor() const
+	{
+		return textColor;
+	}
 	private:
 	void PrintConfig()
 	{
@@ -57,5 +113,10 @@ class ConfigLoader
 		return str;
 	}
 	std::vector< TileColor > colorConfig;
+
+	SDL_Color localPlayerColor;
+	SDL_Color remotePlayerColor;
+	SDL_Color backgroundColor;
+	SDL_Color textColor;
 };
 
