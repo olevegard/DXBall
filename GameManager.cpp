@@ -225,7 +225,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	int randMax = 100;
+	int randMax = 0;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -255,6 +255,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
+	SendBonusBoxMessage( bonusBox );
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
@@ -337,6 +338,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::TileHit:
 			RecieveTileHitMessage( message );
 			break;
+		case MessageType::BonusSpawned:
+			RecieveBonusBoxMessage( message );
+			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
 			std::cin.ignore();
@@ -347,7 +351,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 {
 	remoteResolutionScale = windowSize.w / message.GetXSize();
-	PrintRecv( message );
+	//PrintRecv( message );
 
 	if ( !netManager.IsServer() || !isTwoPlayerMode )
 	{
@@ -359,7 +363,7 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
-	PrintRecv( message );
+	//PrintRecv( message );
 	std::shared_ptr< Ball > ball = AddBall( Player::Remote, message.GetObjectID() );
 
 	ball->rect.x = message.GetXPos() * remoteResolutionScale;
@@ -434,6 +438,20 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 	{
 		remotePaddle->rect.x = xPos;
 	}
+}
+void GameManager::RecieveBonusBoxMessage( const TCPMessage &message )
+{
+	//PrintRecv( message );
+	std::shared_ptr< BonusBox > bonusBox = std::make_shared< BonusBox >();
+
+	bonusBox->rect.x = message.GetXPos() * remoteResolutionScale;
+	bonusBox->rect.y = ( message.GetYPos() * remoteResolutionScale ) - bonusBox->rect.h;
+
+	bonusBox->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() * -1.0 ) );
+	//bonusBox->SetRemoteScale( remoteResolutionScale );
+
+	bonusBoxList.push_back( bonusBox );
+	renderer.AddBonusBox( bonusBox );
 }
 void GameManager::SendPaddlePosMessage( )
 {
@@ -536,7 +554,7 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	PrintSend(msg);
+	//PrintSend(msg);
 }
 void GameManager::SendTileHitMessage( unsigned int tileID )
 {
@@ -551,6 +569,29 @@ void GameManager::SendTileHitMessage( unsigned int tileID )
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
+}
+
+void GameManager::SendBonusBoxMessage( const std::shared_ptr< BonusBox > &bonusBox )
+{
+	if ( !isTwoPlayerMode )
+		return;
+
+	TCPMessage msg;
+	std::stringstream ss;
+
+	msg.SetMessageType( MessageType::BonusSpawned );
+	msg.SetObjectID( 0. );
+
+	msg.SetXPos( bonusBox->rect.x );
+	msg.SetYPos( bonusBox->rect.y );
+
+	msg.SetXDir( bonusBox->GetDirection().x );
+	msg.SetYDir( bonusBox->GetDirection().y );
+
+	ss << msg;
+	netManager.SendMessage( ss.str() );
+
+	PrintSend( msg );
 }
 void GameManager::PrintSend( const TCPMessage &msg ) const
 {

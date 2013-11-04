@@ -37,18 +37,20 @@ std::string TCPMessage::GetTypeAsString() const
 {
 	switch ( msgType )
 	{
-		case MessageType::PaddlePosition:
+		case PaddlePosition:
 			return "Paddle Position";
-		case MessageType::BallSpawned:
+		case BallSpawned:
 			return "Ball Spawned";
-		case MessageType::BallData:
+		case BallData:
 			return "Ball Data";
-		case MessageType::BallKilled:
+		case BallKilled:
 			return "Ball Killed";
-		case MessageType::TileHit:
+		case TileHit:
 			return "Tile Hit";
-		case MessageType::GameSettings:
+		case GameSettings:
 			return "Game Settings";
+		case BonusSpawned:
+			return "Bonus Spawned";
 		default:
 			break;
 	}

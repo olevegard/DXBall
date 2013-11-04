@@ -100,6 +100,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		// BallData has both pos and dir
 		case BallSpawned:
 		case BallData:
+		case BonusSpawned:
 			{
 				double xPos = 0.0;
 				double yPos = 0.0;
@@ -165,6 +166,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		// BallData has both pos and dir
 		case BallSpawned:
 		case BallData:
+		case BonusSpawned:
 			os << message.GetXPos();
 			os << " ";
 			os << message.GetYPos();
