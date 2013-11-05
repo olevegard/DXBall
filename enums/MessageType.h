@@ -9,11 +9,12 @@ enum MessageType
 	BallData,    	// ID, position, speed, direction
 	BallKilled,  	// ID of ball
 
-	TileHit,
+	TileHit,		// Player hit a tile, remove tile, reduce tile HP or trigger explosion.
 
 	GameSettings,	// Contains resolution of the remote player. Sent during beggining and when resolution chages.
 
-	BonusSpawned,
+	BonusSpawned,	// A bonus was triggeredby the oponenyyt
+	BonusPickup, 	// A bonus was picked up by the oponent
 
 	GeneralUpade,	// Contains lifes, points and number of active balls. [ Not needed atm ]
 

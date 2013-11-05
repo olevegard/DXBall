@@ -7,7 +7,7 @@
 struct SDL_Texture;
 struct BonusBox : GamePiece
 {
-	BonusBox();
+	BonusBox( int32_t objectID );
 
 	//std::string GetName() const;
 

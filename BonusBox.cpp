@@ -1,8 +1,8 @@
 #include "BonusBox.h"
 
-BonusBox::BonusBox()
-	//:	effectName( "Life" )
+BonusBox::BonusBox( int32_t objectID_ )
 {
+	SetObjectID( objectID_ );
 	rect.x = 100;
 	rect.y = 100;
 	rect.w =  40;

@@ -105,7 +105,8 @@ class GameManager
 		void RecieveBallKillMessage( const TCPMessage &message );
 		void RecieveTileHitMessage( const TCPMessage &message );
 		void RecievePaddlePosMessage( const TCPMessage &message );
-		void RecieveBonusBoxMessage( const TCPMessage &message );
+		void RecieveBonusBoxSpawnedMessage( const TCPMessage &message );
+		void RecieveBonusBoxPickupMessage( const TCPMessage &message );
 
 		// Send messages
 		void SendGameSettingsMessage();
@@ -113,8 +114,9 @@ class GameManager
 		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
 		void SendTileHitMessage( unsigned int tileID );
-		void SendBonusBoxMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendPaddlePosMessage( );
+		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
+		void SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox );
 
 		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
 		std::shared_ptr< Tile > GetTileFromID( int32_t ID );
@@ -168,6 +170,7 @@ class GameManager
 
 		unsigned int tileCount;
 		unsigned int ballCount;
+		unsigned int bonusCount;
 
 		unsigned short fpsLimit;
 		double frameDuration;

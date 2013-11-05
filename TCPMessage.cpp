@@ -13,7 +13,7 @@ std::string TCPMessage::Print() const
 	std::stringstream ss;
 	ss << "Type : " << std::left << std::setw( 16 ) << GetTypeAsString() << "| Object ID : "  << std::left << std::setw( 4 ) << objectID;
 
-	if ( msgType == MessageType::BallKilled || msgType == MessageType::TileHit )
+	if ( msgType == MessageType::BallKilled || msgType == MessageType::TileHit || msgType == MessageType::BonusPickup)
 	{
 		ss << "\n";
 	}
@@ -51,6 +51,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Game Settings";
 		case BonusSpawned:
 			return "Bonus Spawned";
+		case BonusPickup:
+			return "Bonus Pickup";
 		default:
 			break;
 	}
