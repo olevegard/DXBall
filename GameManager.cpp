@@ -875,6 +875,12 @@ void GameManager::Update( double delta )
 		GenerateBoard();
 	}
 
+	if ( localPlayerLives == 0 && remotePlayerLives == 0 )
+	{
+		menuManager.SetGameState( GameState::GameOver );
+		return;
+	}
+
 	UpdateGUI();
 }
 void GameManager::AIMove()
@@ -1199,7 +1205,17 @@ void GameManager::RenderInGame()
 	if ( localPlayerActiveBalls == 0 )
 	{
 		if ( localPlayerLives == 0 )
-			renderer.RenderText( "No more lives!", Player::Local  );
+		{
+			if ( isTwoPlayerMode )
+			{
+				if ( localPlayerPoints < remotePlayerPoints )
+					renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
+				else
+					renderer.RenderText( "No more lives!", Player::Local  );
+			}
+			else
+				renderer.RenderText( "No more lives!", Player::Local  );
+		}
 		else
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
 	}
