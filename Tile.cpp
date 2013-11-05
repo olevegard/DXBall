@@ -9,10 +9,9 @@
 Tile::Tile(TileType type_, unsigned int tileID_ )
 	:	type( type_ )
 	,	hitsLeft( 1 )
-	,	tileID( tileID_ )
 {
 	type = type_;
-	tileID = tileID_;
+	SetObjectID( tileID_ );
 
 	if ( type == TileType::Regular || type == TileType::Explosive  )
 	{

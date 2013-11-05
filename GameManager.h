@@ -116,8 +116,8 @@ class GameManager
 		void SendBonusBoxMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendPaddlePosMessage( );
 
-		std::shared_ptr< Ball > GetBallFromID( unsigned int ID );
-		std::shared_ptr< Tile > GetTileFromID( unsigned int ID );
+		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
+		std::shared_ptr< Tile > GetTileFromID( int32_t ID );
 
 		// Paddles
 		void SetLocalPaddlePosition( int x, int y );

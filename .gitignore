@@ -18,3 +18,4 @@ callgrind*
 *.sh
 notes/*
 *.o
+boards/*

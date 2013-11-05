@@ -12,22 +12,20 @@
 #include "enums/Side.h"
 #include "enums/Corner.h"
 
-Ball::Ball( const SDL_Rect &windowSize, const Player &owner, unsigned int ID   )
+Ball::Ball( const SDL_Rect &windowSize, const Player &owner, int32_t ID   )
 	:	speed( 0.0705f )
 	,	dirX( -0.83205f )
 	,	dirY(-0.5547f )
 	,	paddleHitInPrevFrame( false )
-	,	ballID( ID )
 	,	debugMode( false )
 	,	ballOwner( owner )
 {
+	SetObjectID( ID );
 	rect.w = 20;
 	oldRect.w = 20;
 
 	rect.h = 20;
 	oldRect.h = 20;
-
-	ballID = ID;
 
 	Reset( windowSize );
 }

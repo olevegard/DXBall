@@ -34,21 +34,15 @@ struct Tile : GamePiece
 
 	void Hit();
 
-	unsigned int GetTileID() const
-	{
-		return tileID;
-	}
-
 	private:
 		TileType type;
 		unsigned short hitsLeft;
-		unsigned int tileID;
 };
 inline bool operator==( const Tile &tile1, const Tile &tile2)
 {
-	return tile1.GetTileID() == tile2.GetTileID();
+	return tile1.GetObjectID() == tile2.GetObjectID();
 }
 inline bool operator!=( const Tile &tile1, const Tile &tile2)
 {
-	return tile1.GetTileID() != tile2.GetTileID();
+	return tile1.GetObjectID() != tile2.GetObjectID();
 }

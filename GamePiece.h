@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "math/Rect.h"
 
 #include "enums/TextureType.h"
@@ -34,9 +36,19 @@ struct GamePiece
 		rect.w = 60;
 		rect.h = 20;
 	}
+	int32_t GetObjectID() const
+	{
+		return objectID;
+	}
+
+	void SetObjectID( int32_t objectID_ )
+	{
+		objectID = objectID_;
+	}
 	private:
 	GamePiece( const GamePiece &gamePiece );
 	GamePiece& operator=( const GamePiece &gamePiece );
+	int32_t objectID;
 	bool isAlive;
 	double scale;
 };

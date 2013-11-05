@@ -447,6 +447,8 @@ void GameManager::RecieveBonusBoxMessage( const TCPMessage &message )
 	bonusBox->rect.x = message.GetXPos() * remoteResolutionScale;
 	bonusBox->rect.y = ( message.GetYPos() * remoteResolutionScale ) - bonusBox->rect.h;
 
+	bonusBox->SetOwner( Player::Remote );
+
 	bonusBox->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() * -1.0 ) );
 	//bonusBox->SetRemoteScale( remoteResolutionScale );
 
@@ -503,7 +505,7 @@ void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::BallSpawned );
-	msg.SetObjectID( ball->GetBallID() );
+	msg.SetObjectID( ball->GetObjectID() );
 
 	msg.SetXPos( r.x );
 	msg.SetYPos( windowSize.h - r.y );
@@ -528,7 +530,7 @@ void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 
 	msg.SetMessageType( MessageType::BallData );
 
-	msg.SetObjectID(  ball->GetBallID() );
+	msg.SetObjectID(  ball->GetObjectID() );
 	msg.SetXPos( r.x );
 	msg.SetYPos(  windowSize.h - r.y );
 
@@ -549,7 +551,7 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::BallKilled );
-	msg.SetObjectID(  ball->GetBallID() );
+	msg.SetObjectID(  ball->GetObjectID() );
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
@@ -617,11 +619,11 @@ void GameManager::DeleteDeadBalls()
 	// Remove item returned by remove_if
 	ballList.erase( newEnd, ballList.end( ) );
 }
-std::shared_ptr< Ball > GameManager::GetBallFromID( unsigned int ID )
+std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
 {
 	for ( auto p : ballList )
 	{
-		if ( ID == p->GetBallID() )
+		if ( ID == p->GetObjectID() )
 		{
 			return p;
 		}
@@ -629,11 +631,11 @@ std::shared_ptr< Ball > GameManager::GetBallFromID( unsigned int ID )
 
 	return nullptr;
 }
-std::shared_ptr< Tile > GameManager::GetTileFromID( unsigned int ID )
+std::shared_ptr< Tile > GameManager::GetTileFromID( int32_t ID )
 {
 	for ( auto p : tileList )
 	{
-		if ( ID == p->GetTileID() )
+		if ( ID == p->GetObjectID() )
 			return p;
 	}
 
@@ -877,14 +879,14 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 	if ( !tile )
 		return;
 
-	if ( !ball->TileCheck( tile->rect, tile->GetTileID() ) )
+	if ( !ball->TileCheck( tile->rect, tile->GetObjectID() ) )
 		return;
 
 	if ( ball->GetOwner() == Player::Local ) SendBallDataMessage( ball );
 
 	tile->Hit();
 
-	SendTileHitMessage( tile->GetTileID() );
+	SendTileHitMessage( tile->GetObjectID() );
 
 	UpdateTileHit( ball, tile );
 }

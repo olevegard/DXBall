@@ -11,7 +11,7 @@ enum class Corner : int;
 enum class Player : int;
 struct Ball : GamePiece
 {
-	Ball( const SDL_Rect &windowSize, const Player &owner, unsigned int ID );
+	Ball( const SDL_Rect &windowSize, const Player &owner, int32_t ID );
 
 	virtual ~Ball();
 
@@ -37,14 +37,6 @@ struct Ball : GamePiece
 	{
 		return ballOwner;
 	}
-	unsigned int GetBallID() const
-	{
-		return ballID;
-	}
-	void SetBallID( unsigned int ID )
-	{
-		ballID = ID;
-	}
 	void SetRemoteScale( double scale_ )
 	{
 		speed *= scale_;
@@ -62,11 +54,9 @@ struct Ball : GamePiece
 
 	bool LineLineIntersectionTest( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2  ) const;
 
-
 	void HandlePaddleHit( const Rect &paddleRect );
 	double CalculatePaddleHitPosition( const Rect &paddleRect ) const;
 	void  CalculateNewBallDirection( double  hitPosition );
-
 
 	// Find intersectin side
 	// ==================================
@@ -86,28 +76,25 @@ struct Ball : GamePiece
 	unsigned int lastTileHit;
 	bool paddleHitInPrevFrame;
 
-	unsigned int ballID;
-
 	bool debugMode;
 
 	Player ballOwner;
 
 	Ball( const Ball &other) = delete;
 	Ball& operator=( const Ball &other) = delete;
-
 };
 
 inline bool operator==( const Ball &ball1, const Ball &ball2)
 {
-	return ball1.GetBallID() == ball2.GetBallID();
+	return ball1.GetObjectID() == ball2.GetObjectID();
 }
-inline bool operator==( const Ball &ball, unsigned int ID)
+inline bool operator==( const Ball &ball, int32_t ID)
 {
-	return ball.GetBallID() == ID;
+	return ball.GetObjectID() == ID;
 }
-inline bool operator==( unsigned int ID, const Ball &ball )
+inline bool operator==( int32_t ID, const Ball &ball )
 {
-	return ball.GetBallID() == ID;
+	return ball.GetObjectID() == ID;
 }
 inline bool operator!=( const Ball &ball1, const Ball &ball2)
 {
