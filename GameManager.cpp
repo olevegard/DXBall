@@ -242,19 +242,15 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 
 	Vector2f direction = triggerBall->GetDirection();
 
+	// Force correct y dir
 	if ( ballOwner == Player::Local )
-		// Force y dir to be positive ( down )
 		direction.y = ( direction.y > 0.0 ) ? direction.y : direction.y * -1.0;
 	else
 		direction.y = ( direction.y < 0.0 ) ? direction.y : direction.y * -1.0;
 
 	bonusBox->SetDirection( direction );
 	bonusBox->SetOwner( ballOwner  );
-
-	if ( Math::GenRandomNumber( 1 ) != 1  )
-		bonusBox->SetBonusType( BonusType::ExtraLife  );
-	else
-		bonusBox->SetBonusType( BonusType::Death  );
+	bonusBox->SetBonusType( GetRandomBonusType()  );
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -280,6 +276,7 @@ void GameManager::UpdateBalls( double delta )
 			SendBallDataMessage( p );
 
 		if ( p->PaddleCheck( localPaddle->rect ) )
+
 			SendBallDataMessage( p );
 
 		CheckBallTileIntersection( p );
@@ -467,6 +464,8 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 	if ( bb )
 		ApplyBonus( bb );
 }
+
+
 void GameManager::SendPaddlePosMessage( )
 {
 	if ( !isTwoPlayerMode || !netManager.IsConnected()  || !isResolutionScaleRecieved )
@@ -1137,7 +1136,6 @@ void GameManager::RemoveDeadBonusBoxes()
 	// Remove item returned by remove_if
 	bonusBoxList.erase( newEnd, bonusBoxList.end( ) );
 }
-
 void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 {
 	switch  ( ptr->GetBonusType() )
@@ -1156,6 +1154,14 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 	}
 
 	ptr->Kill();
+}
+BonusType GameManager::GetRandomBonusType() const
+{
+	int rand = Math::GenRandomNumber( 1000 );
+	if ( rand < 500 )
+		return BonusType::ExtraLife;
+	else
+		return BonusType::Death;
 }
 void GameManager::UpdateGUI( )
 {

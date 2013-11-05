@@ -92,6 +92,7 @@ class GameManager
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
 		void ApplyBonus( std::shared_ptr< BonusBox > &ptr );
+		BonusType GetRandomBonusType() const;
 
 		// Network
 		void PrintSend( const TCPMessage &msg ) const;
