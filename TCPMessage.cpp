@@ -25,9 +25,14 @@ std::string TCPMessage::Print() const
 	{
 		ss << " : "  << xSize << " , " << ySize << " board scale : " << boardScale <<  "\n";
 	}
+	else if ( msgType == MessageType::BonusSpawned )
+	{
+		ss << " : " << GetBonusTypeAsString() << " , "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+	}
 	else
 	{
 		ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+
 	}
 
 	return ss.str();
@@ -70,6 +75,24 @@ MessageType TCPMessage::GetType() const
 unsigned int TCPMessage::GetObjectID() const
 {
 	return objectID;
+}
+std::string TCPMessage::GetBonusTypeAsString() const
+{
+	switch ( bonusType )
+	{
+		case BonusType::ExtraLife:
+			return "Extra Life";
+		case BonusType::Death:
+			return "Death";
+		default:
+			break;
+	}
+
+	return "Unknown";
+}
+int32_t TCPMessage::GetBonusTypeAsInt() const
+{
+	return static_cast< int32_t > ( bonusType );
 }
 BonusType TCPMessage::GetBonusType() const
 {
@@ -120,6 +143,10 @@ void TCPMessage::SetObjectID( unsigned int objectID_ )
 void TCPMessage::SetBonusType( BonusType bonusType_ )
 {
 	bonusType = bonusType_;
+}
+void TCPMessage::SetBonusType( int32_t bonusType_ )
+{
+	bonusType = static_cast< BonusType > ( bonusType_ );
 }
 void TCPMessage::SetXPos( double xPos_ )
 {

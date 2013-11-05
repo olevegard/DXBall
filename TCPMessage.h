@@ -19,7 +19,9 @@ class TCPMessage
 		MessageType GetType() const;
 		unsigned int GetObjectID() const;
 
+		std::string GetBonusTypeAsString() const;
 		BonusType GetBonusType() const;
+		int32_t GetBonusTypeAsInt() const;
 
 		double GetXPos() const;
 		double GetYPos() const;
@@ -34,6 +36,7 @@ class TCPMessage
 		void SetMessageType( int  msgType_ );
 		void SetObjectID( unsigned int objectID_ );
 
+		void SetBonusType( int32_t bonustType_ );
 		void SetBonusType( BonusType bonustType_ );
 
 		void SetXPos( double xPos_ );
@@ -115,7 +118,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				int bonusType;
 				is >> bonusType;
 
-				msg.SetBonusType( static_cast< BonusType > ( bonusType ) );
+				msg.SetBonusType( bonusType );
 
 				double xPos = 0.0;
 				double yPos = 0.0;
@@ -183,7 +186,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case BallSpawned:
 		case BallData:
 		case BonusSpawned:
-			os << static_cast< int32_t > ( message.GetBonusType() );
+			os << message.GetBonusTypeAsInt();
 			os << " ";
 			os << message.GetXPos();
 			os << " ";
