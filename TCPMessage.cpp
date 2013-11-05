@@ -71,6 +71,10 @@ unsigned int TCPMessage::GetObjectID() const
 {
 	return objectID;
 }
+BonusType TCPMessage::GetBonusType() const
+{
+	return bonusType;
+}
 double TCPMessage::GetXPos() const
 {
 	return xPos;
@@ -111,6 +115,11 @@ void TCPMessage::SetMessageType( int  msgType_ )
 void TCPMessage::SetObjectID( unsigned int objectID_ )
 {
 	objectID = objectID_;
+}
+
+void TCPMessage::SetBonusType( BonusType bonusType_ )
+{
+	bonusType = bonusType_;
 }
 void TCPMessage::SetXPos( double xPos_ )
 {

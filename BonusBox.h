@@ -2,7 +2,9 @@
 #include "GamePiece.h"
 
 #include "math/Vector2f.h"
+
 #include "enums/Player.h"
+#include "enums/BonusType.h"
 
 struct SDL_Texture;
 struct BonusBox : GamePiece
@@ -21,8 +23,18 @@ struct BonusBox : GamePiece
 	Vector2f GetDirection( ) const;
 	void FlipXDir();
 
+	BonusType GetBonusType() const
+	{
+		return bonusType;
+	}
+	void SetBonusType( BonusType bonusType_ )
+	{
+		bonusType = bonusType_;
+	}
+
 	private:
 		Player owner;
+		BonusType bonusType;
 		Vector2f direction;
 		SDL_Texture* texture;
 };

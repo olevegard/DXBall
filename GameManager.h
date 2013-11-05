@@ -90,6 +90,7 @@ class GameManager
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
+		void ApplyBonus( std::shared_ptr< BonusBox > &ptr );
 
 		// Network
 		void PrintSend( const TCPMessage &msg ) const;
@@ -120,6 +121,7 @@ class GameManager
 
 		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
 		std::shared_ptr< Tile > GetTileFromID( int32_t ID );
+		std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID );
 
 		// Paddles
 		void SetLocalPaddlePosition( int x, int y );

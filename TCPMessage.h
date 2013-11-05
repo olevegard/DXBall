@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "enums/MessageType.h"
+#include "enums/BonusType.h"
 
 class TCPMessage
 {
@@ -17,6 +18,9 @@ class TCPMessage
 		int GetTypeAsInt() const;
 		MessageType GetType() const;
 		unsigned int GetObjectID() const;
+
+		BonusType GetBonusType() const;
+
 		double GetXPos() const;
 		double GetYPos() const;
 		double GetXDir() const;
@@ -29,6 +33,9 @@ class TCPMessage
 		void SetMessageType( MessageType msgType_ );
 		void SetMessageType( int  msgType_ );
 		void SetObjectID( unsigned int objectID_ );
+
+		void SetBonusType( BonusType bonustType_ );
+
 		void SetXPos( double xPos_ );
 		void SetYPos( double yPos_ );
 		void SetXDir( double xDir_ );
@@ -39,6 +46,8 @@ class TCPMessage
 	private:
 		MessageType msgType;
 		unsigned int objectID;
+
+		BonusType bonusType;
 
 		double xPos;
 		double yPos;
@@ -103,6 +112,11 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case BallData:
 		case BonusSpawned:
 			{
+				int bonusType;
+				is >> bonusType;
+
+				msg.SetBonusType( static_cast< BonusType > ( bonusType ) );
+
 				double xPos = 0.0;
 				double yPos = 0.0;
 
@@ -169,6 +183,8 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case BallSpawned:
 		case BallData:
 		case BonusSpawned:
+			os << static_cast< int32_t > ( message.GetBonusType() );
+			os << " ";
 			os << message.GetXPos();
 			os << " ";
 			os << message.GetYPos();

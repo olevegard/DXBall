@@ -254,6 +254,11 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 	bonusBox->SetDirection( direction );
 	bonusBox->SetOwner( ballOwner  );
 
+	if ( Math::GenRandomNumber( 2 ) == 1  )
+		bonusBox->SetBonusType( BonusType::ExtraLife  );
+	else
+		bonusBox->SetBonusType( BonusType::Death  );
+
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
 	SendBonusBoxSpawnedMessage( bonusBox );
@@ -445,25 +450,26 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 {
 	//PrintRecv( message );
-	std::shared_ptr< BonusBox > bonusBox = std::make_shared< BonusBox >( message.GetBoardScale()  );
+	std::shared_ptr< BonusBox > bonusBox = std::make_shared< BonusBox >( message.GetObjectID()  );
 
 	bonusBox->rect.x = message.GetXPos() * remoteResolutionScale;
 	bonusBox->rect.y = ( message.GetYPos() * remoteResolutionScale ) - bonusBox->rect.h;
 
 	bonusBox->SetOwner( Player::Remote );
-
 	bonusBox->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() * -1.0 ) );
-	//bonusBox->SetRemoteScale( remoteResolutionScale );
+	bonusBox->SetBonusType( message.GetBonusType() );
 
-	//bonusBoxList.push_back( bonusBox );
-	//renderer.AddBonusBox( bonusBox );
+	bonusBoxList.push_back( bonusBox );
+	renderer.AddBonusBox( bonusBox );
 }
 void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
 	PrintRecv( message );
-	remotePlayerLives++;
-}
+	auto bb = GetBonusBoxFromID( message.GetObjectID() );
 
+	if ( bb )
+		ApplyBonus( bb );
+}
 void GameManager::SendPaddlePosMessage( )
 {
 	if ( !isTwoPlayerMode || !netManager.IsConnected()  || !isResolutionScaleRecieved )
@@ -592,6 +598,7 @@ void GameManager::SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > 
 
 	msg.SetMessageType( MessageType::BonusSpawned );
 	msg.SetObjectID( bonusBox->GetObjectID() );
+	msg.SetBonusType( bonusBox->GetBonusType() );
 
 	msg.SetXPos( bonusBox->rect.x );
 	msg.SetYPos( bonusBox->rect.y );
@@ -666,6 +673,20 @@ std::shared_ptr< Tile > GameManager::GetTileFromID( int32_t ID )
 	}
 
 	return nullptr;
+}
+
+std::shared_ptr< BonusBox > GameManager::GetBonusBoxFromID( int32_t ID )
+{
+	for ( auto p : bonusBoxList )
+	{
+		if ( ID == p->GetObjectID() )
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
+
 }
 void GameManager::Run()
 {
@@ -1052,8 +1073,8 @@ void GameManager::UpdateBonusBoxes( double delta )
 			if ( p->rect.CheckTileIntersection( localPaddle->rect ) )
 			{
 				SendBonusBoxPickupMessage( p );
-				++localPlayerLives;
-				p->Kill();
+				ApplyBonus( p );
+				//p->Kill();
 			}
 		}
 		// Remote BonusBoxe Pickup are handled by messages
@@ -1095,6 +1116,28 @@ void GameManager::RemoveDeadBonusBoxes()
 
 	// Remove item returned by remove_if
 	bonusBoxList.erase( newEnd, bonusBoxList.end( ) );
+}
+
+void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
+{
+	switch  ( ptr->GetBonusType() )
+	{
+		case BonusType::ExtraLife:
+			if ( ptr->GetOwner() == Player::Local )
+				++localPlayerLives;
+			else
+				++remotePlayerLives;
+			break;
+		case BonusType::Death:
+			if ( ptr->GetOwner() == Player::Local )
+				--localPlayerLives;
+			else
+				--remotePlayerLives;
+			break;
+		default:
+			break;
+	}
+	ptr->Kill();
 }
 void GameManager::UpdateGUI( )
 {
