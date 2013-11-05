@@ -392,7 +392,12 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 {
-	ballList.erase( std::find( ballList.begin(), ballList.end(), ball ) );
+	auto p = std::find( ballList.begin(), ballList.end(), ball );
+
+	if ( p == ballList.end() )
+		std::cout << "ball not found!" << std::endl;
+	else
+		ballList.erase( p  );
 }
 
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )

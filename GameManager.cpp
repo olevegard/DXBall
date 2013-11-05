@@ -180,18 +180,15 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	{
 		--localPlayerActiveBalls;
 
-		if ( localPlayerActiveBalls == 0 )
-			--localPlayerLives;
-
 		SendBallKilledMessage( ball );
-	} else if ( ball->GetOwner() == Player::Remote )
+	} else
 	{
 		--remotePlayerActiveBalls;
 
-		if ( remotePlayerActiveBalls == 0 )
-			--remotePlayerLives;
 		renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
 	}
+	if ( !ball )
+		std::cout << "Ball is null!" << std::endl;
 
 	renderer.RemoveBall( ball );
 	UpdateGUI();
@@ -254,7 +251,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 	bonusBox->SetDirection( direction );
 	bonusBox->SetOwner( ballOwner  );
 
-	if ( Math::GenRandomNumber( 2 ) == 1  )
+	if ( Math::GenRandomNumber( 1 ) != 1  )
 		bonusBox->SetBonusType( BonusType::ExtraLife  );
 	else
 		bonusBox->SetBonusType( BonusType::Death  );
@@ -638,10 +635,21 @@ void GameManager::PrintRecv( const TCPMessage &msg ) const
 }
 void GameManager::DeleteDeadBalls()
 {
-	auto isDeadFunc = [=]( std::shared_ptr< Ball > ball )
+	bool localPlayerBallDeleted = false;
+	bool remotePlayerBallDeleted = false;
+	auto isDeadFunc = [&]( std::shared_ptr< Ball > ball )
 	{
+		if ( !ball )
+			return false;
+			//std::cout << "Ball is dead allready" << std::endl;
+
 		if ( ball->IsAlive() )
 			return false;
+
+		if ( ball->GetOwner() == Player::Local )
+			localPlayerBallDeleted = true;
+		else
+			remotePlayerBallDeleted = true;
 
 		RemoveBall( ball );
 		return true;
@@ -651,6 +659,18 @@ void GameManager::DeleteDeadBalls()
 
 	// Remove item returned by remove_if
 	ballList.erase( newEnd, ballList.end( ) );
+
+	if ( localPlayerBallDeleted )
+	{
+		if ( localPlayerActiveBalls == 0 )
+			ReducePlayerLifes( Player::Local );
+	}
+
+	if ( remotePlayerBallDeleted )
+	{
+		if ( remotePlayerActiveBalls == 0 )
+			ReducePlayerLifes( Player::Remote );
+	}
 }
 std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
 {
@@ -1129,14 +1149,12 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 				++remotePlayerLives;
 			break;
 		case BonusType::Death:
-			if ( ptr->GetOwner() == Player::Local )
-				--localPlayerLives;
-			else
-				--remotePlayerLives;
+			ReducePlayerLifes( ptr->GetOwner() );
 			break;
 		default:
 			break;
 	}
+
 	ptr->Kill();
 }
 void GameManager::UpdateGUI( )
@@ -1175,7 +1193,7 @@ void GameManager::RenderInGame()
 	if ( localPlayerActiveBalls == 0 )
 	{
 		if ( localPlayerLives == 0 )
-			renderer.RenderText( "No more levels!", Player::Local  );
+			renderer.RenderText( "No more lives!", Player::Local  );
 		else
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
 	}
@@ -1264,6 +1282,52 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 		if ( isDestroyed )
 			remotePlayerPoints += points[ tileType ];
 	}
+}
+void GameManager::ReducePlayerLifes( Player player )
+{
+	if ( player == Player::Local )
+	{
+		if ( localPlayerLives == 0 )
+			return;
+
+		--localPlayerLives;
+
+		if ( localPlayerLives == 0 )
+		{
+			for ( auto p : ballList )
+			{
+				if ( p->GetOwner() == Player::Local )
+					p->Kill();
+			}
+			for ( auto p : bonusBoxList )
+			{
+				if ( p->GetOwner() == Player::Local )
+					p->Kill();
+			}
+		}
+	}
+	else
+	{
+		if ( remotePlayerLives == 0 )
+			return;
+
+		--remotePlayerLives;
+
+		if ( remotePlayerLives == 0 )
+		{
+			for ( auto p : ballList )
+			{
+				if ( p->GetOwner() == Player::Remote )
+					p->Kill();
+			}
+			for ( auto p : bonusBoxList )
+			{
+				if ( p->GetOwner() == Player::Remote )
+					p->Kill();
+			}
+		}
+	}
+
 }
 void GameManager::CreateMenu()
 {

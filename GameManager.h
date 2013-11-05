@@ -83,6 +83,7 @@ class GameManager
 		bool IsLevelDone();
 
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
+		void ReducePlayerLifes( Player player );
 
 		void Update( double delta );
 
