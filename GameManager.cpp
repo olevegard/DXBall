@@ -323,6 +323,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::GameSettings:
 			RecieveGameSettingsMessage( message );
 			break;
+		case MessageType::GameStateChanged:
+			RecieveGameStateChangedMessage( message );
+			break;
 		case MessageType::PaddlePosition:
 			RecievePaddlePosMessage( message );
 			break;
@@ -363,6 +366,13 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 	}
 
 	isResolutionScaleRecieved = true;
+
+}
+void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
+{
+
+	menuManager.SetGameState( message.GetGameState() );
+	PrintRecv( message );
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
@@ -623,7 +633,23 @@ void GameManager::SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &
 
 	PrintSend( msg );
 }
+void GameManager::SendGameStateChangedMessage()
+{
+	if ( !isTwoPlayerMode )
+		return;
 
+	TCPMessage msg;
+	std::stringstream ss;
+
+	msg.SetMessageType( MessageType::GameStateChanged );
+	msg.SetObjectID( 0 );
+	msg.SetGameState( menuManager.GetGameState() );
+
+	ss << msg;
+	netManager.SendMessage( ss.str() );
+
+	PrintSend( msg );
+}
 void GameManager::PrintSend( const TCPMessage &msg ) const
 {
 	std::cout << "Sending : " << msg.Print();
@@ -731,6 +757,7 @@ void GameManager::HandleStatusChange( )
 {
 	if ( menuManager.HasGameStateChanged() )
 	{
+		SendGameStateChangedMessage();
 		renderer.SetGameState( menuManager.GetGameState() );
 
 		if ( menuManager.GetGameState() == GameState::Quit )
@@ -851,19 +878,19 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
-	if ( menuManager.GetGameState() != GameState::InGame )
-	{
-		//renderer.Render( );
-		UpdateGUI();
-		return;
-	}
-
 	if ( isTwoPlayerMode )
 	{
 		if ( isAIControlled )
 			AIMove();
 
 		UpdateNetwork();
+	}
+
+	if ( menuManager.GetGameState() != GameState::InGame )
+	{
+		//renderer.Render( );
+		UpdateGUI();
+		return;
 	}
 
 	UpdateBalls( delta );

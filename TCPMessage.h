@@ -6,6 +6,7 @@
 
 #include "enums/MessageType.h"
 #include "enums/BonusType.h"
+#include "enums/GameState.h"
 
 class TCPMessage
 {
@@ -23,6 +24,10 @@ class TCPMessage
 		BonusType GetBonusType() const;
 		int32_t GetBonusTypeAsInt() const;
 
+		std::string GetGameStateAsString() const;
+		GameState GetGameState() const;
+		int32_t GetGameStateAsInt() const;
+
 		double GetXPos() const;
 		double GetYPos() const;
 		double GetXDir() const;
@@ -39,6 +44,9 @@ class TCPMessage
 		void SetBonusType( int32_t bonustType_ );
 		void SetBonusType( BonusType bonustType_ );
 
+		void SetGameState( int32_t bonustType_ );
+		void SetGameState( GameState bonustType_ );
+
 		void SetXPos( double xPos_ );
 		void SetYPos( double yPos_ );
 		void SetXDir( double xDir_ );
@@ -51,6 +59,8 @@ class TCPMessage
 		unsigned int objectID;
 
 		BonusType bonusType;
+
+		GameState newGameState;
 
 		double xPos;
 		double yPos;
@@ -140,6 +150,13 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				return is;
 			}
+		case GameStateChanged:
+			{
+				int gameState = 0;
+				is >> gameState;
+				msg.SetGameState( gameState );
+				return is;
+			}
 		default:
 			{
 				std::cout << "Wrong message type : " << type << std::endl;
@@ -198,6 +215,9 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			os << message.GetYDir();
 			os << " ";
 
+			break;
+		case GameStateChanged:
+			os << message.GetGameStateAsInt() << " ";
 			break;
 		default:
 			std::cout << "Wrong message type : " << type << std::endl;

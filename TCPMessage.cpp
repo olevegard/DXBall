@@ -13,26 +13,28 @@ std::string TCPMessage::Print() const
 	std::stringstream ss;
 	ss << "Type : " << std::left << std::setw( 16 ) << GetTypeAsString() << "| Object ID : "  << std::left << std::setw( 4 ) << objectID;
 
-	if ( msgType == MessageType::BallKilled || msgType == MessageType::TileHit || msgType == MessageType::BonusPickup)
+	switch ( msgType )
 	{
-		ss << "\n";
-	}
-	else if ( msgType == MessageType::PaddlePosition )
-	{
-		ss << " : "  << xPos << "\n";
-	}
-	else if ( msgType == MessageType::GameSettings )
-	{
-		ss << " : "  << xSize << " , " << ySize << " board scale : " << boardScale <<  "\n";
-	}
-	else if ( msgType == MessageType::BonusSpawned )
-	{
-		ss << " : " << GetBonusTypeAsString() << " , "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
-	}
-	else
-	{
-		ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
-
+		case BallKilled:
+		case TileHit:
+		case BonusPickup:
+			ss << "\n";
+			break;
+		case PaddlePosition:
+			ss << " : "  << xPos << "\n";
+			break;
+		case GameSettings:
+			ss << " : "  << xSize << " , " << ySize << " board scale : " << boardScale <<  "\n";
+			break;
+		case BonusSpawned:
+			ss << " : " << GetBonusTypeAsString() << " , "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+			break;
+		case GameStateChanged:
+			ss << " : " << GetGameStateAsString() << "\n";
+			break;
+		default:
+			ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+			break;
 	}
 
 	return ss.str();
@@ -54,6 +56,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Tile Hit";
 		case GameSettings:
 			return "Game Settings";
+		case GameStateChanged:
+			return "Game State Changed";
 		case BonusSpawned:
 			return "Bonus Spawned";
 		case BonusPickup:
@@ -97,6 +101,36 @@ int32_t TCPMessage::GetBonusTypeAsInt() const
 BonusType TCPMessage::GetBonusType() const
 {
 	return bonusType;
+}
+std::string TCPMessage::GetGameStateAsString() const
+{
+	switch ( newGameState )
+	{
+		case GameState::GameOver:
+			return "Game Oever";
+		case GameState::InGame:
+			return "In Game";
+		case GameState::InGameMenu:
+			return "In Game Menu";
+		case GameState::Lobby:
+			return "Lobby";
+		case GameState::MainMenu:
+			return "Main Menu";
+		case GameState::Options:
+			return "Options";
+		case GameState::Paused:
+			return "Paused";
+		case GameState::Quit:
+			return "Quit";
+	}
+}
+GameState TCPMessage::GetGameState() const
+{
+	return newGameState;
+}
+int32_t TCPMessage::GetGameStateAsInt() const
+{
+	return static_cast< int32_t > ( newGameState );
 }
 double TCPMessage::GetXPos() const
 {
@@ -147,6 +181,14 @@ void TCPMessage::SetBonusType( BonusType bonusType_ )
 void TCPMessage::SetBonusType( int32_t bonusType_ )
 {
 	bonusType = static_cast< BonusType > ( bonusType_ );
+}
+void TCPMessage::SetGameState( int32_t gameState_ )
+{
+	newGameState = static_cast< GameState > ( gameState_ );
+}
+void TCPMessage::SetGameState( GameState gameState_ )
+{
+	newGameState = gameState_;
 }
 void TCPMessage::SetXPos( double xPos_ )
 {
