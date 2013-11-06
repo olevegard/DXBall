@@ -36,7 +36,7 @@ Ball::~Ball()
 
 void Ball::Reset( const SDL_Rect &windowSize )
 {
-	speed = 0.2f * Math::GenRandomNumber( 1 );
+	speed = 0.3f * Math::GenRandomNumber( 1 );
 
 	// X pos and dirX is the same for both local and remote player
 	dirX = Math::GenRandomNumber( -1.0, 1.0 );

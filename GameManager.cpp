@@ -2,12 +2,12 @@
 
 #include "Ball.h"
 #include "Tile.h"
+#include "Board.h"
 #include "Paddle.h"
 #include "BoardLoader.h"
 
 #include "math/Math.h"
 #include "math/RectHelpers.h"
-#include "Board.h"
 
 #include "TCPMessage.h"
 
@@ -223,7 +223,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	int randMax = 0;
+	int randMax = 1;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -1115,8 +1115,8 @@ void GameManager::MoveBonusBoxes ( double delta )
 	{
 		Vector2f direction = curr->GetDirection();
 
-		curr->rect.x += direction.x * delta * 0.7;
-		curr->rect.y += direction.y * delta * 0.7;
+		curr->rect.x += direction.x * delta * 0.3;
+		curr->rect.y += direction.y * delta * 0.3;
 
 		if ( curr->rect.x < 0.0 || ( curr->rect.x + curr->rect.w ) > windowSize.w )
 			curr->FlipXDir();
