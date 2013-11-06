@@ -56,6 +56,15 @@ class ConfigLoader
 				std::cout << "\n\ttext color : " << textColor;
 				continue;
 			}
+			else if (  configLine.find( "grey_area " ) != std::string::npos )
+			{
+				std::stringstream ss(configLine);
+				std::string str;
+				ss >> str;
+				ss >> greayAreaColor;;
+				std::cout << "\n\tgrey area color : " << greayAreaColor;
+				continue;
+			}
 			else if ( configLine[0] == '#' || configLine.empty() )
 				continue;
 
@@ -98,6 +107,11 @@ class ConfigLoader
 	{
 		return textColor;
 	}
+
+	SDL_Color GetGreyArea() const
+	{
+		return greayAreaColor;
+	}
 	private:
 	void PrintConfig()
 	{
@@ -118,5 +132,6 @@ class ConfigLoader
 	SDL_Color remotePlayerColor;
 	SDL_Color backgroundColor;
 	SDL_Color textColor;
+	SDL_Color greayAreaColor;
 };
 

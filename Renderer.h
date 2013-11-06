@@ -207,6 +207,7 @@ private:
 	TTF_Font* hugeFont;
 
 	SDL_Color textColor;
+	SDL_Color greyAreaColor;
 
 	// main info text...
 	SDL_Texture* localPlayerTextTexture;

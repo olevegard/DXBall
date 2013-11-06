@@ -64,6 +64,7 @@
 	,	bigFont()
 
 	,	textColor{ 0, 140, 140, 255 }
+	,	greyAreaColor{ 0, 0, 128, 255}
 
 	,	localPlayerTextTexture( )
 	,	localPlayerTextRect( )
@@ -288,6 +289,7 @@ void Renderer::LoadColors()
 
 	localPlayerColor = cfgldr.GetLocalPlayerColor();
 	remotePlayerColor = cfgldr.GetRemotePlayerColor();
+	greyAreaColor = cfgldr.GetGreyArea();
 
 	tileColors[0] = cfgldr.GetTileColor( TileType::Regular );
 	tileColors[1] = cfgldr.GetTileColor( TileType::Explosive );
@@ -1001,7 +1003,7 @@ void Renderer::InitGreyAreaRect( )
 	greyAreaRect.x = 0;
 	greyAreaRect.y = ( background.h - greyAreaRect.h ) / 2;
 
-	greyAreaTexture = InitSurface( background.w, background.h, 120, 120, 120 );
+	greyAreaTexture = InitSurface( background.w, background.h, greyAreaColor );
 }
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
