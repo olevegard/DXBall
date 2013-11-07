@@ -94,7 +94,10 @@ void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short 
 	if ( !isTwoPlayerMode )
 		return;
 
-	netManager.Init( isServer, ip, port );
+	//netManager.Init( isServer, ip, port );
+	std::cout << "IP : " << ip << " | Port : " << port << std::endl;
+	netManager.Init( isServer );
+	netManager.Connect( ip, port );
 }
 void GameManager::Restart()
 {
@@ -883,7 +886,8 @@ void GameManager::Update( double delta )
 		if ( isAIControlled )
 			AIMove();
 
-		UpdateNetwork();
+		if ( netManager.IsConnected() )
+			UpdateNetwork();
 	}
 
 	if ( menuManager.GetGameState() != GameState::InGame )

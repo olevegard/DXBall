@@ -4,15 +4,20 @@
 
 #include "TCPMessage.h"
 
-void NetManager::Init( bool server, std::string ip, unsigned short port)
+void NetManager::Init( bool server)
 {
 	isServer = server;
+
 	if ( SDLNet_Init() < 0 )
 	{
 		std::cout << "Failed to init SDLNet : " << SDLNet_GetError() << std::endl;
 		return;
 	}
 
+	mainServer.Init( "127.0.0.1", 3113, false );
+}
+void NetManager::Connect( std::string ip, unsigned short port )
+{
 	if ( isServer )
 	{
 		gameServer.Init( ip, port, true );
@@ -52,7 +57,4 @@ bool NetManager::IsConnected() const
 		return gameServer.IsConnected();
 	else
 		return gameClient.IsConnected();
-
 }
-
-

@@ -6,7 +6,8 @@
 class NetManager
 {
 	public:
-		void Init( bool server, std::string ip = "127.0.0.1", unsigned short port = 2002 );
+		void Init( bool server );
+		void Connect( std::string IP, unsigned short port );
 		void Close();
 
 		std::string ReadMessage( );
@@ -16,6 +17,7 @@ class NetManager
 		bool IsConnected() const;
 	private:
 		bool isServer;
+		TCPConnection mainServer;
 		TCPConnection gameServer;
 		TCPConnection gameClient;
 };
