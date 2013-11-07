@@ -114,6 +114,9 @@
 	,	pauseResumeButton( "Resume" )
 	,	pauseMainMenuButton( "Main Menu" )
 	,	pauseQuitButton( "Quit" )
+
+	,	lowestItem( 0 )
+	,	lobbyHeaderRect({ 200, 400, 0, 0 } )
 {
 }
 
@@ -273,6 +276,29 @@ bool Renderer::LoadImages()
 
 	for ( size_t i = 0; i < hardTileTextures.size() ; ++i )
 		SetTileColorSurface( i, hardTileColors[ i ], hardTileTextures );
+
+
+	lobbyHeaderTexture = RenderTextTexture_Blended( mediumFont, "Available games", textColor, lobbyHeaderRect );
+	lobbyHeaderRect.x = ( greyAreaRect.w - lobbyHeaderRect.w) / 2 ;
+	lobbyHeaderRect.y = greyAreaRect.y + 10;
+
+
+	gameListRect.y = lobbyHeaderRect.y + lobbyHeaderRect.h;
+	double ratio = 0.4;// 0.7;
+	gameListRect.w = static_cast< int32_t > ( background.w * ( ratio * 2 ) );
+	gameListRect.h = static_cast< int32_t > ( background.h * ratio );
+	gameListRect.x = static_cast< int32_t > ( ( background.w * 0.5 ) - ( gameListRect.w * 0.5 ) );
+	gameListTexture = InitSurface( gameListRect.w, gameListRect.h,  0, 0, 0 );
+	SDL_SetTextureAlphaMod( gameListTexture, 50 );
+
+
+	updateButtonTexture = RenderTextTexture_Blended( mediumFont, "Update", textColor, updateButtonRect );
+	updateButtonRect.x = static_cast< int32_t > ( ( background.w * 0.5 ) - ( updateButtonRect.w * 0.5 ) );
+	updateButtonRect.y = gameListRect.y + gameListRect.h +10;
+
+	lowestItem = gameListRect.y + 10;
+	AddGameToList( "127.0.0.1", 1111 );
+	AddGameToList( "127.0.0.1", 2222 );
 
 	return true;
 }
@@ -577,32 +603,40 @@ void Renderer::RenderLobby()
 	if ( greyAreaTexture )
 		SDL_RenderCopy( renderer, greyAreaTexture, nullptr, &greyAreaRect );
 
-	SDL_Rect r{ 200, 400, 0, 0 };
-	SDL_Texture* text = nullptr;
-
 	// Render text
-	text = RenderTextTexture_Blended( mediumFont, "Available games", textColor, r );
-	r.x = ( greyAreaRect.w - r.w) / 2 ;
-	r.y = greyAreaRect.y + 10;
-	SDL_RenderCopy( renderer, text, nullptr, &r);
-	SDL_DestroyTexture( text );
+	SDL_RenderCopy( renderer, lobbyHeaderTexture, nullptr, &lobbyHeaderRect );
 
 	// Render game list box
-	r.y += r.h;
-	r.h = greyAreaRect.h - 150;
-	r.w = static_cast< int > ( r.h * 1.777 );
-	r.x = ( greyAreaRect.w - r.w) / 2 ;
-	text = InitSurface( r.w, r.h,  0, 0, 0 );
-	SDL_SetTextureAlphaMod( text, 255 );
-	SDL_RenderCopy( renderer, text, nullptr, &r);
-	SDL_DestroyTexture( text );
+	SDL_RenderCopy( renderer, gameListTexture, nullptr, &gameListRect );
 
-	r.y += r.h + 10;
-	text = RenderTextTexture_Blended( mediumFont, "Update", textColor, r );
-	SDL_RenderCopy( renderer, text, nullptr, &r);
-	SDL_DestroyTexture( text );
+	// Update button
+	SDL_RenderCopy( renderer, updateButtonTexture, nullptr, &updateButtonRect);
+
+	// Game List ITem
+	for ( const auto &p : gameList )
+			RenderMenuItem( p );
 }
 
+void Renderer::AddGameToList( std::string strIP, int32_t port )
+{
+	SDL_Texture* text;
+	SDL_Rect gameListItem;
+
+	std::stringstream ss;
+	ss << "IP : " << strIP << " | Port : " << port;
+	std::string str = ss.str();
+	MenuItem item( str.c_str()  );
+
+	text = RenderTextTexture_Blended( tinyFont, str.c_str(), textColor, gameListItem );
+	item.SetTexture( text );
+
+	gameListItem.x = gameListRect.x + 10;
+	gameListItem.y = lowestItem;
+	item.SetRect( gameListItem );
+
+	gameList.push_back( item );
+	lowestItem += gameListItem.h + 10;
+}
 void Renderer::RenderMainMenuHeader()
 {
 	if( mainMenuCaptionTexture )
@@ -648,7 +682,7 @@ TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
 }
 bool Renderer::LoadFontAndText()
 {
-	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 12 );
+	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 20 );
 
 	font = LoadFont( "media/fonts/sketchy.ttf", 28 );
 

@@ -104,6 +104,8 @@ public:
 		isTwoPlayerMode = isTwoPlayerMode_;
 	}
 
+	// Multuplayer menu
+	void AddGameToList( std::string strIP, int32_t port );
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -280,4 +282,18 @@ private:
 	MenuItem 	pauseResumeButton;
 	MenuItem 	pauseMainMenuButton;
 	MenuItem 	pauseQuitButton;
+
+	// Multiplayer menu item
+	// =============================================
+	std::vector< MenuItem > gameList;
+	int32_t lowestItem;
+
+	SDL_Texture* lobbyHeaderTexture;
+	SDL_Rect lobbyHeaderRect;
+
+	SDL_Texture* gameListTexture;
+	SDL_Rect gameListRect;
+
+	SDL_Texture* updateButtonTexture;
+	SDL_Rect updateButtonRect;
 };
