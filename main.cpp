@@ -83,7 +83,6 @@ int main( int argc, char* args[] )
 	std::cout << "============================\n";
 
 	GameManager gameMan;
-	gameMan.SetTwoPlayerMode( startTwoPlayer );
 	if ( !gameMan.Init( localPlayerName, remotePlayerName, resolution, startFS  ) )
 		return 1;
 

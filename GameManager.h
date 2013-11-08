@@ -25,7 +25,6 @@ class GameManager
 
 		// Setters
 		void SetFPSLimit( unsigned short limit );
-		void SetTwoPlayerMode( bool isTwoPlayer );
 		void SetAIControlled( bool isAIControlled_ );
 
 		// Ipdate
@@ -155,7 +154,6 @@ class GameManager
 		std::shared_ptr < Paddle > remotePaddle;
 
 		bool isAIControlled;
-		bool isTwoPlayerMode;
 		unsigned int localPlayerPoints;
 		unsigned int localPlayerLives;
 		unsigned int localPlayerActiveBalls;

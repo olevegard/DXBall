@@ -30,6 +30,10 @@ public:
 	GameState GetPrevGameState() const;
 
 	bool HasGameStateChanged();
+	bool IsTwoPlayerMode() const
+	{
+		return isTwoPlayerMode;
+	}
 
 	GameState GoBackToPreviousMenuState();
 	GameState GoToMenu();
@@ -42,6 +46,7 @@ private:
 	GameState currentGameState;
 	GameState prevGameState;
 	bool hasGameStateChanged;
+	bool isTwoPlayerMode;
 
 	MenuItem singlePlayer;
 	MenuItem multiPlayer;

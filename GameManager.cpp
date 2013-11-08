@@ -29,7 +29,6 @@
 	,	localPaddle()
 
 	,	isAIControlled( false )
-	,	isTwoPlayerMode( false )
 	,	localPlayerPoints( 0 )
 	,	localPlayerLives( 3 )
 	,	localPlayerActiveBalls( 0 )
@@ -70,7 +69,7 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	UpdateGUI();
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
-	if ( isTwoPlayerMode )
+	if ( menuManager.IsTwoPlayerMode() )
 		renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
 	CreateMenu();
@@ -89,10 +88,7 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 
 void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short port )
 {
-	boardLoader.SetIsServer( !isTwoPlayerMode || isServer );
-
-	if ( !isTwoPlayerMode )
-		return;
+	boardLoader.SetIsServer( !menuManager.IsTwoPlayerMode() || isServer );
 
 	std::cout << "IP : " << ip << " | Port : " << port << std::endl;
 	netManager.Init( isServer );
@@ -100,7 +96,7 @@ void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short 
 }
 void GameManager::Restart()
 {
-	if ( isTwoPlayerMode )
+	if ( menuManager.IsTwoPlayerMode() )
 	{
 		remotePaddle = std::make_shared< Paddle > ();
 		remotePaddle->textureType = TextureType::e_Paddle;
@@ -118,9 +114,8 @@ void GameManager::Restart()
 	ballCount = 0;
 
 	boardLoader.Reset();
-	if ( !isTwoPlayerMode || netManager.IsServer() )
+	if ( !menuManager.IsTwoPlayerMode() || netManager.IsServer() )
 		GenerateBoard();
-
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
 	localPlayerActiveBalls = 0;
@@ -129,6 +124,7 @@ void GameManager::Restart()
 	remotePlayerLives = 3;
 	remotePlayerActiveBalls = 0;
 
+	renderer.SetIsTwoPlayerMode( menuManager.IsTwoPlayerMode() );
 	renderer.ResetText();
 
 	UpdateGUI();
@@ -361,7 +357,7 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 	remoteResolutionScale = windowSize.w / message.GetXSize();
 	//PrintRecv( message );
 
-	if ( !netManager.IsServer() || !isTwoPlayerMode )
+	if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode()  )
 	{
 		GenerateBoard();
 		SetScale( message.GetBoardScale() * remoteResolutionScale );
@@ -388,6 +384,7 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 	ball->SetRemoteScale( remoteResolutionScale );
 }
 void GameManager::RecieveBallDataMessage( const TCPMessage &message )
+
 {
 	PrintRecv( message );
 	if ( ballList.size() == 0 )
@@ -482,7 +479,7 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 
 void GameManager::SendPaddlePosMessage( )
 {
-	if ( !isTwoPlayerMode || !netManager.IsConnected()  || !isResolutionScaleRecieved )
+	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected()  || !isResolutionScaleRecieved )
 		return;
 
 	// Sending
@@ -499,7 +496,7 @@ void GameManager::SendPaddlePosMessage( )
 
 void GameManager::SendGameSettingsMessage()
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -521,7 +518,7 @@ void GameManager::SendGameSettingsMessage()
 }
 void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -545,7 +542,7 @@ void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 }
 void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -569,7 +566,7 @@ void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 }
 void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -585,7 +582,7 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 }
 void GameManager::SendTileHitMessage( unsigned int tileID )
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -600,7 +597,7 @@ void GameManager::SendTileHitMessage( unsigned int tileID )
 
 void GameManager::SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox )
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -623,7 +620,7 @@ void GameManager::SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > 
 }
 void GameManager::SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox )
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -639,7 +636,7 @@ void GameManager::SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &
 }
 void GameManager::SendGameStateChangedMessage()
 {
-	if ( !isTwoPlayerMode )
+	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -656,7 +653,7 @@ void GameManager::SendGameStateChangedMessage()
 }
 void GameManager::SendNewGameMessage( )
 {
-	if ( netManager.IsServer() )
+	if ( netManager.IsServer() || !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
@@ -862,7 +859,7 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 }
 void GameManager::HandleGameKeys( const SDL_Event &event )
 {
-	if ( menuManager.GetGameState() != GameState::InGame || ( isTwoPlayerMode && !isResolutionScaleRecieved ) )
+	if ( menuManager.GetGameState() != GameState::InGame || ( menuManager.IsTwoPlayerMode() && !isResolutionScaleRecieved ) )
 		return;
 
 	if ( event.type == SDL_KEYDOWN )
@@ -870,7 +867,7 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 		switch  ( event.key.keysym.sym )
 		{
 			case SDLK_a:
-				SetAIControlled( true );
+				SetAIControlled( !isAIControlled );
 				break;
 			case SDLK_RETURN:
 			case SDLK_b:
@@ -897,11 +894,12 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
-	if ( isTwoPlayerMode )
-	{
-		if ( isAIControlled )
-			AIMove();
 
+	if ( isAIControlled )
+		AIMove();
+
+	if ( menuManager.IsTwoPlayerMode() )
+	{
 		if ( netManager.IsConnected() )
 			UpdateNetwork();
 	}
@@ -916,7 +914,7 @@ void GameManager::Update( double delta )
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
 
-	if ( ( !isTwoPlayerMode || netManager.IsServer() ) &&  IsLevelDone() )
+	if ( ( !menuManager.IsTwoPlayerMode() || netManager.IsServer() ) &&  IsLevelDone() )
 	{
 		std::cout << "GameMAanager@" << __LINE__ << " Level is done..\n";
 		GenerateBoard();
@@ -1234,7 +1232,7 @@ void GameManager::RendererScores()
 	renderer.RenderLives    ( localPlayerLives, Player::Local );
 	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
 
-	if ( isTwoPlayerMode )
+	if ( menuManager.IsTwoPlayerMode() )
 	{
 		renderer.RenderLives    ( remotePlayerLives, Player::Remote );
 		renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
@@ -1243,7 +1241,7 @@ void GameManager::RendererScores()
 }
 void GameManager::RenderInGame()
 {
-	if ( isTwoPlayerMode && !isResolutionScaleRecieved )
+	if ( menuManager.IsTwoPlayerMode() && !isResolutionScaleRecieved )
 	{
 		renderer.RenderText( "Waiting for other player...", Player::Local  );
 		return;
@@ -1253,7 +1251,7 @@ void GameManager::RenderInGame()
 	{
 		if ( localPlayerLives == 0 )
 		{
-			if ( isTwoPlayerMode )
+			if ( menuManager.IsTwoPlayerMode() )
 			{
 				if ( localPlayerPoints < remotePlayerPoints )
 					renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
@@ -1269,7 +1267,7 @@ void GameManager::RenderInGame()
 }
 void GameManager::RenderEndGame()
 {
-	if ( isTwoPlayerMode )
+	if ( menuManager.IsTwoPlayerMode() )
 	{
 		if ( localPlayerPoints > remotePlayerPoints )
 			renderer.RenderText( "Yay, you won :D", Player::Local  );
@@ -1289,11 +1287,6 @@ void GameManager::GameManager::SetFPSLimit( unsigned short limit )
 	else
 		frameDuration = 0.0;
 }
-void GameManager::SetTwoPlayerMode( bool isTwoPlayer )
-{
-	isTwoPlayerMode = isTwoPlayer;
-	renderer.SetIsTwoPlayerMode( isTwoPlayer );
-}
 void GameManager::GenerateBoard()
 {
 	ClearBoard();
@@ -1311,10 +1304,10 @@ void GameManager::GenerateBoard()
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 
-	if ( netManager.IsServer() )
+	if (  menuManager.IsTwoPlayerMode() && netManager.IsServer()  )
 		SetScale( b.GetScale() );
-	else if ( !isTwoPlayerMode )
-		SetScale( 2.0  );
+	else if ( !menuManager.IsTwoPlayerMode() )
+		SetScale( b.GetScale()  );
 }
 bool GameManager::IsLevelDone()
 {

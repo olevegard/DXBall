@@ -9,6 +9,7 @@ MenuManager::MenuManager()
 	,	prevGameState( GameState::Quit )
 
 	,	hasGameStateChanged( false )
+	,	isTwoPlayerMode( false )
 
 	,	singlePlayer( "Single Player" )
 	,	multiPlayer ( "Multiplayer"   )
@@ -85,7 +86,7 @@ void MenuManager::CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer 
 	}
 
 }
-void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) const 
+void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) const
 {
 	PauseMenuItemType mouseOver = CheckIntersections_Pause( x, y );
 
@@ -136,8 +137,10 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 		{
 			case MainMenuItemType::SinglePlayer:
 				SetGameState( GameState::InGame );
+				isTwoPlayerMode = false;
 				break;
 			case MainMenuItemType::MultiPlayer:
+				isTwoPlayerMode = true;
 				SetGameState( GameState::Lobby );
 				break;
 			case MainMenuItemType::Options:
