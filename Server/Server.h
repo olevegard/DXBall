@@ -7,6 +7,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "TCPConnectionServer.h"
+#include "../TCPMessage.h"
 
 class Server
 {
@@ -195,27 +196,10 @@ class Server
 		else
 			return false;
 
-		if ( connection.StartServer() )
-		{
-			std::string ipConnected;
-			uint32_t port = 0;
-			connection.GetServerInfo( ipConnected, port );
-
-			std::cout << "Port : " << port << std::endl;
-			AddGameLine( ipConnected, port );
-		}
-		else
+		if ( !connection.StartServer() )
 			return false;
 
-		if ( connection.StartServer() )
-		{
-			std::string ipConnected;
-			uint32_t port = 0;
-			connection.GetServerInfo( ipConnected, port );
-
-			AddGameLine( ipConnected, port );
-		}
-		else
+		if ( !connection.StartServer() )
 			return false;
 
 		std::cout << "Net initialized" << std::endl;
@@ -232,9 +216,21 @@ class Server
 
 			while ( SDL_PollEvent( &event ) )
 			{
-				if ( event.type == SDL_QUIT )
+				if ( event.type == SDL_KEYDOWN )
+				{
+					switch ( event.key.keysym.sym )
+					{
+						case SDLK_q:
+						case SDLK_ESCAPE:
+							run = false;
+					}
+				}
+				else if ( event.type == SDL_QUIT )
 					run = false;
 			}
+
+			UpdateNetwork( 0 );
+			UpdateNetwork( 1 );
 
 			SDL_RenderCopy( renderer, textureHeader, nullptr, &rectHeader);
 			SDL_RenderCopy( renderer, textureSubHeader, nullptr, &rectSubHeader);
@@ -243,8 +239,38 @@ class Server
 
 			SDL_RenderPresent( renderer );
 		}
+		std::cout << "Main loop done\n";
+	}
+	void UpdateNetwork( int connectionNo )
+	{
+		std::string str = connection.ReadMessages( connectionNo );
+
+		std::stringstream ss;
+		ss << str;
+
+		if ( str == "" )
+			return;
+
+		TCPMessage msg;
+		while ( ss >> msg )
+		{
+			if ( msg.GetType() == MessageType::NewGame )
+			{
+				AddGameLine( msg.GetIPAdress(), msg.GetPort() );
+				GameInfo game;
+				game.ip = msg.GetIPAdress();
+				game.port = msg.GetPort();
+				gameList.push_back( game );
+			}
+		}
 	}
 	private:
+	struct GameInfo
+	{
+		std::string ip;
+		uint16_t port;
+	};
+	std::vector< GameInfo > gameList;
 	TCPConnection connection;
 
 	// Header

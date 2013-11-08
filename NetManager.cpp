@@ -18,6 +18,9 @@ void NetManager::Init( bool server)
 }
 void NetManager::Connect( std::string ip, unsigned short port )
 {
+	ipAdress = ip;
+	portNr = port;
+
 	if ( isServer )
 	{
 		gameServer.Init( ip, port, true );
@@ -58,3 +61,8 @@ bool NetManager::IsConnected() const
 	else
 		return gameClient.IsConnected();
 }
+void NetManager::SendMessageToServer( std::string str )
+{
+	mainServer.Send( str );
+}
+

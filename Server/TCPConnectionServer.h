@@ -12,9 +12,9 @@ public:
 	bool ResolveHost();
 	bool OpenConnectionToHost( );
 
-	bool CheckForActivity() const;
-	void Send( std::string str );
-	std::string ReadMessages();
+	bool CheckForActivity( int connectionNr ) const;
+	void Send( std::string str, int connectionNr );
+	std::string ReadMessages( int connectionNr );
 
 	bool IsConnected() const;
 

@@ -32,6 +32,9 @@ std::string TCPMessage::Print() const
 		case GameStateChanged:
 			ss << " : " << GetGameStateAsString() << "\n";
 			break;
+		case NewGame:
+			ss << " : " << GetIPAdress() << " : " << GetPort() <<  "\n";
+			break;
 		default:
 			ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
 			break;
@@ -62,6 +65,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Bonus Spawned";
 		case BonusPickup:
 			return "Bonus Pickup";
+		case NewGame:
+			return "New Game";
 		default:
 			break;
 	}

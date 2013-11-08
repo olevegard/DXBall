@@ -54,6 +54,23 @@ class TCPMessage
 		void SetXSize( double xSize_ );
 		void SetYSize( double ySize_ );
 		void SetBoardScale( double boardScale_);
+
+		void SetPort( uint16_t port_ )
+		{
+			port = port_;
+		}
+		void SetIPAdress( std::string  ipAddress_ )
+		{
+			ipAddress = ipAddress_;
+		}
+		uint16_t GetPort() const
+		{
+			return port;
+		}
+		std::string GetIPAdress() const
+		{
+			return ipAddress;
+		}
 	private:
 		MessageType msgType;
 		unsigned int objectID;
@@ -72,6 +89,9 @@ class TCPMessage
 		double ySize;
 
 		double boardScale;
+
+		std::string ipAddress;
+		uint16_t port;
 };
 
 inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
@@ -157,6 +177,19 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				msg.SetGameState( gameState );
 				return is;
 			}
+
+		case NewGame:
+			{
+				std::string ip;
+				is >> ip;
+				msg.SetIPAdress( ip );
+
+				uint16_t port;
+				is >> port;
+				msg.SetPort( port );
+
+				return is;
+			}
 		default:
 			{
 				std::cout << "Wrong message type : " << type << std::endl;
@@ -218,6 +251,10 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			break;
 		case GameStateChanged:
 			os << message.GetGameStateAsInt() << " ";
+			break;
+		case NewGame:
+			os << message.GetIPAdress() << " ";
+			os << message.GetPort();
 			break;
 		default:
 			std::cout << "Wrong message type : " << type << std::endl;

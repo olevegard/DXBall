@@ -11,6 +11,5 @@ int main()
 	}
 
 	server.Run();
-	std::cin.ignore();
 }
 

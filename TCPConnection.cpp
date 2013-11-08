@@ -33,8 +33,12 @@ bool TCPConnection::ResolveHost()
 	int success = 0;
 
 	if ( isServer )
+		// IP is null becasue this is a server
+		// Port is listening port
 		success = SDLNet_ResolveHost( &ipAddress, nullptr, portNr );
 	else
+		// IP is the IP of the server
+		// Port is the port the serer listens on ( seea above )
 		success = SDLNet_ResolveHost( &ipAddress, hostName.c_str(), portNr );
 
 	if ( success == -1 )

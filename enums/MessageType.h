@@ -11,13 +11,11 @@ enum MessageType
 
 	TileHit,		// Player hit a tile, remove tile, reduce tile HP or trigger explosion.
 
-	GameSettings,	// Contains resolution of the remote player. Sent during beggining and when resolution chages.
-	GameStateChanged,		// Game was paused by remote player
+	GameSettings,		// Contains resolution of the remote player. Sent during beggining and when resolution chages.
+	GameStateChanged,	// Game was paused by remote player
+	GameInstance,		// A new game was started, display it in the list of games
+	NewGame,			// Tell the server than you have started a game
 
 	BonusSpawned,	// A bonus was triggeredby the oponenyyt
 	BonusPickup, 	// A bonus was picked up by the oponent
-
-	GeneralUpade,	// Contains lifes, points and number of active balls. [ Not needed atm ]
-
-	BoardUpdate	// Contains number of tiles, and position and type information about all tiles.
 };

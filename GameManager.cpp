@@ -94,7 +94,6 @@ void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short 
 	if ( !isTwoPlayerMode )
 		return;
 
-	//netManager.Init( isServer, ip, port );
 	std::cout << "IP : " << ip << " | Port : " << port << std::endl;
 	netManager.Init( isServer );
 	netManager.Connect( ip, port );
@@ -448,6 +447,8 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 {
 	//PrintRecv( message );
+	if ( !remotePaddle )
+		return;
 	double xPos = message.GetXPos();
 	if ( xPos > 0 && xPos < windowSize.w )
 	{
@@ -653,6 +654,20 @@ void GameManager::SendGameStateChangedMessage()
 
 	PrintSend( msg );
 }
+void GameManager::SendNewGameMessage( )
+{
+	if ( netManager.IsServer() )
+		return;
+
+	TCPMessage msg;
+	msg.SetMessageType( MessageType::NewGame );
+	msg.SetIPAdress( "127.0.0.1"  );
+	msg.SetPort( 2002 );
+
+	std::stringstream ss;
+	ss << msg;
+	netManager.SendMessageToServer( ss.str() );
+}
 void GameManager::PrintSend( const TCPMessage &msg ) const
 {
 	std::cout << "Sending : " << msg.Print();
@@ -669,7 +684,7 @@ void GameManager::DeleteDeadBalls()
 	{
 		if ( !ball )
 			return false;
-			//std::cout << "Ball is dead allready" << std::endl;
+		//std::cout << "Ball is dead allready" << std::endl;
 
 		if ( ball->IsAlive() )
 			return false;
@@ -767,6 +782,7 @@ void GameManager::HandleStatusChange( )
 			runGame = false;
 		else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() != GameState::Paused )
 		{
+			SendNewGameMessage();
 			Restart();
 		}
 	}

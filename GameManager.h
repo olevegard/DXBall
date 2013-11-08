@@ -122,6 +122,7 @@ class GameManager
 		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendGameStateChangedMessage( );
+		void SendNewGameMessage( );
 
 		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
 		std::shared_ptr< Tile > GetTileFromID( int32_t ID );

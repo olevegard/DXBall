@@ -46,11 +46,26 @@ CompileString="clang++ \
 	#-lSDL2 \
 	#-lSDL2_ttf \
 	#-lSDL2_image \
+
+CompileServer="clang++
+	Server/main.cpp
+	Server/TCPConnectionServer.cpp
+	TCPMessage.cpp
+	-o Server/Server
+	-std=c++11
+	-lSDL2
+	-lSDL2_ttf
+	-lSDL2_net
+	-g"
+
+
+
 #RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1280x720 -twoPlayer false"
 RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1920x1080 -twoPlayer false -startfs true"
-RunStringClient="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer true"
-RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -twoPlayer true -server true -AIControlled true"
+RunStringClient="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -twoPlayer true "
+RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -twoPlayer true -server true -AIControlled true "
 #RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 1920x1080 -twoPlayer true -server true"
+RunStringGameServer="cd Server && ./Server"
 
 GDBString="gdb -ex run --args $RunString"
 GDBStringServer="gdb -ex run --args $RunStringServer"
@@ -139,6 +154,8 @@ if make; then
 
 	done
 
+	$CompileServer
+
 	echo "Build succesfull"
 
 	if $ForceFullCompile ; then
@@ -167,13 +184,17 @@ if make; then
 			#gnome-terminal -e "$GDBStringServer"&
 
 			#Run in terminal ( explanation below )
+
+			xterm -fa default -fs 12 -geometry 95x15+1000+600 -e "$RunStringGameServer" &
+			sleep 1
 			xterm -fa default -fs 12 -geometry 95x15+0+600 -e "$GDBStringServer"&
 			sleep 1
-			xterm -fa default -fs 12 -geometry 95x15+1000+600   -e "$RunStringClient"&
+			xterm -fa default -fs 12 -geometry 95x15+1000+600   -e "$GDBStringClient"&
 		else
 			echo -e "\tNormal mode"
 			echo -e "\tCommand : " $RunString
 			echo "=============================== DX Balll ==============================="
+
 			gnome-terminal -e "$RunStringClient"&   # Run without blocking
 			gnome-terminal -e "$RunStringServer"&   # Run without blocking
 
@@ -184,8 +205,11 @@ if make; then
 				# position  = 95x15 ( pixels? )
 				# program args
 				# non-blocking
+			xterm -fa default -fs 12 -geometry 95x15+1000+600 -e "$RunStringGameServer" &
+			xterm -fa default -fs 12 -geometry 95x15+0000+600 -e "$RunStringServer" &
 			xterm -fa default -fs 12 -geometry 95x15+1000+600 -e "$RunStringClient" &
-			xterm -fa default -fs 12 -geometry 95x15+0+600    -e "$RunStringServer" &
+
+			#xterm -fa default -fs 12 -geometry 95x15+0+600    -e "$RunStringServer" &
 		fi
 	else
 		if $RunGDB ; then

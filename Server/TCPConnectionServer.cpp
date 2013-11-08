@@ -76,7 +76,7 @@ bool TCPConnection::OpenConnectionToHost( )
 	return true;
 }
 
-void TCPConnection::Send( std::string str )
+void TCPConnection::Send( std::string str, int connectionNr  )
 {
 	if ( !isConnected  )
 	{
@@ -90,7 +90,7 @@ void TCPConnection::Send( std::string str )
 
 	if ( isServer )
 	{
-		bytesSent = SDLNet_TCP_Send( serverSocket[0],  messageData,  messageSize);
+		bytesSent = SDLNet_TCP_Send( serverSocket[connectionNr],  messageData,  messageSize);
 	}
 	else
 	{
@@ -188,9 +188,9 @@ void TCPConnection::GetServerInfo( std::string &str, uint32_t prt)
 
 	prt = SDLNet_Read16( &ipRemote->port );
 }
-std::string TCPConnection::ReadMessages()
+std::string TCPConnection::ReadMessages( int connectionNr )
 {
-	if ( !CheckForActivity() )
+	if ( !CheckForActivity( connectionNr ) )
 		return "";
 
 	char buffer[bufferSize];
@@ -203,7 +203,7 @@ std::string TCPConnection::ReadMessages()
 		return received;
 
 	if ( isServer )
-		byteCount = SDLNet_TCP_Recv( serverSocket[0], buffer, bufferSize );
+		byteCount = SDLNet_TCP_Recv( serverSocket[connectionNr], buffer, bufferSize );
 	else
 		byteCount = SDLNet_TCP_Recv( tcpSocket, buffer, bufferSize );
 
@@ -231,7 +231,7 @@ std::string TCPConnection::ReadMessages()
 	} else if ( byteCount < 0 )
 	{
 		std::cout << "TCPConnection.cpp@" << __LINE__ << " Read failed!" <<
-			"\nSocket : " << ( isServer ? serverSocket[0] : tcpSocket )  <<
+			"\nSocket : " << ( isServer ? serverSocket[connectionNr] : tcpSocket )  <<
 			"\nByte count : " << byteCount <<
 			"\nERrror : " << SDLNet_GetError() <<
 			std::endl;
@@ -239,7 +239,7 @@ std::string TCPConnection::ReadMessages()
 
 	return received;
 }
-bool TCPConnection::CheckForActivity() const
+bool TCPConnection::CheckForActivity( int connectionNr ) const
 {
 	int countReady = SDLNet_CheckSockets( socketSet, 0 );
 
@@ -250,7 +250,7 @@ bool TCPConnection::CheckForActivity() const
 	}
 
 	if ( isServer )
-		return SDLNet_SocketReady( serverSocket[0] ) != 0;
+		return SDLNet_SocketReady( serverSocket[connectionNr] ) != 0;
 	else
 		return SDLNet_SocketReady( tcpSocket ) != 0;
 }

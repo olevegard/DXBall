@@ -15,7 +15,20 @@ class NetManager
 
 		bool IsServer() const;
 		bool IsConnected() const;
+
+		void SendMessageToServer( std::string str );
+		std::string GetIPAdress()
+		{
+			return ipAdress;
+		}
+		uint16_t GetPort()
+		{
+			return portNr;
+		}
 	private:
+		std::string ipAdress;
+		uint16_t portNr;
+
 		bool isServer;
 		TCPConnection mainServer;
 		TCPConnection gameServer;
