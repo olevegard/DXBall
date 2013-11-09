@@ -36,6 +36,10 @@ void NetManager::Close()
 {
 	gameServer.Close();
 }
+void NetManager::Update()
+{
+	gameServer.Update();
+}
 std::string NetManager::ReadMessage( )
 {
 	if ( isServer )
@@ -50,6 +54,10 @@ void NetManager::SendMessage( std::string str )
 	else
 		gameClient.Send( str );
 }
+void NetManager::SendMessageToServer( std::string str )
+{
+	mainServer.Send( str );
+}
 bool NetManager::IsServer() const
 {
 	return isServer;
@@ -61,8 +69,15 @@ bool NetManager::IsConnected() const
 	else
 		return gameClient.IsConnected();
 }
-void NetManager::SendMessageToServer( std::string str )
+std::string NetManager::GetIPAdress()
 {
-	mainServer.Send( str );
+	return ipAdress;
 }
-
+uint16_t NetManager::GetPort()
+{
+	return portNr;
+}
+void NetManager::SetIsServer( bool isServer_ )
+{
+	isServer = isServer_;
+}

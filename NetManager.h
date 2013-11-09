@@ -9,22 +9,18 @@ class NetManager
 		void Init( bool server );
 		void Connect( std::string IP, unsigned short port );
 		void Close();
+		void Update();
 
 		std::string ReadMessage( );
 		void SendMessage( std::string str );
+		void SendMessageToServer( std::string str );
 
 		bool IsServer() const;
 		bool IsConnected() const;
+		std::string GetIPAdress();
+		uint16_t GetPort();
 
-		void SendMessageToServer( std::string str );
-		std::string GetIPAdress()
-		{
-			return ipAdress;
-		}
-		uint16_t GetPort()
-		{
-			return portNr;
-		}
+		void SetIsServer( bool isServer_ );
 	private:
 		std::string ipAdress;
 		uint16_t portNr;
