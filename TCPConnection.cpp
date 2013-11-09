@@ -105,8 +105,33 @@ void TCPConnection::Send( std::string str )
 }
 void TCPConnection::Close()
 {
-	if ( isConnected )
-		SDLNet_TCP_Close( tcpSocket );
+	if ( !isConnected )
+		return;
+
+	std::cout << "Closing TCPCOnnection...\n";
+	SDLNet_TCP_Close( tcpSocket );
+	SDLNet_FreeSocketSet( socketSet );
+
+	if ( isServer )
+		SDLNet_TCP_Close( serverSocket );
+
+	isConnected = false;
+}
+
+
+void TCPConnection::Update()
+{
+	if ( !isServer || isConnected )
+		return;
+
+	if ( AcceptConnection() )
+	{
+		if ( SetServerSocket() )
+		{
+			SDLNet_TCP_AddSocket( socketSet, serverSocket );
+			isConnected = true;
+		}
+	}
 }
 bool TCPConnection::StartServer( )
 {
@@ -116,22 +141,9 @@ bool TCPConnection::StartServer( )
 		return false;
 	}
 
-	bool quit = false;
-	while ( !quit )
-	{
-		if ( AcceptConnection() )
-		{
-			if ( SetServerSocket() )
-			{
-				SDLNet_TCP_AddSocket( socketSet, serverSocket );
-				quit = true;
-				isConnected = true;
-				return true;
-			}
-		}
-		SDL_Delay( 20 );
-	}
-	return false;
+	Update();
+
+	return isConnected;
 }
 
 bool TCPConnection::AcceptConnection()

@@ -24,6 +24,7 @@ public:
 
 	void Close();
 
+	void Update();
 	bool StartServer( );
 	bool AcceptConnection();
 	bool SetServerSocket();
