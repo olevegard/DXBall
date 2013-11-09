@@ -22,7 +22,6 @@
 #include "BonusBox.h"
 
 #include "enums/GameState.h"
-#include "enums/MainMenuItemType.h"
 
 #include "MainMenuItem.h"
 #include "PauseMenuItem.h"
@@ -34,6 +33,8 @@ struct Paddle;
 struct BonusBox;
 enum class Player : int;
 enum class MenuItemType : int;
+enum class LobbyMenuItem : int;
+enum class MainMenuItemType : int;
 
 class Renderer
 {
@@ -93,6 +94,14 @@ public:
 	SDL_Rect GetPauseResumeRect() const;
 	SDL_Rect GetPauseMainMenuRect() const;
 	SDL_Rect GetPauseQuitRect() const;
+
+	// Lobby Menu
+	void AddLobbyMenuButtons( const std::string &newGame, const std::string &updaete, const std::string &back );
+	void CenterLobbyButtons( );
+	void SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mit  );
+	SDL_Rect GetLobbyNewGameRect() const;
+	SDL_Rect GetLobbyUpdateRect() const;
+	SDL_Rect GetLobbyBackRect() const;
 
 	void ForceMouseFocus();
 
@@ -285,6 +294,10 @@ private:
 
 	// Multiplayer menu item
 	// =============================================
+	MenuItem 	lobbyNewGameButton;
+	MenuItem 	lobbyUpdateButton;
+	MenuItem 	lobbyBackButton;
+
 	std::vector< MenuItem > gameList;
 	int32_t lowestItem;
 
@@ -296,4 +309,7 @@ private:
 
 	SDL_Texture* updateButtonTexture;
 	SDL_Rect updateButtonRect;
+
+	SDL_Texture* newGameTexture;
+	SDL_Rect newGameRect;
 };

@@ -16,9 +16,14 @@ MenuManager::MenuManager()
 	,	options     ( "Options"       )
 	,	quit        ( "Quit"          )
 
-	,	pauseResumeButton  ( "Resume"   )
-	,	pauseMainMenuButton( "Main Menu"       )
-	,	pauseQuitButton    ( "Quit"          )
+	,	pauseResumeButton  ( "Resume"    )
+	,	pauseMainMenuButton( "Main Menu" )
+	,	pauseQuitButton    ( "Quit"      )
+
+	,	lobbyNewGameButton( "New Game" )
+	,	lobbyUpdateButton ( "Update"   )
+	,	lobbyBackButton   ( "Back"     )
+	,	lobbyStateChanged( false  )
 {
 
 }
@@ -40,14 +45,27 @@ void MenuManager::AddPauseMenuElememts( Renderer &renderer )
 	pauseMainMenuButton.SetRect( renderer.GetPauseMainMenuRect() );
 	pauseQuitButton.SetRect( renderer.GetPauseQuitRect() );
 }
+void MenuManager::AddLobbyMenuElememts( Renderer &renderer )
+{
+	renderer.AddLobbyMenuButtons( lobbyNewGameButton.GetName(), lobbyUpdateButton.GetName(), lobbyBackButton.GetName() );
+
+	lobbyNewGameButton.SetRect( renderer.GetLobbyNewGameRect() );
+	lobbyUpdateButton.SetRect( renderer.GetLobbyUpdateRect() );
+	lobbyBackButton.SetRect( renderer.GetLobbyBackRect() );
+}
 void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer ) const
 {
 	if ( currentGameState == GameState::Paused )
 	{
 		CheckItemMouseOver_Pause( x, y, renderer );
-	} else if ( currentGameState == GameState::MainMenu )
+	}
+	else if ( currentGameState == GameState::MainMenu )
 	{
 		CheckItemMouseOver_MainMenu( x, y, renderer );
+	}
+	else if ( currentGameState == GameState::Lobby )
+	{
+		CheckItemMouseOver_Lobby( x, y, renderer );
 	}
 }
 void MenuManager::CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer ) const
@@ -111,7 +129,33 @@ void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) c
 			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Quit );
 			break;
 	}
+}
 
+void MenuManager::CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer ) const
+{
+	LobbyMenuItem mouseOver = CheckIntersections_Lobby( x, y );
+
+	renderer.SetLobbyItemUnderline( true, mouseOver );
+	switch ( mouseOver )
+	{
+		case LobbyMenuItem::NewGame:
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Back );
+			break;
+		case LobbyMenuItem::Update:
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Back );
+			break;
+		case LobbyMenuItem::Back:
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
+			break;
+		case LobbyMenuItem::Unknown:
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
+			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Back );
+			break;
+	}
 }
 bool MenuManager::CheckItemMouseClick( int x, int y)
 {
@@ -151,6 +195,10 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 			case MainMenuItemType::Unknown:
 				return false;
 		}
+	} else if ( currentGameState == GameState::Lobby )
+	{
+		lobbyState = CheckIntersections_Lobby( x, y);
+		lobbyStateChanged = true;
 	}
 
 	return true;
@@ -183,6 +231,19 @@ PauseMenuItemType MenuManager::CheckIntersections_Pause( int x, int y ) const
 		return PauseMenuItemType::Quit;
 
 	return PauseMenuItemType::Unknown;
+}
+LobbyMenuItem MenuManager::CheckIntersections_Lobby( int x, int y ) const
+{
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyNewGameButton.GetRect() ) )
+		return LobbyMenuItem::NewGame;
+
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyUpdateButton.GetRect() ) )
+		return LobbyMenuItem::Update;
+
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyBackButton.GetRect() ) )
+		return LobbyMenuItem::Back;
+
+	return LobbyMenuItem::Unknown;
 }
 void MenuManager::RemoevAllUnderscores( Renderer &renderer )
 {
@@ -245,4 +306,14 @@ GameState MenuManager::GoToMenu()
 		SetGameState( GameState::MainMenu );
 
 	return currentGameState;
+}
+LobbyMenuItem MenuManager::GetLobbyState()
+{
+	return lobbyState;
+}
+bool MenuManager::LobbyStateChanged()
+{
+	bool state = lobbyStateChanged;
+	lobbyStateChanged = false;
+	return state;
 }

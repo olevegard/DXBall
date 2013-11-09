@@ -221,7 +221,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	int randMax = 1;
+	int randMax = 100;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -806,8 +806,10 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 	{
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 	}
-
-	else if ( menuManager.GetGameState() == GameState::MainMenu  || menuManager.GetGameState() == GameState::Paused )
+	else if ( menuManager.GetGameState() == GameState::MainMenu
+			|| menuManager.GetGameState() == GameState::Paused
+			|| menuManager.GetGameState() == GameState::Lobby
+		)
 	{
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{
@@ -1395,6 +1397,7 @@ void GameManager::CreateMenu()
 {
 	menuManager.AddMenuElememts( renderer );
 	menuManager.AddPauseMenuElememts( renderer );
+	menuManager.AddLobbyMenuElememts( renderer );
 }
 void GameManager::SetLocalPaddlePosition( int x, int y )
 {

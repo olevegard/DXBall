@@ -3,8 +3,10 @@
 #include "Ball.h"
 #include "Tile.h"
 #include "Paddle.h"
+
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
+#include "enums/LobbyMenuItem.h"
 
 #include "ConfigLoader.h"
 
@@ -114,6 +116,10 @@
 	,	pauseResumeButton( "Resume" )
 	,	pauseMainMenuButton( "Main Menu" )
 	,	pauseQuitButton( "Quit" )
+
+	,	lobbyNewGameButton( "New Game" )
+	,	lobbyUpdateButton( "Update" )
+	,	lobbyBackButton( "Back" )
 
 	,	lowestItem( 0 )
 	,	lobbyHeaderRect({ 200, 400, 0, 0 } )
@@ -289,12 +295,16 @@ bool Renderer::LoadImages()
 	gameListRect.h = static_cast< int32_t > ( background.h * ratio );
 	gameListRect.x = static_cast< int32_t > ( ( background.w * 0.5 ) - ( gameListRect.w * 0.5 ) );
 	gameListTexture = InitSurface( gameListRect.w, gameListRect.h,  0, 0, 0 );
-	SDL_SetTextureAlphaMod( gameListTexture, 50 );
-
+	SDL_SetTextureAlphaMod( gameListTexture, 255 );
 
 	updateButtonTexture = RenderTextTexture_Blended( mediumFont, "Update", textColor, updateButtonRect );
-	updateButtonRect.x = static_cast< int32_t > ( ( background.w * 0.5 ) - ( updateButtonRect.w * 0.5 ) );
+	newGameTexture = RenderTextTexture_Blended( mediumFont, "New Game", textColor, newGameRect );
+
+	updateButtonRect.x = static_cast< int32_t > ( ( background.w * 0.5 ) - ( ( updateButtonRect.w + newGameRect.w )  * 0.5 ) );
 	updateButtonRect.y = gameListRect.y + gameListRect.h +10;
+
+	newGameRect.x = updateButtonRect.x + updateButtonRect.w + 20;
+	newGameRect.y = updateButtonRect.y;
 
 	lowestItem = gameListRect.y + 10;
 	AddGameToList( "127.0.0.1", 1111 );
@@ -502,7 +512,10 @@ void Renderer::Render( )
 			break;
 		case GameState::Lobby:
 			RenderMainMenuHeader();
-			RenderLobby();
+			//RenderLobby();
+			RenderMenuItem( lobbyNewGameButton );
+			RenderMenuItem( lobbyUpdateButton );
+			RenderMenuItem( lobbyBackButton );
 			break;
 		case GameState::InGame:
 			RenderForeground();
@@ -611,6 +624,9 @@ void Renderer::RenderLobby()
 
 	// Update button
 	SDL_RenderCopy( renderer, updateButtonTexture, nullptr, &updateButtonRect);
+
+	// New game button
+	SDL_RenderCopy( renderer, newGameTexture, nullptr, &newGameRect);
 
 	// Game List ITem
 	for ( const auto &p : gameList )
@@ -941,7 +957,6 @@ void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainM
 	}
 }
 MenuItem Renderer::AddMenuButtonHelper( MenuItem menuItem, std::string menuItemString, const SDL_Rect &singlePlayerRect )
-
 {
 	SDL_Rect r;
 	menuItem.SetTexture( RenderTextTexture_Blended( mediumFont, menuItemString, textColor, r ) );
@@ -1042,7 +1057,8 @@ void Renderer::InitGreyAreaRect( )
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
 	pauseResumeButton = AddMenuButtonHelper( pauseResumeButton, resumeString, { 0, 0, 0, 0 }  );
-	pauseResumeButton .SetRectXY( margin / 2, background.h - pauseResumeButton.GetRectH() );
+	pauseResumeButton.SetRectXY( margin / 2, background.h - pauseResumeButton.GetRectH() );
+	std::cout << "Adding button : " << pauseResumeButton.GetRectX() << std::endl;
 
 	pauseMainMenuButton = AddMenuButtonHelper( pauseMainMenuButton, mainMenuString, pauseResumeButton.GetRect()  );
 
@@ -1093,7 +1109,59 @@ SDL_Rect Renderer::GetPauseQuitRect() const
 {
 	return pauseQuitButton.GetRect();
 }
+void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::string &update, const std::string &back )
+{
+	int32_t xPos = static_cast< int32_t > ( ( background.w * 0.5 ) - ( ( updateButtonRect.w + newGameRect.w )  * 0.5 ) );
+	int32_t yPos = gameListRect.y + gameListRect.h +10;
 
+	lobbyNewGameButton = AddMenuButtonHelper( lobbyNewGameButton, newGame, { xPos, yPos, 0, 0 } );
+	xPos = lobbyNewGameButton.GetEndX()  + 10;
+	lobbyUpdateButton = AddMenuButtonHelper( lobbyUpdateButton, update, { xPos, yPos, 0, 0 } );
+	xPos = lobbyUpdateButton.GetEndX() +  10;
+	lobbyBackButton = AddMenuButtonHelper( lobbyBackButton, back, { xPos, yPos, 0, 0 } );
+
+	CenterLobbyButtons();
+}
+void Renderer::CenterLobbyButtons( )
+{
+	int32_t widht = lobbyBackButton.GetEndX() - lobbyNewGameButton.GetRectX();
+	int32_t newX = ( background.w / 2 ) - ( widht / 2 );
+
+	lobbyNewGameButton.SetRectX( newX );
+	newX = lobbyNewGameButton.GetEndX() + 10;
+	lobbyUpdateButton.SetRectX( newX );
+	newX = lobbyUpdateButton.GetEndX() + 10;
+	lobbyBackButton.SetRectX( newX );
+}
+void Renderer::SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mit  )
+{
+	switch ( mit )
+	{
+		case LobbyMenuItem::NewGame:
+			lobbyNewGameButton = SetUnderlineHelper( lobbyNewGameButton, setUnderline );
+			break;
+		case LobbyMenuItem::Update:
+			lobbyUpdateButton = SetUnderlineHelper( lobbyUpdateButton, setUnderline );
+			break;
+		case LobbyMenuItem::Back:
+			lobbyBackButton = SetUnderlineHelper( lobbyBackButton, setUnderline );
+			break;
+		default:
+			break;
+	}
+}
+SDL_Rect Renderer::GetLobbyNewGameRect() const
+{
+	return lobbyNewGameButton.GetRect();
+}
+SDL_Rect Renderer::GetLobbyUpdateRect() const
+{
+	return lobbyUpdateButton.GetRect();
+}
+SDL_Rect Renderer::GetLobbyBackRect() const
+{
+	return lobbyBackButton.GetRect();
+}
 void Renderer::CalculateRemotePlayerTextureRects()
 {
 	// Set remaning text rects based on caption rect
