@@ -265,6 +265,11 @@ void MenuManager::SetGameState( const GameState &gs )
 		return;
 	}
 
+	std::cout << "MenuManager.cpp@" << __LINE__ << " Changing game state from : "
+		<< static_cast< int32_t > ( currentGameState  ) << " to "
+		<< static_cast< int32_t > ( gs )
+		<< std::endl;
+
 	hasGameStateChanged = true;
 	prevGameState = currentGameState;
 	currentGameState = gs;
@@ -311,7 +316,7 @@ LobbyMenuItem MenuManager::GetLobbyState()
 {
 	return lobbyState;
 }
-bool MenuManager::LobbyStateChanged()
+bool MenuManager::HasLobbyStateChanged()
 {
 	bool state = lobbyStateChanged;
 	lobbyStateChanged = false;

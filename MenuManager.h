@@ -42,7 +42,7 @@ public:
 	GameState GoBackToPreviousMenuState();
 	GameState GoToMenu();
 	LobbyMenuItem GetLobbyState();
-	bool LobbyStateChanged();
+	bool HasLobbyStateChanged();
 private:
 	MainMenuItemType CheckIntersections( int x, int y ) const;
 	PauseMenuItemType CheckIntersections_Pause( int x, int y ) const;
