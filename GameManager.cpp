@@ -12,6 +12,7 @@
 #include "TCPMessage.h"
 
 #include "enums/MessageType.h"
+#include "enums/LobbyMenuItem.h"
 
 #include <limits>
 #include <vector>
@@ -92,7 +93,6 @@ void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short 
 
 	std::cout << "IP : " << ip << " | Port : " << port << std::endl;
 	netManager.Init( isServer );
-	netManager.Connect( ip, port );
 }
 void GameManager::Restart()
 {
@@ -287,6 +287,9 @@ void GameManager::UpdateBalls( double delta )
 }
 void GameManager::UpdateNetwork()
 {
+	if ( !isResolutionScaleRecieved && netManager.IsServer() )
+		SendGameSettingsMessage();
+
 	if ( netManager.IsConnected()  && localPaddle )
 	{
 		TCPMessage msg;
@@ -355,7 +358,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 {
 	remoteResolutionScale = windowSize.w / message.GetXSize();
-	//PrintRecv( message );
+	PrintRecv( message );
 
 	if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode()  )
 	{
@@ -479,7 +482,7 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 
 void GameManager::SendPaddlePosMessage( )
 {
-	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected()  || !isResolutionScaleRecieved )
+	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
 		return;
 
 	// Sending
@@ -496,7 +499,7 @@ void GameManager::SendPaddlePosMessage( )
 
 void GameManager::SendGameSettingsMessage()
 {
-	if ( !menuManager.IsTwoPlayerMode() )
+	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() || !netManager.IsServer()  )
 		return;
 
 	TCPMessage msg;
@@ -514,7 +517,8 @@ void GameManager::SendGameSettingsMessage()
 	ss << msg;
 	netManager.SendMessage( ss.str() );
 
-	//PrintSend(msg);
+	isResolutionScaleRecieved  = true;
+	PrintSend(msg);
 }
 void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 {
@@ -776,11 +780,17 @@ void GameManager::HandleStatusChange( )
 		renderer.SetGameState( menuManager.GetGameState() );
 
 		if ( menuManager.GetGameState() == GameState::Quit )
-			runGame = false;
+		{
+			 runGame = false;
+		}
 		else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() != GameState::Paused )
 		{
 			SendNewGameMessage();
 			Restart();
+		}
+		else if ( menuManager.GetPrevGameState() == GameState::InGame && menuManager.GetGameState() != GameState::Paused )
+		{
+			 netManager.Close();
 		}
 	}
 }
@@ -908,6 +918,31 @@ void GameManager::Update( double delta )
 
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
+
+		if ( menuManager.GetGameState() == GameState::Lobby && menuManager.HasLobbyStateChanged() )
+		{
+			switch ( menuManager.GetLobbyState() )
+			{
+				case LobbyMenuItem::NewGame:
+					std::cout << "New game\n";
+					menuManager.SetGameState( GameState::InGame );
+					netManager.SetIsServer( true );
+					netManager.Connect( "127.0.0.1", 2002 );
+					break;
+				case LobbyMenuItem::Update:
+					std::cout << "Update game list\n";
+					menuManager.SetGameState( GameState::InGame );
+					netManager.SetIsServer( false );
+					netManager.Connect( "127.0.0.1", 2002 );
+					break;
+				case LobbyMenuItem::Back:
+					menuManager.GoToMenu();
+					break;
+				case LobbyMenuItem::Unknown:
+					std::cout << "GameManager.cpp@" << __LINE__ << " Unkown new game state\n";
+					break;
+			}
+		}
 		//renderer.Render( );
 		UpdateGUI();
 		return;
@@ -1243,9 +1278,10 @@ void GameManager::RendererScores()
 }
 void GameManager::RenderInGame()
 {
-	if ( menuManager.IsTwoPlayerMode() && !isResolutionScaleRecieved )
+	if ( menuManager.IsTwoPlayerMode()  && !isResolutionScaleRecieved )
 	{
 		renderer.RenderText( "Waiting for other player...", Player::Local  );
+		netManager.Update();
 		return;
 	}
 
