@@ -89,10 +89,8 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 
 void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short port )
 {
-	boardLoader.SetIsServer( !menuManager.IsTwoPlayerMode() || isServer );
-
-	std::cout << "IP : " << ip << " | Port : " << port << std::endl;
-	netManager.Init( isServer );
+	std::cout << "IP : " << ip << " | Port : " << port << " | Server? : " << std::boolalpha << isServer << std::endl;
+	netManager.Init( true  );
 }
 void GameManager::Restart()
 {
@@ -1278,7 +1276,10 @@ void GameManager::RendererScores()
 }
 void GameManager::RenderInGame()
 {
-	if ( menuManager.IsTwoPlayerMode()  && !isResolutionScaleRecieved )
+	if ( menuManager.IsTwoPlayerMode()
+			&& !isResolutionScaleRecieved
+			&& netManager.IsServer()
+		)
 	{
 		renderer.RenderText( "Waiting for other player...", Player::Local  );
 		netManager.Update();

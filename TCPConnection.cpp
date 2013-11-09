@@ -148,6 +148,11 @@ bool TCPConnection::StartServer( )
 
 bool TCPConnection::AcceptConnection()
 {
+	if ( tcpSocket == nullptr )
+	{
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " tcpSoket is null" << std::endl;
+		return false;
+	}
 	serverSocket = SDLNet_TCP_Accept( tcpSocket );
 
 	if ( serverSocket  == nullptr )

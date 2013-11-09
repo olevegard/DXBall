@@ -38,6 +38,12 @@ void NetManager::Close()
 }
 void NetManager::Update()
 {
+	if ( !isServer )
+	{
+		std::cout << "NetManager.cpp@" << __LINE__
+			<< " Needs to be server to run Updare()" << std::endl;
+		return;
+	}
 	gameServer.Update();
 }
 std::string NetManager::ReadMessage( )
