@@ -59,8 +59,10 @@
 	windowSize.h = 1080 / 2;
 }
 
-bool GameManager::Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS )
+bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &size, bool startFS )
 {
+	localPlayerName = localPlayerName_;
+
 	windowSize = size;
 	bool server = localPlayerName ==  "server";
 
@@ -70,8 +72,6 @@ bool GameManager::Init( const std::string &localPlayerName, const std::string &r
 	UpdateGUI();
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
-	if ( menuManager.IsTwoPlayerMode() )
-		renderer.RenderPlayerCaption( remotePlayerName, Player::Remote );
 
 	CreateMenu();
 
@@ -346,6 +346,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::BonusPickup:
 			RecieveBonusBoxPickupMessage( message );
 			break;
+		case MessageType::PlayerName:
+			RecievePlayerNameMessage( message );
+			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
 			std::cin.ignore();
@@ -353,6 +356,11 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 	}
 }
 
+void GameManager::RecievePlayerNameMessage( const TCPMessage &message )
+{
+	PrintRecv( message );
+	renderer.RenderPlayerCaption( message.GetPlayerName(), Player::Remote );
+}
 void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 {
 	remoteResolutionScale = windowSize.w / message.GetXSize();
@@ -516,6 +524,21 @@ void GameManager::SendGameSettingsMessage()
 	netManager.SendMessage( ss.str() );
 
 	isResolutionScaleRecieved  = true;
+	PrintSend(msg);
+}
+void GameManager::SendPlayerName()
+{
+	if ( !menuManager.IsTwoPlayerMode() )
+		return;
+
+	TCPMessage msg;
+	std::stringstream ss;
+
+	msg.SetPlayerName( localPlayerName );
+	ss << msg;
+
+	netManager.SendMessage( ss.str() );
+
 	PrintSend(msg);
 }
 void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)

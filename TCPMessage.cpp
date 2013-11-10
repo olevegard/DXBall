@@ -35,6 +35,9 @@ std::string TCPMessage::Print() const
 		case NewGame:
 			ss << " : " << GetIPAdress() << " : " << GetPort() <<  "\n";
 			break;
+		case PlayerName:
+			ss << " : " << GetPlayerName() << "\n";
+			break;
 		default:
 			ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
 			break;
@@ -67,6 +70,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Bonus Pickup";
 		case NewGame:
 			return "New Game";
+		case PlayerName:
+			return "Player Name";
 		default:
 			break;
 	}

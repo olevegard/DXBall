@@ -83,7 +83,7 @@ int main( int argc, char* args[] )
 	std::cout << "============================\n";
 
 	GameManager gameMan;
-	if ( !gameMan.Init( localPlayerName, remotePlayerName, resolution, startFS  ) )
+	if ( !gameMan.Init( localPlayerName, resolution, startFS  ) )
 		return 1;
 
 	gameMan.SetFPSLimit( fpsLimit );

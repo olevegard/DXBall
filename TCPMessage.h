@@ -63,6 +63,12 @@ class TCPMessage
 		{
 			ipAddress = ipAddress_;
 		}
+
+		void SetPlayerName( std::string playerName_ )
+		{
+			playerName = playerName_;
+		}
+
 		uint16_t GetPort() const
 		{
 			return port;
@@ -70,6 +76,10 @@ class TCPMessage
 		std::string GetIPAdress() const
 		{
 			return ipAddress;
+		}
+		std::string GetPlayerName() const
+		{
+			return playerName;
 		}
 	private:
 		MessageType msgType;
@@ -92,6 +102,8 @@ class TCPMessage
 
 		std::string ipAddress;
 		uint16_t port;
+
+		std::string playerName;
 };
 
 inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
@@ -190,6 +202,14 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				return is;
 			}
+		case PlayerName:
+			{
+				std::string playerName_;
+				is >> playerName_;
+				msg.SetPlayerName( playerName_ );
+
+				return is;
+			}
 		default:
 			{
 				std::cout << "Wrong message type : " << type << std::endl;
@@ -255,6 +275,9 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case NewGame:
 			os << message.GetIPAdress() << " ";
 			os << message.GetPort();
+			break;
+		case PlayerName:
+			os << message.GetPlayerName();
 			break;
 		default:
 			std::cout << "Wrong message type : " << type << std::endl;

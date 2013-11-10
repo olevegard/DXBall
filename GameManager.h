@@ -21,7 +21,7 @@ class GameManager
 	public:
 		GameManager();
 		// Startup options
-		bool Init( const std::string &localPlayerName, const std::string &remotePlayerName, const SDL_Rect &size, bool startFS );
+		bool Init( const std::string &localPlayerName, const SDL_Rect &size, bool startFS );
 
 		// Setters
 		void SetFPSLimit( unsigned short limit );
@@ -101,6 +101,7 @@ class GameManager
 
 		// Recieve messages
 		void HandleRecieveMessage( const TCPMessage &message );
+		void RecievePlayerNameMessage( const TCPMessage &message );
 		void RecieveGameSettingsMessage( const TCPMessage &message);
 		void RecieveGameStateChangedMessage( const TCPMessage &message );
 		void RecieveBallSpawnMessage( const TCPMessage &message );
@@ -113,6 +114,7 @@ class GameManager
 
 		// Send messages
 		void SendGameSettingsMessage();
+		void SendPlayerName();
 		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
@@ -154,10 +156,13 @@ class GameManager
 		std::shared_ptr < Paddle > remotePaddle;
 
 		bool isAIControlled;
+		std::string localPlayerName;
 		unsigned int localPlayerPoints;
 		unsigned int localPlayerLives;
 		unsigned int localPlayerActiveBalls;
 
+
+		std::string remotePlayerName;
 		unsigned int remotePlayerPoints;
 		unsigned int remotePlayerLives;
 		unsigned int remotePlayerActiveBalls;

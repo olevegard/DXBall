@@ -15,6 +15,7 @@ enum MessageType
 	GameStateChanged,	// Game was paused by remote player
 	GameInstance,		// A new game was started, display it in the list of games
 	NewGame,			// Tell the server than you have started a game
+	PlayerName,			// Tell the server than you have started a game
 
 	BonusSpawned,	// A bonus was triggeredby the oponenyyt
 	BonusPickup, 	// A bonus was picked up by the oponent
