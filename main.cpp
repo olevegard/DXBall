@@ -83,7 +83,7 @@ int main( int argc, char* args[] )
 
 	gameMan.SetFPSLimit( fpsLimit );
 	gameMan.SetAIControlled( isAIControlled );
-	gameMan.InitNetManager( isServer, ip, port );
+	gameMan.InitNetManager( ip, port );
 	gameMan.Run();
 	return 0;
 }

@@ -87,9 +87,11 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	return true;
 }
 
-void GameManager::InitNetManager( bool isServer, std::string ip, unsigned short port )
+void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
-	std::cout << "IP : " << ip << " | Port : " << port << " | Server? : " << std::boolalpha << isServer << std::endl;
+	ip = ip_;
+	port = port_;
+	std::cout << "IP : " << ip << " | Port : " << port << "\n";
 	netManager.Init( true  );
 }
 void GameManager::Restart()
@@ -687,8 +689,8 @@ void GameManager::SendNewGameMessage( )
 
 	TCPMessage msg;
 	msg.SetMessageType( MessageType::NewGame );
-	msg.SetIPAdress( "127.0.0.1"  );
-	msg.SetPort( 2002 );
+	msg.SetIPAdress( ip  );
+	msg.SetPort( port );
 
 	std::stringstream ss;
 	ss << msg;
@@ -952,13 +954,13 @@ void GameManager::Update( double delta )
 					std::cout << "New game\n";
 					menuManager.SetGameState( GameState::InGame );
 					netManager.SetIsServer( true );
-					netManager.Connect( "127.0.0.1", 2002 );
+					netManager.Connect( ip, port );
 					break;
 				case LobbyMenuItem::Update:
 					std::cout << "Update game list\n";
 					menuManager.SetGameState( GameState::InGame );
 					netManager.SetIsServer( false );
-					netManager.Connect( "127.0.0.1", 2002 );
+					netManager.Connect( ip, port );
 					break;
 				case LobbyMenuItem::Back:
 					menuManager.GoToMenu();

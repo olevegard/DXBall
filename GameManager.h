@@ -31,7 +31,7 @@ class GameManager
 		void Run();
 		void UpdateGUI( );
 
-		void InitNetManager( bool isServer, std::string ip, unsigned short port );
+		void InitNetManager( std::string ip_, uint16_t port_ );
 	private:
 		// Add / Remoe game objects
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
@@ -150,7 +150,10 @@ class GameManager
 		Renderer renderer;
 		Timer timer;
 		MenuManager menuManager;
+
 		NetManager netManager;
+		std::string ip;
+		uint16_t port;
 
 		std::shared_ptr < Paddle > localPaddle;
 		std::shared_ptr < Paddle > remotePaddle;
