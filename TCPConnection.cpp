@@ -24,7 +24,7 @@ bool TCPConnection::Init( const std::string &host, unsigned short port, bool ser
 		return false;
 	}
 
-	isConnected = true;
+	isConnected = !server;
 	return true;
 }
 

@@ -285,8 +285,13 @@ void GameManager::UpdateBalls( double delta )
 }
 void GameManager::UpdateNetwork()
 {
-	if ( !isResolutionScaleRecieved && netManager.IsServer() )
-		SendGameSettingsMessage();
+	if ( !isResolutionScaleRecieved )
+	{
+		if ( netManager.IsServer() )
+			SendGameSettingsMessage();
+
+		SendPlayerName();
+	}
 
 	if ( netManager.IsConnected()  && localPaddle )
 	{
@@ -508,6 +513,7 @@ void GameManager::SendGameSettingsMessage()
 	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() || !netManager.IsServer()  )
 		return;
 
+
 	TCPMessage msg;
 
 	std::stringstream ss;
@@ -528,12 +534,10 @@ void GameManager::SendGameSettingsMessage()
 }
 void GameManager::SendPlayerName()
 {
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
 	TCPMessage msg;
 	std::stringstream ss;
 
+	msg.SetMessageType( MessageType::PlayerName );
 	msg.SetPlayerName( localPlayerName );
 	ss << msg;
 
@@ -678,7 +682,7 @@ void GameManager::SendGameStateChangedMessage()
 }
 void GameManager::SendNewGameMessage( )
 {
-	if ( netManager.IsServer() || !menuManager.IsTwoPlayerMode() )
+	if ( netManager.IsServer() || !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
 		return;
 
 	TCPMessage msg;

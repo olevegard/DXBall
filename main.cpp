@@ -18,7 +18,6 @@ bool StrToBool( const std::string &str );
 int main( int argc, char* args[] )
 {
 	std::string localPlayerName  = "Player 1";
-	std::string remotePlayerName = "Player 2";
 	unsigned short fpsLimit = 100;
 	SDL_Rect resolution;
 	resolution.x = 0;
@@ -45,8 +44,6 @@ int main( int argc, char* args[] )
 
 			if ( str == "-lplayer" && argc > ( i + 1 )  )
 				localPlayerName = args[i + 1 ];
-			else if ( str == "-rplayer" && argc > ( i + 1 )  )
-				remotePlayerName = args[i + 1 ];
 			else if ( str == "-fpslimit" && argc > ( i + 1 )  )
 				fpsLimit = static_cast< unsigned short >( std::stoi( args[i + 1] ) );
 			else if ( str == "-resolution" && argc > ( i + 1 )  )
@@ -67,11 +64,9 @@ int main( int argc, char* args[] )
 	}
 
 	localPlayerName = ReplaceUnderscores( localPlayerName );
-	remotePlayerName =  ReplaceUnderscores( remotePlayerName );
 
 	std::cout << "========== CONFIG ==========\n";
 	std::cout << "Local player     : " << "\'" << localPlayerName << "\'"  << std::endl;
-	std::cout << "Rmote player     : " << "\'" << remotePlayerName << "\'"  << std::endl;
 	std::cout << "Frame rate limit : " << fpsLimit << std::endl;
 	std::cout << "Resolution       : " << resolution.w << "x" << resolution.h << std::endl;
 	std::cout << "Fullscreen       : " << std::boolalpha << startFS << std::endl;

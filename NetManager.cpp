@@ -56,9 +56,13 @@ std::string NetManager::ReadMessage( )
 void NetManager::SendMessage( std::string str )
 {
 	if ( isServer )
+	{
 		gameServer.Send( str );
+	}
 	else
+	{
 		gameClient.Send( str );
+	}
 }
 void NetManager::SendMessageToServer( std::string str )
 {
@@ -71,9 +75,13 @@ bool NetManager::IsServer() const
 bool NetManager::IsConnected() const
 {
 	if ( isServer )
+	{
 		return gameServer.IsConnected();
+	}
 	else
+	{
 		return gameClient.IsConnected();
+	}
 }
 std::string NetManager::GetIPAdress()
 {
