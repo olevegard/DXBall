@@ -953,12 +953,14 @@ void GameManager::Update( double delta )
 				case LobbyMenuItem::NewGame:
 					std::cout << "New game\n";
 					menuManager.SetGameState( GameState::InGame );
+					boardLoader.SetIsServer( true );
 					netManager.SetIsServer( true );
 					netManager.Connect( ip, port );
 					break;
 				case LobbyMenuItem::Update:
 					std::cout << "Update game list\n";
 					menuManager.SetGameState( GameState::InGame );
+					boardLoader.SetIsServer( false );
 					netManager.SetIsServer( false );
 					netManager.Connect( ip, port );
 					break;
