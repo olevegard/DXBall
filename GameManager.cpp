@@ -114,8 +114,15 @@ void GameManager::Restart()
 	ballCount = 0;
 
 	boardLoader.Reset();
+
+	if ( !menuManager.IsTwoPlayerMode() )
+	{
+		boardLoader.SetIsServer( true );
+	}
+
 	if ( !menuManager.IsTwoPlayerMode() || netManager.IsServer() )
 		GenerateBoard();
+
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
 	localPlayerActiveBalls = 0;
@@ -384,7 +391,6 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 }
 void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
 {
-
 	menuManager.SetGameState( message.GetGameState() );
 	PrintRecv( message );
 }
@@ -812,6 +818,7 @@ void GameManager::HandleStatusChange( )
 		}
 		else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() != GameState::Paused )
 		{
+
 			SendNewGameMessage();
 			Restart();
 		}
