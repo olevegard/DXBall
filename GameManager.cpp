@@ -192,9 +192,7 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 
 		renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
 	}
-	if ( !ball )
-		std::cout << "Ball is null!" << std::endl;
-
+	ReducePlayerLifes( ball->GetOwner() );
 	renderer.RemoveBall( ball );
 	UpdateGUI();
 }
@@ -736,18 +734,6 @@ void GameManager::DeleteDeadBalls()
 
 	// Remove item returned by remove_if
 	ballList.erase( newEnd, ballList.end( ) );
-
-	if ( localPlayerBallDeleted )
-	{
-		if ( localPlayerActiveBalls == 0 )
-			ReducePlayerLifes( Player::Local );
-	}
-
-	if ( remotePlayerBallDeleted )
-	{
-		if ( remotePlayerActiveBalls == 0 )
-			ReducePlayerLifes( Player::Remote );
-	}
 }
 std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
 {
