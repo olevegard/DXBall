@@ -186,25 +186,30 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 		--localPlayerActiveBalls;
 
 		SendBallKilledMessage( ball );
-	} else
+	}
+	else
 	{
 		--remotePlayerActiveBalls;
 
 		renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
 	}
-	ReducePlayerLifes( ball->GetOwner() );
+
+	if ( localPlayerActiveBalls == 0 && ball->GetOwner() == Player::Local )
+			ReducePlayerLifes( Player::Local );
+
+	if ( remotePlayerLives == 0 && ball->GetOwner() == Player::Remote )
+			ReducePlayerLifes( Player::Remote );
+
 	renderer.RemoveBall( ball );
 	UpdateGUI();
 }
-
-
 void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
 	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
 	tile->textureType = TextureType::e_Tile;
 
-	tile->rect.x = posX;//( posX * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
-	tile->rect.y = posY;//( posY * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
+	tile->rect.x = posX;
+	tile->rect.y = posY;
 	tile->rect.w = 60 * scale;
 	tile->rect.h = 20 * scale;
 
@@ -212,7 +217,6 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 
 	renderer.AddTile( tile );
 }
-
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
 	if ( tile == nullptr )
@@ -265,9 +269,6 @@ void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 }
 void GameManager::UpdateBalls( double delta )
 {
-	if ( ballList.size() > 0 )
-		renderer.RemoveText();
-
 	for ( auto p : ballList )
 	{
 		p->Update( delta );
@@ -275,12 +276,11 @@ void GameManager::UpdateBalls( double delta )
 		if ( p->GetOwner() == Player::Remote )
 			continue;
 
-		if ( p->BoundCheck( windowSize ) )
+		if ( p->BoundCheck( windowSize ) || p->PaddleCheck( localPaddle->rect )  )
+		{
 			SendBallDataMessage( p );
-
-		if ( p->PaddleCheck( localPaddle->rect ) )
-
-			SendBallDataMessage( p );
+			continue;
+		}
 
 		CheckBallTileIntersection( p );
 
@@ -292,40 +292,35 @@ void GameManager::UpdateBalls( double delta )
 }
 void GameManager::UpdateNetwork()
 {
+	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
+		return;
+
 	if ( !isResolutionScaleRecieved )
 	{
-		if ( netManager.IsServer() )
-			SendGameSettingsMessage();
-
+		SendGameSettingsMessage();
 		SendPlayerName();
 	}
 
-	if ( netManager.IsConnected()  && localPaddle )
+	ReadMessages();
+}
+void GameManager::ReadMessages( )
+{
+	TCPMessage msg;
+	while ( true  )
 	{
-		TCPMessage msg;
+		std::string str = netManager.ReadMessage();
 
-		// Reading
-		bool stop = false;
-		while ( !stop )
+		if ( str == "" )
+			break;
+
+		std::stringstream ss;
+		ss << str;
+
+		while ( ss >> msg )
 		{
-			std::string str = netManager.ReadMessage();
-
-			if ( str == "" )
-			{
-				stop = true;
-				break;
-			}
-
-			std::stringstream ss;
-			ss << str;
-
-			while ( ss >> msg )
-			{
-				HandleRecieveMessage( msg );
-			}
+			HandleRecieveMessage( msg );
 		}
 	}
-
 }
 void GameManager::HandleRecieveMessage( const TCPMessage &message )
 {
@@ -367,7 +362,6 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			break;
 	}
 }
-
 void GameManager::RecievePlayerNameMessage( const TCPMessage &message )
 {
 	PrintRecv( message );
@@ -385,7 +379,6 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 	}
 
 	isResolutionScaleRecieved = true;
-
 }
 void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
 {
@@ -404,9 +397,8 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 	ball->SetRemoteScale( remoteResolutionScale );
 }
 void GameManager::RecieveBallDataMessage( const TCPMessage &message )
-
 {
-	PrintRecv( message );
+	//PrintRecv( message );
 	if ( ballList.size() == 0 )
 		return;
 
@@ -418,19 +410,16 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 		return;
 	}
 
-	ball->rect.x = message.GetXPos() * remoteResolutionScale;
-
 	// Need to add ball's height, because ball it traveling in oposite direction.
 	// The board is also flipped, so the ball will have the oposite horizontal collision edge.
-	//ball->rect.y = ( message.GetYPos() - ball->rect.h ) * remoteResolutionScale;
+	ball->rect.x = message.GetXPos() * remoteResolutionScale;
 	ball->rect.y = ( message.GetYPos()  * remoteResolutionScale ) - ball->rect.h ;
-
 
 	ball->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() ) );
 }
 void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 {
-	PrintRecv( message );
+	//PrintRecv( message );
 	if ( ballList.size() > 0 )
 	{
 		RemoveBall( GetBallFromID( message.GetObjectID() ));
@@ -495,8 +484,6 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 	if ( bb )
 		ApplyBonus( bb );
 }
-
-
 void GameManager::SendPaddlePosMessage( )
 {
 	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
@@ -518,7 +505,6 @@ void GameManager::SendGameSettingsMessage()
 {
 	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() || !netManager.IsServer()  )
 		return;
-
 
 	TCPMessage msg;
 
@@ -714,11 +700,7 @@ void GameManager::DeleteDeadBalls()
 	bool remotePlayerBallDeleted = false;
 	auto isDeadFunc = [&]( std::shared_ptr< Ball > ball )
 	{
-		if ( !ball )
-			return false;
-		//std::cout << "Ball is dead allready" << std::endl;
-
-		if ( ball->IsAlive() )
+		if ( !ball || ball->IsAlive() )
 			return false;
 
 		if ( ball->GetOwner() == Player::Local )
@@ -793,25 +775,24 @@ void GameManager::Run()
 }
 void GameManager::HandleStatusChange( )
 {
-	if ( menuManager.HasGameStateChanged() )
+	if ( !menuManager.HasGameStateChanged() )
+		return;
+
+	SendGameStateChangedMessage();
+	renderer.SetGameState( menuManager.GetGameState() );
+
+	if ( menuManager.GetGameState() == GameState::Quit )
 	{
-		SendGameStateChangedMessage();
-		renderer.SetGameState( menuManager.GetGameState() );
-
-		if ( menuManager.GetGameState() == GameState::Quit )
-		{
-			 runGame = false;
-		}
-		else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() != GameState::Paused )
-		{
-
-			SendNewGameMessage();
-			Restart();
-		}
-		else if ( menuManager.GetPrevGameState() == GameState::InGame && menuManager.GetGameState() != GameState::Paused )
-		{
-			 netManager.Close();
-		}
+		runGame = false;
+	}
+	else if ( menuManager.WasGameStarted()  )
+	{
+		SendNewGameMessage();
+		Restart();
+	}
+	else if ( menuManager.WasGameQuited() )
+	{
+		netManager.Close();
 	}
 }
 void GameManager::HandleEvent( const SDL_Event &event )
@@ -836,10 +817,7 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 	{
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 	}
-	else if ( menuManager.GetGameState() == GameState::MainMenu
-			|| menuManager.GetGameState() == GameState::Paused
-			|| menuManager.GetGameState() == GameState::Lobby
-		)
+	else if ( menuManager.IsInAMenu() )
 	{
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{
@@ -926,46 +904,14 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
-
 	if ( isAIControlled )
 		AIMove();
 
-	if ( menuManager.IsTwoPlayerMode() )
-	{
-		if ( netManager.IsConnected() )
-			UpdateNetwork();
-	}
+	UpdateNetwork();
 
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
-
-		if ( menuManager.GetGameState() == GameState::Lobby && menuManager.HasLobbyStateChanged() )
-		{
-			switch ( menuManager.GetLobbyState() )
-			{
-				case LobbyMenuItem::NewGame:
-					std::cout << "New game\n";
-					menuManager.SetGameState( GameState::InGame );
-					boardLoader.SetIsServer( true );
-					netManager.SetIsServer( true );
-					netManager.Connect( ip, port );
-					break;
-				case LobbyMenuItem::Update:
-					std::cout << "Update game list\n";
-					menuManager.SetGameState( GameState::InGame );
-					boardLoader.SetIsServer( false );
-					netManager.SetIsServer( false );
-					netManager.Connect( ip, port );
-					break;
-				case LobbyMenuItem::Back:
-					menuManager.GoToMenu();
-					break;
-				case LobbyMenuItem::Unknown:
-					std::cout << "GameManager.cpp@" << __LINE__ << " Unkown new game state\n";
-					break;
-			}
-		}
-		//renderer.Render( );
+		UpdateLobbyState();
 		UpdateGUI();
 		return;
 	}
@@ -973,7 +919,7 @@ void GameManager::Update( double delta )
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
 
-	if ( ( !menuManager.IsTwoPlayerMode() || netManager.IsServer() ) &&  IsLevelDone() )
+	if ( IsTimeForNewBoard() )
 	{
 		std::cout << "GameMAanager@" << __LINE__ << " Level is done..\n";
 		GenerateBoard();
@@ -986,6 +932,36 @@ void GameManager::Update( double delta )
 	}
 
 	UpdateGUI();
+}
+
+void GameManager::UpdateLobbyState()
+{
+	if ( menuManager.GetGameState() != GameState::Lobby || !menuManager.HasLobbyStateChanged() )
+		return;
+
+	switch ( menuManager.GetLobbyState() )
+	{
+		case LobbyMenuItem::NewGame:
+			std::cout << "New game\n";
+			menuManager.SetGameState( GameState::InGame );
+			boardLoader.SetIsServer( true );
+			netManager.SetIsServer( true );
+			netManager.Connect( ip, port );
+			break;
+		case LobbyMenuItem::Update:
+			std::cout << "Update game list\n";
+			menuManager.SetGameState( GameState::InGame );
+			boardLoader.SetIsServer( false );
+			netManager.SetIsServer( false );
+			netManager.Connect( ip, port );
+			break;
+		case LobbyMenuItem::Back:
+			menuManager.GoToMenu();
+			break;
+		case LobbyMenuItem::Unknown:
+			std::cout << "GameManager.cpp@" << __LINE__ << " Unkown new game state\n";
+			break;
+	}
 }
 void GameManager::AIMove()
 {
@@ -1168,10 +1144,8 @@ std::vector< Rect > GameManager::GenereateExplosionRects( const std::shared_ptr<
 		explodeVec.erase( newEnd, explodeVec.end( ) );
 	}
 
-
 	return explodedTileRects;
 }
-
 std::vector< std::shared_ptr< Tile > > GameManager::FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const
 {
 	std::vector< std::shared_ptr< Tile > > explodingTileVec;
@@ -1203,7 +1177,6 @@ void GameManager::UpdateBonusBoxes( double delta )
 			{
 				SendBonusBoxPickupMessage( p );
 				ApplyBonus( p );
-				//p->Kill();
 			}
 		}
 		// Remote BonusBoxe Pickup are handled by messages
@@ -1303,7 +1276,7 @@ void GameManager::RenderInGame()
 	if ( menuManager.IsTwoPlayerMode()
 			&& !isResolutionScaleRecieved
 			&& netManager.IsServer()
-		)
+	   )
 	{
 		renderer.RenderText( "Waiting for other player...", Player::Local  );
 		netManager.Update();
@@ -1327,6 +1300,9 @@ void GameManager::RenderInGame()
 		else
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
 	}
+	else
+		if ( ballList.size() > 0 )
+			renderer.RemoveText();
 }
 void GameManager::RenderEndGame()
 {
@@ -1374,13 +1350,19 @@ void GameManager::GenerateBoard()
 }
 bool GameManager::IsLevelDone()
 {
-	if ( menuManager.GetGameState() == GameState::InGame )
-	{
-		auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); };
-		return std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable )  == 0;
-	}
+	return CountDestroyableTiles() == 0;
+}
+int32_t GameManager::CountDestroyableTiles()
+{
+	if ( menuManager.GetGameState() != GameState::InGame && menuManager.GetGameState() != GameState::Paused )
+		return 0;
 
-	return false;
+	auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); };
+	return static_cast< int32_t > ( std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable ) );
+}
+bool GameManager::IsTimeForNewBoard()
+{
+	return ( ( !menuManager.IsTwoPlayerMode() || netManager.IsServer() ) &&  IsLevelDone() );
 }
 void GameManager::ClearBoard()
 {
@@ -1418,18 +1400,7 @@ void GameManager::ReducePlayerLifes( Player player )
 		--localPlayerLives;
 
 		if ( localPlayerLives == 0 )
-		{
-			for ( auto p : ballList )
-			{
-				if ( p->GetOwner() == Player::Local )
-					p->Kill();
-			}
-			for ( auto p : bonusBoxList )
-			{
-				if ( p->GetOwner() == Player::Local )
-					p->Kill();
-			}
-		}
+			RemoveDeadBallsAndBoxes( Player::Local );
 	}
 	else
 	{
@@ -1439,20 +1410,21 @@ void GameManager::ReducePlayerLifes( Player player )
 		--remotePlayerLives;
 
 		if ( remotePlayerLives == 0 )
-		{
-			for ( auto p : ballList )
-			{
-				if ( p->GetOwner() == Player::Remote )
-					p->Kill();
-			}
-			for ( auto p : bonusBoxList )
-			{
-				if ( p->GetOwner() == Player::Remote )
-					p->Kill();
-			}
-		}
+			RemoveDeadBallsAndBoxes( Player::Remote );
 	}
-
+}
+void GameManager::RemoveDeadBallsAndBoxes( Player player )
+{
+	for ( auto p : ballList )
+	{
+		if ( p->GetOwner() == player )
+			p->Kill();
+	}
+	for ( auto p : bonusBoxList )
+	{
+		if ( p->GetOwner() == player )
+			p->Kill();
+	}
 }
 void GameManager::CreateMenu()
 {

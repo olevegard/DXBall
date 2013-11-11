@@ -257,6 +257,7 @@ GameState MenuManager::GetPrevGameState() const
 {
 	return prevGameState;
 }
+
 void MenuManager::SetGameState( const GameState &gs )
 {
 	if ( !IsGameStateChangeValid( gs ) )
@@ -321,4 +322,23 @@ bool MenuManager::HasLobbyStateChanged()
 	bool state = lobbyStateChanged;
 	lobbyStateChanged = false;
 	return state;
+}
+bool MenuManager::WasGameStarted() const
+{
+	return ( currentGameState == GameState::InGame && prevGameState != GameState::Paused );
+}
+bool MenuManager::WasGameQuited() const
+{
+	return ( currentGameState != GameState::Paused && prevGameState == GameState::InGame );
+}
+bool MenuManager::IsTwoPlayerMode() const
+{
+	return isTwoPlayerMode;
+}
+bool MenuManager::IsInAMenu() const
+{
+	return ( currentGameState == GameState::MainMenu
+			|| currentGameState == GameState::Paused
+			|| currentGameState == GameState::Lobby
+		   );
 }

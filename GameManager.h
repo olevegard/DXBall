@@ -80,11 +80,15 @@ class GameManager
 		void GenerateBoard();
 		void ClearBoard();
 		bool IsLevelDone();
+		int32_t CountDestroyableTiles();
+		bool IsTimeForNewBoard();
 
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 		void ReducePlayerLifes( Player player );
+		void RemoveDeadBallsAndBoxes( Player player );
 
 		void Update( double delta );
+		void UpdateLobbyState();
 
 		// Bonus boxes
 		void UpdateBonusBoxes( double delta );
@@ -100,6 +104,7 @@ class GameManager
 		void UpdateNetwork();
 
 		// Recieve messages
+		void ReadMessages( );
 		void HandleRecieveMessage( const TCPMessage &message );
 		void RecievePlayerNameMessage( const TCPMessage &message );
 		void RecieveGameSettingsMessage( const TCPMessage &message);

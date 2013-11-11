@@ -31,18 +31,18 @@ public:
 	void SetGameState( const GameState &gs );
 	bool IsGameStateChangeValid( const GameState &gs) const;
 
-	GameState GetPrevGameState() const;
-
-	bool HasGameStateChanged();
-	bool IsTwoPlayerMode() const
-	{
-		return isTwoPlayerMode;
-	}
-
 	GameState GoBackToPreviousMenuState();
 	GameState GoToMenu();
 	LobbyMenuItem GetLobbyState();
+
+	GameState GetPrevGameState() const;
+	bool HasGameStateChanged();
 	bool HasLobbyStateChanged();
+
+	bool WasGameStarted() const;
+	bool WasGameQuited() const;
+	bool IsTwoPlayerMode() const;
+	bool IsInAMenu() const;
 private:
 	MainMenuItemType CheckIntersections( int x, int y ) const;
 	PauseMenuItemType CheckIntersections_Pause( int x, int y ) const;
