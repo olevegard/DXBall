@@ -433,7 +433,9 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 	auto p = std::find( ballList.begin(), ballList.end(), ball );
 
 	if ( p == ballList.end() )
+	{
 		std::cout << "ball not found!" << std::endl;
+	}
 	else
 		ballList.erase( p  );
 }
@@ -513,6 +515,7 @@ void Renderer::Render( )
 		case GameState::Lobby:
 			RenderMainMenuHeader();
 			//RenderLobby();
+			RenderMainMenuImage();
 			RenderMenuItem( lobbyNewGameButton );
 			RenderMenuItem( lobbyUpdateButton );
 			RenderMenuItem( lobbyBackButton );
@@ -1115,9 +1118,9 @@ void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::strin
 	int32_t yPos = gameListRect.y + gameListRect.h +10;
 
 	lobbyNewGameButton = AddMenuButtonHelper( lobbyNewGameButton, newGame, { xPos, yPos, 0, 0 } );
-	xPos = lobbyNewGameButton.GetEndX()  + 10;
+	xPos = lobbyNewGameButton.GetEndX()  + 20;
 	lobbyUpdateButton = AddMenuButtonHelper( lobbyUpdateButton, update, { xPos, yPos, 0, 0 } );
-	xPos = lobbyUpdateButton.GetEndX() +  10;
+	xPos = lobbyUpdateButton.GetEndX() +  20;
 	lobbyBackButton = AddMenuButtonHelper( lobbyBackButton, back, { xPos, yPos, 0, 0 } );
 
 	CenterLobbyButtons();
@@ -1126,12 +1129,16 @@ void Renderer::CenterLobbyButtons( )
 {
 	int32_t widht = lobbyBackButton.GetEndX() - lobbyNewGameButton.GetRectX();
 	int32_t newX = ( background.w / 2 ) - ( widht / 2 );
+	int32_t newY = singlePlayerText.GetRectY();
 
 	lobbyNewGameButton.SetRectX( newX );
-	newX = lobbyNewGameButton.GetEndX() + 10;
+	lobbyNewGameButton.SetRectY( newY );
+	newX = lobbyNewGameButton.GetEndX() + 20;
 	lobbyUpdateButton.SetRectX( newX );
-	newX = lobbyUpdateButton.GetEndX() + 10;
+	lobbyUpdateButton.SetRectY( newY );
+	newX = lobbyUpdateButton.GetEndX() + 20;
 	lobbyBackButton.SetRectX( newX );
+	lobbyBackButton.SetRectY( newY );
 }
 void Renderer::SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mit  )
 {
