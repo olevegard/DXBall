@@ -25,6 +25,7 @@
 
 #include "MainMenuItem.h"
 #include "PauseMenuItem.h"
+#include "MenuList.h"
 
 // Forward declarations
 struct Ball;
@@ -113,8 +114,28 @@ public:
 		isTwoPlayerMode = isTwoPlayerMode_;
 	}
 
-	// Multuplayer menu
-	void AddGameToList( std::string strIP, int32_t port );
+	SDL_Renderer* GetRenderer()
+	{
+		return renderer;
+	}
+
+	TTF_Font* GetFont() const
+	{
+		return font;
+	}
+
+	void AddMenuList( MenuList* mitem )
+	{
+		ml = mitem;
+	}
+
+	SDL_Texture* RenderTextTexture_Solid  (  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
+	SDL_Texture* RenderTextTexture_Blended(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect, int style = 0);
+
+	SDL_Texture* InitSurface( const Rect &rect     , unsigned char r, unsigned char g, unsigned char b ) const;
+	SDL_Texture* InitSurface( int width, int height, unsigned char r, unsigned char g, unsigned char b ) const;
+	SDL_Texture* InitSurface( const Rect &rect     , const SDL_Color &clr ) const;
+	SDL_Texture* InitSurface( int width, int height, const SDL_Color &clr ) const;
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -139,10 +160,6 @@ private:
 	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;
 	void FillSurface( SDL_Surface* source, const SDL_Color &color ) const;
 
-	SDL_Texture* InitSurface( const Rect &rect     , unsigned char r, unsigned char g, unsigned char b ) const;
-	SDL_Texture* InitSurface( int width, int height, unsigned char r, unsigned char g, unsigned char b ) const;
-	SDL_Texture* InitSurface( const Rect &rect     , const SDL_Color &clr ) const;
-	SDL_Texture* InitSurface( int width, int height, const SDL_Color &clr ) const;
 
 	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
 
@@ -157,8 +174,6 @@ private:
 	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
 
 	bool LoadFontAndText();
-	SDL_Texture* RenderTextTexture_Solid  (  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
-	SDL_Texture* RenderTextTexture_Blended(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect, int style = 0);
 
 	void CalculateRemotePlayerTextureRects();
 
@@ -167,6 +182,8 @@ private:
 	void CleanUpLists();
 	void CleanUpTTF();
 	void QuitSDL();
+
+	MenuList* ml;
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -297,19 +314,4 @@ private:
 	MenuItem 	lobbyNewGameButton;
 	MenuItem 	lobbyUpdateButton;
 	MenuItem 	lobbyBackButton;
-
-	std::vector< MenuItem > gameList;
-	int32_t lowestItem;
-
-	SDL_Texture* lobbyHeaderTexture;
-	SDL_Rect lobbyHeaderRect;
-
-	SDL_Texture* gameListTexture;
-	SDL_Rect gameListRect;
-
-	SDL_Texture* updateButtonTexture;
-	SDL_Rect updateButtonRect;
-
-	SDL_Texture* newGameTexture;
-	SDL_Rect newGameRect;
 };

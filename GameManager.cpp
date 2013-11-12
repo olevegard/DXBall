@@ -69,6 +69,8 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	if ( !renderer.Init( windowSize, startFS, server ) )
 		return false;
 
+
+	menuManager.AddGameToList( renderer );
 	UpdateGUI();
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
@@ -936,6 +938,7 @@ void GameManager::Update( double delta )
 
 void GameManager::UpdateLobbyState()
 {
+
 	if ( menuManager.GetGameState() != GameState::Lobby || !menuManager.HasLobbyStateChanged() )
 		return;
 
@@ -1253,11 +1256,9 @@ void GameManager::UpdateGUI( )
 	else if ( menuManager.GetGameState() == GameState::GameOver )
 		RenderEndGame();
 
-	RendererScores();
-
 	renderer.Render( );
+	RendererScores();
 }
-
 void GameManager::RendererScores()
 {
 	renderer.RenderPoints   ( localPlayerPoints, Player::Local );

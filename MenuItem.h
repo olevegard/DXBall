@@ -41,6 +41,10 @@ struct MenuItem
 	{
 		return itemRect.y;
 	}
+	int GetRectW( ) const
+	{
+		return itemRect.w;
+	}
 	int GetRectH( ) const
 	{
 		return itemRect.h;

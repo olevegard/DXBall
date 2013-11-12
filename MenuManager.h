@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Renderer.h"
 #include "MenuItem.h"
+
+#include "MenuList.h"
 
 #include "enums/GameState.h"
 #include "enums/LobbyState.h"
@@ -43,6 +46,17 @@ public:
 	bool WasGameQuited() const;
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
+
+	void AddGameToList( Renderer &renderer )
+	{
+		lobbyGameList->Init( "Available Games : ",  { 260, 180, 400, 200 }, renderer  );
+
+		lobbyGameList->AddItem( "Text", renderer );
+		lobbyGameList->AddItem( "ads",  renderer );
+		renderer.AddMenuList( lobbyGameList.get() );
+		std::cout << "Added!\n";
+
+	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y ) const;
 	PauseMenuItemType CheckIntersections_Pause( int x, int y ) const;
@@ -70,6 +84,7 @@ private:
 	MenuItem lobbyNewGameButton;
 	MenuItem lobbyUpdateButton;
 	MenuItem lobbyBackButton;
+	std::shared_ptr <MenuList > lobbyGameList;
 	LobbyMenuItem lobbyState;
 	bool lobbyStateChanged;
 };

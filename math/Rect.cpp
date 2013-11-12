@@ -121,3 +121,10 @@ SDL_Rect Rect::ToSDLRect(  ) const
 	ret.h = static_cast< int > ( h );
 	return ret;
 }
+void Rect::FromSDLRect( const SDL_Rect &r  )
+{
+	x = r.x;
+	y = r.y;
+	w = r.w;
+	h = r.h;
+}

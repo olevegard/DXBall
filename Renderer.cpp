@@ -120,9 +120,6 @@
 	,	lobbyNewGameButton( "New Game" )
 	,	lobbyUpdateButton( "Update" )
 	,	lobbyBackButton( "Back" )
-
-	,	lowestItem( 0 )
-	,	lobbyHeaderRect({ 200, 400, 0, 0 } )
 {
 }
 
@@ -171,6 +168,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 	if ( !LoadFontAndText() )
 		return false;
+
 
 	LoadColors();
 	LoadImages();
@@ -283,36 +281,8 @@ bool Renderer::LoadImages()
 	for ( size_t i = 0; i < hardTileTextures.size() ; ++i )
 		SetTileColorSurface( i, hardTileColors[ i ], hardTileTextures );
 
-
-	lobbyHeaderTexture = RenderTextTexture_Blended( mediumFont, "Available games", textColor, lobbyHeaderRect );
-	lobbyHeaderRect.x = ( greyAreaRect.w - lobbyHeaderRect.w) / 2 ;
-	lobbyHeaderRect.y = greyAreaRect.y + 10;
-
-
-	gameListRect.y = lobbyHeaderRect.y + lobbyHeaderRect.h;
-	double ratio = 0.4;// 0.7;
-	gameListRect.w = static_cast< int32_t > ( background.w * ( ratio * 2 ) );
-	gameListRect.h = static_cast< int32_t > ( background.h * ratio );
-	gameListRect.x = static_cast< int32_t > ( ( background.w * 0.5 ) - ( gameListRect.w * 0.5 ) );
-	gameListTexture = InitSurface( gameListRect.w, gameListRect.h,  0, 0, 0 );
-	SDL_SetTextureAlphaMod( gameListTexture, 255 );
-
-	updateButtonTexture = RenderTextTexture_Blended( mediumFont, "Update", textColor, updateButtonRect );
-	newGameTexture = RenderTextTexture_Blended( mediumFont, "New Game", textColor, newGameRect );
-
-	updateButtonRect.x = static_cast< int32_t > ( ( background.w * 0.5 ) - ( ( updateButtonRect.w + newGameRect.w )  * 0.5 ) );
-	updateButtonRect.y = gameListRect.y + gameListRect.h +10;
-
-	newGameRect.x = updateButtonRect.x + updateButtonRect.w + 20;
-	newGameRect.y = updateButtonRect.y;
-
-	lowestItem = gameListRect.y + 10;
-	AddGameToList( "127.0.0.1", 1111 );
-	AddGameToList( "127.0.0.1", 2222 );
-
 	return true;
 }
-
 void Renderer::LoadColors()
 {
 	ConfigLoader cfgldr;
@@ -519,6 +489,7 @@ void Renderer::Render( )
 			RenderMenuItem( lobbyNewGameButton );
 			RenderMenuItem( lobbyUpdateButton );
 			RenderMenuItem( lobbyBackButton );
+			ml->Render( renderer );
 			break;
 		case GameState::InGame:
 			RenderForeground();
@@ -618,43 +589,6 @@ void Renderer::RenderLobby()
 {
 	if ( greyAreaTexture )
 		SDL_RenderCopy( renderer, greyAreaTexture, nullptr, &greyAreaRect );
-
-	// Render text
-	SDL_RenderCopy( renderer, lobbyHeaderTexture, nullptr, &lobbyHeaderRect );
-
-	// Render game list box
-	SDL_RenderCopy( renderer, gameListTexture, nullptr, &gameListRect );
-
-	// Update button
-	SDL_RenderCopy( renderer, updateButtonTexture, nullptr, &updateButtonRect);
-
-	// New game button
-	SDL_RenderCopy( renderer, newGameTexture, nullptr, &newGameRect);
-
-	// Game List ITem
-	for ( const auto &p : gameList )
-			RenderMenuItem( p );
-}
-
-void Renderer::AddGameToList( std::string strIP, int32_t port )
-{
-	SDL_Texture* text;
-	SDL_Rect gameListItem;
-
-	std::stringstream ss;
-	ss << "IP : " << strIP << " | Port : " << port;
-	std::string str = ss.str();
-	MenuItem item( str.c_str()  );
-
-	text = RenderTextTexture_Blended( tinyFont, str.c_str(), textColor, gameListItem );
-	item.SetTexture( text );
-
-	gameListItem.x = gameListRect.x + 10;
-	gameListItem.y = lowestItem;
-	item.SetRect( gameListItem );
-
-	gameList.push_back( item );
-	lowestItem += gameListItem.h + 10;
 }
 void Renderer::RenderMainMenuHeader()
 {
@@ -1114,8 +1048,10 @@ SDL_Rect Renderer::GetPauseQuitRect() const
 }
 void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::string &update, const std::string &back )
 {
-	int32_t xPos = static_cast< int32_t > ( ( background.w * 0.5 ) - ( ( updateButtonRect.w + newGameRect.w )  * 0.5 ) );
-	int32_t yPos = gameListRect.y + gameListRect.h +10;
+	int32_t xPos =
+		static_cast< int32_t > ( ( background.w * 0.5 ) -
+		( ( lobbyNewGameButton.GetRectW()  +  lobbyUpdateButton.GetRectW() + lobbyBackButton.GetRectW() )  * 0.5 ) );
+	int32_t yPos = singlePlayerText.GetRectY();
 
 	lobbyNewGameButton = AddMenuButtonHelper( lobbyNewGameButton, newGame, { xPos, yPos, 0, 0 } );
 	xPos = lobbyNewGameButton.GetEndX()  + 20;
@@ -1129,16 +1065,12 @@ void Renderer::CenterLobbyButtons( )
 {
 	int32_t widht = lobbyBackButton.GetEndX() - lobbyNewGameButton.GetRectX();
 	int32_t newX = ( background.w / 2 ) - ( widht / 2 );
-	int32_t newY = singlePlayerText.GetRectY();
 
 	lobbyNewGameButton.SetRectX( newX );
-	lobbyNewGameButton.SetRectY( newY );
 	newX = lobbyNewGameButton.GetEndX() + 20;
 	lobbyUpdateButton.SetRectX( newX );
-	lobbyUpdateButton.SetRectY( newY );
 	newX = lobbyUpdateButton.GetEndX() + 20;
 	lobbyBackButton.SetRectX( newX );
-	lobbyBackButton.SetRectY( newY );
 }
 void Renderer::SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mit  )
 {

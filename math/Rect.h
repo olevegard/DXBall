@@ -22,6 +22,7 @@ struct Rect
 	}
 
 	SDL_Rect ToSDLRect(  ) const;
+	void FromSDLRect( const SDL_Rect &r );
 
 	bool CheckTileIntersection( const Rect &other ) const;
 
@@ -36,4 +37,12 @@ struct Rect
 	double w;
 	double h;
 };
-
+/*
+void operator=( Rect lhs, Rect rhs )
+{
+	lhs.x = rhs.x;
+	lhs.y = rhs.y;
+	lhs.w = rhs.w;
+	lhs.h = rhs.h;
+}
+*/

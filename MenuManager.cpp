@@ -1,7 +1,10 @@
 #include <string>
+#include <memory>
 
 #include "MenuManager.h"
 #include "Renderer.h"
+#include "MenuList.h"
+
 #include "math/RectHelpers.h"
 
 MenuManager::MenuManager()
@@ -23,9 +26,10 @@ MenuManager::MenuManager()
 	,	lobbyNewGameButton( "New Game" )
 	,	lobbyUpdateButton ( "Update"   )
 	,	lobbyBackButton   ( "Back"     )
+
 	,	lobbyStateChanged( false  )
 {
-
+	lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
 }
 void MenuManager::AddMenuElememts( Renderer &renderer )
 {
