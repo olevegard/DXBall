@@ -69,8 +69,6 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	if ( !renderer.Init( windowSize, startFS, server ) )
 		return false;
 
-
-	menuManager.AddGameToList( renderer );
 	UpdateGUI();
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
@@ -85,6 +83,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	localPaddle->SetScale( scale );
 
 	renderer.SetLocalPaddle( localPaddle );
+	menuManager.Init( renderer );
 
 	return true;
 }
@@ -95,6 +94,10 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 	port = port_;
 	std::cout << "IP : " << ip << " | Port : " << port << "\n";
 	netManager.Init( true  );
+
+	HostInfo hostInfo;
+	hostInfo.Set( ip, port );
+	//menuManager.AddGameToList( renderer, hostInfo );
 }
 void GameManager::Restart()
 {
@@ -294,6 +297,8 @@ void GameManager::UpdateBalls( double delta )
 }
 void GameManager::UpdateNetwork()
 {
+	ReadMessagesFromServer();
+
 	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
 		return;
 
@@ -315,6 +320,26 @@ void GameManager::ReadMessages( )
 		if ( str == "" )
 			break;
 
+		std::stringstream ss;
+		ss << str;
+
+		while ( ss >> msg )
+		{
+			HandleRecieveMessage( msg );
+		}
+	}
+}
+void GameManager::ReadMessagesFromServer( )
+{
+	TCPMessage msg;
+	while ( true  )
+	{
+		std::string str = netManager.ReadMessageFromServer();
+
+		if ( str == "" )
+			break;
+
+		std::cout << "Reading : " << str << std::endl;
 		std::stringstream ss;
 		ss << str;
 
@@ -358,11 +383,22 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::PlayerName:
 			RecievePlayerNameMessage( message );
 			break;
+		case MessageType::NewGame:
+			RecieveNewGameMessage( message );
+			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
 			std::cin.ignore();
 			break;
 	}
+}
+void GameManager::RecieveNewGameMessage( const TCPMessage &message )
+{
+	HostInfo info;
+	info.Set( message.GetIPAdress(), message.GetPort() );
+	menuManager.AddGameToList( renderer, info );
+
+	PrintRecv( message );
 }
 void GameManager::RecievePlayerNameMessage( const TCPMessage &message )
 {
@@ -676,8 +712,7 @@ void GameManager::SendGameStateChangedMessage()
 }
 void GameManager::SendNewGameMessage( )
 {
-	if ( netManager.IsServer() || !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
-		return;
+	//if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() ) return;
 
 	TCPMessage msg;
 	msg.SetMessageType( MessageType::NewGame );
@@ -687,6 +722,18 @@ void GameManager::SendNewGameMessage( )
 	std::stringstream ss;
 	ss << msg;
 	netManager.SendMessageToServer( ss.str() );
+
+}
+void GameManager::SendGetGameListMessage()
+{
+	TCPMessage msg;
+	msg.SetMessageType( MessageType::GetGameList );
+
+	std::stringstream ss;
+	ss << msg;
+	netManager.SendMessageToServer( ss.str() );
+
+	PrintSend( msg );
 }
 void GameManager::PrintSend( const TCPMessage &msg ) const
 {
@@ -789,7 +836,6 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.WasGameStarted()  )
 	{
-		SendNewGameMessage();
 		Restart();
 	}
 	else if ( menuManager.WasGameQuited() )
@@ -946,6 +992,7 @@ void GameManager::UpdateLobbyState()
 	{
 		case LobbyMenuItem::NewGame:
 			std::cout << "New game\n";
+			SendNewGameMessage();
 			menuManager.SetGameState( GameState::InGame );
 			boardLoader.SetIsServer( true );
 			netManager.SetIsServer( true );
@@ -953,14 +1000,33 @@ void GameManager::UpdateLobbyState()
 			break;
 		case LobbyMenuItem::Update:
 			std::cout << "Update game list\n";
+			SendGetGameListMessage();
+			break;
+		case LobbyMenuItem::Back:
 			menuManager.SetGameState( GameState::InGame );
 			boardLoader.SetIsServer( false );
 			netManager.SetIsServer( false );
 			netManager.Connect( ip, port );
-			break;
-		case LobbyMenuItem::Back:
 			menuManager.GoToMenu();
 			break;
+
+		case LobbyMenuItem::GameList:
+			{
+				HostInfo info;
+				if ( menuManager.IsAnItemSelected() )
+				{
+					std::cout << "GameManager.cpp@" << __LINE__ << " Selected game in list : " << menuManager.GetSelectedGameInfo().GetAsSrting()  << std::endl;
+					HostInfo hostInfo = menuManager.GetSelectedGameInfo();
+					menuManager.SetGameState( GameState::InGame );
+					boardLoader.SetIsServer( false );
+					netManager.SetIsServer( false );
+					netManager.Connect( hostInfo.GetIP(), static_cast< uint16_t > ( hostInfo.GetPort()  ) );
+				}
+				else
+					std::cout << "GameManager.cpp@" << __LINE__ << " No item selected\n";
+
+				break;
+			}
 		case LobbyMenuItem::Unknown:
 			std::cout << "GameManager.cpp@" << __LINE__ << " Unkown new game state\n";
 			break;

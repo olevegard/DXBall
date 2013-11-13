@@ -27,9 +27,9 @@ MenuManager::MenuManager()
 	,	lobbyUpdateButton ( "Update"   )
 	,	lobbyBackButton   ( "Back"     )
 
+	,	seletedGameID( -1 )
 	,	lobbyStateChanged( false  )
 {
-	lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
 }
 void MenuManager::AddMenuElememts( Renderer &renderer )
 {
@@ -154,6 +154,8 @@ void MenuManager::CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer ) c
 			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
 			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
 			break;
+		case LobbyMenuItem::GameList:
+			break;
 		case LobbyMenuItem::Unknown:
 			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
 			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
@@ -179,7 +181,8 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 			case PauseMenuItemType::Unknown:
 				return false;
 		}
-	} else if ( currentGameState == GameState::MainMenu )
+	}
+	else if ( currentGameState == GameState::MainMenu )
 	{
 		switch ( CheckIntersections( x, y))
 		{
@@ -199,13 +202,22 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 			case MainMenuItemType::Unknown:
 				return false;
 		}
-	} else if ( currentGameState == GameState::Lobby )
+	}
+	else if ( currentGameState == GameState::Lobby )
 	{
 		lobbyState = CheckIntersections_Lobby( x, y);
-		lobbyStateChanged = true;
-	}
 
-	return true;
+		if ( lobbyState == LobbyMenuItem::GameList )
+			seletedGameID = lobbyGameList->FindIntersectedItem( x, y );
+		else
+			seletedGameID = -1;
+
+		lobbyStateChanged = true;
+		return true;
+	}
+	std::cout << "ID : " << seletedGameID << "\n";
+
+	return false;
 }
 MainMenuItemType MenuManager::CheckIntersections( int x, int y ) const
 {
@@ -246,6 +258,9 @@ LobbyMenuItem MenuManager::CheckIntersections_Lobby( int x, int y ) const
 
 	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyBackButton.GetRect() ) )
 		return LobbyMenuItem::Back;
+
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyGameList->GetRect() ) )
+		return LobbyMenuItem::GameList;
 
 	return LobbyMenuItem::Unknown;
 }

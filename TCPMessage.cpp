@@ -15,9 +15,10 @@ std::string TCPMessage::Print() const
 
 	switch ( msgType )
 	{
-		case BallKilled:
 		case TileHit:
+		case BallKilled:
 		case BonusPickup:
+		case GetGameList:
 			ss << "\n";
 			break;
 		case PaddlePosition:
@@ -72,6 +73,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "New Game";
 		case PlayerName:
 			return "Player Name";
+		case GetGameList:
+			return "Get Game List";
 		default:
 			break;
 	}

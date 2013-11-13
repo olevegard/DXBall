@@ -157,7 +157,7 @@ bool TCPConnection::AcceptConnection()
 
 	if ( serverSocket  == nullptr )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << " Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
+		//std::cout << "TCPConnection.cpp@" << __LINE__ << " Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
 		isConnected = false;
 		return false;
 	}

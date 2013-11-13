@@ -4,6 +4,7 @@
 #include "MenuItem.h"
 
 #include "MenuList.h"
+#include "HostInfo.h"
 
 #include "enums/GameState.h"
 #include "enums/LobbyState.h"
@@ -47,15 +48,28 @@ public:
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
 
-	void AddGameToList( Renderer &renderer )
+	void Init( Renderer &renderer )
 	{
+		lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
 		lobbyGameList->Init( "Available Games : ",  { 260, 180, 400, 200 }, renderer  );
-
-		lobbyGameList->AddItem( "Text", renderer );
-		lobbyGameList->AddItem( "ads",  renderer );
 		renderer.AddMenuList( lobbyGameList.get() );
-		std::cout << "Added!\n";
-
+	}
+	void AddGameToList( Renderer &renderer, HostInfo hostInfo )
+	{
+		lobbyGameList->AddItem( hostInfo, renderer );
+		//lobbyGameList->AddItem( "ads",  renderer );
+	}
+	int32_t GetSelectedGame() const
+	{
+		return seletedGameID;
+	}
+	bool IsAnItemSelected() const
+	{
+		return ( seletedGameID >= 0 );
+	}
+	HostInfo GetSelectedGameInfo() const
+	{
+		return lobbyGameList->GetHostInfoForIndex( seletedGameID);;
 	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y ) const;
@@ -85,6 +99,7 @@ private:
 	MenuItem lobbyUpdateButton;
 	MenuItem lobbyBackButton;
 	std::shared_ptr <MenuList > lobbyGameList;
+	int32_t seletedGameID;
 	LobbyMenuItem lobbyState;
 	bool lobbyStateChanged;
 };

@@ -126,6 +126,7 @@ bool TCPConnection::StartServer( )
 			if ( SetServerSocket() )
 			{
 				SDLNet_TCP_AddSocket( socketSet, serverSocket[ serverSocket.size() - 1] );
+
 				quit = true;
 				isConnected = true;
 				return true;

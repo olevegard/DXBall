@@ -120,9 +120,10 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	switch ( type )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
-		case BallKilled:
 		case TileHit:
+		case BallKilled:
 		case BonusPickup:
+		case GetGameList:
 			return is;
 		// Game Settings uses xSize and ySize
 		case GameSettings:
@@ -231,8 +232,9 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 	switch ( type )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
-		case BallKilled:
 		case TileHit:
+		case BallKilled:
+		case GetGameList:
 		case BonusPickup:
 			break;
 		// Game Settings uses xSize and ySize
@@ -274,7 +276,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			break;
 		case NewGame:
 			os << message.GetIPAdress() << " ";
-			os << message.GetPort();
+			os << message.GetPort() << " ";
 			break;
 		case PlayerName:
 			os << message.GetPlayerName();

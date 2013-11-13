@@ -261,8 +261,32 @@ class Server
 				game.ip = msg.GetIPAdress();
 				game.port = msg.GetPort();
 				gameList.push_back( game );
+				std::cout << "Game Added\n";
+			}
+			else if ( msg.GetType() == MessageType::GetGameList )
+			{
+				SendGameList( connectionNo );
 			}
 		}
+	}
+	void SendGameList( int32_t connectionNo )
+	{
+		std::cout << "Get game list. From : " << connectionNo << std::endl;
+		std::cout << "Size of game list : " << gameList.size() << std::endl;
+
+		for ( const auto &p : gameList )
+		{
+			TCPMessage msg;
+			msg.SetMessageType( MessageType::NewGame );
+			msg.SetIPAdress( p.ip );
+			msg.SetPort( p.port );
+			std::stringstream ss;
+			ss << msg;
+			connection.Send( ss.str(), connectionNo );
+			std::cout << "Sending : " << ss.str() << std::endl;
+		}
+
+		std::cout << "========= DONE SENDING ==========\n";
 	}
 	private:
 	struct GameInfo

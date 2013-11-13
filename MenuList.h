@@ -7,7 +7,10 @@
 #include <vector>
 
 #include "MenuItem.h"
+#include "HostInfo.h"
+
 #include "math/Rect.h"
+#include "math/RectHelpers.h"
 
 class Renderer;
 struct MenuList
@@ -16,23 +19,17 @@ struct MenuList
 
 	void Init( std::string name, SDL_Rect mainRect_, Renderer &renderer_ );
 
-	void AddItem(
-			std::string itemCaption,
-			Renderer &renderer_
-	);
-/*
-	void SetMainRect( SDL_Rect mainRect_  )
-	{
-		mainRect= mainRect_;
-	}
-	*/
+	void AddItem( HostInfo hostInfo, Renderer &renderer_ );
 
-	void Render( SDL_Renderer* renderer );
+	void Render( SDL_Renderer* renderer ) const;
 
-	void SetCaption( std::string caption_ )
+	int32_t FindIntersectedItem( int32_t x, int32_t y ) const;
+	HostInfo GetHostInfoForIndex( int32_t index ) const
 	{
-		caption = caption_;
+		return hostInfoList[index];
 	}
+
+	SDL_Rect GetRect() const;
 
 	private:
 	SDL_Texture* mainTexture;
@@ -43,6 +40,7 @@ struct MenuList
 
 	int32_t height;
 	std::vector< MenuItem > gameList;
+	std::vector< HostInfo > hostInfoList;
+
 	std::string caption;
 };
-

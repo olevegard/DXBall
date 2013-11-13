@@ -12,6 +12,8 @@ class NetManager
 		void Update();
 
 		std::string ReadMessage( );
+		std::string ReadMessageFromServer( );
+
 		void SendMessage( std::string str );
 		void SendMessageToServer( std::string str );
 

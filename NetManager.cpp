@@ -53,6 +53,11 @@ std::string NetManager::ReadMessage( )
 	else
 		return gameClient.ReadMessages();
 }
+
+std::string NetManager::ReadMessageFromServer( )
+{
+	return mainServer.ReadMessages();
+}
 void NetManager::SendMessage( std::string str )
 {
 	if ( isServer )
@@ -80,6 +85,7 @@ bool NetManager::IsConnected() const
 	}
 	else
 	{
+
 		return gameClient.IsConnected();
 	}
 }
