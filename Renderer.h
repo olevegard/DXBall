@@ -129,13 +129,6 @@ public:
 		ml = mitem;
 	}
 
-	SDL_Texture* RenderTextTexture_Solid  (  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect );
-	SDL_Texture* RenderTextTexture_Blended(  TTF_Font* font, const std::string &text, const SDL_Color &color, SDL_Rect &rect, int style = 0);
-
-	SDL_Texture* InitSurface( const Rect &rect     , unsigned char r, unsigned char g, unsigned char b ) const;
-	SDL_Texture* InitSurface( int width, int height, unsigned char r, unsigned char g, unsigned char b ) const;
-	SDL_Texture* InitSurface( const Rect &rect     , const SDL_Color &clr ) const;
-	SDL_Texture* InitSurface( int width, int height, const SDL_Color &clr ) const;
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -157,10 +150,6 @@ private:
 	void RenderMainMenuFooter();
 	void RenderMenuItem( const MenuItem &menuItem ) const;
 
-	void FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const;
-	void FillSurface( SDL_Surface* source, const SDL_Color &color ) const;
-
-
 	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
 
 	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list );
@@ -170,7 +159,6 @@ private:
 
 	void PrintSDL_TTFVersion();
 
-	SDL_Texture* LoadImage( const std::string &filename);
 	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
 
 	bool LoadFontAndText();

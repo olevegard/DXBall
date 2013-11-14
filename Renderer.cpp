@@ -8,6 +8,8 @@
 #include "enums/PauseMenuItemType.h"
 #include "enums/LobbyMenuItem.h"
 
+#include "tools/RenderTools.h"
+
 #include "ConfigLoader.h"
 
 #include <sstream>
@@ -258,18 +260,23 @@ bool Renderer::SetFullscreen( bool fullscreenOn )
 // ============================================================================================
 bool Renderer::LoadImages()
 {
-	localPlayerBallTexture  = InitSurface( background.w, background.h, localPlayerColor );
-	remotePlayerBallTexture = InitSurface( background.w, background.h, remotePlayerColor );
+	localPlayerBallTexture  = RenderHelpers::InitSurface( background.w, background.h, localPlayerColor , renderer );
+	remotePlayerBallTexture = RenderHelpers::InitSurface( background.w, background.h, remotePlayerColor, renderer );
 
 	// Menu mode
-	mainMenuBackground = InitSurface( background.w, background.h, 0, 0, 0 );
-	//mainMenuBackground = LoadImage( "media/background.png" );
+	mainMenuBackground = RenderHelpers::InitSurface( background.w, background.h, 0, 0, 0, renderer );
 
-	mainMenuCaptionTexture = RenderTextTexture_Blended( hugeFont, "DX Ball", textColor, mainMenuCaptionRect );
+	mainMenuCaptionTexture = RenderHelpers::RenderTextTexture_Blended( hugeFont, "DX Ball", textColor, mainMenuCaptionRect, renderer );
 	mainMenuCaptionRect.x = ( background.w / 2 ) - ( mainMenuCaptionRect.w / 2 );
 	mainMenuCaptionRect.y = 0;
 
-	mainMenuSubCaptionTexture = RenderTextTexture_Blended( mediumFont, "A quite simple clone made by a weird guy", textColor, mainMenuSubCaptionRect );
+	mainMenuSubCaptionTexture = RenderHelpers::RenderTextTexture_Blended(
+			mediumFont,
+			"A quite simple clone made by a weird guy",
+			textColor,
+			mainMenuSubCaptionRect,
+			renderer
+		);
 	mainMenuSubCaptionRect.x = ( background.w / 2 ) - ( mainMenuSubCaptionRect.w / 2 );
 	mainMenuSubCaptionRect.y = mainMenuCaptionRect.y  + mainMenuCaptionRect.h;//+ margin;
 
@@ -307,62 +314,6 @@ void Renderer::LoadColors()
 	hardTileColors[3] = cfgldr.GetTileColor( TileType::Hard, 3 );
 	hardTileColors[4] = cfgldr.GetTileColor( TileType::Hard, 4 );
 }
-void Renderer::FillSurface( SDL_Surface* source, unsigned char r, unsigned char g, unsigned char b ) const
-{
-	SDL_FillRect( source, NULL, SDL_MapRGBA( source->format, r, g, b, 255 )  );
-}
-
-void Renderer::FillSurface( SDL_Surface* source, const SDL_Color &color ) const
-{
-	FillSurface( source, color.r, color.g, color.b );
-}
-
-SDL_Texture* Renderer::InitSurface( const Rect &rect     , const SDL_Color &clr ) const
-{
-	return InitSurface( static_cast< int > ( rect.w ), static_cast< int > ( rect.h ), clr.r, clr.g, clr.b );
-}
-SDL_Texture* Renderer::InitSurface( int width, int height, const SDL_Color &clr ) const
-{
-	return InitSurface( width, height, clr.r, clr.g, clr.b );
-}
-SDL_Texture* Renderer::InitSurface( const Rect &rect, unsigned char r, unsigned char g, unsigned char b) const
-{
-	return InitSurface( static_cast< int > ( rect.w ), static_cast< int > ( rect.h ), r, g, b);
-}
-
-SDL_Texture* Renderer::InitSurface( int width, int height, unsigned char r, unsigned char g, unsigned char b ) const
-{
-	SDL_Surface* surface = SDL_CreateRGBSurface( 0, width, height, SCREEN_BPP, rmask, gmask, bmask, amask);
-
-	FillSurface( surface, r, g, b );
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, surface );
-	SDL_FreeSurface( surface );
-
-	return texture;
-}
-SDL_Texture* Renderer::LoadImage( const std::string &filename )
-{
-	// Temporary stoare for the iamge that's loaded
-	SDL_Surface* loadedImage = nullptr;
-
-	// Load the image
-	loadedImage = IMG_Load( filename.c_str() );
-
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, loadedImage );
-
-	// Free the old image
-	SDL_FreeSurface( loadedImage );
-
-	// If the image loaded
-	if ( texture == nullptr )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to load " << filename << std::endl;
-	}
-
-	return texture;
-}
 SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 {
 	if ( !surface )
@@ -374,7 +325,7 @@ SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 }
 void Renderer::SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list  )
 {
-	SDL_Texture *text = InitSurface(  60, 20, color.r, color.g, color.b );//SDL_CreateTextureFromSurface( renderer, surf );
+	SDL_Texture *text = RenderHelpers::InitSurface(  60, 20, color.r, color.g, color.b, renderer );
 	list.at( index ) = text;
 }
 // ============================================================================================
@@ -459,13 +410,13 @@ void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	localPaddle = paddle;
 
-	localPlayerPaddle = InitSurface( localPaddle->rect, localPlayerColor );
+	localPlayerPaddle = RenderHelpers::InitSurface( localPaddle->rect, localPlayerColor, renderer );
 }
 void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	remotePaddle = paddle;
 
-	remotePlayerPaddle = InitSurface( localPaddle->rect, remotePlayerColor );
+	remotePlayerPaddle = RenderHelpers::InitSurface( localPaddle->rect, remotePlayerColor, renderer );
 }
 
 // ============================================================================================
@@ -653,52 +604,7 @@ bool Renderer::LoadFontAndText()
 
 	return true;
 }
-SDL_Texture* Renderer::RenderTextTexture_Solid(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color, SDL_Rect &rect )
-{
-	SDL_Surface* surface = TTF_RenderText_Solid( textFont, textToRender.c_str(), color );
 
-	if ( surface != nullptr )
-	{
-		rect.w = surface->clip_rect.w;
-		rect.h = surface->clip_rect.h;
-
-		SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, surface );
-
-		SDL_FreeSurface( surface );
-
-		return texture;
-	} else
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to create text surface..." << textFont << " " << textToRender << " \n";
-		return nullptr;
-	}
-}
-SDL_Texture* Renderer::RenderTextTexture_Blended(  TTF_Font* textFont, const std::string &textToRender, const SDL_Color &color, SDL_Rect &rect, int style /* = 0 */ )
-{
-	if ( style != 0 )
-		TTF_SetFontStyle( textFont, style );
-
-	SDL_Surface* surface = TTF_RenderText_Blended( textFont, textToRender.c_str(), color);
-
-	if ( style != 0 )
-		TTF_SetFontStyle( textFont, TTF_STYLE_NORMAL );
-
-	if ( surface != nullptr )
-	{
-		rect.w = surface->clip_rect.w;
-		rect.h = surface->clip_rect.h;
-
-		SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, surface );
-
-		SDL_FreeSurface( surface );
-
-		return texture;
-	} else
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to create text surface..." << textFont << " " << textToRender << " \n";
-		return nullptr;
-	}
-}
 void Renderer::RenderText( const std::string &textToRender, const Player &player  )
 {
 
@@ -709,7 +615,7 @@ void Renderer::RenderText( const std::string &textToRender, const Player &player
 			localPlayerTextValue = textToRender;
 
 			SDL_DestroyTexture( localPlayerTextTexture );
-			localPlayerTextTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), textColor, localPlayerTextRect );
+			localPlayerTextTexture = RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), textColor, localPlayerTextRect, renderer );
 
 			localPlayerTextRect.x = ( background.w / 2 ) - ( localPlayerTextRect.w / 2 );
 			localPlayerTextRect.y = ( background.h / 2 ) - ( localPlayerTextRect.h / 2 );
@@ -730,7 +636,7 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 			localPlayerCaptionValue  = textToRender;
 
 			SDL_DestroyTexture( localPlayerCaptionTexture );
-			localPlayerCaptionTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), localPlayerColor, localPlayerCaptionRect );
+			localPlayerCaptionTexture = RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), localPlayerColor, localPlayerCaptionRect, renderer );
 
 			localPlayerCaptionRect.x = 0;
 			localPlayerCaptionRect.y = 0;
@@ -752,7 +658,7 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 			remotePlayerCaptionValue  = textToRender;
 
 			SDL_DestroyTexture( remotePlayerCaptionTexture );
-			remotePlayerCaptionTexture = RenderTextTexture_Solid( bigFont, textToRender.c_str(), remotePlayerColor, remotePlayerCaptionRect );
+			remotePlayerCaptionTexture = RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), remotePlayerColor, remotePlayerCaptionRect, renderer );
 
 			remotePlayerCaptionRect.x = background.w - remotePlayerCaptionRect.w;
 			remotePlayerCaptionRect.y = 0;
@@ -774,7 +680,7 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player, bool 
 			ss << "Lives : " << lifeCount;
 
 			SDL_DestroyTexture( localPlayerLivesTexture );
-			localPlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerLivesRect );
+			localPlayerLivesTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerLivesRect, renderer );
 		}
 	} else if ( player == Player::Remote )
 	{
@@ -786,7 +692,7 @@ void Renderer::RenderLives( unsigned long lifeCount, const Player &player, bool 
 			ss << "Lives : " << lifeCount;
 
 			SDL_DestroyTexture( remotePlayerLivesTexture );
-			remotePlayerLivesTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerLivesRect );
+			remotePlayerLivesTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerLivesRect, renderer  );
 		}
 	}
 }
@@ -802,7 +708,7 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player, boo
 			ss << "Points : " << pointCount;
 
 			SDL_DestroyTexture( localPlayerPointsTexture  );
-			localPlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerPointsRect  );
+			localPlayerPointsTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerPointsRect, renderer  );
 		}
 	} else if ( player == Player::Remote )
 	{
@@ -814,7 +720,7 @@ void Renderer::RenderPoints( unsigned long pointCount, const Player &player, boo
 			ss << "Points : " << pointCount;
 
 			SDL_DestroyTexture( remotePlayerPointsTexture  );
-			remotePlayerPointsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerPointsRect  );
+			remotePlayerPointsTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerPointsRect, renderer  );
 
 			CalculateRemotePlayerTextureRects();
 		}
@@ -833,7 +739,7 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player, b
 			ss << "Balls : " <<  ballCount;
 
 			SDL_DestroyTexture( localPlayerBallsTexture  );
-			localPlayerBallsTexture  = RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerBallsRect  );
+			localPlayerBallsTexture  = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerBallsRect, renderer  );
 
 			localPlayerBallsRect.x = localPlayerLivesRect.x;
 			localPlayerBallsRect.y = localPlayerPointsRect.y + localPlayerLivesRect.h ;
@@ -848,7 +754,7 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player, b
 			ss << "Balls : " << ballCount;
 
 			SDL_DestroyTexture( remotePlayerBallsTexture );
-			remotePlayerBallsTexture = RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerBallsRect  );
+			remotePlayerBallsTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerBallsRect, renderer  );
 
 			CalculateRemotePlayerTextureRects();
 		}
@@ -896,7 +802,7 @@ void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainM
 MenuItem Renderer::AddMenuButtonHelper( MenuItem menuItem, std::string menuItemString, const SDL_Rect &singlePlayerRect )
 {
 	SDL_Rect r;
-	menuItem.SetTexture( RenderTextTexture_Blended( mediumFont, menuItemString, textColor, r ) );
+	menuItem.SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItemString, textColor, r, renderer ) );
 	r.x = singlePlayerRect.x + singlePlayerRect.w + margin;
 	r.y = singlePlayerRect.y;
 
@@ -940,7 +846,7 @@ MenuItem Renderer::SetUnderlineHelper( MenuItem menuItem, bool setUnderline )
 	}
 
 	SDL_Rect r = menuItem.GetRect();
-	menuItem.SetTexture( RenderTextTexture_Blended( mediumFont, menuItem.GetName(), clr, r, style ) );
+	menuItem.SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItem.GetName(), clr, r, renderer, style ) );
 	menuItem.SetRect( r );
 	menuItem.SetSelcted( setUnderline );
 
@@ -989,7 +895,7 @@ void Renderer::InitGreyAreaRect( )
 	greyAreaRect.x = 0;
 	greyAreaRect.y = ( background.h - greyAreaRect.h ) / 2;
 
-	greyAreaTexture = InitSurface( background.w, background.h, greyAreaColor );
+	greyAreaTexture = RenderHelpers::InitSurface( background.w, background.h, greyAreaColor, renderer );
 }
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
