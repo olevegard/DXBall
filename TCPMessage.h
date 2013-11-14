@@ -148,6 +148,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 			{
 				double xPos = 0.0;
 
+
 				is >> xPos;
 
 				msg.SetXPos( xPos );
@@ -190,7 +191,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				msg.SetGameState( gameState );
 				return is;
 			}
-
+		case EndGame:
 		case NewGame:
 			{
 				std::string ip;
@@ -274,6 +275,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case GameStateChanged:
 			os << message.GetGameStateAsInt() << " ";
 			break;
+		case EndGame:
 		case NewGame:
 			os << message.GetIPAdress() << " ";
 			os << message.GetPort() << " ";

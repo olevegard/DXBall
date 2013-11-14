@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-struct HostInfo
+struct GameInfo
 {
 	public:
 	std::string GetAsSrting() const
@@ -17,7 +17,7 @@ struct HostInfo
 		return ip;
 	}
 
-	int32_t GetPort()
+	int32_t GetPort() const
 	{
 		return host;
 	}
@@ -27,7 +27,18 @@ struct HostInfo
 		ip = ip_;
 		host = host_;
 	}
+
+	void SetGameID( int32_t gameID_ )
+	{
+		gameID = gameID_;
+	}
+
+	int32_t GetGameID() const
+	{
+		return gameID;
+	}
 	private:
 	std::string ip;
 	int32_t host;
+	int32_t gameID;
 };

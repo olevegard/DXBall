@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 #include <vector>
 
@@ -8,13 +9,15 @@
 
 #include "TCPConnectionServer.h"
 #include "../TCPMessage.h"
+#include "../GameInfo.h"
 
 class Server
 {
 	public:
 
 	Server()
-		:	screenRect( { 0, 0, 500, 800 } )
+		:	gameCount( 0 )
+		,	screenRect( { 0, 0, 500, 800 } )
 		,	lastHeight( 0 )
 	{
 	}
@@ -153,6 +156,15 @@ class Server
 		rectsGameLine.push_back( rectGameLine );
 		texturesGameLine.push_back( textureGameLine );
 	}
+	void RepositionGameLines()
+	{
+		lastHeight = rectSubHeader.y + 50;
+		for ( auto &p : rectsGameLine )
+		{
+			p.y = lastHeight;
+			lastHeight += 30;
+		}
+	}
 	bool Init()
 	{
 		if ( !InitSDL() )
@@ -232,6 +244,7 @@ class Server
 			UpdateNetwork( 0 );
 			UpdateNetwork( 1 );
 
+			SDL_RenderClear( renderer );
 			SDL_RenderCopy( renderer, textureHeader, nullptr, &rectHeader);
 			SDL_RenderCopy( renderer, textureSubHeader, nullptr, &rectSubHeader);
 			for ( int i = 0; i < texturesGameLine.size() ; ++i )
@@ -250,6 +263,7 @@ class Server
 
 		if ( str == "" )
 			return;
+		std::cout << "Received : " << str << std::endl;
 
 		TCPMessage msg;
 		while ( ss >> msg )
@@ -258,10 +272,50 @@ class Server
 			{
 				AddGameLine( msg.GetIPAdress(), msg.GetPort() );
 				GameInfo game;
-				game.ip = msg.GetIPAdress();
-				game.port = msg.GetPort();
+				game.Set( msg.GetIPAdress(), msg.GetPort() );
+				game.SetGameID( gameCount );
 				gameList.push_back( game );
-				std::cout << "Game Added\n";
+				++gameCount;
+			}
+			else if ( msg.GetType() == MessageType::EndGame )
+			{
+
+				std::cout << "Delete message received for : " << msg.GetTypeAsString() << std::endl;
+				std::string deleteIP  = msg.GetIPAdress();
+				int32_t deletePort  = msg.GetPort();
+
+				int32_t deletedGames = 0;
+
+				for ( int32_t i = 0; i < gameList.size() ; ++i )
+				{
+					if ( gameList[i].GetIP() == deleteIP && gameList[i].GetPort() == deletePort )
+					{
+						++deletedGames;
+
+						gameList.erase( gameList.begin() + i );
+						rectsGameLine.erase( rectsGameLine.begin() + i );
+						texturesGameLine.erase( texturesGameLine.begin() + i );
+					}
+				}
+
+				if ( deletedGames == 0 )
+				{
+					std::cout << "Server.cpp@" << __LINE__
+						<< " no games deleted for Game Info : "
+						<< msg.GetIPAdress() << " : "
+						<< msg.GetPort() << std::endl;
+				}
+				else if ( deletedGames > 1 )
+				{
+					std::cout << "Server.cpp@" << __LINE__
+						<< " more than 1 games deleted for Game Info : "
+						<< msg.GetIPAdress() << " : "
+						<< msg.GetPort() << std::endl;
+				}
+				std::cout << "Game deleted!\n";
+
+				RepositionGameLines();
+
 			}
 			else if ( msg.GetType() == MessageType::GetGameList )
 			{
@@ -278,8 +332,9 @@ class Server
 		{
 			TCPMessage msg;
 			msg.SetMessageType( MessageType::NewGame );
-			msg.SetIPAdress( p.ip );
-			msg.SetPort( p.port );
+			msg.SetIPAdress( p.GetIP() );
+			msg.SetPort( p.GetPort() );
+			msg.SetObjectID( p.GetGameID() );
 			std::stringstream ss;
 			ss << msg;
 			connection.Send( ss.str(), connectionNo );
@@ -289,11 +344,8 @@ class Server
 		std::cout << "========= DONE SENDING ==========\n";
 	}
 	private:
-	struct GameInfo
-	{
-		std::string ip;
-		uint16_t port;
-	};
+	int32_t gameCount;
+
 	std::vector< GameInfo > gameList;
 	TCPConnection connection;
 

@@ -27,6 +27,8 @@
 	:	runGame( true )
 	,	renderer()
 	,	timer()
+
+	,	gameID( -1 )
 	,	localPaddle()
 
 	,	isAIControlled( false )
@@ -95,8 +97,8 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 	std::cout << "IP : " << ip << " | Port : " << port << "\n";
 	netManager.Init( true  );
 
-	HostInfo hostInfo;
-	hostInfo.Set( ip, port );
+	GameInfo gameInfo;
+	gameInfo.Set( ip, port );
 	//menuManager.AddGameToList( renderer, hostInfo );
 }
 void GameManager::Restart()
@@ -394,8 +396,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 }
 void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 {
-	HostInfo info;
+	GameInfo info;
 	info.Set( message.GetIPAdress(), message.GetPort() );
+	info.SetGameID( message.GetObjectID() );
 	menuManager.AddGameToList( renderer, info );
 
 	PrintRecv( message );
@@ -724,6 +727,23 @@ void GameManager::SendNewGameMessage( )
 	netManager.SendMessageToServer( ss.str() );
 
 }
+void GameManager::SendEndGameMessage( )
+{
+	//if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() ) return;
+
+	TCPMessage msg;
+	msg.SetMessageType( MessageType::EndGame );
+
+	msg.SetObjectID( gameID );
+	msg.SetIPAdress( ip );
+	msg.SetPort( port );
+
+	std::stringstream ss;
+	ss << msg;
+	netManager.SendMessageToServer( ss.str() );
+	PrintSend( msg );
+
+}
 void GameManager::SendGetGameListMessage()
 {
 	TCPMessage msg;
@@ -840,6 +860,7 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.WasGameQuited() )
 	{
+		SendEndGameMessage();
 		netManager.Close();
 	}
 }
@@ -1000,6 +1021,7 @@ void GameManager::UpdateLobbyState()
 			break;
 		case LobbyMenuItem::Update:
 			std::cout << "Update game list\n";
+			menuManager.ClearGameList();
 			SendGetGameListMessage();
 			break;
 		case LobbyMenuItem::Back:
@@ -1012,15 +1034,16 @@ void GameManager::UpdateLobbyState()
 
 		case LobbyMenuItem::GameList:
 			{
-				HostInfo info;
+				GameInfo info;
 				if ( menuManager.IsAnItemSelected() )
 				{
 					std::cout << "GameManager.cpp@" << __LINE__ << " Selected game in list : " << menuManager.GetSelectedGameInfo().GetAsSrting()  << std::endl;
-					HostInfo hostInfo = menuManager.GetSelectedGameInfo();
+					GameInfo gameInfo = menuManager.GetSelectedGameInfo();
 					menuManager.SetGameState( GameState::InGame );
 					boardLoader.SetIsServer( false );
 					netManager.SetIsServer( false );
-					netManager.Connect( hostInfo.GetIP(), static_cast< uint16_t > ( hostInfo.GetPort()  ) );
+					netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
+					gameID = gameInfo.GetGameID();
 				}
 				else
 					std::cout << "GameManager.cpp@" << __LINE__ << " No item selected\n";

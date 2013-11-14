@@ -123,6 +123,7 @@ class GameManager
 		// Send messages
 		void SendPlayerName();
 		void SendNewGameMessage( );
+		void SendEndGameMessage( );
 		void SendGetGameListMessage();
 		void SendGameSettingsMessage();
 		void SendGameStateChangedMessage( );
@@ -163,6 +164,7 @@ class GameManager
 		NetManager netManager;
 		std::string ip;
 		uint16_t port;
+		int32_t gameID;
 
 		std::shared_ptr < Paddle > localPaddle;
 		std::shared_ptr < Paddle > remotePaddle;
@@ -172,7 +174,6 @@ class GameManager
 		unsigned int localPlayerPoints;
 		unsigned int localPlayerLives;
 		unsigned int localPlayerActiveBalls;
-
 
 		std::string remotePlayerName;
 		unsigned int remotePlayerPoints;

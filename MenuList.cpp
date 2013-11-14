@@ -17,9 +17,9 @@ void MenuList::Init( std::string text, SDL_Rect mainRect_, Renderer &renderer_  
 	captionRect.y = mainRect.y;
 	height = captionRect.y + captionRect.h + 10;
 }
-void MenuList::AddItem( HostInfo hostInfo, Renderer &renderer_ )
+void MenuList::AddItem( GameInfo gameInfo, Renderer &renderer_ )
 {
-	std::string gameLine = hostInfo.GetAsSrting();
+	std::string gameLine = gameInfo.GetAsSrting();
 	MenuItem item( gameLine );
 
 	SDL_Rect r;
@@ -38,7 +38,7 @@ void MenuList::AddItem( HostInfo hostInfo, Renderer &renderer_ )
 	item.SetTexture( text );
 	item.SetRect( r );
 	gameList.emplace_back( item );
-	hostInfoList.emplace_back( hostInfo );
+	hostInfoList.emplace_back( gameInfo );
 }
 void MenuList::Render( SDL_Renderer* renderer ) const
 {

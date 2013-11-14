@@ -4,7 +4,7 @@
 #include "MenuItem.h"
 
 #include "MenuList.h"
-#include "HostInfo.h"
+#include "GameInfo.h"
 
 #include "enums/GameState.h"
 #include "enums/LobbyState.h"
@@ -54,10 +54,14 @@ public:
 		lobbyGameList->Init( "Available Games : ",  { 260, 180, 400, 200 }, renderer  );
 		renderer.AddMenuList( lobbyGameList.get() );
 	}
-	void AddGameToList( Renderer &renderer, HostInfo hostInfo )
+	void AddGameToList( Renderer &renderer, GameInfo gameInfo )
 	{
-		lobbyGameList->AddItem( hostInfo, renderer );
+		lobbyGameList->AddItem( gameInfo, renderer );
 		//lobbyGameList->AddItem( "ads",  renderer );
+	}
+	void ClearGameList()
+	{
+		lobbyGameList->ClearList();
 	}
 	int32_t GetSelectedGame() const
 	{
@@ -67,9 +71,9 @@ public:
 	{
 		return ( seletedGameID >= 0 );
 	}
-	HostInfo GetSelectedGameInfo() const
+	GameInfo GetSelectedGameInfo() const
 	{
-		return lobbyGameList->GetHostInfoForIndex( seletedGameID);;
+		return lobbyGameList->GetGameInfoForIndex( seletedGameID);;
 	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y ) const;
