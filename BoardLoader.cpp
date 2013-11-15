@@ -3,7 +3,7 @@
 #include "Tile.h"
 #include "Board.h"
 #include "TilePosition.h"
-#include "TilePositionHelpers.h"
+#include "tools/TilePositionHelpers.h"
 
 #include <algorithm>
 
