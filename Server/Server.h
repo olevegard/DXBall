@@ -78,7 +78,8 @@ class Server
 	}
 	bool InitFonts()
 	{
-		fontHeader = TTF_OpenFont( "../media/fonts/sketchy.ttf", 50  );
+
+		fontHeader = TTF_OpenFont( "../media/fonts/sketchy.ttf", 40  );//TTF_OpenFont( "~/Programming/DXBall/media/fonts/sketchy.ttf", 50  );
 
 		if ( !fontHeader )
 		{

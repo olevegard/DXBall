@@ -75,7 +75,6 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
 	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
 
-	CreateMenu();
 
 	localPaddle = std::make_shared< Paddle > ();
 	localPaddle->textureType = TextureType::e_Paddle;
@@ -86,6 +85,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
 	renderer.SetLocalPaddle( localPaddle );
 	menuManager.Init( renderer );
+	CreateMenu();
 
 	return true;
 }
@@ -110,6 +110,7 @@ void GameManager::Restart()
 		remotePaddle->rect.w = 120;
 		remotePaddle->rect.h = 30;
 		remotePaddle->rect.x = 400;
+
 		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
 		remotePaddle->SetScale( scale );
 

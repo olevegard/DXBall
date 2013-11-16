@@ -114,7 +114,7 @@ public:
 		isTwoPlayerMode = isTwoPlayerMode_;
 	}
 
-	SDL_Renderer* GetRenderer()
+	SDL_Renderer* GetRenderer() const
 	{
 		return renderer;
 	}
@@ -124,9 +124,30 @@ public:
 		return font;
 	}
 
+	SDL_Color GetBackgroundColor() const
+	{
+		return backgroundColor;
+	}
+
+	SDL_Color GetTextColor() const
+	{
+		return textColor;
+	}
+
 	void AddMenuList( MenuList* mitem )
 	{
 		ml = mitem;
+	}
+	SDL_Rect CalcMenuListRect()
+	{
+		lobbyMenuListRect.w = static_cast< int32_t > ( greyAreaRect.w * 0.6 );
+		lobbyMenuListRect.h = static_cast< int32_t > ( greyAreaRect.h * 0.9 );
+
+		lobbyMenuListRect.x = static_cast< int32_t > ( ( background.w * 0.5   ) - ( lobbyMenuListRect.w * 0.5 ) );
+		lobbyMenuListRect.y = static_cast< int32_t > ( ( greyAreaRect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyAreaRect.y;
+
+		std::cout << "AddLobbyMenuButtons.w set to : " << lobbyMenuListRect.w << std::endl;
+		return lobbyMenuListRect;
 	}
 
 private:
@@ -302,4 +323,5 @@ private:
 	MenuItem 	lobbyNewGameButton;
 	MenuItem 	lobbyUpdateButton;
 	MenuItem 	lobbyBackButton;
+	SDL_Rect	lobbyMenuListRect;
 };

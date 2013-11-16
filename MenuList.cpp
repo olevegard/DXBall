@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "tools/RenderTools.h"
 
+#include <iostream>
 MenuList::MenuList( )
 {
 	height = 0;
@@ -11,9 +12,17 @@ void MenuList::Init( std::string text, SDL_Rect mainRect_, Renderer &renderer_  
 	mainRect = mainRect_;
 	Rect r;
 	r.FromSDLRect( mainRect );
-	mainTexture = RenderHelpers::InitSurface( r, {255,255,255,255 }, renderer_.GetRenderer() );
+	mainTexture = RenderHelpers::InitSurface( r, renderer_.GetBackgroundColor(), renderer_.GetRenderer() );
+	SDL_SetTextureAlphaMod( mainTexture, 173 );
 
-	captionTexture = RenderHelpers::RenderTextTexture_Solid( renderer_.GetFont(), text, { 255, 0, 255, 255}, captionRect, renderer_.GetRenderer()  );
+	captionTexture = RenderHelpers::RenderTextTexture_Solid(
+			renderer_.GetFont(),
+			text,
+			renderer_.GetTextColor(),
+			captionRect,
+			renderer_.GetRenderer()
+		);
+
 	captionRect.x = mainRect.x + static_cast< int32_t > ( ( mainRect.w * 0.5 ) - ( captionRect.w * 0.5 ) );
 	captionRect.y = mainRect.y;
 	height = captionRect.y + captionRect.h + 10;
@@ -30,7 +39,7 @@ void MenuList::AddItem( GameInfo gameInfo, Renderer &renderer_ )
 	(
 		 renderer_.GetFont(),
 		 gameLine,
-		 {255,0,0,255 },
+		 renderer_.GetTextColor(),
 		 r,
 		 renderer_.GetRenderer()
 	);
@@ -44,7 +53,6 @@ void MenuList::AddItem( GameInfo gameInfo, Renderer &renderer_ )
 void MenuList::Render( SDL_Renderer* renderer ) const
 {
 	SDL_RenderCopy( renderer, mainTexture, nullptr, &mainRect  );
-
 	SDL_RenderCopy( renderer, captionTexture, nullptr, &captionRect  );
 
 	for ( const auto p : gameList )

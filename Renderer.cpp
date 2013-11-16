@@ -122,6 +122,7 @@
 	,	lobbyNewGameButton( "New Game" )
 	,	lobbyUpdateButton( "Update" )
 	,	lobbyBackButton( "Back" )
+	,	lobbyMenuListRect( { 0, 0, 0, 0 })
 {
 }
 
@@ -969,8 +970,9 @@ void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::strin
 }
 void Renderer::CenterLobbyButtons( )
 {
-	int32_t widht = lobbyBackButton.GetEndX() - lobbyNewGameButton.GetRectX();
-	int32_t newX = ( background.w / 2 ) - ( widht / 2 );
+	int32_t width = 20 + lobbyBackButton.GetRectW() + lobbyNewGameButton.GetRectW() + lobbyUpdateButton.GetRectW();
+	//int32_t width = 20 + lobbyBackButton.GetEndX() - lobbyNewGameButton.GetRectX();
+	int32_t newX = lobbyMenuListRect.x + static_cast< int32_t > ( ( lobbyMenuListRect.w * 0.5 ) - ( width * 0.5 ) );
 
 	lobbyNewGameButton.SetRectX( newX );
 	newX = lobbyNewGameButton.GetEndX() + 20;

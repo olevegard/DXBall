@@ -38,6 +38,11 @@ struct MenuList
 		hostInfoList.clear();
 	}
 
+	SDL_Rect GetMainRect()
+	{
+		return mainRect;
+	}
+
 	private:
 	SDL_Texture* mainTexture;
 	SDL_Rect mainRect;

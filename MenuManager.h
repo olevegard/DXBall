@@ -48,10 +48,11 @@ public:
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
 
-	void Init( Renderer &renderer )
+		void Init( Renderer &renderer )
 	{
+		SDL_Rect menuListRect = renderer.CalcMenuListRect();
 		lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
-		lobbyGameList->Init( "Available Games : ",  { 260, 180, 400, 200 }, renderer  );
+		lobbyGameList->Init( "Available Games : ",menuListRect , renderer  );
 		renderer.AddMenuList( lobbyGameList.get() );
 	}
 	void AddGameToList( Renderer &renderer, GameInfo gameInfo )
