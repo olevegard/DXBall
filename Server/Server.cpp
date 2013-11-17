@@ -195,22 +195,6 @@ bool Server::InitNet( std::string ip, uint16_t port )
 		return false;
 	}
 
-
-	while ( !connection.Update() );
-	while ( !connection.Update() );
-	/*
-	if ( !connection.Update() )
-	{
-		std::cout << "Server.cpp@" << __LINE__ << " Failed to start server : " << SDLNet_GetError() << std::endl;
-		return false;
-	}
-
-	if ( !connection.StartServer() )
-	{
-		std::cout << "Server.cpp@" << __LINE__ << " Failed to start server : " << SDLNet_GetError() << std::endl;
-		return false;
-	}*/
-
 	std::cout << "Net initialized" << std::endl;
 
 	return true;
@@ -238,6 +222,7 @@ void Server::Run()
 				run = false;
 		}
 
+		connection.Update();
 		UpdateNetwork( 0 );
 		UpdateNetwork( 1 );
 

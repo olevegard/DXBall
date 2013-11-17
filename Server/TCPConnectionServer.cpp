@@ -7,12 +7,12 @@
 
 bool TCPConnectionServer::Init( const std::string &host, unsigned short port, bool server )
 {
-	socketsConnected = 0;
 	bufferSize = 1024;
 
 	isServer = server;
 	hostName = host;
 	portNr = port;
+
 	socketSet = SDLNet_AllocSocketSet( 100 );
 	isSocketConnected.resize( 100 );
 
@@ -49,7 +49,6 @@ bool TCPConnectionServer::ResolveHost()
 			"\nIP Adress : " << hostName <<
 			"\nPort : " << portNr <<
 			"\nError : " << SDLNet_GetError() <<
-
 			"\nLine : " << __LINE__
 			<< std::endl;
 		return false;
@@ -103,7 +102,6 @@ void TCPConnectionServer::Send( std::string str, int connectionNr  )
 	if ( bytesSent < messageSize )
 	{
 		std::cout << "TCPConnection.cpp@" << __LINE__ << " Send failed : " << SDLNet_GetError() << std::endl;
-		//isConnected = false;
 		isSocketConnected[connectionNr] = false;
 	}
 }
@@ -132,7 +130,6 @@ bool TCPConnectionServer::StartServer( )
 				SDLNet_TCP_AddSocket( socketSet, serverSocket[ serverSocket.size() - 1] );
 
 				quit = true;
-				//isConnected = true;
 				return true;
 			}
 		}
@@ -148,7 +145,6 @@ bool TCPConnectionServer::Update()
 		{
 			std::cout << "Adding Socket : "<< serverSocket.size() - 1 << std::endl;
 			SDLNet_TCP_AddSocket( socketSet, serverSocket[ serverSocket.size() - 1] );
-			//isConnected = true;
 			return true;
 		}
 	}
@@ -161,8 +157,7 @@ bool TCPConnectionServer::AcceptConnection()
 
 	if ( socket == nullptr )
 	{
-		//std::cout << "TCPConnection.cpp@" << __LINE__ << " Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
-		//isConnected = false;
+		// Connection failed, this just means no new client is trying to connect
 		return false;
 	}
 
@@ -179,7 +174,6 @@ bool TCPConnectionServer::SetServerSocket()
 		std::cout  << "TCPConnection.cpp@" << __LINE__
 			<< " Failed to get peer addres : " << hostName << " : " << portNr
 			<< "\n\tServer : " << std::boolalpha << isServer << std::endl;
-		//isConnected = false;
 		return false;
 	}
 
@@ -188,7 +182,6 @@ bool TCPConnectionServer::SetServerSocket()
 		<< SDLNet_Read32( &ipRemote->host )
 		<< " : " << SDLNet_Read16( &ipRemote->port ) << std::endl;
 
-	//isConnected = true;
 	return true;
 }
 
@@ -219,7 +212,6 @@ std::string TCPConnectionServer::ReadMessages( int connectionNr )
 	int byteCount  = 0;
 	std::string received("");
 
-	//if ( !isConnected )
 	if ( isSocketConnected.size() <  ( connectionNr + 1 ) )
 		return received;
 
@@ -248,8 +240,8 @@ std::string TCPConnectionServer::ReadMessages( int connectionNr )
 	{
 		std::cout << "TCPConnection.cpp@" << __LINE__ << " Connection terminated" << std::endl;
 		isSocketConnected[ connectionNr ] = false;
-		//isConnected = false;
-		// A bytecount of < 0 means an error occured
+
+	// A bytecount of < 0 means an error occured
 	} else if ( byteCount < 0 )
 	{
 		std::cout << "TCPConnection.cpp@" << __LINE__ << " Read failed!" <<
