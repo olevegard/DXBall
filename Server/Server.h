@@ -26,6 +26,7 @@ class Server
 	bool InitFonts();
 	bool InitHeader();
 	bool InitSubHeader();
+	bool InitPlayerCount( int32_t playerCount = 0 );
 
 	void AddGameLine( const std::string &IP, int32_t port );
 	void RepositionGameLines();
@@ -49,6 +50,11 @@ class Server
 	SDL_Rect rectSubHeader;
 	SDL_Texture* textureSubHeader;
 	TTF_Font* fontSubHeader;
+
+	// Playe count
+	SDL_Rect rectPlayerCount;
+	SDL_Texture* texturePlayerCount;
+	TTF_Font* fontPlayerCount;
 
 	// Game Line
 	TTF_Font* fontGameLine;

@@ -18,6 +18,7 @@ public:
 	std::string ReadMessages( int connectionNr );
 
 	bool IsConnected() const;
+	int32_t GetActiveConnectionsCount() const;
 
 	bool StartServer( );
 	bool AcceptConnection();

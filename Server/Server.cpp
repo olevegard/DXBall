@@ -116,12 +116,31 @@ bool Server::InitSubHeader()
 	rectSubHeader.w = surf->clip_rect.w;
 	rectSubHeader.h = surf->clip_rect.h;
 	rectSubHeader.x = 10;
-	rectSubHeader.y = rectHeader.h + rectHeader.y + 20;
+	rectSubHeader.y = rectPlayerCount.y + rectPlayerCount.h + 10;
+
+	SDL_FreeSurface( surf );
+
+	return true;
+}
+
+bool Server::InitPlayerCount( int32_t playerCount )
+{
+	std::stringstream ss;
+	ss << "Players : " << playerCount;
+	SDL_Color textColor{ 0, 255, 255, 255 };
+	SDL_Surface* surf = TTF_RenderText_Solid( fontSubHeader, ss.str().c_str(), textColor );
+	texturePlayerCount = SDL_CreateTextureFromSurface( renderer, surf );
+
+	rectPlayerCount.w = surf->clip_rect.w;
+	rectPlayerCount.h = surf->clip_rect.h;
+	rectPlayerCount.x = 10;
+	rectPlayerCount.y = rectHeader.y + 60;
 	lastHeight = rectSubHeader.y + 50;
 
 	SDL_FreeSurface( surf );
 
 	return true;
+
 }
 void Server::AddGameLine( const std::string &IP, int32_t port )
 {
@@ -132,6 +151,7 @@ void Server::AddGameLine( const std::string &IP, int32_t port )
 	SDL_Texture* textureGameLine = SDL_CreateTextureFromSurface( renderer, surf );
 
 	SDL_Rect rectGameLine;
+
 	rectGameLine.w = surf->clip_rect.w;
 	rectGameLine.h = surf->clip_rect.h;
 	rectGameLine.x = rectSubHeader.x + 20;
@@ -145,7 +165,7 @@ void Server::AddGameLine( const std::string &IP, int32_t port )
 }
 void Server::RepositionGameLines()
 {
-	lastHeight = rectSubHeader.y + 50;
+	lastHeight = rectPlayerCount.y + 50;
 	for ( auto &p : rectsGameLine )
 	{
 		p.y = lastHeight;
@@ -167,6 +187,9 @@ bool Server::Init()
 		return false;
 
 	if ( !InitFonts() )
+		return false;
+
+	if ( !InitPlayerCount() )
 		return false;
 
 	if ( !InitHeader() )
@@ -221,13 +244,16 @@ void Server::Run()
 			else if ( event.type == SDL_QUIT )
 				run = false;
 		}
-
-		connection.Update();
-		UpdateNetwork( 0 );
-		UpdateNetwork( 1 );
+		bool newConnection = connection.Update();
+		int32_t countConnections = connection.GetActiveConnectionsCount();
+		for ( int i = 0; i < countConnections ; ++i )
+			UpdateNetwork( i );
+		if ( newConnection )
+			InitPlayerCount( countConnections );
 
 		SDL_RenderClear( renderer );
 		SDL_RenderCopy( renderer, textureHeader, nullptr, &rectHeader);
+		SDL_RenderCopy( renderer, texturePlayerCount, nullptr, &rectPlayerCount);
 		SDL_RenderCopy( renderer, textureSubHeader, nullptr, &rectSubHeader);
 		for ( uint32_t i = 0; i < texturesGameLine.size() ; ++i )
 			SDL_RenderCopy( renderer, texturesGameLine[i] , nullptr, &rectsGameLine[i]);

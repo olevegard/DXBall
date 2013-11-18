@@ -275,7 +275,14 @@ bool TCPConnectionServer::IsConnected() const
 {
 	return false;
 }
+int32_t TCPConnectionServer::GetActiveConnectionsCount() const
+{
+	int32_t count = 0;
+	for ( const auto &p : serverSocket )
+		++count;
 
+	return count;
+}
 void* TCPConnectionServer::ConvertStringToVoidPtr( const std::string &str )
 {
 	const char* charPtr = str.c_str();
