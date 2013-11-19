@@ -205,7 +205,7 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	if ( localPlayerActiveBalls == 0 && ball->GetOwner() == Player::Local )
 			ReducePlayerLifes( Player::Local );
 
-	if ( remotePlayerLives == 0 && ball->GetOwner() == Player::Remote )
+	if ( remotePlayerActiveBalls == 0 && ball->GetOwner() == Player::Remote )
 			ReducePlayerLifes( Player::Remote );
 
 	renderer.RemoveBall( ball );
