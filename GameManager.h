@@ -89,6 +89,7 @@ class GameManager
 
 		void Update( double delta );
 		void UpdateLobbyState();
+		void UpdateGameList();
 
 		// Bonus boxes
 		void UpdateBonusBoxes( double delta );
@@ -108,6 +109,7 @@ class GameManager
 		void ReadMessagesFromServer( );
 		void HandleRecieveMessage( const TCPMessage &message );
 
+		void RecieveJoinGameMessage( const TCPMessage &message );
 		void RecieveNewGameMessage( const TCPMessage &message );
 		void RecievePlayerNameMessage( const TCPMessage &message );
 		void RecieveGameSettingsMessage( const TCPMessage &message);
@@ -123,6 +125,7 @@ class GameManager
 		// Send messages
 		void SendPlayerName();
 		void SendNewGameMessage( );
+		void SendJoinGameMessage(const GameInfo &gameInfo );
 		void SendEndGameMessage( );
 		void SendGetGameListMessage();
 		void SendGameSettingsMessage();

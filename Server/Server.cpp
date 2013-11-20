@@ -165,7 +165,7 @@ void Server::AddGameLine( const std::string &IP, int32_t port )
 }
 void Server::RepositionGameLines()
 {
-	lastHeight = rectPlayerCount.y + 50;
+	lastHeight = rectSubHeader.y + 50;
 	for ( auto &p : rectsGameLine )
 	{
 		p.y = lastHeight;
@@ -285,13 +285,18 @@ void Server::UpdateNetwork( int connectionNo )
 			gameList.push_back( game );
 			++gameCount;
 		}
+		else if ( msg.GetType() == MessageType::GameJoined )
+		{
+			RecieveGameJoinedMessage( msg );
+
+			SendMessageToAll( msg );
+		}
 		else if ( msg.GetType() == MessageType::EndGame )
 		{
 
 			std::cout << "Delete message received for : " << msg.GetTypeAsString() << std::endl;
 			std::string deleteIP  = msg.GetIPAdress();
 			int32_t deletePort  = msg.GetPort();
-
 			int32_t deletedGames = 0;
 
 			for ( uint32_t i = 0; i < gameList.size() ; ++i )
@@ -350,4 +355,49 @@ void Server::SendGameList( int32_t connectionNo )
 	}
 
 	std::cout << "========= DONE SENDING ==========\n";
+}
+void Server::RecieveGameJoinedMessage( const TCPMessage &msg )
+{
+	int32_t deleteID = msg.GetObjectID();
+	std::cout << "Delete message received for : " << deleteID << std::endl;
+	int32_t deletedGames = 0;
+
+	for ( uint32_t i = 0; i < gameList.size() ; ++i )
+	{
+		if ( gameList[i].GetGameID() == deleteID )
+		{
+			++deletedGames;
+
+			gameList.erase( gameList.begin() + i );
+			rectsGameLine.erase( rectsGameLine.begin() + i );
+			texturesGameLine.erase( texturesGameLine.begin() + i );
+		}
+	}
+
+	if ( deletedGames == 0 )
+	{
+		std::cout << "Server.cpp@" << __LINE__
+			<< " no games deleted for Game ID : " << deleteID
+			<< std::endl;
+
+	}
+	else if ( deletedGames > 1 )
+	{
+		std::cout << "Server.cpp@" << __LINE__
+			<< " more than 1 games deleted for Game ID : "
+			<< deleteID << std::endl;
+	}
+
+	std::cout << "Game deleted!\n";
+	RepositionGameLines();
+}
+void Server::SendMessageToAll( const TCPMessage &msg )
+{
+	int32_t countConnections = connection.GetActiveConnectionsCount();
+	for ( int i = 0; i < countConnections ; ++i )
+	{
+		std::stringstream ss;
+		ss << msg;
+		connection.Send( ss.str(), i );
+	}
 }

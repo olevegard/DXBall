@@ -17,6 +17,7 @@ std::string TCPMessage::Print() const
 	{
 		case EndGame:
 		case TileHit:
+		case GameJoined:
 		case BallKilled:
 		case BonusPickup:
 		case GetGameList:
@@ -78,6 +79,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Get Game List";
 		case EndGame:
 			return "End Game";
+		case GameJoined:
+			return "Game Joined";
 		default:
 			break;
 	}

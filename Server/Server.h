@@ -38,6 +38,10 @@ class Server
 	private:
 	int32_t gameCount;
 
+	void RecieveGameJoinedMessage(const TCPMessage &msg );
+
+	void SendMessageToAll( const TCPMessage &msg );
+
 	std::vector< GameInfo > gameList;
 	TCPConnectionServer connection;
 

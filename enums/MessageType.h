@@ -2,7 +2,7 @@
 
 enum MessageType
 {
-	PaddlePosition, 	// Contains paddle position
+	PaddlePosition, // Contains paddle position
 	PaddleResize, 	// Contains new paddle size ( for use with paddle shrik / enlarge )
 
 	BallSpawned, 	// New ball spawned. Contains ID, position, speed and direction.
@@ -14,6 +14,7 @@ enum MessageType
 	GameSettings,		// Contains resolution of the remote player. Sent during beggining and when resolution chages.
 	GameStateChanged,	// Game was paused by remote player
 	GameInstance,		// A new game was started, display it in the list of games
+	GameJoined,			// Game was joined by oponent
 
 	NewGame,			// Tell the server than you have started a game
 	EndGame,			// Tell the server that the game has ended

@@ -389,11 +389,22 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::NewGame:
 			RecieveNewGameMessage( message );
 			break;
+		case MessageType::GameJoined:
+			RecieveJoinGameMessage( message );
+			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
 			std::cin.ignore();
 			break;
 	}
+}
+
+void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
+{
+	UpdateGameList();
+	menuManager.ClearGameList();
+
+	PrintRecv( message );
 }
 void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 {
@@ -728,6 +739,17 @@ void GameManager::SendNewGameMessage( )
 	netManager.SendMessageToServer( ss.str() );
 
 }
+
+void GameManager::SendJoinGameMessage( const GameInfo &gameInfo )
+{
+	TCPMessage msg;
+	msg.SetMessageType( MessageType::GameJoined );
+	msg.SetObjectID( gameInfo.GetGameID() );
+
+	std::stringstream ss;
+	ss << msg;
+	netManager.SendMessageToServer( ss.str() );
+}
 void GameManager::SendEndGameMessage( )
 {
 	//if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() ) return;
@@ -1003,7 +1025,6 @@ void GameManager::Update( double delta )
 
 	UpdateGUI();
 }
-
 void GameManager::UpdateLobbyState()
 {
 
@@ -1021,9 +1042,7 @@ void GameManager::UpdateLobbyState()
 			netManager.Connect( ip, port );
 			break;
 		case LobbyMenuItem::Update:
-			std::cout << "Update game list\n";
-			menuManager.ClearGameList();
-			SendGetGameListMessage();
+			UpdateGameList();
 			break;
 		case LobbyMenuItem::Back:
 			menuManager.SetGameState( GameState::InGame );
@@ -1045,6 +1064,7 @@ void GameManager::UpdateLobbyState()
 					netManager.SetIsServer( false );
 					netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
 					gameID = gameInfo.GetGameID();
+					SendJoinGameMessage( gameInfo );
 				}
 				else
 					std::cout << "GameManager.cpp@" << __LINE__ << " No item selected\n";
@@ -1055,6 +1075,12 @@ void GameManager::UpdateLobbyState()
 			std::cout << "GameManager.cpp@" << __LINE__ << " Unkown new game state\n";
 			break;
 	}
+}
+void GameManager::UpdateGameList()
+{
+	std::cout << "Update game list\n";
+	menuManager.ClearGameList();
+	SendGetGameListMessage();
 }
 void GameManager::AIMove()
 {
