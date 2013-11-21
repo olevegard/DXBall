@@ -39,6 +39,7 @@ class Server
 	int32_t gameCount;
 
 	void RecieveGameJoinedMessage(const TCPMessage &msg );
+	void RecieveGameEndMessage(const TCPMessage &msg );
 
 	void SendMessageToAll( const TCPMessage &msg );
 

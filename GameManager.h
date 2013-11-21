@@ -111,6 +111,7 @@ class GameManager
 
 		void RecieveJoinGameMessage( const TCPMessage &message );
 		void RecieveNewGameMessage( const TCPMessage &message );
+		void RecieveEndGameMessage( const TCPMessage &message );
 		void RecievePlayerNameMessage( const TCPMessage &message );
 		void RecieveGameSettingsMessage( const TCPMessage &message);
 		void RecieveGameStateChangedMessage( const TCPMessage &message );

@@ -392,6 +392,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::GameJoined:
 			RecieveJoinGameMessage( message );
 			break;
+		case MessageType::EndGame:
+			RecieveEndGameMessage( message );
+			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
 			std::cin.ignore();
@@ -402,7 +405,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 {
 	UpdateGameList();
-	menuManager.ClearGameList();
+	//menuManager.ClearGameList();
 
 	PrintRecv( message );
 }
@@ -412,6 +415,13 @@ void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 	info.Set( message.GetIPAdress(), message.GetPort() );
 	info.SetGameID( message.GetObjectID() );
 	menuManager.AddGameToList( renderer, info );
+
+	PrintRecv( message );
+}
+void GameManager::RecieveEndGameMessage( const TCPMessage &message )
+{
+	UpdateGameList();
+	menuManager.ClearGameList();
 
 	PrintRecv( message );
 }
