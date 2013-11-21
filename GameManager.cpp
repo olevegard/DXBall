@@ -887,6 +887,10 @@ void GameManager::HandleStatusChange( )
 	{
 		runGame = false;
 	}
+	else if ( menuManager.GetGameState() == GameState::Lobby )
+	{
+		UpdateGameList();
+	}
 	else if ( menuManager.WasGameStarted()  )
 	{
 		Restart();
