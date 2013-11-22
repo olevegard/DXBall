@@ -12,6 +12,7 @@
 class TCPMessage;
 enum class TileType : int;
 enum class Player : int;
+enum class MessageTarget : int;
 struct GamePiece;
 struct Paddle;
 struct Ball;
@@ -138,6 +139,7 @@ class GameManager
 		void SendPaddlePosMessage( );
 		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox );
+		void SendMessage( const TCPMessage &message, const MessageTarget &target );
 
 		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
 		std::shared_ptr< Tile > GetTileFromID( int32_t ID );

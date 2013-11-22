@@ -13,6 +13,7 @@
 
 #include "enums/MessageType.h"
 #include "enums/LobbyMenuItem.h"
+#include "enums/MessageTarget.h"
 
 #include <limits>
 #include <vector>
@@ -551,12 +552,10 @@ void GameManager::SendPaddlePosMessage( )
 
 	TCPMessage msg;
 
-	std::stringstream ss;
 	msg.SetMessageType( MessageType::PaddlePosition );
 	msg.SetXPos( localPaddle->rect.x );
-	ss << msg;
-	netManager.SendMessage( ss.str() );
 
+	SendMessage( msg, MessageTarget::Oponent );
 	//PrintSend(msg);
 }
 
@@ -567,8 +566,6 @@ void GameManager::SendGameSettingsMessage()
 
 	TCPMessage msg;
 
-	std::stringstream ss;
-
 	msg.SetMessageType( MessageType::GameSettings );
 	msg.SetObjectID( 0 );
 
@@ -577,8 +574,7 @@ void GameManager::SendGameSettingsMessage()
 
 	msg.SetBoardScale( scale  );
 
-	ss << msg;
-	netManager.SendMessage( ss.str() );
+	SendMessage( msg, MessageTarget::Oponent );
 
 	isResolutionScaleRecieved  = true;
 	PrintSend(msg);
@@ -586,13 +582,11 @@ void GameManager::SendGameSettingsMessage()
 void GameManager::SendPlayerName()
 {
 	TCPMessage msg;
-	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::PlayerName );
 	msg.SetPlayerName( localPlayerName );
-	ss << msg;
 
-	netManager.SendMessage( ss.str() );
+	SendMessage( msg, MessageTarget::Oponent );
 
 	PrintSend(msg);
 }
@@ -604,7 +598,6 @@ void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 	TCPMessage msg;
 
 	Rect r = ball->rect;
-	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::BallSpawned );
 	msg.SetObjectID( ball->GetObjectID() );
@@ -615,8 +608,7 @@ void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
 	msg.SetXDir( ball->GetDirection().x );
 	msg.SetYDir( ball->GetDirection().y * -1.0 );
 
-	ss << msg;
-	netManager.SendMessage( ss.str() );
+	SendMessage( msg, MessageTarget::Oponent );
 
 	PrintSend(msg);
 }
@@ -628,7 +620,6 @@ void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 	TCPMessage msg;
 
 	Rect r = ball->rect;
-	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::BallData );
 	msg.SetObjectID( ball->GetObjectID()  );
@@ -639,8 +630,7 @@ void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 	msg.SetXDir( ball->GetDirection().x );
 	msg.SetYDir( ball->GetDirection().y * -1.0 );
 
-	ss << msg;
-	netManager.SendMessage( ss.str() );
+	SendMessage( msg, MessageTarget::Oponent );
 
 	//PrintSend(msg);
 }
@@ -650,13 +640,11 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 		return;
 
 	TCPMessage msg;
-	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::BallKilled );
 	msg.SetObjectID(  ball->GetObjectID() );
 
-	ss << msg;
-	netManager.SendMessage( ss.str() );
+	SendMessage( msg, MessageTarget::Oponent );
 
 	//PrintSend(msg);
 }
@@ -666,22 +654,18 @@ void GameManager::SendTileHitMessage( unsigned int tileID )
 		return;
 
 	TCPMessage msg;
-	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::TileHit );
 	msg.SetObjectID( tileID );
 
-	ss << msg;
-	netManager.SendMessage( ss.str() );
+	SendMessage( msg, MessageTarget::Oponent );
 }
-
 void GameManager::SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox )
 {
 	if ( !menuManager.IsTwoPlayerMode() )
 		return;
 
 	TCPMessage msg;
-	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::BonusSpawned );
 	msg.SetObjectID( bonusBox->GetObjectID() );
@@ -693,8 +677,7 @@ void GameManager::SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > 
 	msg.SetXDir( bonusBox->GetDirection().x );
 	msg.SetYDir( bonusBox->GetDirection().y );
 
-	ss << msg;
-	netManager.SendMessage( ss.str() );
+	SendMessage( msg, MessageTarget::Oponent );
 
 	//PrintSend( msg );
 }
@@ -720,15 +703,12 @@ void GameManager::SendGameStateChangedMessage()
 		return;
 
 	TCPMessage msg;
-	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::GameStateChanged );
 	msg.SetObjectID( 0 );
 	msg.SetGameState( menuManager.GetGameState() );
 
-	ss << msg;
-	netManager.SendMessage( ss.str() );
-
+	SendMessage( msg, MessageTarget::Oponent );
 	PrintSend( msg );
 }
 void GameManager::SendNewGameMessage( )
@@ -740,21 +720,15 @@ void GameManager::SendNewGameMessage( )
 	msg.SetIPAdress( ip  );
 	msg.SetPort( port );
 
-	std::stringstream ss;
-	ss << msg;
-	netManager.SendMessageToServer( ss.str() );
-
+	SendMessage( msg, MessageTarget::Server );
 }
-
 void GameManager::SendJoinGameMessage( const GameInfo &gameInfo )
 {
 	TCPMessage msg;
 	msg.SetMessageType( MessageType::GameJoined );
 	msg.SetObjectID( gameInfo.GetGameID() );
 
-	std::stringstream ss;
-	ss << msg;
-	netManager.SendMessageToServer( ss.str() );
+	SendMessage( msg, MessageTarget::Server );
 }
 void GameManager::SendEndGameMessage( )
 {
@@ -767,9 +741,7 @@ void GameManager::SendEndGameMessage( )
 	msg.SetIPAdress( ip );
 	msg.SetPort( port );
 
-	std::stringstream ss;
-	ss << msg;
-	netManager.SendMessageToServer( ss.str() );
+	SendMessage( msg, MessageTarget::Server );
 	PrintSend( msg );
 
 }
@@ -783,6 +755,16 @@ void GameManager::SendGetGameListMessage()
 	netManager.SendMessageToServer( ss.str() );
 
 	PrintSend( msg );
+}
+void GameManager::SendMessage( const TCPMessage &message, const MessageTarget &target )
+{
+	std::stringstream ss;
+	ss << message;
+
+	if ( target == MessageTarget::Oponent )
+		netManager.SendMessage( ss.str() );
+	else
+		netManager.SendMessageToServer( ss.str() );
 }
 void GameManager::PrintSend( const TCPMessage &msg ) const
 {
