@@ -19,3 +19,6 @@ callgrind*
 notes/*
 *.o
 boards/*
+Server/Server
+backup/
+build/
