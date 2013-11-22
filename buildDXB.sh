@@ -50,6 +50,7 @@ CompileString="clang++ \
 CompileServer="clang++
 	Server/main.cpp
 	Server/TCPConnectionServer.cpp
+	Server/Server.cpp
 	TCPMessage.cpp
 	-o Server/Server
 	-std=c++11
