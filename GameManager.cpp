@@ -170,8 +170,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
 	ball->textureType = TextureType::e_Ball;
 
-	if ( scale != 1.0 )
-		ball->SetScale( scale );
+	ball->SetScale( scale );
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
@@ -342,7 +341,6 @@ void GameManager::ReadMessagesFromServer( )
 		if ( str == "" )
 			break;
 
-		std::cout << "Reading : " << str << std::endl;
 		std::stringstream ss;
 		ss << str;
 
@@ -405,7 +403,6 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 {
 	UpdateGameList();
-	//menuManager.ClearGameList();
 
 	PrintRecv( message );
 }
@@ -552,7 +549,6 @@ void GameManager::SendPaddlePosMessage( )
 	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
 		return;
 
-	// Sending
 	TCPMessage msg;
 
 	std::stringstream ss;
@@ -1041,7 +1037,6 @@ void GameManager::Update( double delta )
 }
 void GameManager::UpdateLobbyState()
 {
-
 	if ( menuManager.GetGameState() != GameState::Lobby || !menuManager.HasLobbyStateChanged() )
 		return;
 
@@ -1068,16 +1063,20 @@ void GameManager::UpdateLobbyState()
 
 		case LobbyMenuItem::GameList:
 			{
-				GameInfo info;
 				if ( menuManager.IsAnItemSelected() )
 				{
-					std::cout << "GameManager.cpp@" << __LINE__ << " Selected game in list : " << menuManager.GetSelectedGameInfo().GetAsSrting()  << std::endl;
 					GameInfo gameInfo = menuManager.GetSelectedGameInfo();
+					gameID = gameInfo.GetGameID();
+
+					std::cout << "GameManager.cpp@" << __LINE__
+						<< " Selected game in list : "<< gameInfo.GetAsSrting()
+						<< std::endl;
+
 					menuManager.SetGameState( GameState::InGame );
 					boardLoader.SetIsServer( false );
 					netManager.SetIsServer( false );
 					netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
-					gameID = gameInfo.GetGameID();
+
 					SendJoinGameMessage( gameInfo );
 				}
 				else
@@ -1092,7 +1091,6 @@ void GameManager::UpdateLobbyState()
 }
 void GameManager::UpdateGameList()
 {
-	std::cout << "Update game list\n";
 	menuManager.ClearGameList();
 	SendGetGameListMessage();
 }
