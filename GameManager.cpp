@@ -157,6 +157,9 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 		{
 			return nullptr;
 		}
+		if ( localPlayerActiveBalls == 0 )
+			renderer.StartFade();
+
 		++localPlayerActiveBalls;
 	}
 	else  if ( owner == Player::Remote )
@@ -238,7 +241,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	int randMax = 100;
+	int randMax = 1;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -1002,6 +1005,7 @@ void GameManager::Update( double delta )
 
 	UpdateBalls( delta );
 	UpdateBonusBoxes( delta );
+	renderer.Update( delta );
 
 	if ( IsTimeForNewBoard() )
 	{
@@ -1338,7 +1342,10 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 	{
 		case BonusType::ExtraLife:
 			if ( ptr->GetOwner() == Player::Local )
+			{
 				++localPlayerLives;
+				renderer.RenderText( "Extra Life!", Player::Local, true );
+			}
 			else
 				++remotePlayerLives;
 			break;
@@ -1411,9 +1418,8 @@ void GameManager::RenderInGame()
 		else
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
 	}
-	else
-		if ( ballList.size() > 0 )
-			renderer.RemoveText();
+	//else if ( ballList.size() > 0 )
+			//renderer.RemoveText();
 }
 void GameManager::RenderEndGame()
 {

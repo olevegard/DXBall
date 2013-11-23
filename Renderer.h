@@ -64,7 +64,7 @@ public:
 	void Render( );
 
 	// Ingame text
-	void RenderText( const std::string &textToRender, const Player &player );
+	void RenderText( const std::string &textToRender, const Player &player, bool fade = false);
 	void RemoveText();
 
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
@@ -148,6 +148,36 @@ public:
 
 		std::cout << "AddLobbyMenuButtons.w set to : " << lobbyMenuListRect.w << std::endl;
 		return lobbyMenuListRect;
+	}
+	void Update( double delta )
+	{
+		if ( !localPlayerTextActive || !localPlayerTextFade )
+			return;
+
+		if ( localPlayerTextAlpha  > 0.0 )
+		{
+			localPlayerTextAlpha -= ( delta * 0.001 );
+
+			if ( localPlayerTextAlpha < 0.0 )
+			{
+				localPlayerTextAlpha = 0.0;
+				localPlayerTextActive = false;
+				localPlayerTextValue = "";
+
+			}
+			Uint8 alpha  =  static_cast< Uint8 > ( 255 * localPlayerTextAlpha );
+			SDL_SetTextureAlphaMod( localPlayerTextTexture, alpha );
+		}
+	}
+	void ResetAlpha()
+	{
+		localPlayerTextAlpha = 1.0;
+		SDL_SetTextureAlphaMod( localPlayerTextTexture, 255 );
+		std::cout << "Alpha reset\n";
+	}
+	void StartFade()
+	{
+		localPlayerTextFade = true;
 	}
 
 private:
@@ -250,6 +280,9 @@ private:
 	SDL_Texture* localPlayerTextTexture;
 	SDL_Rect     localPlayerTextRect;
 	std::string  localPlayerTextValue;
+	double 		 localPlayerTextAlpha;
+	bool 		 localPlayerTextActive;
+	bool 		 localPlayerTextFade;
 
 	// Player name
 	SDL_Texture* localPlayerCaptionTexture;

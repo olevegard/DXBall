@@ -73,6 +73,9 @@
 	,	localPlayerTextTexture( )
 	,	localPlayerTextRect( )
 	,	localPlayerTextValue( "" )
+	,	localPlayerTextAlpha( 1.0 )
+	,	localPlayerTextActive( true )
+	,	localPlayerTextFade( false )
 
 	,	localPlayerCaptionTexture( )
 	,	localPlayerCaptionRect( )
@@ -606,7 +609,7 @@ bool Renderer::LoadFontAndText()
 	return true;
 }
 
-void Renderer::RenderText( const std::string &textToRender, const Player &player  )
+void Renderer::RenderText( const std::string &textToRender, const Player &player, bool fade   )
 {
 
 	if ( player == Player::Local )
@@ -620,6 +623,10 @@ void Renderer::RenderText( const std::string &textToRender, const Player &player
 
 			localPlayerTextRect.x = ( background.w / 2 ) - ( localPlayerTextRect.w / 2 );
 			localPlayerTextRect.y = ( background.h / 2 ) - ( localPlayerTextRect.h / 2 );
+
+			ResetAlpha();
+			localPlayerTextActive  = true;
+			localPlayerTextFade = fade;
 		}
 	}
 }
@@ -769,6 +776,8 @@ void Renderer::ResetText()
 	RenderLives( 0, Player::Remote, true );
 	RenderBallCount( 0, Player::Local, true );
 	RenderBallCount( 0, Player::Remote, true );
+	ResetAlpha();
+	localPlayerTextActive  = false;
 }
 void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
 {
