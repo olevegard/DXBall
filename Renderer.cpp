@@ -74,7 +74,6 @@
 	,	localPlayerTextRect( )
 	,	localPlayerTextValue( "" )
 	,	localPlayerTextAlpha( 1.0 )
-	,	localPlayerTextActive( true )
 	,	localPlayerTextFade( false )
 
 	,	localPlayerCaptionTexture( )
@@ -625,8 +624,11 @@ void Renderer::RenderText( const std::string &textToRender, const Player &player
 			localPlayerTextRect.y = ( background.h / 2 ) - ( localPlayerTextRect.h / 2 );
 
 			ResetAlpha();
-			localPlayerTextActive  = true;
 			localPlayerTextFade = fade;
+		}
+		if ( fade )
+		{
+			localPlayerTextFade = true;
 		}
 	}
 }
@@ -777,7 +779,6 @@ void Renderer::ResetText()
 	RenderBallCount( 0, Player::Local, true );
 	RenderBallCount( 0, Player::Remote, true );
 	ResetAlpha();
-	localPlayerTextActive  = false;
 }
 void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
 {

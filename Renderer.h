@@ -151,7 +151,7 @@ public:
 	}
 	void Update( double delta )
 	{
-		if ( !localPlayerTextActive || !localPlayerTextFade )
+		if ( !localPlayerTextFade )
 			return;
 
 		if ( localPlayerTextAlpha  > 0.0 )
@@ -160,20 +160,19 @@ public:
 
 			if ( localPlayerTextAlpha < 0.0 )
 			{
-				localPlayerTextAlpha = 0.0;
-				localPlayerTextActive = false;
-				localPlayerTextValue = "";
-
+				localPlayerTextAlpha = 1.0;
+				localPlayerTextFade = false;
+			} else
+			{
+				Uint8 alpha  =  static_cast< Uint8 > ( 255 * localPlayerTextAlpha );
+				SDL_SetTextureAlphaMod( localPlayerTextTexture, alpha );
 			}
-			Uint8 alpha  =  static_cast< Uint8 > ( 255 * localPlayerTextAlpha );
-			SDL_SetTextureAlphaMod( localPlayerTextTexture, alpha );
 		}
 	}
 	void ResetAlpha()
 	{
 		localPlayerTextAlpha = 1.0;
 		SDL_SetTextureAlphaMod( localPlayerTextTexture, 255 );
-		std::cout << "Alpha reset\n";
 	}
 	void StartFade()
 	{
@@ -281,7 +280,6 @@ private:
 	SDL_Rect     localPlayerTextRect;
 	std::string  localPlayerTextValue;
 	double 		 localPlayerTextAlpha;
-	bool 		 localPlayerTextActive;
 	bool 		 localPlayerTextFade;
 
 	// Player name
