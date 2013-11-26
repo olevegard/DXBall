@@ -241,7 +241,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	int randMax = 1;
+	int randMax = 100;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -1029,51 +1029,60 @@ void GameManager::UpdateLobbyState()
 	switch ( menuManager.GetLobbyState() )
 	{
 		case LobbyMenuItem::NewGame:
-			std::cout << "New game\n";
-			SendNewGameMessage();
-			menuManager.SetGameState( GameState::InGame );
-			boardLoader.SetIsServer( true );
-			netManager.SetIsServer( true );
-			netManager.Connect( ip, port );
+			StartNewGame();
 			break;
 		case LobbyMenuItem::Update:
 			UpdateGameList();
 			break;
 		case LobbyMenuItem::Back:
-			menuManager.SetGameState( GameState::InGame );
-			boardLoader.SetIsServer( false );
-			netManager.SetIsServer( false );
-			netManager.Connect( ip, port );
-			menuManager.GoToMenu();
+			GoBackFromLobby();
 			break;
-
 		case LobbyMenuItem::GameList:
-			{
-				if ( menuManager.IsAnItemSelected() )
-				{
-					GameInfo gameInfo = menuManager.GetSelectedGameInfo();
-					gameID = gameInfo.GetGameID();
-
-					std::cout << "GameManager.cpp@" << __LINE__
-						<< " Selected game in list : "<< gameInfo.GetAsSrting()
-						<< std::endl;
-
-					menuManager.SetGameState( GameState::InGame );
-					boardLoader.SetIsServer( false );
-					netManager.SetIsServer( false );
-					netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
-
-					SendJoinGameMessage( gameInfo );
-				}
-				else
-					std::cout << "GameManager.cpp@" << __LINE__ << " No item selected\n";
-
-				break;
-			}
+			JoinGame();
+			break;
 		case LobbyMenuItem::Unknown:
 			std::cout << "GameManager.cpp@" << __LINE__ << " Unkown new game state\n";
 			break;
 	}
+}
+void GameManager::StartNewGame()
+{
+	std::cout << "New game\n";
+	SendNewGameMessage();
+	menuManager.SetGameState( GameState::InGame );
+	boardLoader.SetIsServer( true );
+	netManager.SetIsServer( true );
+	netManager.Connect( ip, port );
+}
+void GameManager::GoBackFromLobby()
+{
+	menuManager.SetGameState( GameState::InGame );
+	boardLoader.SetIsServer( false );
+	netManager.SetIsServer( false );
+	netManager.Connect( ip, port );
+	menuManager.GoToMenu();
+}
+
+void GameManager::JoinGame()
+{
+	if ( menuManager.IsAnItemSelected() )
+	{
+		GameInfo gameInfo = menuManager.GetSelectedGameInfo();
+		gameID = gameInfo.GetGameID();
+
+		std::cout << "GameManager.cpp@" << __LINE__
+			<< " Selected game in list : "<< gameInfo.GetAsSrting()
+			<< std::endl;
+
+		menuManager.SetGameState( GameState::InGame );
+		boardLoader.SetIsServer( false );
+		netManager.SetIsServer( false );
+		netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
+
+		SendJoinGameMessage( gameInfo );
+	}
+	else
+		std::cout << "GameManager.cpp@" << __LINE__ << " No item selected\n";
 }
 void GameManager::UpdateGameList()
 {
@@ -1419,7 +1428,7 @@ void GameManager::RenderInGame()
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
 	}
 	//else if ( ballList.size() > 0 )
-			//renderer.RemoveText();
+		//renderer.RemoveText();
 }
 void GameManager::RenderEndGame()
 {

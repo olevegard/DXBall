@@ -67,6 +67,11 @@ class GameManager
 
 		void CreateMenu();
 
+		// New Game / Join Game / Update
+		void StartNewGame();
+		void GoBackFromLobby();
+		void JoinGame();
+
 		// Tile collisions
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
