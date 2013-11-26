@@ -241,7 +241,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
-	int randMax = 100;
+	int randMax = 10;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -675,7 +675,7 @@ void GameManager::SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > 
 	msg.SetBonusType( bonusBox->GetBonusType() );
 
 	msg.SetXPos( bonusBox->rect.x );
-	msg.SetYPos( bonusBox->rect.y );
+	msg.SetYPos( windowSize.h - bonusBox->rect.y );
 
 	msg.SetXDir( bonusBox->GetDirection().x );
 	msg.SetYDir( bonusBox->GetDirection().y );
@@ -1318,8 +1318,8 @@ void GameManager::MoveBonusBoxes ( double delta )
 	{
 		Vector2f direction = curr->GetDirection();
 
-		curr->rect.x += direction.x * delta * 0.3;
-		curr->rect.y += direction.y * delta * 0.3;
+		curr->rect.x += direction.x * delta * 0.1;
+		curr->rect.y += direction.y * delta * 0.1;
 
 		if ( curr->rect.x < 0.0 || ( curr->rect.x + curr->rect.w ) > windowSize.w )
 			curr->FlipXDir();
