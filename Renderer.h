@@ -33,6 +33,7 @@ struct Tile;
 struct Paddle;
 struct BonusBox;
 enum class Player : int;
+enum class BonusType : int;
 enum class MenuItemType : int;
 enum class LobbyMenuItem : int;
 enum class MainMenuItemType : int;
@@ -57,6 +58,8 @@ public:
 
 	void AddBonusBox( const std::shared_ptr< BonusBox > &bb );
 	void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
+	void SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox, const BonusType &bonusType );
+	SDL_Color GetBonusBoxColor( const BonusType &bonusType );
 
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
 	void SetRemotePaddle( std::shared_ptr< Paddle >  &paddle );

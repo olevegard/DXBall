@@ -7,6 +7,7 @@
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 #include "enums/LobbyMenuItem.h"
+#include "enums/BonusType.h"
 
 #include "tools/RenderTools.h"
 
@@ -368,32 +369,27 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
 	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
 
-	int bonusBoxMargin = bonusBoxRect.w / 10;
-	int doubleMargin = bonusBoxMargin * 2;
+
 
 	// Background
 	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, rmask, gmask, bmask, amask);
 	if ( bonusBox->GetOwner() == Player::Local )
-		SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, localPlayerColor.r, localPlayerColor.g, localPlayerColor.b, localPlayerColor.a ) );
+		SDL_FillRect(
+				bonus,
+				NULL,
+				SDL_MapRGBA( bonus->format, localPlayerColor.r, localPlayerColor.g, localPlayerColor.b, localPlayerColor.a ) );
 	else
-		SDL_FillRect( bonus, NULL, SDL_MapRGBA( bonus->format, remotePlayerColor.r, remotePlayerColor.g, remotePlayerColor.b, remotePlayerColor.a ) );
+		SDL_FillRect(
+				bonus,
+				NULL,
+				SDL_MapRGBA( bonus->format, remotePlayerColor.r, remotePlayerColor.g, remotePlayerColor.b, remotePlayerColor.a ) );
 
-	// Icon
-	SDL_Rect logoPosition;
-	logoPosition.x = bonusBoxMargin;
-	logoPosition.y = bonusBoxMargin;
-	logoPosition.w = bonusBoxRect.w - doubleMargin;
-	logoPosition.h = bonusBoxRect.w - doubleMargin;
-	SDL_Surface* logo = SDL_CreateRGBSurface( 0, logoPosition.w, logoPosition.h, SCREEN_BPP, rmask, gmask, bmask, amask);
-	SDL_FillRect( logo, NULL, SDL_MapRGBA( bonus->format, tileColors[0].r, tileColors[0].g, tileColors[0].b, 255 ) );
 
-	// Add icon to the surface
-	SDL_BlitSurface( logo   , NULL, bonus, &logoPosition);
-	SDL_FreeSurface( logo );
+	bonusBoxRect = bonus->clip_rect;
+	SetBonusBoxIcon( bonusBoxRect.w, bonus, bonusBox->GetBonusType()  );
 
 	bonusBoxTexture = SDL_CreateTextureFromSurface( renderer, bonus );
 
-	bonusBoxRect = bonus->clip_rect;
 	SDL_FreeSurface( bonus );
 
 	bonusBox->SetTexture( bonusBoxTexture );
@@ -403,6 +399,42 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 
 	bonusBoxList.push_back( bonusBox );
 
+}
+void Renderer::SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox, const BonusType &bonusType )
+{
+	int32_t bbMargin = width / 8;
+	int32_t doubleMargin = bbMargin * 2;
+
+	SDL_Rect logoPosition;
+	logoPosition.x = bbMargin;
+	logoPosition.y = bbMargin;
+	logoPosition.w = width - doubleMargin;
+	logoPosition.h = width - doubleMargin;
+
+	SDL_Color logoColor = GetBonusBoxColor( bonusType );
+
+	SDL_Surface* logo = SDL_CreateRGBSurface( 0, logoPosition.w, logoPosition.h, SCREEN_BPP, rmask, gmask, bmask, amask);
+	SDL_FillRect( logo, NULL, SDL_MapRGBA( bonusBox->format, logoColor.r, logoColor.g,  logoColor.b, logoColor.a ) );
+
+	SDL_BlitSurface( logo, NULL, bonusBox, &logoPosition);
+	SDL_FreeSurface( logo );
+}
+SDL_Color Renderer::GetBonusBoxColor( const BonusType &bonusType )
+{
+	SDL_Color logoColor = { 0, 128, 128, 255 };
+	if ( bonusType == BonusType::ExtraLife )
+	{
+		logoColor.r = 255;
+		logoColor.g = 255;
+		logoColor.b = 255;
+	}
+	else
+	{
+		logoColor.r = 0;
+		logoColor.g = 0;
+		logoColor.b = 0;
+	}
+	return logoColor;
 }
 void Renderer::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bonusBox )
 {
