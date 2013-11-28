@@ -3,17 +3,19 @@ text_color 140 0 140 255
 local_player_color 0 140 0 255
 remote_player_color 140 0 0 255
 grey_area 0 140 0 255
+bonus_extra_life 255 255 255 255
+bonus_death 0 0 0 255
 
 # Tile colors
 # ============================================================================
 # Regular tiles
 0 255 0 0 128
 
-# Explosive
-1 0 0 255 255
-
 # Hard tiles
 2 255 255 255 255  | 196 196 196 255 |  128 128 128 255 | 64 64 64 255 | 32 32 32 255
+
+# Explosive
+1 0 0 255 255
 
 # Unbreakable
 3 0 255 0 255

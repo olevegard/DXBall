@@ -38,6 +38,16 @@ struct TileColor
 				return "Unknown";
 		}
 	}
+	bool IsMultiColored() const
+	{
+		return isMultiColored;
+	}
+	void SetIsMultiColored( bool multiColored )
+	{
+		isMultiColored = multiColored;
+	}
+	private:
+		bool isMultiColored;
 };
 inline std::istream& operator>>( std::istream &is, SDL_Color &color )
 {
@@ -77,6 +87,7 @@ inline std::istream& operator>>( std::istream &is, TileColor &tileColor )
 	if ( tileColor.type != TileType::Hard )
 	{
 		is >> tileColor.colors[0];
+		tileColor.SetIsMultiColored( false );
 	}
 	else
 	{
@@ -84,6 +95,7 @@ inline std::istream& operator>>( std::istream &is, TileColor &tileColor )
 		{
 			is >> tileColor.colors[i];
 		}
+		tileColor.SetIsMultiColored( true );
 	}
 	return is;
 }
@@ -108,4 +120,3 @@ inline std::ostream& operator<<( std::ostream &os, const TileColor &tileColor )
 
 	return os;
 }
-

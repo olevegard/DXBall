@@ -317,6 +317,8 @@ void Renderer::LoadColors()
 	hardTileColors[2] = cfgldr.GetTileColor( TileType::Hard, 2 );
 	hardTileColors[3] = cfgldr.GetTileColor( TileType::Hard, 3 );
 	hardTileColors[4] = cfgldr.GetTileColor( TileType::Hard, 4 );
+
+	bonusTypeColors = cfgldr.GetBonusColorMap();
 }
 SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
 {
@@ -421,6 +423,7 @@ void Renderer::SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox, const Bonu
 }
 SDL_Color Renderer::GetBonusBoxColor( const BonusType &bonusType )
 {
+	/*
 	SDL_Color logoColor = { 0, 128, 128, 255 };
 	if ( bonusType == BonusType::ExtraLife )
 	{
@@ -434,7 +437,9 @@ SDL_Color Renderer::GetBonusBoxColor( const BonusType &bonusType )
 		logoColor.g = 0;
 		logoColor.b = 0;
 	}
-	return logoColor;
+	*/
+
+	return bonusTypeColors[bonusType];
 }
 void Renderer::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bonusBox )
 {

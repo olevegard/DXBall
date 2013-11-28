@@ -358,4 +358,7 @@ private:
 	MenuItem 	lobbyUpdateButton;
 	MenuItem 	lobbyBackButton;
 	SDL_Rect	lobbyMenuListRect;
+
+	// Bonus Boxes
+	std::map< BonusType, SDL_Color > bonusTypeColors;
 };
