@@ -77,6 +77,17 @@ void ColorConfigLoader::LoadConfig()
 			bonusTypeColors.insert( std::make_pair( BonusType::Death, color ) );
 			continue;
 		}
+		else if (  configLine.find( "bonus_super_ball" ) != std::string::npos )
+		{
+			std::stringstream ss(configLine);
+			std::string str;
+			SDL_Color color;
+			ss >> str;
+			ss >> color;;
+			PrintColor( "bonus super ball", color );
+			bonusTypeColors.insert( std::make_pair( BonusType::SuperBall, color ) );
+			continue;
+		}
 		else if ( configLine[0] == '#' || configLine.empty() )
 			continue;
 

@@ -38,10 +38,12 @@
 	,	localPlayerPoints( 0 )
 	,	localPlayerLives( 3 )
 	,	localPlayerActiveBalls( 0 )
+	,	localPlayerSuperBall( false )
 
 	,	remotePlayerPoints( 0 )
 	,	remotePlayerLives( 3 )
 	,	remotePlayerActiveBalls( 0 )
+	,	remotePlayerSuperBall( false )
 
 	,	ballList()
 	,	windowSize()
@@ -144,10 +146,12 @@ void GameManager::Restart()
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
 	localPlayerActiveBalls = 0;
+	localPlayerSuperBall = false;
 
 	remotePlayerPoints = 0;
 	remotePlayerLives = 3;
 	remotePlayerActiveBalls = 0;
+	remotePlayerSuperBall = false;
 
 	renderer.SetIsTwoPlayerMode( menuManager.IsTwoPlayerMode() );
 	renderer.ResetText();
@@ -1170,7 +1174,7 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 	if ( !tile )
 		return;
 
-	if ( !ball->TileCheck( tile->rect, tile->GetObjectID() ) )
+	if ( !ball->TileCheck( tile->rect, tile->GetObjectID() , IsSuperBall( ball )) )
 		return;
 
 	if ( ball->GetOwner() == Player::Local ) SendBallDataMessage( ball );
@@ -1180,6 +1184,13 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 	SendTileHitMessage( tile->GetObjectID() );
 
 	UpdateTileHit( ball, tile );
+}
+bool GameManager::IsSuperBall( std::shared_ptr< Ball > ball )
+{
+	if ( ball->GetOwner() == Player::Local )
+		return localPlayerSuperBall;
+	else
+		return remotePlayerSuperBall;
 }
 void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
@@ -1374,6 +1385,12 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 		case BonusType::Death:
 			ReducePlayerLifes( ptr->GetOwner() );
 			break;
+		case BonusType::SuperBall:
+			if ( ptr->GetOwner() == Player::Local )
+				localPlayerSuperBall = true;
+			else
+				remotePlayerSuperBall = true;
+			break;
 		default:
 			break;
 	}
@@ -1384,9 +1401,12 @@ BonusType GameManager::GetRandomBonusType() const
 {
 	int rand = Math::GenRandomNumber( 1000 );
 	if ( rand < 500 )
+		return BonusType::SuperBall;
+	if ( rand < 750 )
 		return BonusType::ExtraLife;
 	else
 		return BonusType::Death;
+
 }
 void GameManager::UpdateGUI( )
 {

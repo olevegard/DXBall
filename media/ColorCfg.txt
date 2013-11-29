@@ -5,6 +5,7 @@ remote_player_color 140 0 0 255
 grey_area 0 140 0 255
 bonus_extra_life 255 255 255 255
 bonus_death 0 0 0 255
+bonus_super_ball 0 0 255 255
 
 # Tile colors
 # ============================================================================

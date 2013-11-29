@@ -195,7 +195,7 @@ void  Ball::CalculateNewBallDirection( double hitPosition )
 
 	NormalizeDirection();
 }
-bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
+bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID, bool isSuperBall )
 {
 	if ( !CheckTileIntersection( tileRect, rect ) )
 		return false;
@@ -235,7 +235,8 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID )
 		RectHelpers::PrintPosition( oldRect , "Ball old ");
 	}
 	lastTileHit = tileID;
-	FindIntersectingSide( tileRect );
+	if ( !isSuperBall )
+		FindIntersectingSide( tileRect );
 	//HandleTileIntersection( tileRect );
 	//HandleTileIntersection2( tileRect );
 

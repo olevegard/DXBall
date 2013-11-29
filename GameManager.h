@@ -76,6 +76,7 @@ class GameManager
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
 		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
+		bool IsSuperBall( std::shared_ptr< Ball > ball );
 
 		// Explotion related
 		int HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
@@ -185,11 +186,13 @@ class GameManager
 		unsigned int localPlayerPoints;
 		unsigned int localPlayerLives;
 		unsigned int localPlayerActiveBalls;
+		bool localPlayerSuperBall;
 
 		std::string remotePlayerName;
 		unsigned int remotePlayerPoints;
 		unsigned int remotePlayerLives;
 		unsigned int remotePlayerActiveBalls;
+		bool remotePlayerSuperBall;
 
 		std::vector< std::shared_ptr< Ball     > > ballList;
 		std::vector< std::shared_ptr< Tile     > > tileList;

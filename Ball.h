@@ -26,7 +26,7 @@ struct Ball : GamePiece
 
 	bool PaddleCheck( const Rect &paddleRect );
 
-	bool TileCheck( const Rect &paddleRect, unsigned int tileID );
+	bool TileCheck( const Rect &paddleRect, unsigned int tileID, bool isSuperBall );
 
 	void SetOwner( Player owner )
 	{
