@@ -1383,11 +1383,19 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 				++remotePlayerLives;
 			break;
 		case BonusType::Death:
+			if ( ptr->GetOwner() == Player::Local )
+			{
+				renderer.RenderText( "Death!!", Player::Local, true );
+			}
+			else
 			ReducePlayerLifes( ptr->GetOwner() );
 			break;
 		case BonusType::SuperBall:
 			if ( ptr->GetOwner() == Player::Local )
+			{
 				localPlayerSuperBall = true;
+				renderer.RenderText( "Super Ball!", Player::Local, true );
+			}
 			else
 				remotePlayerSuperBall = true;
 			break;
