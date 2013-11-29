@@ -159,7 +159,7 @@ public:
 
 		if ( localPlayerTextAlpha  > 0.0 )
 		{
-			localPlayerTextAlpha -= ( delta * 0.001 );
+			localPlayerTextAlpha -= ( delta * 0.0005 );
 
 			if ( localPlayerTextAlpha < 0.0 )
 			{
