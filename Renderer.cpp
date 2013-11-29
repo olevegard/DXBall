@@ -11,7 +11,7 @@
 
 #include "tools/RenderTools.h"
 
-#include "ConfigLoader.h"
+#include "ColorConfigLoader.h"
 
 #include <sstream>
 #include <iostream>
@@ -296,7 +296,7 @@ bool Renderer::LoadImages()
 }
 void Renderer::LoadColors()
 {
-	ConfigLoader cfgldr;
+	ColorConfigLoader cfgldr;
 
 	cfgldr.LoadConfig();
 

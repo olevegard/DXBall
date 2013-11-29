@@ -208,4 +208,7 @@ class GameManager
 
 		unsigned short fpsLimit;
 		double frameDuration;
+
+		double ballSpeed;
+		double bonusBoxSpeed;
 };

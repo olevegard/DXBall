@@ -1,0 +1,2 @@
+ball_speed 0.9
+bonus_box_speed 0.9

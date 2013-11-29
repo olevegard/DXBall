@@ -7,6 +7,8 @@ BonusBox::BonusBox( int32_t objectID_ )
 	rect.y = 100;
 	rect.w =  40;
 	rect.h =  40;//84
+
+	SetSpeed( 0.15 );
 }
 
 //std::string BonusBox::GetName() const { return effectName; }

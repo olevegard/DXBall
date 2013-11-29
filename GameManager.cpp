@@ -23,6 +23,8 @@
 
 #include <cmath>
 
+#include "ConfigLoader.h"
+
 
 	GameManager::GameManager()
 	:	runGame( true )
@@ -55,6 +57,8 @@
 
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
+	,	ballSpeed( 0.2 )
+	,	bonusBoxSpeed( 0.2 )
 {
 	windowSize.x = 0.0;
 	windowSize.y = 0.0;
@@ -87,6 +91,11 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	renderer.SetLocalPaddle( localPaddle );
 	menuManager.Init( renderer );
 	CreateMenu();
+
+	ConfigLoader cfg;
+	cfg.LoadConfig();
+	bonusBoxSpeed = cfg.GetBonusBoxSpeed();
+	ballSpeed = cfg.GetBallSpeed();
 
 	return true;
 }
@@ -175,6 +184,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	ball->textureType = TextureType::e_Ball;
 
 	ball->SetScale( scale );
+	ball->SetSpeed( ballSpeed );
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
@@ -269,6 +279,8 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 	bonusBox->SetDirection( direction );
 	bonusBox->SetOwner( ballOwner  );
 	bonusBox->SetBonusType( GetRandomBonusType()  );
+	bonusBox->SetSpeed( bonusBoxSpeed );
+	std::cout << "Setting speed to : " << bonusBoxSpeed << std::endl;
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -536,6 +548,7 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 	bonusBox->SetOwner( Player::Remote );
 	bonusBox->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() * -1.0 ) );
 	bonusBox->SetBonusType( message.GetBonusType() );
+	bonusBox->SetSpeed( bonusBoxSpeed );
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
