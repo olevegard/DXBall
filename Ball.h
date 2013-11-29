@@ -39,7 +39,7 @@ struct Ball : GamePiece
 	}
 	void SetRemoteScale( double scale_ )
 	{
-		speed *= scale_;
+		SetSpeed( GetSpeed() * scale_ );
 	}
 	bool CheckTileSphereIntersection( const Rect &tile, const Rect &ball, double &retDistance ) const;
 
@@ -68,7 +68,7 @@ struct Ball : GamePiece
 
 	Vector2f Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const;
 
-	double speed;
+	//double speed;
 
 	double dirX;
 	double dirY;

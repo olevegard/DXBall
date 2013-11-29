@@ -13,8 +13,8 @@
 #include "enums/Corner.h"
 
 Ball::Ball( const SDL_Rect &windowSize, const Player &owner, int32_t ID   )
-	:	speed( 0.0705f )
-	,	dirX( -0.83205f )
+	//:	speed( 0.0705f )
+	:	dirX( -0.83205f )
 	,	dirY(-0.5547f )
 	,	paddleHitInPrevFrame( false )
 	,	debugMode( false )
@@ -36,7 +36,8 @@ Ball::~Ball()
 
 void Ball::Reset( const SDL_Rect &windowSize )
 {
-	speed = 0.3f * Math::GenRandomNumber( 1 );
+	//speed = 0.3f * Math::GenRandomNumber( 1 );
+	SetSpeed(0.3f * Math::GenRandomNumber( 1 ));
 
 	// X pos and dirX is the same for both local and remote player
 	dirX = Math::GenRandomNumber( -1.0, 1.0 );
@@ -70,8 +71,8 @@ void Ball::Update( double tick )
 	oldRect.x = rect.x;
 	oldRect.y = rect.y;
 
-	rect.x += tick * speed * dirX;
-	rect.y += tick * speed * dirY;
+	rect.x += tick * GetSpeed() * dirX;
+	rect.y += tick * GetSpeed() * dirY;
 }
 
 bool Ball::BoundCheck( const SDL_Rect &boundsRect )
@@ -177,7 +178,7 @@ void Ball::HandlePaddleHit( const Rect &paddleRect )
 
 	CalculateNewBallDirection( hitPosition );
 
-	speed *= 1.0005f;
+	SetSpeed( GetSpeed() * 1.0005f);
 }
 double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
 {

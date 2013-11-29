@@ -1318,8 +1318,8 @@ void GameManager::MoveBonusBoxes ( double delta )
 	{
 		Vector2f direction = curr->GetDirection();
 
-		curr->rect.x += direction.x * delta * 0.1;
-		curr->rect.y += direction.y * delta * 0.1;
+		curr->rect.x += direction.x * delta * curr->GetSpeed();
+		curr->rect.y += direction.y * delta * curr->GetSpeed();
 
 		if ( curr->rect.x < 0.0 || ( curr->rect.x + curr->rect.w ) > windowSize.w )
 			curr->FlipXDir();

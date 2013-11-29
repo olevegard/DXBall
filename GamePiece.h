@@ -45,10 +45,19 @@ struct GamePiece
 	{
 		objectID = objectID_;
 	}
+	void SetSpeed( double speed_ )
+	{
+		speed = speed_;
+	}
+	double GetSpeed() const
+	{
+		return speed;
+	}
 	private:
 	GamePiece( const GamePiece &gamePiece );
 	GamePiece& operator=( const GamePiece &gamePiece );
 	int32_t objectID;
 	bool isAlive;
 	double scale;
+	double speed;
 };
