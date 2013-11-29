@@ -1134,3 +1134,43 @@ void Renderer::ForceMouseFocus()
 {
 	SDL_SetWindowGrab( window, SDL_TRUE );
 }
+SDL_Rect Renderer::CalcMenuListRect()
+{
+	lobbyMenuListRect.w = static_cast< int32_t > ( greyAreaRect.w * 0.6 );
+	lobbyMenuListRect.h = static_cast< int32_t > ( greyAreaRect.h * 0.9 );
+
+	lobbyMenuListRect.x = static_cast< int32_t > ( ( background.w * 0.5   ) - ( lobbyMenuListRect.w * 0.5 ) );
+	lobbyMenuListRect.y = static_cast< int32_t > ( ( greyAreaRect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyAreaRect.y;
+
+	std::cout << "AddLobbyMenuButtons.w set to : " << lobbyMenuListRect.w << std::endl;
+	return lobbyMenuListRect;
+}
+void Renderer::Update( double delta )
+{
+	if ( !localPlayerTextFade )
+		return;
+
+	if ( localPlayerTextAlpha  > 0.0 )
+	{
+		localPlayerTextAlpha -= ( delta * 0.0005 );
+
+		if ( localPlayerTextAlpha < 0.0 )
+		{
+			localPlayerTextAlpha = 1.0;
+			localPlayerTextFade = false;
+		} else
+		{
+			Uint8 alpha  =  static_cast< Uint8 > ( 255 * localPlayerTextAlpha );
+			SDL_SetTextureAlphaMod( localPlayerTextTexture, alpha );
+		}
+	}
+}
+void Renderer::ResetAlpha()
+{
+	localPlayerTextAlpha = 1.0;
+	SDL_SetTextureAlphaMod( localPlayerTextTexture, 255 );
+}
+void Renderer::StartFade()
+{
+	localPlayerTextFade = true;
+}
