@@ -1560,6 +1560,8 @@ void GameManager::ReducePlayerLifes( Player player )
 
 		if ( localPlayerLives == 0 )
 			RemoveDeadBallsAndBoxes( Player::Local );
+
+		localPlayerSuperBall = false;
 	}
 	else
 	{
@@ -1570,6 +1572,8 @@ void GameManager::ReducePlayerLifes( Player player )
 
 		if ( remotePlayerLives == 0 )
 			RemoveDeadBallsAndBoxes( Player::Remote );
+
+		remotePlayerSuperBall = false;
 	}
 }
 void GameManager::RemoveDeadBallsAndBoxes( Player player )
