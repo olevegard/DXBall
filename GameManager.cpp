@@ -1386,12 +1386,28 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 				++remotePlayerLives;
 			break;
 		case BonusType::Death:
+			{
 			if ( ptr->GetOwner() == Player::Local )
 			{
 				renderer.RenderText( "Death!!", Player::Local, true );
 			}
+
+			int32_t countKilled = 0;
+			for ( auto p : ballList )
+			{
+				if ( p->GetOwner() == ptr->GetOwner() )
+				{
+					++countKilled;
+					p->Kill();
+					renderer.RemoveText();
+					std::cout << "\tBallRemoved\n";
+				}
+			}
+			if ( countKilled != 0 )
+				DeleteDeadBalls();
 			else
-			ReducePlayerLifes( ptr->GetOwner() );
+				ReducePlayerLifes( ptr->GetOwner() );
+			}
 			break;
 		case BonusType::SuperBall:
 			if ( ptr->GetOwner() == Player::Local )

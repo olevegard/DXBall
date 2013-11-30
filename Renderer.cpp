@@ -649,26 +649,30 @@ bool Renderer::LoadFontAndText()
 
 void Renderer::RenderText( const std::string &textToRender, const Player &player, bool fade   )
 {
-
 	if ( player == Player::Local )
 	{
+		if ( fade )
+		{
+			RemoveText();
+			localPlayerTextFade = true;
+		}
+
+		ResetAlpha();
+
 		if (  localPlayerTextValue != textToRender || localPlayerTextTexture == nullptr )
 		{
 			localPlayerTextValue = textToRender;
 
 			SDL_DestroyTexture( localPlayerTextTexture );
-			localPlayerTextTexture = RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), textColor, localPlayerTextRect, renderer );
+			localPlayerTextTexture =
+				RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), textColor, localPlayerTextRect, renderer );
 
 			localPlayerTextRect.x = ( background.w / 2 ) - ( localPlayerTextRect.w / 2 );
 			localPlayerTextRect.y = ( background.h / 2 ) - ( localPlayerTextRect.h / 2 );
 
-			ResetAlpha();
 			localPlayerTextFade = fade;
 		}
-		if ( fade )
-		{
-			localPlayerTextFade = true;
-		}
+
 	}
 }
 void Renderer::RemoveText()
