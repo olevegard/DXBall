@@ -499,11 +499,14 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 {
-	//PrintRecv( message );
+	std::cout << "GameManager.cpp@" << __LINE__ << "Erasing ball kill message: \n";
+	PrintRecv( message );
 	if ( ballList.size() > 0 )
 	{
-		RemoveBall( GetBallFromID( message.GetObjectID() ));
+		GetBallFromID( message.GetObjectID() )->Kill();
 	}
+
+	DeleteDeadBalls();
 }
 void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 {

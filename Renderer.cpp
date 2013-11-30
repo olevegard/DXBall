@@ -357,11 +357,13 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 {
+	std::cout << "Renderer.cpp@" << __LINE__ << " Deleting Ball : " << ball->GetObjectID() << std::endl;
 	auto p = std::find( ballList.begin(), ballList.end(), ball );
 
 	if ( p == ballList.end() )
 	{
-		std::cout << "ball not found!" << std::endl;
+		std::cout << "Renderer.cpp@" << __LINE__ << " Ball not found" << std::endl;
+		std::cin.ignore();
 	}
 	else
 		ballList.erase( p  );
