@@ -1,4 +1,5 @@
 #include "TCPConnection.h"
+#include <csignal>
 
 #include <iostream>
 
@@ -108,8 +109,12 @@ void TCPConnection::Close()
 	if ( !isConnected )
 		return;
 
-	std::cout << "Closing TCPCOnnection...\n";
+	std::cout << "TCPConnection.cpp@" << __LINE__ << " Closing connection" << std::endl;
 	SDLNet_TCP_Close( tcpSocket );
+
+	if ( SDLNet_TCP_DelSocket( socketSet, tcpSocket ) == -1 )
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Failed to delete socket : " << SDLNet_GetError()  << std::endl;
+
 	SDLNet_FreeSocketSet( socketSet );
 
 	if ( isServer )

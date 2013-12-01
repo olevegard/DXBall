@@ -31,7 +31,7 @@
 	,	renderer()
 	,	timer()
 
-	,	gameID( -1 )
+	,	gameID( 0 )
 	,	localPaddle()
 
 	,	isAIControlled( false )
@@ -1073,6 +1073,9 @@ void GameManager::StartNewGame()
 	boardLoader.SetIsServer( true );
 	netManager.SetIsServer( true );
 	netManager.Connect( ip, port );
+	// This is a temporary fix, setting the port to this client to something else
+	// The code should be changed so that it's not necesseary to change port.
+	port += 100;
 }
 void GameManager::GoBackFromLobby()
 {

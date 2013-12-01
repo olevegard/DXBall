@@ -282,6 +282,8 @@ void Server::UpdateNetwork( int connectionNo )
 			GameInfo game;
 			game.Set( msg.GetIPAdress(), msg.GetPort() );
 			game.SetGameID( gameCount );
+
+			std::cout << "Server.cpp@" << __LINE__ << " Adding game with ID : " << gameCount << std::endl;
 			gameList.push_back( game );
 			++gameCount;
 		}
@@ -294,7 +296,6 @@ void Server::UpdateNetwork( int connectionNo )
 		else if ( msg.GetType() == MessageType::EndGame )
 		{
 			RecieveGameEndMessage( msg );
-
 			SendMessageToAll( msg );
 		}
 		else if ( msg.GetType() == MessageType::GetGameList )
@@ -306,14 +307,14 @@ void Server::UpdateNetwork( int connectionNo )
 
 void Server::RecieveGameEndMessage(const TCPMessage &msg )
 {
-	std::cout << "Delete message received for : " << msg.GetTypeAsString() << std::endl;
+	std::cout << "Delete message received for : " << msg.GetObjectID() << std::endl;
 	std::string deleteIP  = msg.GetIPAdress();
 	int32_t deletePort  = msg.GetPort();
 	int32_t deletedGames = 0;
 
 	for ( uint32_t i = 0; i < gameList.size() ; ++i )
 	{
-		if ( gameList[i].GetIP() == deleteIP && gameList[i].GetPort() == deletePort )
+		if ( gameList[i].GetGameID() == msg.GetObjectID() )
 		{
 			++deletedGames;
 
@@ -323,22 +324,14 @@ void Server::RecieveGameEndMessage(const TCPMessage &msg )
 		}
 	}
 
-
 	if ( deletedGames == 0 )
-	{
 		std::cout << "Server.cpp@" << __LINE__
-			<< " no games deleted for Game Info : "
-			<< msg.GetIPAdress() << " : "
-			<< msg.GetPort() << std::endl;
-	}
+			<< " no games deleted for Game ID : " << msg.GetObjectID() << std::endl;
 	else if ( deletedGames > 1 )
-	{
 		std::cout << "Server.cpp@" << __LINE__
-			<< " more than 1 games deleted for Game Info : "
-			<< msg.GetIPAdress() << " : "
-			<< msg.GetPort() << std::endl;
-	}
-	std::cout << "Game deleted!\n";
+			<< " more than 1 games deleted for Game ID : " << msg.GetObjectID() << std::endl;
+	else
+		std::cout << "Game deleted!\n";
 
 	RepositionGameLines();
 
