@@ -4,6 +4,7 @@
 #include "Tile.h"
 #include "Board.h"
 #include "Paddle.h"
+#include "Bullet.h"
 #include "BoardLoader.h"
 
 #include "math/Math.h"
@@ -98,6 +99,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	cfg.LoadConfig();
 	bonusBoxSpeed = cfg.GetBonusBoxSpeed();
 	ballSpeed = cfg.GetBallSpeed();
+
 
 	return true;
 }
@@ -316,6 +318,13 @@ void GameManager::UpdateBalls( double delta )
 	}
 
 	DeleteDeadBalls();
+}
+void GameManager::UpdateBullets( double delta )
+{
+	for ( auto p : bulletList )
+	{
+		p->Update( delta );
+	}
 }
 void GameManager::UpdateNetwork()
 {
@@ -991,6 +1000,19 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				//AddBall( Player::Remote );
 				AddBall( Player::Local, ballCount );
 				break;
+			case SDLK_f:
+				{
+					std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
+					bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
+					bulletList.push_back( bullet );
+					renderer.AddBullet( bullet );
+
+					std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
+					bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w, localPaddle->rect.y - 10 );
+					bulletList.push_back( bullet2 );
+					renderer.AddBullet( bullet2 );
+				}
+				break;
 			case SDLK_u:
 				ResetScale();
 				break;
@@ -1024,6 +1046,7 @@ void GameManager::Update( double delta )
 	}
 
 	UpdateBalls( delta );
+	UpdateBullets( delta );
 	UpdateBonusBoxes( delta );
 	renderer.Update( delta );
 

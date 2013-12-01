@@ -14,6 +14,7 @@ enum class TileType : int;
 enum class Player : int;
 enum class MessageTarget : int;
 struct GamePiece;
+struct Bullet;
 struct Paddle;
 struct Ball;
 struct Tile;
@@ -46,6 +47,7 @@ class GameManager
 
 		// Ball checks
 		void UpdateBalls( double delta );
+		void UpdateBullets( double delta );
 		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
 		void DeleteDeadBalls();
 
@@ -197,6 +199,7 @@ class GameManager
 		std::vector< std::shared_ptr< Ball     > > ballList;
 		std::vector< std::shared_ptr< Tile     > > tileList;
 		std::vector< std::shared_ptr< BonusBox > > bonusBoxList;
+		std::vector< std::shared_ptr< Bullet   > > bulletList;
 
 		SDL_Rect windowSize;
 		double scale;

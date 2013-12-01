@@ -448,6 +448,10 @@ void Renderer::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bonusBox )
 	bonusBoxList.erase( std::find( bonusBoxList.begin(), bonusBoxList.end(), bonusBox ) );
 }
 
+void Renderer::AddBullet( const std::shared_ptr< Bullet > &bb )
+{
+	bulletList.push_back( bb );
+}
 void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	localPaddle = paddle;
@@ -545,6 +549,16 @@ void Renderer::RenderForeground()
 		SDL_Texture* texture = gp->GetTexture();
 		SDL_RenderCopy( renderer, texture, nullptr, &boxRect );
 	}
+
+	for ( std::shared_ptr< Bullet > gp : bulletList)
+	{
+		SDL_Rect r = gp->rect.ToSDLRect( );
+		if ( gp->GetOwner() == Player::Local )
+			SDL_RenderCopy( renderer, localPlayerBallTexture, nullptr, &r );
+		else if ( gp->GetOwner() == Player::Remote )
+			SDL_RenderCopy( renderer, remotePlayerBallTexture, nullptr, &r );
+	}
+
 }
 void Renderer::RenderText()
 {

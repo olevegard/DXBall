@@ -20,6 +20,7 @@
 
 #include "GamePiece.h"
 #include "BonusBox.h"
+#include "Bullet.h"
 
 #include "enums/GameState.h"
 
@@ -60,6 +61,9 @@ public:
 	void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 	void SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox, const BonusType &bonusType );
 	SDL_Color GetBonusBoxColor( const BonusType &bonusType );
+
+	void AddBullet( const std::shared_ptr< Bullet > &bb );
+	//void RemoveBonusBox( const std::shared_ptr< Bullet >  &bb );
 
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
 	void SetRemotePaddle( std::shared_ptr< Paddle >  &paddle );
@@ -218,6 +222,7 @@ private:
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;
 	std::vector< std::shared_ptr< BonusBox > > bonusBoxList;
+	std::vector< std::shared_ptr< Bullet > > bulletList;
 
 	std::shared_ptr< Paddle >  localPaddle;
 	std::shared_ptr< Paddle >  remotePaddle;
