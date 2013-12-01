@@ -987,6 +987,19 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 	if ( menuManager.GetGameState() == GameState::InGame && !isAIControlled )
 	{
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
+
+		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
+		{
+			std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
+			bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
+			bulletList.push_back( bullet );
+			renderer.AddBullet( bullet );
+
+			std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
+			bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w, localPaddle->rect.y - 10 );
+			bulletList.push_back( bullet2 );
+			renderer.AddBullet( bullet2 );
+		}
 	}
 	else if ( menuManager.IsInAMenu() )
 	{
@@ -1054,19 +1067,6 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 			case SDLK_b:
 				//AddBall( Player::Remote );
 				AddBall( Player::Local, ballCount );
-				break;
-			case SDLK_f:
-				{
-					std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
-					bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
-					bulletList.push_back( bullet );
-					renderer.AddBullet( bullet );
-
-					std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
-					bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w, localPaddle->rect.y - 10 );
-					bulletList.push_back( bullet2 );
-					renderer.AddBullet( bullet2 );
-				}
 				break;
 			case SDLK_u:
 				ResetScale();
