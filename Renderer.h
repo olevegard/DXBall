@@ -63,7 +63,7 @@ public:
 	SDL_Color GetBonusBoxColor( const BonusType &bonusType );
 
 	void AddBullet( const std::shared_ptr< Bullet > &bb );
-	//void RemoveBonusBox( const std::shared_ptr< Bullet >  &bb );
+	void RemoveBullet( const std::shared_ptr< Bullet >  &bb );
 
 	void SetLocalPaddle( std::shared_ptr< Paddle >  &paddle );
 	void SetRemotePaddle( std::shared_ptr< Paddle >  &paddle );

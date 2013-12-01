@@ -18,9 +18,9 @@ Player Bullet::GetOwner() const
 void Bullet::Update( double delta )
 {
 	if ( owner == Player::Local )
-		rect.y -= delta * 0.01;
+		rect.y -= delta * 0.15;
 	else
-		rect.y += delta * 0.01;
+		rect.y += delta * 0.15;
 }
 void Bullet::SetPosition( double x, double y )
 {

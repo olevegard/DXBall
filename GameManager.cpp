@@ -321,10 +321,65 @@ void GameManager::UpdateBalls( double delta )
 }
 void GameManager::UpdateBullets( double delta )
 {
-	for ( auto p : bulletList )
+	///for ( auto bullet : bulletList )
+
+	std::vector< std::vector< std::shared_ptr< Bullet > >::iterator > deadBulletList;
+
+	for ( auto bullet = bulletList.begin() ; bullet != bulletList.end() ; ++bullet  )
 	{
-		p->Update( delta );
+		(*bullet)->Update( delta );
+
+		for ( auto tile = tileList.begin() ; tile != tileList.end() ;  )
+		{
+			double tileLeft =   (*tile)->rect.x;
+			double tileTop =    (*tile)->rect.y;
+			double tileRight =  (*tile)->rect.x + (*tile)->rect.w;
+			double tileBottom = (*tile)->rect.y + (*tile)->rect.h;
+
+			double ballLeft =   (*bullet)->rect.x;
+			double ballTop =    (*bullet)->rect.y;
+			double ballRight =  (*bullet)->rect.x + (*bullet)->rect.w;
+			double ballBottom = (*bullet)->rect.y + (*bullet)->rect.h;
+
+			// Intersection test
+			if  (!(
+					ballTop    > tileBottom
+					|| ballLeft   > tileRight
+					|| ballRight  < tileLeft
+					|| ballBottom < tileTop
+					))
+			{
+				(*tile)->Hit();
+				bool isDestroyed = (*tile)->IsDestroyed();
+				IncrementPoints( (*tile)->GetTileTypeAsIndex(), isDestroyed, Player::Local );
+
+				deadBulletList.push_back( bullet );
+
+				//if ( (*tile)->GetTileType() == TileType::Explosive ) HandleExplosions( (*tile), Player::Local );
+
+				if ( isDestroyed )
+				{
+					RemoveTile( (*tile ) );
+					tile = tileList.erase( tile );
+					continue;
+				}
+				else
+					++tile;
+			}
+			else
+			{
+				++tile;
+			}
+		}
 	}
+
+	for ( auto p : deadBulletList )
+	{
+		renderer.RemoveBullet( (*p ));
+		bulletList.erase( p );
+	}
+
+	//bullet = bulletList.erase( bullet );
 }
 void GameManager::UpdateNetwork()
 {

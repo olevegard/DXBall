@@ -452,6 +452,10 @@ void Renderer::AddBullet( const std::shared_ptr< Bullet > &bb )
 {
 	bulletList.push_back( bb );
 }
+void Renderer::RemoveBullet( const std::shared_ptr< Bullet >  &bullet )
+{
+	bulletList.erase( std::find( bulletList.begin(), bulletList.end(), bullet ) );
+}
 void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	localPaddle = paddle;
