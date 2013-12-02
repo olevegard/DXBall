@@ -43,6 +43,7 @@ class GameManager
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
+		void AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed = 1 );
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 
 		// Ball checks

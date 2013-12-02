@@ -256,8 +256,11 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	// Decrement tile count
 	--tileCount;
 }
-
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
+{
+	AddBonusBox( triggerBall->GetOwner(), triggerBall->GetDirection(), { x, y }, tilesDestroyed );
+}
+void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed )
 {
 	int randMax = 10;
 	if ( tilesDestroyed != 1 )
@@ -271,21 +274,17 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 		return;
 
 	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ( bonusCount++ );
-	bonusBox->rect.x = x;
-	bonusBox->rect.y = y;
-
-	Player ballOwner = triggerBall->GetOwner();
-
-	Vector2f direction = triggerBall->GetDirection();
+	bonusBox->rect.x = pos.x;
+	bonusBox->rect.y = pos.y;
 
 	// Force correct y dir
-	if ( ballOwner == Player::Local )
-		direction.y = ( direction.y > 0.0 ) ? direction.y : direction.y * -1.0;
+	if ( owner == Player::Local )
+		dir.y = ( dir.y > 0.0 ) ? dir.y : dir.y * -1.0;
 	else
-		direction.y = ( direction.y < 0.0 ) ? direction.y : direction.y * -1.0;
+		dir.y = ( dir.y < 0.0 ) ? dir.y : dir.y * -1.0;
 
-	bonusBox->SetDirection( direction );
-	bonusBox->SetOwner( ballOwner  );
+	bonusBox->SetDirection( dir );
+	bonusBox->SetOwner( owner  );
 	bonusBox->SetBonusType( GetRandomBonusType()  );
 	bonusBox->SetSpeed( bonusBoxSpeed );
 	std::cout << "Setting speed to : " << bonusBoxSpeed << std::endl;
@@ -293,6 +292,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
 	SendBonusBoxSpawnedMessage( bonusBox );
+
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
@@ -342,9 +342,15 @@ void GameManager::UpdateBullets( double delta )
 
 				IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), Player::Local );
 
-				if ( tile->GetTileType() == TileType::Explosive )
+				if ( !tile->IsAlive() )
 				{
-					HandleExplosions( tile, Player::Local );
+					if ( tile->GetTileType() == TileType::Explosive )
+					{
+						int32_t count = HandleExplosions( tile, Player::Local );
+						AddBonusBox( Player::Local, Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), count );
+					}
+					else
+						AddBonusBox( Player::Local, Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), 1 );
 				}
 
 			}
