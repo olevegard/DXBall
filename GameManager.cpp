@@ -331,24 +331,31 @@ void GameManager::UpdateBullets( double delta )
 		{
 			if (tile->rect.CheckTileIntersection( bullet->rect ) )
 			{
-				tile->Hit();
-				IncrementPoints( tile->GetTileTypeAsIndex(), tile->IsDestroyed(), Player::Local );
-
-				bullet->Kill();
-
-				if ( tile->GetTileType() == TileType::Explosive )
-					HandleExplosions( tile, Player::Local );
-
-				if ( tile->IsDestroyed() )
+				if ( localPlayerSuperBall )
 				{
 					tile->Kill();
-					continue;
+				} else
+				{
+					bullet->Kill();
+					tile->Hit();
 				}
+
+				if ( tile->IsDestroyed() )
+					tile->Kill();
+
+				IncrementPoints( tile->GetTileTypeAsIndex(), tile->IsDestroyed(), Player::Local );
+
+				if ( tile->GetTileType() == TileType::Explosive )
+				{
+					HandleExplosions( tile, Player::Local );
+				}
+
 			}
 		}
 	}
 
-	DeleteDeadBullets();
+	if ( !localPlayerSuperBall )
+		DeleteDeadBullets();
 	DeleteDeadTiles();
 }
 void GameManager::UpdateNetwork()
