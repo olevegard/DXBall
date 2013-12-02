@@ -249,6 +249,8 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	if ( tile == nullptr )
 		return;
 
+	tile->Kill();
+
 	renderer.RemoveTile( tile );
 
 	// Decrement tile count
@@ -321,65 +323,33 @@ void GameManager::UpdateBalls( double delta )
 }
 void GameManager::UpdateBullets( double delta )
 {
-	///for ( auto bullet : bulletList )
-
-	std::vector< std::vector< std::shared_ptr< Bullet > >::iterator > deadBulletList;
-
-	for ( auto bullet = bulletList.begin() ; bullet != bulletList.end() ; ++bullet  )
+	for ( auto  bullet : bulletList )
 	{
-		(*bullet)->Update( delta );
+		bullet->Update( delta );
 
-		for ( auto tile = tileList.begin() ; tile != tileList.end() ;  )
+		for ( auto tile : tileList )
 		{
-			double tileLeft =   (*tile)->rect.x;
-			double tileTop =    (*tile)->rect.y;
-			double tileRight =  (*tile)->rect.x + (*tile)->rect.w;
-			double tileBottom = (*tile)->rect.y + (*tile)->rect.h;
-
-			double ballLeft =   (*bullet)->rect.x;
-			double ballTop =    (*bullet)->rect.y;
-			double ballRight =  (*bullet)->rect.x + (*bullet)->rect.w;
-			double ballBottom = (*bullet)->rect.y + (*bullet)->rect.h;
-
-			// Intersection test
-			if  (!(
-					ballTop    > tileBottom
-					|| ballLeft   > tileRight
-					|| ballRight  < tileLeft
-					|| ballBottom < tileTop
-					))
+			if (tile->rect.CheckTileIntersection( bullet->rect ) )
 			{
-				(*tile)->Hit();
-				bool isDestroyed = (*tile)->IsDestroyed();
-				IncrementPoints( (*tile)->GetTileTypeAsIndex(), isDestroyed, Player::Local );
+				tile->Hit();
+				IncrementPoints( tile->GetTileTypeAsIndex(), tile->IsDestroyed(), Player::Local );
 
-				deadBulletList.push_back( bullet );
+				bullet->Kill();
 
-				//if ( (*tile)->GetTileType() == TileType::Explosive ) HandleExplosions( (*tile), Player::Local );
+				if ( tile->GetTileType() == TileType::Explosive )
+					HandleExplosions( tile, Player::Local );
 
-				if ( isDestroyed )
+				if ( tile->IsDestroyed() )
 				{
-					RemoveTile( (*tile ) );
-					tile = tileList.erase( tile );
+					tile->Kill();
 					continue;
 				}
-				else
-					++tile;
-			}
-			else
-			{
-				++tile;
 			}
 		}
 	}
 
-	for ( auto p : deadBulletList )
-	{
-		renderer.RemoveBullet( (*p ));
-		bulletList.erase( p );
-	}
-
-	//bullet = bulletList.erase( bullet );
+	DeleteDeadBullets();
+	DeleteDeadTiles();
 }
 void GameManager::UpdateNetwork()
 {
@@ -587,6 +557,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	if ( tile->GetTileType() == TileType::Explosive )
 	{
 		HandleExplosions( tile, Player::Remote );
+		DeleteDeadTiles();
 		return;
 	}
 
@@ -883,6 +854,44 @@ void GameManager::DeleteDeadBalls()
 
 	// Remove item returned by remove_if
 	ballList.erase( newEnd, ballList.end( ) );
+}
+void GameManager::DeleteDeadTiles()
+{
+	auto newEnd = std::remove_if(
+		tileList.begin(),
+		tileList.end(),
+	[=]( std::shared_ptr< Tile > tile )
+	{
+		if ( !tile || tile->IsAlive() )
+			return false;
+
+		RemoveTile( tile );
+
+		return true;
+	} );
+
+	// Remove item returned by remove_if
+	tileList.erase( newEnd, tileList.end( ) );
+}
+void GameManager::DeleteDeadBullets()
+{
+	auto newEnd = std::remove_if(
+		bulletList.begin(),
+		bulletList.end(),
+	[=]( std::shared_ptr< Bullet > bullet )
+	{
+		if ( !bullet || bullet->IsAlive() )
+			return false;
+
+		renderer.RemoveBullet( (bullet ));
+		//bulletList.erase( p );
+
+		return true;
+	} );
+
+	// Remove item returned by remove_if
+	bulletList.erase( newEnd, bulletList.end( ) );
+
 }
 std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
 {
@@ -1286,15 +1295,15 @@ void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< 
 		{
 			int count = HandleExplosions( tile, ball->GetOwner() );
 			AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
+			DeleteDeadTiles();
 		}
 		else
-		{
 			AddBonusBox( ball, tile->rect.x, tile->rect.y );
-			auto itClosestTile = std::find( tileList.begin(), tileList.end(), tile );
-			tileList.erase( itClosestTile );
-			RemoveTile( tile );
-		}
+
+		tile->Kill();
+		DeleteDeadTiles();
 	}
+
 }
 std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_ptr< Ball > ball )
 {
@@ -1328,19 +1337,15 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 	auto isDeadFunc = [=, &countDestroyedTiles ]( std::shared_ptr< Tile > curr )
 	{
 		if ( !RectHelpers::CheckTileIntersection( rectVec, curr->rect) )
-			return false;
+			return;
 
 		IncrementPoints( curr->GetTileTypeAsIndex(), true, ballOwner );
-		renderer.RemoveTile( curr );
 		++countDestroyedTiles;
-
-		return true;
+		curr->Kill();
 	};
 
-	auto newEnd = std::remove_if( tileList.begin(), tileList.end(), isDeadFunc );
-
-	// Remove item returned by remove_if
-	tileList.erase( newEnd, tileList.end( ) );
+	// Loop throug all and apply isDeadFunc
+	std::for_each( tileList.begin(), tileList.end(), isDeadFunc );
 
 	return countDestroyedTiles;
 }

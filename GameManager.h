@@ -50,6 +50,8 @@ class GameManager
 		void UpdateBullets( double delta );
 		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
 		void DeleteDeadBalls();
+		void DeleteDeadTiles();
+		void DeleteDeadBullets();
 
 		// Input
 		void HandleEvent( const SDL_Event &event );
