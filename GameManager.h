@@ -55,6 +55,7 @@ class GameManager
 		// Bullets
 		void UpdateBullets( double delta );
 		void DeleteDeadBullets();
+		void DeleteAllBullets();
 		void FireBullets();
 
 		// Input

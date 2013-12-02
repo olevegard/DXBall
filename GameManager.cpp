@@ -905,6 +905,21 @@ void GameManager::DeleteDeadBullets()
 	bulletList.erase( newEnd, bulletList.end( ) );
 
 }
+void GameManager::DeleteAllBullets()
+{
+	auto newEnd = std::remove_if(
+		bulletList.begin(),
+		bulletList.end(),
+	[=]( std::shared_ptr< Bullet > bullet )
+	{
+		renderer.RemoveBullet( (bullet ));
+
+		return true;
+	} );
+
+	// Remove item returned by remove_if
+	bulletList.erase( newEnd, bulletList.end( ) );
+}
 void GameManager::FireBullets()
 {
 	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
@@ -1144,6 +1159,7 @@ void GameManager::Update( double delta )
 	if ( IsTimeForNewBoard() )
 	{
 		std::cout << "GameMAanager@" << __LINE__ << " Level is done..\n";
+		DeleteAllBullets();
 		GenerateBoard();
 	}
 
