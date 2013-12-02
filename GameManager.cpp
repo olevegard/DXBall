@@ -40,7 +40,7 @@
 	,	localPlayerLives( 3 )
 	,	localPlayerActiveBalls( 0 )
 	,	localPlayerSuperBall( false )
-	,	localPlayerFireBullets( true )
+	,	localPlayerFireBullets( false )
 
 	,	remotePlayerPoints( 0 )
 	,	remotePlayerLives( 3 )
@@ -264,7 +264,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 }
 void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed )
 {
-	int randMax = 10;
+	int randMax = 100;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -1097,6 +1097,12 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 			case SDLK_RETURN:
 			case SDLK_b:
 				AddBall( Player::Local, ballCount );
+				break;
+			case SDLK_s:
+				localPlayerSuperBall = true;
+				break;
+			case SDLK_f:
+				localPlayerFireBullets = true;
 				break;
 			case SDLK_u:
 				ResetScale();
