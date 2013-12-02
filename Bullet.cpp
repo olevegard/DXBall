@@ -6,6 +6,7 @@ Bullet::Bullet( int32_t objectID )
 	rect.w = 5;
 	rect.h = 5;
 	SetObjectID( objectID );
+	SetSpeed( 0.6 );
 }
 void Bullet::SetOwner( const Player &owner_ )
 {
@@ -18,9 +19,9 @@ Player Bullet::GetOwner() const
 void Bullet::Update( double delta )
 {
 	if ( owner == Player::Local )
-		rect.y -= delta * 0.15;
+		rect.y -= delta * GetSpeed();
 	else
-		rect.y += delta * 0.15;
+		rect.y += delta * GetSpeed();
 }
 void Bullet::SetPosition( double x, double y )
 {
