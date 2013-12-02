@@ -1021,7 +1021,13 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
+		{
+			if ( localPlayerActiveBalls == 0 )
+			{
+				AddBall( Player::Local, ballCount );
+			}
 			FireBullets();
+		}
 	}
 	else if ( menuManager.IsInAMenu() )
 	{
@@ -1087,7 +1093,6 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				break;
 			case SDLK_RETURN:
 			case SDLK_b:
-				//AddBall( Player::Remote );
 				AddBall( Player::Local, ballCount );
 				break;
 			case SDLK_u:
