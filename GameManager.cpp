@@ -1290,7 +1290,10 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 
 	if ( ball->GetOwner() == Player::Local ) SendBallDataMessage( ball );
 
-	tile->Hit();
+	if ( localPlayerSuperBall )
+		tile->Kill();
+	else
+		tile->Hit();
 
 	SendTileHitMessage( tile->GetObjectID() );
 
