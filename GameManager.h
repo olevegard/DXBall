@@ -47,11 +47,14 @@ class GameManager
 
 		// Ball checks
 		void UpdateBalls( double delta );
-		void UpdateBullets( double delta );
 		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
 		void DeleteDeadBalls();
 		void DeleteDeadTiles();
+
+		// Bullets
+		void UpdateBullets( double delta );
 		void DeleteDeadBullets();
+		void FireBullets();
 
 		// Input
 		void HandleEvent( const SDL_Event &event );

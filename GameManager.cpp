@@ -893,6 +893,19 @@ void GameManager::DeleteDeadBullets()
 	bulletList.erase( newEnd, bulletList.end( ) );
 
 }
+void GameManager::FireBullets()
+{
+	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
+	bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
+	bulletList.push_back( bullet );
+	renderer.AddBullet( bullet );
+
+	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
+	bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w - bullet2->rect.w, localPaddle->rect.y - 10 );
+	bulletList.push_back( bullet2 );
+	renderer.AddBullet( bullet2 );
+
+}
 std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
 {
 	for ( auto p : ballList )
@@ -998,17 +1011,7 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
 
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
-		{
-			std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
-			bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
-			bulletList.push_back( bullet );
-			renderer.AddBullet( bullet );
-
-			std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
-			bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w, localPaddle->rect.y - 10 );
-			bulletList.push_back( bullet2 );
-			renderer.AddBullet( bullet2 );
-		}
+			FireBullets();
 	}
 	else if ( menuManager.IsInAMenu() )
 	{
