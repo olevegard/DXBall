@@ -40,11 +40,13 @@
 	,	localPlayerLives( 3 )
 	,	localPlayerActiveBalls( 0 )
 	,	localPlayerSuperBall( false )
+	,	localPlayerFireBullets( true )
 
 	,	remotePlayerPoints( 0 )
 	,	remotePlayerLives( 3 )
 	,	remotePlayerActiveBalls( 0 )
 	,	remotePlayerSuperBall( false )
+	,	remotePlayerFireBullets( false )
 
 	,	ballList()
 	,	windowSize()
@@ -1026,7 +1028,8 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 			{
 				AddBall( Player::Local, ballCount );
 			}
-			FireBullets();
+			if ( localPlayerFireBullets )
+				FireBullets();
 		}
 	}
 	else if ( menuManager.IsInAMenu() )
@@ -1691,6 +1694,7 @@ void GameManager::ReducePlayerLifes( Player player )
 			return;
 
 		--localPlayerLives;
+		localPlayerFireBullets = false;
 
 		if ( localPlayerLives == 0 )
 			RemoveDeadBallsAndBoxes( Player::Local );
@@ -1703,6 +1707,7 @@ void GameManager::ReducePlayerLifes( Player player )
 			return;
 
 		--remotePlayerLives;
+		remotePlayerFireBullets = false;
 
 		if ( remotePlayerLives == 0 )
 			RemoveDeadBallsAndBoxes( Player::Remote );
