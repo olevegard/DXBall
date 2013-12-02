@@ -25,11 +25,6 @@ struct Tile : GamePiece
 		return hitsLeft;
 	}
 
-	bool IsDestroyed()
-	{
-		return type != TileType::Unbreakable && hitsLeft == 0;
-	}
-
 	bool CheckExplosion( const Rect &explodingTile );
 
 	void Hit();

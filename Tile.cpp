@@ -32,6 +32,9 @@ void Tile::Hit()
 {
 	// Decrease hits left
 	--hitsLeft;
+
+	if ( hitsLeft == 0 && type != TileType::Unbreakable )
+		Kill();
 }
 bool Tile::CheckExplosion( const Rect &explodingTile )
 {

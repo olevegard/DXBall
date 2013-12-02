@@ -340,10 +340,7 @@ void GameManager::UpdateBullets( double delta )
 					tile->Hit();
 				}
 
-				if ( tile->IsDestroyed() )
-					tile->Kill();
-
-				IncrementPoints( tile->GetTileTypeAsIndex(), tile->IsDestroyed(), Player::Local );
+				IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), Player::Local );
 
 				if ( tile->GetTileType() == TileType::Explosive )
 				{
@@ -558,7 +555,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	std::shared_ptr< Tile > tile = GetTileFromID( message.GetObjectID() );
 
 	tile->Hit();
-	bool isDestroyed = tile->IsDestroyed();
+	bool isDestroyed = !tile->IsAlive();
 	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, Player::Remote );
 
 	if ( tile->GetTileType() == TileType::Explosive )
@@ -1297,7 +1294,7 @@ bool GameManager::IsSuperBall( std::shared_ptr< Ball > ball )
 }
 void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
-	bool isDestroyed = tile->IsDestroyed();
+	bool isDestroyed = !tile->IsAlive();
 	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
 	if ( isDestroyed )
 	{
