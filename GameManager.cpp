@@ -1550,7 +1550,18 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 			else
 				remotePlayerSuperBall = true;
 			break;
+		case BonusType::FireBullets:
+			if ( ptr->GetOwner() == Player::Local )
+			{
+				localPlayerFireBullets = true;
+				renderer.RenderText( "Lazarz!", Player::Local, true );
+			}
+			else
+				remotePlayerFireBullets = true;
+			break;
+
 		default:
+
 			break;
 	}
 
@@ -1559,9 +1570,11 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 BonusType GameManager::GetRandomBonusType() const
 {
 	int rand = Math::GenRandomNumber( 1000 );
-	if ( rand < 500 )
+	if ( rand < 900 )
+		return BonusType::FireBullets;
+	if ( rand < 950 )
 		return BonusType::SuperBall;
-	if ( rand < 750 )
+	if ( rand < 990 )
 		return BonusType::ExtraLife;
 	else
 		return BonusType::Death;

@@ -6,6 +6,7 @@ enum class BonusType
 	ExtraLife, // Obvious
 	Death, // Loose 1 life
 	SuperBall, // Ball goes trhough everything
+	FireBullets,
 
 
 	BallSplit, // Ball split into two
