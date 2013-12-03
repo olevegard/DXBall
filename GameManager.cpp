@@ -161,8 +161,10 @@ void GameManager::Restart()
 	renderer.ResetText();
 
 	UpdateGUI();
-}
 
+	DeleteAllBonusBoxes();
+	DeleteAllBullets();
+}
 std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
 	if ( menuManager.GetGameState() != GameState::InGame )
@@ -919,6 +921,21 @@ void GameManager::DeleteAllBullets()
 
 	// Remove item returned by remove_if
 	bulletList.erase( newEnd, bulletList.end( ) );
+}
+void GameManager::DeleteAllBonusBoxes()
+{
+	auto newEnd = std::remove_if(
+		bonusBoxList.begin(),
+		bonusBoxList.end(),
+	[=]( std::shared_ptr< BonusBox > bonusBox )
+	{
+		renderer.RemoveBonusBox( bonusBox );
+
+		return true;
+	} );
+
+	// Remove item returned by remove_if
+	bonusBoxList.erase( newEnd, bonusBoxList.end( ) );
 }
 void GameManager::FireBullets()
 {
