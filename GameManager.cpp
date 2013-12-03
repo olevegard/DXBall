@@ -97,15 +97,17 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	menuManager.Init( renderer );
 	CreateMenu();
 
+	LoadConfig();
+
+	return true;
+}
+void GameManager::LoadConfig()
+{
 	ConfigLoader cfg;
 	cfg.LoadConfig();
 	bonusBoxSpeed = cfg.GetBonusBoxSpeed();
 	ballSpeed = cfg.GetBallSpeed();
-
-
-	return true;
 }
-
 void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
 	ip = ip_;
@@ -872,6 +874,14 @@ void GameManager::DeleteDeadBalls()
 	// Remove item returned by remove_if
 	ballList.erase( newEnd, ballList.end( ) );
 }
+void GameManager::UpdateBallSpeed()
+{
+	auto setBallSpeed = [=]( std::shared_ptr< Ball > curr )
+	{
+		curr->SetSpeed( ballSpeed );
+	};
+	std::for_each( ballList.begin(), ballList.end(), setBallSpeed );
+}
 void GameManager::DeleteDeadTiles()
 {
 	auto newEnd = std::remove_if(
@@ -1159,6 +1169,12 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
+
+	if ( localPlayerSuperBall && localPlayerFireBullets )
+	{
+		ballSpeed = 1.0;
+		UpdateBallSpeed();
+	}
 	if ( isAIControlled )
 		AIMove();
 
@@ -1743,6 +1759,8 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 }
 void GameManager::ReducePlayerLifes( Player player )
 {
+	LoadConfig();
+
 	if ( player == Player::Local )
 	{
 		if ( localPlayerLives == 0 )
