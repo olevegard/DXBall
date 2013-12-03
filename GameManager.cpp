@@ -151,11 +151,13 @@ void GameManager::Restart()
 	localPlayerLives = 3;
 	localPlayerActiveBalls = 0;
 	localPlayerSuperBall = false;
+	localPlayerFireBullets = false;
 
 	remotePlayerPoints = 0;
 	remotePlayerLives = 3;
 	remotePlayerActiveBalls = 0;
 	remotePlayerSuperBall = false;
+	remotePlayerFireBullets = false;
 
 	renderer.SetIsTwoPlayerMode( menuManager.IsTwoPlayerMode() );
 	renderer.ResetText();
@@ -848,6 +850,7 @@ void GameManager::PrintRecv( const TCPMessage &msg ) const
 }
 void GameManager::DeleteDeadBalls()
 {
+
 	bool localPlayerBallDeleted = false;
 	bool remotePlayerBallDeleted = false;
 	auto isDeadFunc = [&]( std::shared_ptr< Ball > ball )
