@@ -1590,11 +1590,11 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 BonusType GameManager::GetRandomBonusType() const
 {
 	int rand = Math::GenRandomNumber( 1000 );
-	if ( rand < 900 )
+	if ( rand < 250 )
 		return BonusType::FireBullets;
-	if ( rand < 950 )
+	if ( rand < 500 )
 		return BonusType::SuperBall;
-	if ( rand < 990 )
+	if ( rand < 750 )
 		return BonusType::ExtraLife;
 	else
 		return BonusType::Death;
