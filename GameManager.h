@@ -186,6 +186,7 @@ class GameManager
 		Renderer renderer;
 		Timer timer;
 		MenuManager menuManager;
+		bool isFastMode;
 
 		NetManager netManager;
 		std::string ip;

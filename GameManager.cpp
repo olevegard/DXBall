@@ -31,6 +31,7 @@
 	:	runGame( true )
 	,	renderer()
 	,	timer()
+	,	isFastMode( false )
 
 	,	gameID( 0 )
 	,	localPaddle()
@@ -339,7 +340,7 @@ void GameManager::UpdateBullets( double delta )
 		{
 			if (tile->rect.CheckTileIntersection( bullet->rect ) )
 			{
-				if ( localPlayerSuperBall )
+				if ( isFastMode && localPlayerSuperBall )
 				{
 					tile->Kill();
 				} else
@@ -365,7 +366,7 @@ void GameManager::UpdateBullets( double delta )
 		}
 	}
 
-	if ( !localPlayerSuperBall )
+	if ( !isFastMode || !localPlayerSuperBall )
 		DeleteDeadBullets();
 	DeleteDeadTiles();
 }
@@ -1170,11 +1171,15 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 void GameManager::Update( double delta )
 {
 
-	if ( localPlayerSuperBall && localPlayerFireBullets )
+	if ( isFastMode && localPlayerSuperBall && localPlayerFireBullets )
 	{
-		ballSpeed = 1.0;
-		UpdateBallSpeed();
+		if ( ballSpeed < 1.0 )
+		{
+			ballSpeed += delta * 0.0005;
+			UpdateBallSpeed();
+		}
 	}
+
 	if ( isAIControlled )
 		AIMove();
 
