@@ -1,2 +1,8 @@
-ball_speed 0.9
-bonus_box_speed 0.01
+ball_speed_normal 0.2
+ball_speed_fastmode 0.3
+bullet_speed 1.0
+bonus_box_speed 0.6
+
+bonus_box_chance 100
+
+is_fast_mode false

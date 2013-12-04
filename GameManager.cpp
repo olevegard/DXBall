@@ -31,7 +31,7 @@
 	:	runGame( true )
 	,	renderer()
 	,	timer()
-	,	isFastMode( false )
+	,	isFastMode( true )
 
 	,	gameID( 0 )
 	,	localPaddle()
@@ -64,7 +64,9 @@
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
 	,	ballSpeed( 0.2 )
+	,	ballSpeedFastMode( 1.0 )
 	,	bonusBoxSpeed( 0.2 )
+	,	bulletSpeed( 1.0 )
 {
 	windowSize.x = 0.0;
 	windowSize.y = 0.0;
@@ -98,16 +100,21 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	menuManager.Init( renderer );
 	CreateMenu();
 
+	configLodaer.LoadConfig();
 	LoadConfig();
 
 	return true;
 }
 void GameManager::LoadConfig()
 {
-	ConfigLoader cfg;
-	cfg.LoadConfig();
-	bonusBoxSpeed = cfg.GetBonusBoxSpeed();
-	ballSpeed = cfg.GetBallSpeed();
+	bonusBoxSpeed = configLodaer.GetBonusBoxSpeed();
+	ballSpeed = configLodaer.GetBallSpeed();
+	ballSpeedFastMode = configLodaer.GetBallSpeedFastMode();
+	bulletSpeed = configLodaer.GetBulletSpeed();
+
+	isFastMode = configLodaer.GetIsFastMode();
+
+	bonusBoxChance = configLodaer.GetBonusBoxChance();
 }
 void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
@@ -271,7 +278,7 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 }
 void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed )
 {
-	int randMax = 100;
+	int randMax = bonusBoxChance;
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -955,11 +962,13 @@ void GameManager::FireBullets()
 {
 	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
 	bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
+	bullet->SetSpeed( bulletSpeed );
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
 
 	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
 	bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w - bullet2->rect.w, localPaddle->rect.y - 10 );
+	bullet2->SetSpeed( bulletSpeed );
 	bulletList.push_back( bullet2 );
 	renderer.AddBullet( bullet2 );
 
@@ -1173,7 +1182,7 @@ void GameManager::Update( double delta )
 
 	if ( isFastMode && localPlayerSuperBall && localPlayerFireBullets )
 	{
-		if ( ballSpeed < 1.0 )
+		if ( ballSpeed < ballSpeedFastMode )
 		{
 			ballSpeed += delta * 0.0005;
 			UpdateBallSpeed();

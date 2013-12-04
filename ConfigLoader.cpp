@@ -16,23 +16,48 @@ void ConfigLoader::LoadConfig()
 		ss >> str;
 		std::cout << "\n\t" << std::setfill( '_' ) << std::setw( 23 ) << std::left << str;
 
-		if (  configLine.find( "ball_speed" ) != std::string::npos )
+		if (  configLine.find( "ball_speed_normal" ) != std::string::npos )
 		{
 			ss >> ballSpeed;;
 			std::cout << ballSpeed;
-			//PrintColor( "bonus death", color );
-			//bonusTypeColors.insert( std::make_pair( BonusType::Death, color ) );
+			continue;
+		}
+		if (  configLine.find( "ball_speed_fastmode" ) != std::string::npos )
+		{
+			ss >> ballSpeedFastMode;;
+			std::cout << ballSpeedFastMode;
+			continue;
+		}
+		if (  configLine.find( "bullet_speed" ) != std::string::npos )
+		{
+			ss >> bulletSpeed;;
+			std::cout << bulletSpeed;
 			continue;
 		}
 		else if (  configLine.find( "bonus_box_speed" ) != std::string::npos )
 		{
 			ss >> bonusBoxSpeed;;
 			std::cout << bonusBoxSpeed;
-			//PrintColor( "bonus death", color );
-			//bonusTypeColors.insert( std::make_pair( BonusType::Death, color ) );
 			continue;
 		}
+		else if (  configLine.find( "is_fast_mode" ) != std::string::npos )
+		{
+			std::string fastMode;
+			ss >> fastMode;
+			isFastMode = ( fastMode.find( "true" ) != std::string::npos );
+			std::cout << fastMode << " : " << std::boolalpha << isFastMode;
+			continue;
+		}
+		else if (  configLine.find( "bonus_box_chance" ) != std::string::npos )
+		{
+			ss >> bonusBoxChance;
+			std::cout << bonusBoxChance;
+			continue;
+		}
+
 		else
+
+
 		{
 			std::cout << "Unknown config\n";
 		}

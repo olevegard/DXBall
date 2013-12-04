@@ -5,6 +5,7 @@
 #include "NetManager.h"
 #include "BoardLoader.h"
 #include "MenuManager.h"
+#include "ConfigLoader.h"
 
 #include <vector>
 
@@ -186,7 +187,9 @@ class GameManager
 		Renderer renderer;
 		Timer timer;
 		MenuManager menuManager;
+		ConfigLoader configLodaer;
 		bool isFastMode;
+		int32_t bonusBoxChance;
 
 		NetManager netManager;
 		std::string ip;
@@ -231,5 +234,7 @@ class GameManager
 		double frameDuration;
 
 		double ballSpeed;
+		double ballSpeedFastMode;
 		double bonusBoxSpeed;
+		double bulletSpeed;
 };
