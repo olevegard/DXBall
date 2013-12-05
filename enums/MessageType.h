@@ -24,4 +24,6 @@ enum MessageType
 
 	BonusSpawned,	// A bonus was triggeredby the oponenyyt
 	BonusPickup, 	// A bonus was picked up by the oponent
+
+	BulletFire,
 };

@@ -30,6 +30,8 @@ class TCPMessage
 
 		double GetXPos() const;
 		double GetYPos() const;
+		double GetXPos2() const;
+		double GetYPos2() const;
 		double GetXDir() const;
 		double GetYDir() const;
 		double GetXSize() const;
@@ -49,6 +51,8 @@ class TCPMessage
 
 		void SetXPos( double xPos_ );
 		void SetYPos( double yPos_ );
+		void SetXPos2( double xPos_ );
+		void SetYPos2( double yPos_ );
 		void SetXDir( double xDir_ );
 		void SetYDir( double yDir_ );
 		void SetXSize( double xSize_ );
@@ -91,6 +95,9 @@ class TCPMessage
 
 		double xPos;
 		double yPos;
+
+		double xPos2;
+		double yPos2;
 
 		double xDir;
 		double yDir;
@@ -185,6 +192,28 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				return is;
 			}
+		case BulletFire:
+			{
+				double xPos = 0.0;
+				double yPos = 0.0;
+
+				is >> xPos;
+				is >> yPos;
+
+				msg.SetXPos( xPos );
+				msg.SetYPos( yPos );
+
+				double xPos2 = 0.0;
+				double yPos2 = 0.0;
+
+				is >> xPos2;
+				is >> yPos2;
+
+				msg.SetXPos2( xPos2 );
+				msg.SetYPos2( yPos2 );
+
+				return is;
+			}
 		case GameStateChanged:
 			{
 				int gameState = 0;
@@ -271,6 +300,18 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			os << message.GetXDir();
 			os << " ";
 			os << message.GetYDir();
+			os << " ";
+
+			break;
+		case BulletFire:
+			os << message.GetXPos();
+			os << " ";
+			os << message.GetYPos();
+			os << " ";
+
+			os << message.GetXPos2();
+			os << " ";
+			os << message.GetYPos2();
 			os << " ";
 
 			break;

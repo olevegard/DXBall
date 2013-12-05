@@ -144,6 +144,7 @@ class GameManager
 		void RecievePaddlePosMessage( const TCPMessage &message );
 		void RecieveBonusBoxSpawnedMessage( const TCPMessage &message );
 		void RecieveBonusBoxPickupMessage( const TCPMessage &message );
+		void RecieveBulletFireMessage( const TCPMessage &message );
 
 		// Send messages
 		void SendPlayerName();
@@ -160,6 +161,8 @@ class GameManager
 		void SendPaddlePosMessage( );
 		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox );
+		void SendBulletFireMessage( const std::shared_ptr< Bullet > &bulletLeft, const std::shared_ptr< Bullet > &bulletRight  );
+
 		void SendMessage( const TCPMessage &message, const MessageTarget &target );
 
 		std::shared_ptr< Ball > GetBallFromID( int32_t ID );

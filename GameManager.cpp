@@ -356,7 +356,7 @@ void GameManager::UpdateBullets( double delta )
 					tile->Hit();
 				}
 
-				IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), Player::Local );
+				IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), bullet->GetOwner() );
 
 				if ( !tile->IsAlive() )
 				{
@@ -473,6 +473,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::EndGame:
 			RecieveEndGameMessage( message );
 			break;
+		case MessageType::BulletFire:
+			RecieveBulletFireMessage( message );
+			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
 			std::cin.ignore();
@@ -576,23 +579,26 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 
 	std::shared_ptr< Tile > tile = GetTileFromID( message.GetObjectID() );
 
-	tile->Hit();
+	if ( tile == nullptr )
+	{
+		std::cout << "GameManager.cpp@" << __LINE__ << " : Tile not found : " << message.GetObjectID() << std::endl;
+		//std::cin.ignore();
+		return;
+	}
+	if ( remotePlayerSuperBall )
+		tile->Kill();
+	else
+		tile->Hit();
+
 	bool isDestroyed = !tile->IsAlive();
 	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, Player::Remote );
 
 	if ( tile->GetTileType() == TileType::Explosive )
 	{
 		HandleExplosions( tile, Player::Remote );
-		DeleteDeadTiles();
 		return;
 	}
-
-	if ( isDestroyed )
-	{
-		auto itClosestTile = std::find( tileList.begin(), tileList.end(), tile );
-		tileList.erase( itClosestTile );
-		RemoveTile( tile );
-	}
+	DeleteDeadTiles();
 }
 void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 {
@@ -628,6 +634,24 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 
 	if ( bb )
 		ApplyBonus( bb );
+}
+void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
+{
+	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
+	bullet->SetPosition( message.GetXPos(),  message.GetYPos() );
+	bullet->SetSpeed( bulletSpeed );
+	bullet->SetOwner( Player::Remote );
+	bulletList.push_back( bullet );
+	renderer.AddBullet( bullet );
+
+	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
+	bullet2->SetPosition( message.GetXPos2(), message.GetYPos2() );
+	bullet2->SetSpeed( bulletSpeed );
+	bullet2->SetOwner( Player::Remote );
+	bulletList.push_back( bullet2 );
+	renderer.AddBullet( bullet2 );
+
+	PrintRecv( message );
 }
 void GameManager::SendPaddlePosMessage( )
 {
@@ -778,6 +802,26 @@ void GameManager::SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
+
+	PrintSend( msg );
+}
+void GameManager::SendBulletFireMessage( const std::shared_ptr< Bullet > &bulletLeft, const std::shared_ptr< Bullet > &bulletRight  )
+{
+	TCPMessage msg;
+	std::stringstream ss;
+
+	msg.SetMessageType( MessageType::BulletFire );
+	msg.SetObjectID( 0 );
+
+	msg.SetXPos( bulletLeft->rect.x );
+	msg.SetYPos( windowSize.h - bulletLeft->rect.y );
+
+	msg.SetXPos2( bulletRight->rect.x );
+	msg.SetYPos2( windowSize.h - bulletRight->rect.y );
+
+	ss << msg;
+	netManager.SendMessage( ss.str() );
+	std::cout << "Sending : " << ss.str() << std::endl;
 
 	PrintSend( msg );
 }
@@ -972,6 +1016,7 @@ void GameManager::FireBullets()
 	bulletList.push_back( bullet2 );
 	renderer.AddBullet( bullet2 );
 
+	SendBulletFireMessage( bullet, bullet2 );
 }
 std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
 {

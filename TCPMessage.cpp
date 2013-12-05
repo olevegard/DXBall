@@ -19,7 +19,6 @@ std::string TCPMessage::Print() const
 		case TileHit:
 		case GameJoined:
 		case BallKilled:
-		case BonusPickup:
 		case GetGameList:
 			ss << "\n";
 			break;
@@ -40,6 +39,12 @@ std::string TCPMessage::Print() const
 			break;
 		case PlayerName:
 			ss << " : " << GetPlayerName() << "\n";
+			break;
+		case BonusPickup:
+			ss << " : " << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+			break;
+		case BulletFire:
+			ss << " : " << xPos << " , " << yPos << " , " << xPos2 << " , " << yPos2 << "\n";
 			break;
 		default:
 			ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
@@ -81,11 +86,11 @@ std::string TCPMessage::GetTypeAsString() const
 			return "End Game";
 		case GameJoined:
 			return "Game Joined";
+		case BulletFire:
+			return "Bullet Fire";
 		default:
-			break;
+			return "Unknown";
 	}
-
-	return "Unknown";
 }
 int TCPMessage::GetTypeAsInt() const
 {
@@ -159,6 +164,14 @@ double TCPMessage::GetYPos() const
 {
 	return yPos;
 }
+double TCPMessage::GetXPos2() const
+{
+	return xPos2;
+}
+double TCPMessage::GetYPos2() const
+{
+	return yPos2;
+}
 double TCPMessage::GetXDir() const
 {
 	return xDir;
@@ -216,6 +229,14 @@ void TCPMessage::SetXPos( double xPos_ )
 void TCPMessage::SetYPos( double yPos_ )
 {
 	yPos = yPos_;
+}
+void TCPMessage::SetXPos2( double xPos_ )
+{
+	xPos2 = xPos_;
+}
+void TCPMessage::SetYPos2( double yPos_ )
+{
+	yPos2 = yPos_;
 }
 void TCPMessage::SetXDir( double xDir_ )
 {
