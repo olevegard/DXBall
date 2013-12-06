@@ -86,7 +86,6 @@ class GameManager
 
 		// New Game / Join Game / Update
 		void StartNewGame();
-		void GoBackFromLobby();
 		void JoinGame();
 
 		// Tile collisions
@@ -139,6 +138,7 @@ class GameManager
 		void RecievePlayerNameMessage( const TCPMessage &message );
 		void RecieveGameSettingsMessage( const TCPMessage &message);
 		void RecieveGameStateChangedMessage( const TCPMessage &message );
+
 		void RecieveBallSpawnMessage( const TCPMessage &message );
 		void RecieveBallDataMessage( const TCPMessage &message );
 		void RecieveBallKillMessage( const TCPMessage &message );
@@ -156,6 +156,7 @@ class GameManager
 		void SendGetGameListMessage();
 		void SendGameSettingsMessage();
 		void SendGameStateChangedMessage( );
+
 		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);

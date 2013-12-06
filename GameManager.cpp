@@ -98,6 +98,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
 	renderer.SetLocalPaddle( localPaddle );
 	menuManager.Init( renderer );
+	menuManager.SetGameState( GameState::MainMenu );
 	CreateMenu();
 
 	configLodaer.LoadConfig();
@@ -868,6 +869,8 @@ void GameManager::SendNewGameMessage( )
 	msg.SetPort( port );
 
 	SendMessage( msg, MessageTarget::Server );
+
+	PrintSend( msg );
 }
 void GameManager::SendJoinGameMessage( const GameInfo &gameInfo )
 {
@@ -876,6 +879,8 @@ void GameManager::SendJoinGameMessage( const GameInfo &gameInfo )
 	msg.SetObjectID( gameInfo.GetGameID() );
 
 	SendMessage( msg, MessageTarget::Server );
+
+	PrintSend( msg );
 }
 void GameManager::SendEndGameMessage( )
 {
@@ -889,8 +894,8 @@ void GameManager::SendEndGameMessage( )
 	msg.SetPort( port );
 
 	SendMessage( msg, MessageTarget::Server );
-	PrintSend( msg );
 
+	PrintSend( msg );
 }
 void GameManager::SendGetGameListMessage()
 {
@@ -1109,6 +1114,7 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.GetGameState() == GameState::Lobby )
 	{
+		std::cout << "GameMAanager@" << __LINE__ << " GameState::Lobby..\n";
 		UpdateGameList();
 	}
 	else if ( menuManager.WasGameStarted()  )
@@ -1117,6 +1123,7 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.WasGameQuited() )
 	{
+		std::cout << "GameMAanager@" << __LINE__ << " Game was quited..\n";
 		SendEndGameMessage();
 		netManager.Close();
 	}
@@ -1180,10 +1187,7 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 				renderer.ToggleFullscreen();
 				break;
 			case SDLK_ESCAPE:
-				if ( menuManager.GetGameState() == GameState::Lobby )
-					GoBackFromLobby();
-				else
-					menuManager.GoToMenu();
+				menuManager.GoToMenu();
 				break;
 			case SDLK_s:
 				menuManager.SetGameState( GameState::InGame );
@@ -1254,7 +1258,6 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
-
 	if ( isFastMode && localPlayerSuperBall && localPlayerFireBullets )
 	{
 		if ( ballSpeed < ballSpeedFastMode )
@@ -1310,7 +1313,7 @@ void GameManager::UpdateLobbyState()
 			UpdateGameList();
 			break;
 		case LobbyMenuItem::Back:
-			GoBackFromLobby();
+			menuManager.GoToMenu();
 			break;
 		case LobbyMenuItem::GameList:
 			JoinGame();
@@ -1322,7 +1325,7 @@ void GameManager::UpdateLobbyState()
 }
 void GameManager::StartNewGame()
 {
-	std::cout << "New game\n";
+	std::cout << "GameManager.cpp@" << __LINE__ << " New game\n";
 	SendNewGameMessage();
 	menuManager.SetGameState( GameState::InGame );
 	boardLoader.SetIsServer( true );
@@ -1332,15 +1335,6 @@ void GameManager::StartNewGame()
 	// The code should be changed so that it's not necesseary to change port.
 	port += 100;
 }
-void GameManager::GoBackFromLobby()
-{
-	menuManager.SetGameState( GameState::InGame );
-	boardLoader.SetIsServer( false );
-	netManager.SetIsServer( false );
-	netManager.Connect( ip, port );
-	menuManager.GoToMenu();
-}
-
 void GameManager::JoinGame()
 {
 	if ( menuManager.IsAnItemSelected() )
