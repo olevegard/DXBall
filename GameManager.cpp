@@ -347,28 +347,7 @@ void GameManager::UpdateBullets( double delta )
 		{
 			if (tile->rect.CheckTileIntersection( bullet->rect ) )
 			{
-				if ( isFastMode && localPlayerSuperBall )
-				{
-					tile->Kill();
-				} else
-				{
-					bullet->Kill();
-					tile->Hit();
-				}
-
-				IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), bullet->GetOwner() );
-
-				if ( !tile->IsAlive() )
-				{
-					if ( tile->GetTileType() == TileType::Explosive )
-					{
-						int32_t count = HandleExplosions( tile, Player::Local );
-						AddBonusBox( Player::Local, Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), count );
-					}
-					else
-						AddBonusBox( Player::Local, Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), 1 );
-				}
-
+				HandleBulletTileIntersection( bullet, tile );
 			}
 		}
 	}
@@ -376,6 +355,46 @@ void GameManager::UpdateBullets( double delta )
 	if ( !isFastMode || !localPlayerSuperBall )
 		DeleteDeadBullets();
 	DeleteDeadTiles();
+}
+
+void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
+{
+	Player owner = bullet->GetOwner();
+
+	if ( IsSuperBullet( owner ) )
+	{
+		tile->Kill();
+	} else
+	{
+		bullet->Kill();
+		tile->Hit();
+	}
+
+	IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), owner );
+
+	if ( !tile->IsAlive() )
+	{
+		int32_t count = 1;
+		if ( tile->GetTileType() == TileType::Explosive )
+		{
+			count= HandleExplosions( tile, owner );
+		}
+
+		if ( bullet->GetOwner() == Player::Local )
+			AddBonusBox( bullet->GetOwner(), Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), count );
+	}
+}
+bool GameManager::IsSuperBullet( const Player owner ) const
+{
+	if ( isFastMode )
+	{
+		if ( owner == Player::Local && localPlayerSuperBall )
+			return true;
+		else if ( owner == Player::Remote && remotePlayerSuperBall )
+			return true;
+	}
+
+	return false;
 }
 void GameManager::UpdateNetwork()
 {
@@ -1005,12 +1024,14 @@ void GameManager::DeleteAllBonusBoxes()
 void GameManager::FireBullets()
 {
 	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
+	bullet->SetOwner( Player::Local );
 	bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
 	bullet->SetSpeed( bulletSpeed );
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
 
 	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
+	bullet2->SetOwner( Player::Local );
 	bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w - bullet2->rect.w, localPaddle->rect.y - 10 );
 	bullet2->SetSpeed( bulletSpeed );
 	bulletList.push_back( bullet2 );
@@ -1199,7 +1220,7 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				AddBall( Player::Local, ballCount );
 				break;
 			case SDLK_s:
-				localPlayerSuperBall = true;
+				//localPlayerSuperBall = true;
 				break;
 			case SDLK_f:
 				localPlayerFireBullets = true;

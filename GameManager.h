@@ -60,6 +60,8 @@ class GameManager
 
 		// Bullets
 		void UpdateBullets( double delta );
+		void HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
+		bool IsSuperBullet( const Player owner ) const;
 		void DeleteDeadBullets();
 		void DeleteAllBullets();
 		void FireBullets();
