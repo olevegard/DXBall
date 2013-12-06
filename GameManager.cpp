@@ -1180,7 +1180,10 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 				renderer.ToggleFullscreen();
 				break;
 			case SDLK_ESCAPE:
-				menuManager.GoToMenu();
+				if ( menuManager.GetGameState() == GameState::Lobby )
+					GoBackFromLobby();
+				else
+					menuManager.GoToMenu();
 				break;
 			case SDLK_s:
 				menuManager.SetGameState( GameState::InGame );
@@ -1196,6 +1199,12 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 				break;
 			case SDLK_r:
 				menuManager.SetGameState( GameState::InGame );
+				break;
+			case SDLK_n:
+				StartNewGame();
+				break;
+			case SDLK_u:
+				UpdateGameList();
 				break;
 			default:
 				break;
