@@ -210,15 +210,13 @@ class GameManager
 		unsigned int localPlayerPoints;
 		unsigned int localPlayerLives;
 		unsigned int localPlayerActiveBalls;
-		bool localPlayerSuperBall;
-		bool localPlayerFireBullets;
+		std::map< BonusType, bool > localPlayerBonusMap;
 
 		std::string remotePlayerName;
 		unsigned int remotePlayerPoints;
 		unsigned int remotePlayerLives;
 		unsigned int remotePlayerActiveBalls;
-		bool remotePlayerSuperBall;
-		bool remotePlayerFireBullets;
+		std::map< BonusType, bool > remotePlayerBonusMap;
 
 		std::vector< std::shared_ptr< Ball     > > ballList;
 		std::vector< std::shared_ptr< Tile     > > tileList;
