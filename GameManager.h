@@ -138,6 +138,7 @@ class GameManager
 		void RecievePlayerNameMessage( const TCPMessage &message );
 		void RecieveGameSettingsMessage( const TCPMessage &message);
 		void RecieveGameStateChangedMessage( const TCPMessage &message );
+		void RecieveLevelDoneMessage( const TCPMessage &message );
 
 		void RecieveBallSpawnMessage( const TCPMessage &message );
 		void RecieveBallDataMessage( const TCPMessage &message );
@@ -149,21 +150,26 @@ class GameManager
 		void RecieveBulletFireMessage( const TCPMessage &message );
 
 		// Send messages
+
+		// System messages
 		void SendPlayerName();
-		void SendNewGameMessage( );
 		void SendJoinGameMessage(const GameInfo &gameInfo );
-		void SendEndGameMessage( );
-		void SendGetGameListMessage();
 		void SendGameSettingsMessage();
 		void SendGameStateChangedMessage( );
+		void SendLevelDoneMessage( );
 
-		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
-		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
-		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
-		void SendTileHitMessage( unsigned int tileID );
+		// Server messages
+		void SendNewGameMessage( );
+		void SendEndGameMessage( );
+		void SendGetGameListMessage( );
+
 		void SendPaddlePosMessage( );
-		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
+		void SendTileHitMessage( unsigned int tileID );
+		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
+		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
+		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
 		void SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox );
+		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendBulletFireMessage( const std::shared_ptr< Bullet > &bulletLeft, const std::shared_ptr< Bullet > &bulletRight  );
 
 		void SendMessage( const TCPMessage &message, const MessageTarget &target );
@@ -195,6 +201,7 @@ class GameManager
 		MenuManager menuManager;
 		ConfigLoader configLodaer;
 		bool isFastMode;
+		bool isOpnonentDoneWithLevel;
 		int32_t bonusBoxChance;
 
 		NetManager netManager;
@@ -228,7 +235,6 @@ class GameManager
 		unsigned int points[4];
 
 		double remoteResolutionScale;
-		bool isResolutionScaleRecieved;
 
 		unsigned int tileCount;
 		unsigned int ballCount;

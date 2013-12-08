@@ -17,6 +17,7 @@ std::string TCPMessage::Print() const
 	{
 		case EndGame:
 		case TileHit:
+		case LevelDone:
 		case GameJoined:
 		case BallKilled:
 		case GetGameList:
@@ -88,6 +89,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Game Joined";
 		case BulletFire:
 			return "Bullet Fire";
+		case LevelDone:
+			return "Level Done";
 		default:
 			return "Unknown";
 	}
@@ -136,6 +139,8 @@ std::string TCPMessage::GetGameStateAsString() const
 			return "In Game";
 		case GameState::InGameMenu:
 			return "In Game Menu";
+		case GameState::InGameWait:
+			return "In Game Wait";
 		case GameState::Lobby:
 			return "Lobby";
 		case GameState::MainMenu:

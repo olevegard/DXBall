@@ -7,6 +7,7 @@ enum class GameState
 	InGame,
 	Paused,
 	InGameMenu,
+	InGameWait,
 	GameOver,
 	Options,
 	Quit

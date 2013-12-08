@@ -19,6 +19,7 @@ class NetManager
 
 		bool IsServer() const;
 		bool IsConnected() const;
+
 		std::string GetIPAdress();
 		uint16_t GetPort();
 
@@ -28,6 +29,7 @@ class NetManager
 		uint16_t portNr;
 
 		bool isServer;
+		bool isReady;
 		TCPConnection mainServer;
 		TCPConnection gameServer;
 		TCPConnection gameClient;

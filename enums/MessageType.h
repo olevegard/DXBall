@@ -21,6 +21,7 @@ enum MessageType
 	GetGameList,		// Tell the server to send you the list of avaibale games
 
 	PlayerName,			// Tell the other player your name
+	LevelDone,			// Tell the other player that the level is done on your side
 
 	BonusSpawned,	// A bonus was triggeredby the oponenyyt
 	BonusPickup, 	// A bonus was picked up by the oponent

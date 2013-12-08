@@ -7,6 +7,7 @@
 void NetManager::Init( bool server)
 {
 	isServer = server;
+	isReady = false;
 
 	if ( SDLNet_Init() < 0 )
 	{
@@ -20,6 +21,7 @@ void NetManager::Connect( std::string ip, unsigned short port )
 {
 	ipAdress = ip;
 	portNr = port;
+	isReady = true;
 
 	if ( isServer )
 	{
@@ -38,10 +40,11 @@ void NetManager::Close()
 }
 void NetManager::Update()
 {
-	if ( !isServer )
+	if ( !isReady )
+		return;
+
+	if ( !isServer || gameServer.IsConnected()  )
 	{
-		std::cout << "NetManager.cpp@" << __LINE__
-			<< " Needs to be server to run Updare()" << std::endl;
 		return;
 	}
 	gameServer.Update();
@@ -85,7 +88,6 @@ bool NetManager::IsConnected() const
 	}
 	else
 	{
-
 		return gameClient.IsConnected();
 	}
 }

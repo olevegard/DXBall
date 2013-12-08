@@ -32,6 +32,7 @@
 	,	renderer()
 	,	timer()
 	,	isFastMode( true )
+	,	isOpnonentDoneWithLevel( false )
 
 	,	gameID( 0 )
 	,	localPaddle()
@@ -51,7 +52,6 @@
 	,	points{ 20, 50, 100, 500 }
 
 	,	remoteResolutionScale( 1.0 )
-	,	isResolutionScaleRecieved( false )
 
 	,	tileCount( 0 )
 	,	ballCount( 0 )
@@ -116,6 +116,12 @@ void GameManager::LoadConfig()
 
 	bonusBoxChance = configLodaer.GetBonusBoxChance();
 }
+void GameManager::CreateMenu()
+{
+	menuManager.AddMenuElememts( renderer );
+	menuManager.AddPauseMenuElememts( renderer );
+	menuManager.AddLobbyMenuElememts( renderer );
+}
 void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
 	ip = ip_;
@@ -125,7 +131,6 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 
 	GameInfo gameInfo;
 	gameInfo.Set( ip, port );
-	//menuManager.AddGameToList( renderer, hostInfo );
 }
 void GameManager::Restart()
 {
@@ -142,7 +147,6 @@ void GameManager::Restart()
 
 		renderer.SetRemotePaddle( remotePaddle );
 	}
-	isResolutionScaleRecieved = false;
 
 	tileCount = 0;
 	ballCount = 0;
@@ -154,15 +158,13 @@ void GameManager::Restart()
 		boardLoader.SetIsServer( true );
 	}
 
-	if ( !menuManager.IsTwoPlayerMode() || netManager.IsServer() )
-		GenerateBoard();
+	GenerateBoard();
 
 	localPlayerPoints = 0;
 	localPlayerLives = 3;
 	localPlayerActiveBalls = 0;
 	localPlayerBonusMap[BonusType::FireBullets] = false;
 	localPlayerBonusMap[BonusType::SuperBall] = false;
-
 
 	remotePlayerPoints = 0;
 	remotePlayerLives = 3;
@@ -346,6 +348,9 @@ void GameManager::UpdateBullets( double delta )
 
 		for ( auto tile : tileList )
 		{
+			if ( !tile->IsAlive() )
+				continue;
+
 			if (tile->rect.CheckTileIntersection( bullet->rect ) )
 			{
 				HandleBulletTileIntersection( bullet, tile );
@@ -357,10 +362,13 @@ void GameManager::UpdateBullets( double delta )
 		DeleteDeadBullets();
 	DeleteDeadTiles();
 }
-
 void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
 {
 	Player owner = bullet->GetOwner();
+	if ( owner == Player::Remote )
+		return;
+
+	SendTileHitMessage( tile->GetObjectID() );
 
 	if ( IsSuperBullet( owner ) )
 	{
@@ -373,27 +381,27 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 
 	IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), owner );
 
-	if ( !tile->IsAlive() )
-	{
-		int32_t count = 1;
-		if ( tile->GetTileType() == TileType::Explosive )
-		{
-			count= HandleExplosions( tile, owner );
-		}
+	if ( tile->IsAlive() )
+		return;
 
-		if ( bullet->GetOwner() == Player::Local )
-			AddBonusBox( bullet->GetOwner(), Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), count );
+	int32_t count = 1;
+	if ( tile->GetTileType() == TileType::Explosive )
+	{
+		count= HandleExplosions( tile, owner );
 	}
+
+	if ( bullet->GetOwner() == Player::Local )
+		AddBonusBox( bullet->GetOwner(), Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), count );
 }
 bool GameManager::IsSuperBullet( const Player owner ) const
 {
-	if ( isFastMode )
-	{
-		if ( owner == Player::Local && localPlayerBonusMap.at(BonusType::SuperBall) )
-			return true;
-		else if ( owner == Player::Remote && remotePlayerBonusMap.at(BonusType::SuperBall) )
-			return true;
-	}
+	if ( !isFastMode )
+		return false;
+
+	if ( owner == Player::Local && localPlayerBonusMap.at(BonusType::SuperBall) )
+		return true;
+	else if ( owner == Player::Remote && remotePlayerBonusMap.at(BonusType::SuperBall) )
+		return true;
 
 	return false;
 }
@@ -401,14 +409,10 @@ void GameManager::UpdateNetwork()
 {
 	ReadMessagesFromServer();
 
+	netManager.Update();
+
 	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
 		return;
-
-	if ( !isResolutionScaleRecieved )
-	{
-		SendGameSettingsMessage();
-		SendPlayerName();
-	}
 
 	ReadMessages();
 }
@@ -496,6 +500,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::BulletFire:
 			RecieveBulletFireMessage( message );
 			break;
+		case MessageType::LevelDone:
+			RecieveLevelDoneMessage( message );
+			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork message received " << message << std::endl;
 			std::cin.ignore();
@@ -506,6 +513,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 {
 	UpdateGameList();
+
+	SendGameSettingsMessage();
+	SendPlayerName();
 
 	PrintRecv( message );
 }
@@ -538,14 +548,16 @@ void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 	if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode()  )
 	{
 		GenerateBoard();
-		SetScale( message.GetBoardScale() * remoteResolutionScale );
 	}
-
-	isResolutionScaleRecieved = true;
 }
 void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
 {
 	menuManager.SetGameState( message.GetGameState() );
+	PrintRecv( message );
+}
+void GameManager::RecieveLevelDoneMessage( const TCPMessage &message )
+{
+	isOpnonentDoneWithLevel = true;
 	PrintRecv( message );
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
@@ -582,7 +594,6 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 {
-	std::cout << "GameManager.cpp@" << __LINE__ << "Erasing ball kill message: \n";
 	PrintRecv( message );
 	if ( ballList.size() > 0 )
 	{
@@ -601,8 +612,6 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 
 	if ( tile == nullptr )
 	{
-		std::cout << "GameManager.cpp@" << __LINE__ << " : Tile not found : " << message.GetObjectID() << std::endl;
-		//std::cin.ignore();
 		return;
 	}
 	if ( remotePlayerBonusMap[BonusType::SuperBall] )
@@ -670,8 +679,6 @@ void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 	bullet2->SetOwner( Player::Remote );
 	bulletList.push_back( bullet2 );
 	renderer.AddBullet( bullet2 );
-
-	PrintRecv( message );
 }
 void GameManager::SendPaddlePosMessage( )
 {
@@ -704,7 +711,7 @@ void GameManager::SendGameSettingsMessage()
 
 	SendMessage( msg, MessageTarget::Oponent );
 
-	isResolutionScaleRecieved  = true;
+	menuManager.SetGameState( GameState::InGame );
 	PrintSend(msg);
 }
 void GameManager::SendPlayerName()
@@ -783,6 +790,14 @@ void GameManager::SendTileHitMessage( unsigned int tileID )
 
 	TCPMessage msg;
 
+	auto p = GetTileFromID( tileID );
+	if ( p == nullptr )
+	{
+		std::cout << "Trying non-existing tile : " << tileID << std::endl;
+		return;
+	}
+	std::cout << "Tile hit : " << tileID << " hits left : " << p->GetHitsLeft() << " alive? " << std::boolalpha << p->IsAlive() << std::endl;
+
 	msg.SetMessageType( MessageType::TileHit );
 	msg.SetObjectID( tileID );
 
@@ -841,9 +856,7 @@ void GameManager::SendBulletFireMessage( const std::shared_ptr< Bullet > &bullet
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
-	std::cout << "Sending : " << ss.str() << std::endl;
 
-	PrintSend( msg );
 }
 void GameManager::SendGameStateChangedMessage()
 {
@@ -859,10 +872,21 @@ void GameManager::SendGameStateChangedMessage()
 	SendMessage( msg, MessageTarget::Oponent );
 	PrintSend( msg );
 }
+void GameManager::SendLevelDoneMessage( )
+{
+	if ( !menuManager.IsTwoPlayerMode() )
+		return;
+
+	TCPMessage msg;
+
+	msg.SetMessageType( MessageType::LevelDone );
+	msg.SetObjectID( 0 );
+
+	SendMessage( msg, MessageTarget::Oponent );
+	PrintSend( msg );
+}
 void GameManager::SendNewGameMessage( )
 {
-	//if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() ) return;
-
 	TCPMessage msg;
 	msg.SetMessageType( MessageType::NewGame );
 	msg.SetIPAdress( ip  );
@@ -884,8 +908,6 @@ void GameManager::SendJoinGameMessage( const GameInfo &gameInfo )
 }
 void GameManager::SendEndGameMessage( )
 {
-	//if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() ) return;
-
 	TCPMessage msg;
 	msg.SetMessageType( MessageType::EndGame );
 
@@ -906,7 +928,7 @@ void GameManager::SendGetGameListMessage()
 	ss << msg;
 	netManager.SendMessageToServer( ss.str() );
 
-	PrintSend( msg );
+	//PrintSend( msg );
 }
 void GameManager::SendMessage( const TCPMessage &message, const MessageTarget &target )
 {
@@ -928,7 +950,6 @@ void GameManager::PrintRecv( const TCPMessage &msg ) const
 }
 void GameManager::DeleteDeadBalls()
 {
-
 	bool localPlayerBallDeleted = false;
 	bool remotePlayerBallDeleted = false;
 	auto isDeadFunc = [&]( std::shared_ptr< Ball > ball )
@@ -960,13 +981,16 @@ void GameManager::UpdateBallSpeed()
 }
 void GameManager::DeleteDeadTiles()
 {
+	bool deadTile = false;
 	auto newEnd = std::remove_if(
 		tileList.begin(),
 		tileList.end(),
-	[=]( std::shared_ptr< Tile > tile )
+	[=, &deadTile]( std::shared_ptr< Tile > tile )
 	{
 		if ( !tile || tile->IsAlive() )
 			return false;
+
+		deadTile = true;
 
 		RemoveTile( tile );
 
@@ -975,6 +999,9 @@ void GameManager::DeleteDeadTiles()
 
 	// Remove item returned by remove_if
 	tileList.erase( newEnd, tileList.end( ) );
+
+	if ( deadTile && tileList.size() == 0 )
+		SendLevelDoneMessage();
 }
 void GameManager::DeleteDeadBullets()
 {
@@ -1217,7 +1244,7 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 }
 void GameManager::HandleGameKeys( const SDL_Event &event )
 {
-	if ( menuManager.GetGameState() != GameState::InGame || ( menuManager.IsTwoPlayerMode() && !isResolutionScaleRecieved ) )
+	if ( menuManager.GetGameState() != GameState::InGame )
 		return;
 
 	if ( event.type == SDL_KEYDOWN )
@@ -1266,28 +1293,29 @@ void GameManager::Update( double delta )
 		}
 	}
 
-	if ( isAIControlled )
-		AIMove();
-
 	UpdateNetwork();
+	UpdateGUI();
 
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
 		UpdateLobbyState();
-		UpdateGUI();
 		return;
 	}
+	if ( isOpnonentDoneWithLevel  && tileList.size() == 0 )
+	{
+		std::cout << "Generating board...\n";
+		DeleteAllBullets();
+		GenerateBoard();
+	}
 
+	AIMove();
 	UpdateBalls( delta );
 	UpdateBullets( delta );
 	UpdateBonusBoxes( delta );
-	renderer.Update( delta );
 
 	if ( IsTimeForNewBoard() )
 	{
-		std::cout << "GameMAanager@" << __LINE__ << " Level is done..\n";
-		DeleteAllBullets();
-		GenerateBoard();
+		std::cout << "GameManager@" << __LINE__ << " Level is done..\n";
 	}
 
 	if ( localPlayerLives == 0 && remotePlayerLives == 0 )
@@ -1295,8 +1323,6 @@ void GameManager::Update( double delta )
 		menuManager.SetGameState( GameState::GameOver );
 		return;
 	}
-
-	UpdateGUI();
 }
 void GameManager::UpdateLobbyState()
 {
@@ -1326,34 +1352,33 @@ void GameManager::StartNewGame()
 {
 	std::cout << "GameManager.cpp@" << __LINE__ << " New game\n";
 	SendNewGameMessage();
-	menuManager.SetGameState( GameState::InGame );
+	menuManager.SetGameState( GameState::InGameWait );
 	boardLoader.SetIsServer( true );
 	netManager.SetIsServer( true );
 	netManager.Connect( ip, port );
+
 	// This is a temporary fix, setting the port to this client to something else
 	// The code should be changed so that it's not necesseary to change port.
 	port += 100;
 }
 void GameManager::JoinGame()
 {
-	if ( menuManager.IsAnItemSelected() )
-	{
-		GameInfo gameInfo = menuManager.GetSelectedGameInfo();
-		gameID = gameInfo.GetGameID();
+	if ( !menuManager.IsAnItemSelected() )
+		return;
 
-		std::cout << "GameManager.cpp@" << __LINE__
-			<< " Selected game in list : "<< gameInfo.GetAsSrting()
-			<< std::endl;
+	GameInfo gameInfo = menuManager.GetSelectedGameInfo();
+	gameID = gameInfo.GetGameID();
 
-		menuManager.SetGameState( GameState::InGame );
-		boardLoader.SetIsServer( false );
-		netManager.SetIsServer( false );
-		netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
+	std::cout << "GameManager.cpp@" << __LINE__
+		<< " Selected game in list : "<< gameInfo.GetAsSrting()
+		<< std::endl;
 
-		SendJoinGameMessage( gameInfo );
-	}
-	else
-		std::cout << "GameManager.cpp@" << __LINE__ << " No item selected\n";
+	boardLoader.SetIsServer( false );
+	netManager.SetIsServer( false );
+	netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
+
+	SendJoinGameMessage( gameInfo );
+	SendPlayerName();
 }
 void GameManager::UpdateGameList()
 {
@@ -1362,6 +1387,9 @@ void GameManager::UpdateGameList()
 }
 void GameManager::AIMove()
 {
+	if ( isAIControlled )
+		return;
+
 	auto highest = FindHighestBall();
 
 	if ( !IsTimeForAIMove( highest ) )
@@ -1425,13 +1453,11 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 }
 void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
-	if ( !tile )
+	if ( !tile || !ball->TileCheck( tile->rect, tile->GetObjectID(), IsSuperBall( ball )) )
 		return;
 
-	if ( !ball->TileCheck( tile->rect, tile->GetObjectID() , IsSuperBall( ball )) )
-		return;
-
-	if ( ball->GetOwner() == Player::Local ) SendBallDataMessage( ball );
+	if ( ball->GetOwner() == Player::Local )
+		SendBallDataMessage( ball );
 
 	if ( localPlayerBonusMap[BonusType::SuperBall] )
 		tile->Kill();
@@ -1453,21 +1479,15 @@ void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< 
 {
 	bool isDestroyed = !tile->IsAlive();
 	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
-	if ( isDestroyed )
-	{
-		if (tile->GetTileType() == TileType::Explosive )
-		{
-			int count = HandleExplosions( tile, ball->GetOwner() );
-			AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
-			DeleteDeadTiles();
-		}
-		else
-			AddBonusBox( ball, tile->rect.x, tile->rect.y );
 
-		tile->Kill();
-		DeleteDeadTiles();
-	}
+	if ( !isDestroyed )
+		return;
 
+	int32_t count = 1;
+	if (tile->GetTileType() == TileType::Explosive )
+		count = HandleExplosions( tile, ball->GetOwner() );
+
+	AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
 }
 std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_ptr< Ball > ball )
 {
@@ -1477,6 +1497,9 @@ std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_pt
 
 	for ( auto p : tileList)
 	{
+		if ( !p->IsAlive() )
+			continue;
+
 		if ( !ball->CheckTileSphereIntersection( p->rect, ball->rect, current ) )
 		{
 			current = std::numeric_limits< double >::max();
@@ -1700,7 +1723,7 @@ BonusType GameManager::GetRandomBonusType() const
 }
 void GameManager::UpdateGUI( )
 {
-	if ( menuManager.GetGameState() == GameState::InGame )
+	if ( menuManager.GetGameState() == GameState::InGame || menuManager.GetGameState() == GameState::InGameWait )
 		RenderInGame();
 	else if ( menuManager.GetGameState() == GameState::GameOver )
 		RenderEndGame();
@@ -1723,49 +1746,35 @@ void GameManager::RendererScores()
 }
 void GameManager::RenderInGame()
 {
-	if ( menuManager.IsTwoPlayerMode()
-			&& !isResolutionScaleRecieved
-			&& netManager.IsServer()
-	   )
+	if ( menuManager.GetGameState() == GameState::InGameWait )
 	{
-		renderer.RenderText( "Waiting for other player...", Player::Local  );
-		netManager.Update();
+		renderer.RenderText( "InGame : Wait...", Player::Local  );
 		return;
 	}
 
-	if ( localPlayerActiveBalls == 0 )
+	if ( localPlayerActiveBalls != 0 )
+		return;
+
+	if ( localPlayerLives != 0 )
 	{
-		if ( localPlayerLives == 0 )
-		{
-			if ( menuManager.IsTwoPlayerMode() )
-			{
-				if ( localPlayerPoints < remotePlayerPoints )
-					renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
-				else
-					renderer.RenderText( "No more lives!", Player::Local  );
-			}
-			else
-				renderer.RenderText( "No more lives!", Player::Local  );
-		}
-		else
-			renderer.RenderText( "Press enter to launch ball", Player::Local  );
+		renderer.RenderText( "Press enter to launch ball", Player::Local  );
+		return;
 	}
-	//else if ( ballList.size() > 0 )
-		//renderer.RemoveText();
+
+	RenderEndGame();
 }
 void GameManager::RenderEndGame()
 {
-	if ( menuManager.IsTwoPlayerMode() )
+	if ( !menuManager.IsTwoPlayerMode() )
 	{
-		if ( localPlayerPoints > remotePlayerPoints )
-			renderer.RenderText( "Yay, you won :D", Player::Local  );
-		else
-			renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
+		renderer.RenderText( "No more lives!", Player::Local  );
+		return;
 	}
+
+	if ( localPlayerPoints < remotePlayerPoints )
+		renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
 	else
-	{
-		renderer.RenderText( "Game Over!", Player::Local  );
-	}
+		renderer.RenderText( "No more lives!", Player::Local  );
 }
 void GameManager::GameManager::SetFPSLimit( unsigned short limit )
 {
@@ -1778,6 +1787,7 @@ void GameManager::GameManager::SetFPSLimit( unsigned short limit )
 void GameManager::GenerateBoard()
 {
 	ClearBoard();
+	isOpnonentDoneWithLevel = false;
 
 	if ( !boardLoader.IsLastLevel() )
 	{
@@ -1792,10 +1802,9 @@ void GameManager::GenerateBoard()
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 
-	if (  menuManager.IsTwoPlayerMode() && netManager.IsServer()  )
-		SetScale( b.GetScale() );
-	else if ( !menuManager.IsTwoPlayerMode() )
-		SetScale( b.GetScale()  );
+	std::cout << "GameManager@" << __LINE__ << " Generate board | Scale : " << b.GetScale() << "\n";
+
+	SetScale( b.GetScale() );
 }
 bool GameManager::IsLevelDone()
 {
@@ -1881,12 +1890,7 @@ void GameManager::RemoveDeadBallsAndBoxes( Player player )
 			p->Kill();
 	}
 }
-void GameManager::CreateMenu()
-{
-	menuManager.AddMenuElememts( renderer );
-	menuManager.AddPauseMenuElememts( renderer );
-	menuManager.AddLobbyMenuElememts( renderer );
-}
+
 void GameManager::SetLocalPaddlePosition( int x, int y )
 {
 	if ( x != 0 && y != 0 )
@@ -1907,7 +1911,6 @@ void GameManager::SetScale( double scale_ )
 	std::cout << "GameManager.cpp@" << __LINE__ << " Scale : " << scale_ << std::endl;
 	scale = scale_;
 	ApplyScale();
-	SendGameSettingsMessage();
 }
 void GameManager::ApplyScale( )
 {
@@ -1944,4 +1947,3 @@ void GameManager::ResetScale( )
 		p->SetScale( tempScale );
 	}
 }
-

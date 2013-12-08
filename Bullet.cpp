@@ -6,7 +6,7 @@ Bullet::Bullet( int32_t objectID )
 	rect.w = 5;
 	rect.h = 5;
 	SetObjectID( objectID );
-	SetSpeed( 0.6 );
+	SetSpeed( 0.9 );
 }
 void Bullet::SetOwner( const Player &owner_ )
 {

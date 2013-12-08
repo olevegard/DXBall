@@ -128,6 +128,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
 		case TileHit:
+		case LevelDone:
 		case GameJoined:
 		case BallKilled:
 		case BonusPickup:
@@ -264,6 +265,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
 		case TileHit:
+		case LevelDone:
 		case GameJoined:
 		case BallKilled:
 		case GetGameList:

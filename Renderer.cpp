@@ -493,6 +493,7 @@ void Renderer::Render( )
 			ml->Render( renderer );
 			break;
 		case GameState::InGame:
+		case GameState::InGameWait:
 			RenderForeground();
 			RenderText();
 			break;
