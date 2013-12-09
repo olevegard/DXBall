@@ -1312,6 +1312,7 @@ void GameManager::Update( double delta )
 	UpdateBalls( delta );
 	UpdateBullets( delta );
 	UpdateBonusBoxes( delta );
+	renderer.Update( delta );
 
 	if ( IsTimeForNewBoard() )
 	{
