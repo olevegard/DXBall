@@ -1301,7 +1301,8 @@ void GameManager::Update( double delta )
 		UpdateLobbyState();
 		return;
 	}
-	if ( isOpnonentDoneWithLevel  && tileList.size() == 0 )
+
+	if ( IsTimeForNewBoard() )
 	{
 		std::cout << "Generating board...\n";
 		DeleteAllBullets();
@@ -1313,11 +1314,6 @@ void GameManager::Update( double delta )
 	UpdateBullets( delta );
 	UpdateBonusBoxes( delta );
 	renderer.Update( delta );
-
-	if ( IsTimeForNewBoard() )
-	{
-		std::cout << "GameManager@" << __LINE__ << " Level is done..\n";
-	}
 
 	if ( localPlayerLives == 0 && remotePlayerLives == 0 )
 	{
@@ -1824,7 +1820,7 @@ int32_t GameManager::CountDestroyableTiles()
 }
 bool GameManager::IsTimeForNewBoard()
 {
-	return ( ( !menuManager.IsTwoPlayerMode() || netManager.IsServer() ) &&  IsLevelDone() );
+	return ( tileList.size() == 0 && ( !menuManager.IsTwoPlayerMode() ||  isOpnonentDoneWithLevel ) );
 }
 void GameManager::ClearBoard()
 {
