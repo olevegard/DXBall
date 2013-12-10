@@ -1800,6 +1800,9 @@ void GameManager::GenerateBoard()
 	Board b = boardLoader.GenerateBoard( windowSize );
 	std::vector<TilePosition> vec = b.GetTiles();
 
+	if ( vec.size() == 0 )
+		SendLevelDoneMessage();
+
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 
