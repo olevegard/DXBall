@@ -1154,6 +1154,10 @@ void GameManager::HandleStatusChange( )
 		SendEndGameMessage();
 		netManager.Close();
 	}
+	else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() == GameState::Paused )
+	{
+		renderer.StartFade();
+	}
 }
 void GameManager::HandleEvent( const SDL_Event &event )
 {
