@@ -1775,7 +1775,7 @@ void GameManager::RenderEndGame()
 	if ( localPlayerPoints < remotePlayerPoints )
 		renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
 	else
-		renderer.RenderText( "No more lives!", Player::Local  );
+		renderer.RenderText( "Yay, you won!!", Player::Local  );
 }
 void GameManager::GameManager::SetFPSLimit( unsigned short limit )
 {
