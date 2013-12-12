@@ -1388,7 +1388,7 @@ void GameManager::UpdateGameList()
 }
 void GameManager::AIMove()
 {
-	if ( isAIControlled )
+	if ( !isAIControlled )
 		return;
 
 	auto highest = FindHighestBall();
