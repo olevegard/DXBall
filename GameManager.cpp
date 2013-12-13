@@ -172,6 +172,8 @@ void GameManager::Restart()
 	remotePlayerBonusMap[BonusType::SuperBall] = false;
 	remotePlayerBonusMap[BonusType::FireBullets] = false;
 
+	LoadConfig();
+
 	renderer.SetIsTwoPlayerMode( menuManager.IsTwoPlayerMode() );
 	renderer.ResetText();
 
