@@ -91,8 +91,18 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	localPaddle->rect.h = 30;
 	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
 	localPaddle->SetScale( scale );
-
+	std::cout << "GameManager@" << __LINE__ << " : Local paddle : " << localPaddle << std::endl;
 	renderer.SetLocalPaddle( localPaddle );
+
+	remotePaddle = std::make_shared< Paddle > ();
+	remotePaddle->textureType = TextureType::e_Paddle;
+	remotePaddle->rect.w = 120;
+	remotePaddle->rect.h = 30;
+	remotePaddle->rect.x = 400;
+	remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
+	std::cout << "GameManager@" << __LINE__ << " : Remote paddle : " << remotePaddle << std::endl;
+	renderer.SetRemotePaddle( remotePaddle );
+
 	menuManager.Init( renderer );
 	menuManager.SetGameState( GameState::MainMenu );
 	CreateMenu();
@@ -134,20 +144,6 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 }
 void GameManager::Restart()
 {
-	if ( menuManager.IsTwoPlayerMode() )
-	{
-		remotePaddle = std::make_shared< Paddle > ();
-		remotePaddle->textureType = TextureType::e_Paddle;
-		remotePaddle->rect.w = 120;
-		remotePaddle->rect.h = 30;
-		remotePaddle->rect.x = 400;
-
-		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
-		remotePaddle->SetScale( scale );
-
-		renderer.SetRemotePaddle( remotePaddle );
-	}
-
 	tileCount = 0;
 	ballCount = 0;
 
@@ -156,6 +152,10 @@ void GameManager::Restart()
 	if ( !menuManager.IsTwoPlayerMode() )
 	{
 		boardLoader.SetIsServer( true );
+	}
+	else
+	{
+		remotePaddle->SetScale( scale );
 	}
 
 	GenerateBoard();
