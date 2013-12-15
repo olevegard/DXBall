@@ -41,10 +41,12 @@
 	,	localPlayerPoints( 0 )
 	,	localPlayerLives( 3 )
 	,	localPlayerActiveBalls( 0 )
+	,	localPlayerBallSpeed ( 0.2)
 
 	,	remotePlayerPoints( 0 )
 	,	remotePlayerLives( 3 )
 	,	remotePlayerActiveBalls( 0 )
+	,	remotePlayerBallSpeed ( 0.2)
 
 	,	ballList()
 	,	windowSize()
@@ -59,7 +61,6 @@
 
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
-	,	ballSpeed( 0.2 )
 	,	ballSpeedFastMode( 1.0 )
 	,	bonusBoxSpeed( 0.2 )
 	,	bulletSpeed( 1.0 )
@@ -118,7 +119,8 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 void GameManager::LoadConfig()
 {
 	bonusBoxSpeed = configLodaer.GetBonusBoxSpeed();
-	ballSpeed = configLodaer.GetBallSpeed();
+	localPlayerBallSpeed = configLodaer.GetBallSpeed();
+	remotePlayerBallSpeed = configLodaer.GetBallSpeed();
 	ballSpeedFastMode = configLodaer.GetBallSpeedFastMode();
 	bulletSpeed = configLodaer.GetBulletSpeed();
 
@@ -187,6 +189,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	if ( menuManager.GetGameState() != GameState::InGame )
 		return nullptr;
 
+	double speed = 0.2;
 	if ( owner == Player::Local )
 	{
 		if (  localPlayerLives == 0 )
@@ -197,6 +200,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 			renderer.StartFade();
 
 		++localPlayerActiveBalls;
+		speed  = localPlayerBallSpeed;
 	}
 	else  if ( owner == Player::Remote )
 	{
@@ -205,13 +209,13 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 			return nullptr;
 		}
 		++remotePlayerActiveBalls;
+		speed = remotePlayerBallSpeed;
 	}
 
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
 	ball->textureType = TextureType::e_Ball;
-
 	ball->SetScale( scale );
-	ball->SetSpeed( ballSpeed );
+	ball->SetSpeed( speed );
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
@@ -977,7 +981,10 @@ void GameManager::UpdateBallSpeed()
 {
 	auto setBallSpeed = [=]( std::shared_ptr< Ball > curr )
 	{
-		curr->SetSpeed( ballSpeed );
+		if ( curr->GetOwner() == Player::Local )
+			curr->SetSpeed( localPlayerBallSpeed );
+		else
+			curr->SetSpeed( remotePlayerBallSpeed );
 	};
 	std::for_each( ballList.begin(), ballList.end(), setBallSpeed );
 }
@@ -1292,9 +1299,17 @@ void GameManager::Update( double delta )
 {
 	if ( isFastMode && localPlayerBonusMap[BonusType::SuperBall] && localPlayerBonusMap[BonusType::FireBullets])
 	{
-		if ( ballSpeed < ballSpeedFastMode )
+		if ( localPlayerBallSpeed < ballSpeedFastMode )
 		{
-			ballSpeed += delta * 0.0005;
+			localPlayerBallSpeed += delta * 0.0005;
+			UpdateBallSpeed();
+		}
+	}
+	if ( isFastMode && remotePlayerBonusMap[BonusType::SuperBall] && remotePlayerBonusMap[BonusType::FireBullets])
+	{
+		if ( remotePlayerBallSpeed < ballSpeedFastMode )
+		{
+			remotePlayerBallSpeed += delta * 0.0005;
 			UpdateBallSpeed();
 		}
 	}
