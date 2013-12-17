@@ -1161,7 +1161,7 @@ void GameManager::HandleStatusChange( )
 	{
 		std::cout << "GameMAanager@" << __LINE__ << " Game was quited..\n";
 		SendEndGameMessage();
-		netManager.Close();
+		//netManager.Close();
 	}
 	else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() == GameState::Paused )
 	{
