@@ -56,7 +56,6 @@ std::string NetManager::ReadMessage( )
 	else
 		return gameClient.ReadMessages();
 }
-
 std::string NetManager::ReadMessageFromServer( )
 {
 	return mainServer.ReadMessages();
@@ -80,6 +79,8 @@ bool NetManager::IsServer() const
 {
 	return isServer;
 }
+// Setters and getters
+// ===========================================================================
 bool NetManager::IsConnected() const
 {
 	if ( isServer )

@@ -101,29 +101,25 @@ void TCPConnection::Send( std::string str )
 	if ( bytesSent < messageSize )
 	{
 		std::cout << "TCPConnection.cpp@" << __LINE__ << " Send failed : " << SDLNet_GetError() << std::endl;
-		isConnected = false;
+		Close();
 	}
 }
 void TCPConnection::Close()
 {
-	if ( !isConnected )
-		return;
-
 	std::cout << "TCPConnection.cpp@" << __LINE__ << " Closing connection" << std::endl;
-	SDLNet_TCP_Close( tcpSocket );
-
-	if ( SDLNet_TCP_DelSocket( socketSet, tcpSocket ) == -1 )
-		std::cout << "TCPConnection.cpp@" << __LINE__ << " Failed to delete socket : " << SDLNet_GetError()  << std::endl;
-
-	SDLNet_FreeSocketSet( socketSet );
+	if ( !isConnected )
+	{
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Can't close : " << " not connected" << std::endl;
+		return;
+	}
 
 	if ( isServer )
 		SDLNet_TCP_Close( serverSocket );
+	else
+		SDLNet_TCP_Close( tcpSocket );
 
 	isConnected = false;
 }
-
-
 void TCPConnection::Update()
 {
 	if ( !isServer || isConnected )
@@ -228,9 +224,10 @@ std::string TCPConnection::ReadMessages()
 	else if ( byteCount == 0 )
 	{
 		std::cout << "TCPConnection.cpp@" << __LINE__ << " Connection terminated" << std::endl;
-		isConnected = false;
-		// A bytecount of < 0 means an error occured
-	} else if ( byteCount < 0 )
+		Close();
+	// A bytecount of < 0 means an error occured
+	}
+	else if ( byteCount < 0 )
 	{
 		std::cout << "TCPConnection.cpp@" << __LINE__ << " Read failed!" <<
 			"\nSocket : " << ( isServer ? serverSocket : tcpSocket )  <<
