@@ -1785,7 +1785,16 @@ void GameManager::RenderEndGame()
 {
 	if ( !menuManager.IsTwoPlayerMode() )
 	{
-		renderer.RenderText( "No more lives!", Player::Local  );
+		if ( localPlayerLives == 0 )
+			renderer.RenderText( "No more lives!", Player::Local  );
+		else
+			renderer.RenderText( "No more levels!", Player::Local  );
+		return;
+	}
+
+	if ( !IsLevelDone() && remotePlayerLives > 0 )
+	{
+		renderer.RenderText( "Waiting for oponent...", Player::Local );
 		return;
 	}
 
