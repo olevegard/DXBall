@@ -218,12 +218,14 @@ class GameManager
 		unsigned int localPlayerLives;
 		unsigned int localPlayerActiveBalls;
 		std::map< BonusType, bool > localPlayerBonusMap;
+		double localPlayerBallSpeed;
 
 		std::string remotePlayerName;
 		unsigned int remotePlayerPoints;
 		unsigned int remotePlayerLives;
 		unsigned int remotePlayerActiveBalls;
 		std::map< BonusType, bool > remotePlayerBonusMap;
+		double remotePlayerBallSpeed;
 
 		std::vector< std::shared_ptr< Ball     > > ballList;
 		std::vector< std::shared_ptr< Tile     > > tileList;
@@ -243,7 +245,6 @@ class GameManager
 		unsigned short fpsLimit;
 		double frameDuration;
 
-		double ballSpeed;
 		double ballSpeedFastMode;
 		double bonusBoxSpeed;
 		double bulletSpeed;
