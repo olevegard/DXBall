@@ -1396,7 +1396,6 @@ void GameManager::JoinGame()
 	netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
 
 	SendJoinGameMessage( gameInfo );
-	SendPlayerName();
 }
 void GameManager::UpdateGameList()
 {
