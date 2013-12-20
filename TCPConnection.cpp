@@ -114,7 +114,10 @@ void TCPConnection::Close()
 	}
 
 	if ( isServer )
+	{
+		SDLNet_TCP_DelSocket( socketSet, serverSocket );
 		SDLNet_TCP_Close( serverSocket );
+	}
 	else
 		SDLNet_TCP_Close( tcpSocket );
 
