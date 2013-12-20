@@ -326,7 +326,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			os << message.GetPort() << " ";
 			break;
 		case PlayerName:
-			os << message.GetPlayerName();
+			os << message.GetPlayerName() << " ";
 			break;
 		default:
 			std::cout << "Wrong message type : " << type << std::endl;
