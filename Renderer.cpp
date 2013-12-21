@@ -552,7 +552,7 @@ void Renderer::RenderPaddles()
 		SDL_RenderCopy( renderer, localPlayerPaddle, nullptr, &localPaddleRect  );
 	}
 
-	if ( remotePaddle )
+	if ( isTwoPlayerMode && remotePaddle )
 	{
 		SDL_Rect remotePaddleRect = remotePaddle->rect.ToSDLRect();
 		SDL_RenderCopy( renderer, remotePlayerPaddle, nullptr, &remotePaddleRect  );
