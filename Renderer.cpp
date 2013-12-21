@@ -515,7 +515,15 @@ void Renderer::Render( )
 }
 void Renderer::RenderForeground()
 {
-	// Draw balls
+	RenderText();
+	RenderBalls();
+	RenderTiles();
+	RenderPaddles();
+	RenderBullets();
+	RenderBonusBoxes();
+}
+void Renderer::RenderBalls()
+{
 	for ( std::shared_ptr< Ball > gp : ballList )
 	{
 		SDL_Rect r = gp->rect.ToSDLRect( );
@@ -524,8 +532,9 @@ void Renderer::RenderForeground()
 		else if ( gp->GetOwner() == Player::Remote )
 			SDL_RenderCopy( renderer, remotePlayerBallTexture, nullptr, &r );
 	}
-
-	// Draw tiles
+}
+void Renderer::RenderTiles()
+{
 	for ( std::shared_ptr< Tile > gp : tileList)
 	{
 		SDL_Rect r = gp->rect.ToSDLRect();
@@ -534,8 +543,9 @@ void Renderer::RenderForeground()
 		else
 			SDL_RenderCopy( renderer, tileTextures[ gp->GetTileTypeAsIndex() ], nullptr, &r );
 	}
-
-	// Draw paddles
+}
+void Renderer::RenderPaddles()
+{
 	if ( localPaddle )
 	{
 		SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
@@ -547,14 +557,9 @@ void Renderer::RenderForeground()
 		SDL_Rect remotePaddleRect = remotePaddle->rect.ToSDLRect();
 		SDL_RenderCopy( renderer, remotePlayerPaddle, nullptr, &remotePaddleRect  );
 	}
-
-	for ( std::shared_ptr< BonusBox > gp : bonusBoxList)
-	{
-		SDL_Rect boxRect = gp->rect.ToSDLRect();//bonusBox.ToSDLRect();//bonusBoxRect.ToSDLRect();
-		SDL_Texture* texture = gp->GetTexture();
-		SDL_RenderCopy( renderer, texture, nullptr, &boxRect );
-	}
-
+}
+void Renderer::RenderBullets()
+{
 	for ( std::shared_ptr< Bullet > gp : bulletList)
 	{
 		SDL_Rect r = gp->rect.ToSDLRect( );
@@ -563,7 +568,15 @@ void Renderer::RenderForeground()
 		else if ( gp->GetOwner() == Player::Remote )
 			SDL_RenderCopy( renderer, remotePlayerBallTexture, nullptr, &r );
 	}
-
+}
+void Renderer::RenderBonusBoxes()
+{
+	for ( std::shared_ptr< BonusBox > gp : bonusBoxList)
+	{
+		SDL_Rect boxRect = gp->rect.ToSDLRect();//bonusBox.ToSDLRect();//bonusBoxRect.ToSDLRect();
+		SDL_Texture* texture = gp->GetTexture();
+		SDL_RenderCopy( renderer, texture, nullptr, &boxRect );
+	}
 }
 void Renderer::RenderText()
 {

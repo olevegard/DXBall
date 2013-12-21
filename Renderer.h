@@ -160,8 +160,14 @@ private:
 	bool CreateWindow( bool server );
 	void SetFlags_VideoMode();
 
+	// Render InGame
 	void RenderForeground();
 	void RenderText();
+	void RenderBalls();
+	void RenderTiles();
+	void RenderPaddles();
+	void RenderBullets();
+	void RenderBonusBoxes();
 
 	void RenderLobby();
 
