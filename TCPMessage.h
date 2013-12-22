@@ -118,8 +118,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	int type = 0;
 	unsigned int objectID = 0;
 
-	is >> type;
-	is >> objectID;
+	is >> type >> objectID;
 
 	msg.SetMessageType( type );
 	msg.SetObjectID( objectID );
@@ -141,13 +140,10 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				double ySize = 0.0;
 				double boardScale = 0.0;
 
-				is >> xSize;
-				is >> ySize;
+				is >> xSize  >> ySize >> boardScale;
 
 				msg.SetXSize( xSize );
 				msg.SetYSize( ySize );
-
-				is >> boardScale;
 				msg.SetBoardScale( boardScale );
 
 				return is;
@@ -156,7 +152,6 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case PaddlePosition:
 			{
 				double xPos = 0.0;
-
 
 				is >> xPos;
 
@@ -169,25 +164,16 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case BonusSpawned:
 			{
 				int bonusType;
-				is >> bonusType;
-
-				msg.SetBonusType( bonusType );
-
 				double xPos = 0.0;
 				double yPos = 0.0;
-
-				is >> xPos;
-				is >> yPos;
-
-				msg.SetXPos( xPos );
-				msg.SetYPos( yPos );
-
 				double xDir = 0.0;
 				double yDir = 0.0;
 
-				is >> xDir;
-				is >> yDir;
+				is >> bonusType >> xPos  >> yPos  >> xDir >> yDir;
 
+				msg.SetBonusType( bonusType );
+				msg.SetXPos( xPos );
+				msg.SetYPos( yPos );
 				msg.SetXDir( xDir );
 				msg.SetYDir( yDir );
 
@@ -197,19 +183,13 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 			{
 				double xPos = 0.0;
 				double yPos = 0.0;
-
-				is >> xPos;
-				is >> yPos;
-
-				msg.SetXPos( xPos );
-				msg.SetYPos( yPos );
-
 				double xPos2 = 0.0;
 				double yPos2 = 0.0;
 
-				is >> xPos2;
-				is >> yPos2;
+				is >> xPos >> yPos  >> xPos2  >> yPos2;
 
+				msg.SetXPos( xPos );
+				msg.SetYPos( yPos );
 				msg.SetXPos2( xPos2 );
 				msg.SetYPos2( yPos2 );
 
@@ -226,11 +206,11 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case NewGame:
 			{
 				std::string ip;
-				is >> ip;
-				msg.SetIPAdress( ip );
-
 				uint16_t port;
-				is >> port;
+
+				is >> ip  >> port;
+
+				msg.SetIPAdress( ip );
 				msg.SetPort( port );
 
 				return is;
@@ -256,10 +236,9 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 {
 	MessageType type = message.GetType();
 
-	os << message.GetTypeAsInt();
-	os << " ";
-	os << message.GetObjectID();
-	os << " ";
+	os
+		<< message.GetTypeAsInt()  << " "
+		<< message.GetObjectID()  << " ";
 
 	switch ( type )
 	{
@@ -273,60 +252,47 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			break;
 		// Game Settings uses xSize and ySize
 		case GameSettings:
-			os << message.GetXSize();
-			os << " ";
-			os << message.GetYSize();
-			os << " ";
-
-			os << message.GetBoardScale();
-			os << " ";
-
+			os
+				<< message.GetXSize() << " "
+				<< message.GetYSize()  << " "
+				<< message.GetBoardScale() << " ";
 			break;
 		// Paddle position only has xPos
 		case PaddlePosition:
-			os << message.GetXPos();
-			os << " ";
-
+			os
+				<< message.GetXPos() << " ";
 			break;
 		// BallData has both pos and dir
 		case BallSpawned:
 		case BallData:
 		case BonusSpawned:
-			os << message.GetBonusTypeAsInt();
-			os << " ";
-			os << message.GetXPos();
-			os << " ";
-			os << message.GetYPos();
-			os << " ";
-
-			os << message.GetXDir();
-			os << " ";
-			os << message.GetYDir();
-			os << " ";
-
+			os
+				<< message.GetBonusTypeAsInt()  << " "
+				<< message.GetXPos() << " "
+				<< message.GetYPos() << " "
+				<< message.GetXDir() << " "
+				<< message.GetYDir() << " ";
 			break;
 		case BulletFire:
-			os << message.GetXPos();
-			os << " ";
-			os << message.GetYPos();
-			os << " ";
-
-			os << message.GetXPos2();
-			os << " ";
-			os << message.GetYPos2();
-			os << " ";
-
+			os
+				<< message.GetXPos() << " "
+				<< message.GetYPos() << " "
+				<< message.GetXPos2() << " "
+				<< message.GetYPos2() << " ";
 			break;
 		case GameStateChanged:
-			os << message.GetGameStateAsInt() << " ";
+			os
+				<< message.GetGameStateAsInt() << " ";
 			break;
 		case EndGame:
 		case NewGame:
-			os << message.GetIPAdress() << " ";
-			os << message.GetPort() << " ";
+			os
+				<< message.GetIPAdress() << " "
+				<< message.GetPort() << " ";
 			break;
 		case PlayerName:
-			os << message.GetPlayerName() << " ";
+			os
+				<< message.GetPlayerName() << " ";
 			break;
 		default:
 			std::cout << "Wrong message type : " << type << std::endl;
