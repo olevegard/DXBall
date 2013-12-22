@@ -7,6 +7,8 @@
 #include "MenuManager.h"
 #include "ConfigLoader.h"
 
+#include "structs/PlayerInfo.h"
+
 #include <vector>
 
 // Forward declarations
@@ -214,19 +216,12 @@ class GameManager
 		std::shared_ptr < Paddle > remotePaddle;
 
 		bool isAIControlled;
-		std::string localPlayerName;
-		unsigned int localPlayerPoints;
-		unsigned int localPlayerLives;
-		unsigned int localPlayerActiveBalls;
-		std::map< BonusType, bool > localPlayerBonusMap;
-		double localPlayerBallSpeed;
 
+		PlayerInfo localPlayerInfo;
+		std::string localPlayerName;
+
+		PlayerInfo remotePlayerInfo;
 		std::string remotePlayerName;
-		unsigned int remotePlayerPoints;
-		unsigned int remotePlayerLives;
-		unsigned int remotePlayerActiveBalls;
-		std::map< BonusType, bool > remotePlayerBonusMap;
-		double remotePlayerBallSpeed;
 
 		std::vector< std::shared_ptr< Ball     > > ballList;
 		std::vector< std::shared_ptr< Tile     > > tileList;

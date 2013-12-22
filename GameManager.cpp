@@ -38,15 +38,6 @@
 	,	localPaddle()
 
 	,	isAIControlled( false )
-	,	localPlayerPoints( 0 )
-	,	localPlayerLives( 3 )
-	,	localPlayerActiveBalls( 0 )
-	,	localPlayerBallSpeed ( 0.2)
-
-	,	remotePlayerPoints( 0 )
-	,	remotePlayerLives( 3 )
-	,	remotePlayerActiveBalls( 0 )
-	,	remotePlayerBallSpeed ( 0.2)
 
 	,	ballList()
 	,	windowSize()
@@ -73,6 +64,7 @@
 
 bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &size, bool startFS )
 {
+	localPlayerInfo.name = localPlayerName_;
 	localPlayerName = localPlayerName_;
 
 	windowSize = size;
@@ -83,7 +75,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
 	UpdateGUI();
 
-	renderer.RenderPlayerCaption( localPlayerName, Player::Local );
+	renderer.RenderPlayerCaption( localPlayerInfo.name, Player::Local );
 
 	InitPaddles();
 
@@ -129,8 +121,8 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 void GameManager::LoadConfig()
 {
 	bonusBoxSpeed = configLodaer.GetBonusBoxSpeed();
-	localPlayerBallSpeed = configLodaer.GetBallSpeed();
-	remotePlayerBallSpeed = configLodaer.GetBallSpeed();
+	localPlayerInfo.ballSpeed = configLodaer.GetBallSpeed();
+	remotePlayerInfo.ballSpeed = configLodaer.GetBallSpeed();
 	ballSpeedFastMode = configLodaer.GetBallSpeedFastMode();
 	bulletSpeed = configLodaer.GetBulletSpeed();
 
@@ -167,17 +159,8 @@ void GameManager::Restart()
 
 	GenerateBoard();
 
-	localPlayerPoints = 0;
-	localPlayerLives = 3;
-	localPlayerActiveBalls = 0;
-	localPlayerBonusMap[BonusType::FireBullets] = false;
-	localPlayerBonusMap[BonusType::SuperBall] = false;
-
-	remotePlayerPoints = 0;
-	remotePlayerLives = 3;
-	remotePlayerActiveBalls = 0;
-	remotePlayerBonusMap[BonusType::SuperBall] = false;
-	remotePlayerBonusMap[BonusType::FireBullets] = false;
+	localPlayerInfo.Reset();
+	remotePlayerInfo.Reset();
 
 	LoadConfig();
 
@@ -188,6 +171,7 @@ void GameManager::Restart()
 
 	DeleteAllBonusBoxes();
 	DeleteAllBullets();
+
 }
 std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
@@ -197,24 +181,24 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	double speed = 0.2;
 	if ( owner == Player::Local )
 	{
-		if (  localPlayerLives == 0 )
+		if (  localPlayerInfo.lives == 0 )
 		{
 			return nullptr;
 		}
-		if ( localPlayerActiveBalls == 0 )
+		if ( localPlayerInfo.activeBalls == 0 )
 			renderer.StartFade();
 
-		++localPlayerActiveBalls;
-		speed  = localPlayerBallSpeed;
+		++localPlayerInfo.activeBalls;
+		speed  = localPlayerInfo.ballSpeed;
 	}
 	else  if ( owner == Player::Remote )
 	{
-		if (  remotePlayerLives == 0 )
+		if (  remotePlayerInfo.lives == 0 )
 		{
 			return nullptr;
 		}
-		++remotePlayerActiveBalls;
-		speed = remotePlayerBallSpeed;
+		++localPlayerInfo.activeBalls;
+		speed = localPlayerInfo.ballSpeed;
 	}
 
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
@@ -240,21 +224,23 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 
 	if ( ball->GetOwner() == Player::Local )
 	{
-		--localPlayerActiveBalls;
+		--localPlayerInfo.activeBalls;
 
 		SendBallKilledMessage( ball );
 	}
 	else
 	{
-		--remotePlayerActiveBalls;
 
-		renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
+		--remotePlayerInfo.activeBalls;
+
+		renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
 	}
 
-	if ( localPlayerActiveBalls == 0 && ball->GetOwner() == Player::Local )
+	if ( localPlayerInfo.activeBalls == 0 && ball->GetOwner() == Player::Local )
 			ReducePlayerLifes( Player::Local );
 
-	if ( remotePlayerActiveBalls == 0 && ball->GetOwner() == Player::Remote )
+
+	if ( remotePlayerInfo.activeBalls == 0 && ball->GetOwner() == Player::Remote )
 			ReducePlayerLifes( Player::Remote );
 
 	renderer.RemoveBall( ball );
@@ -369,7 +355,7 @@ void GameManager::UpdateBullets( double delta )
 		}
 	}
 
-	if ( !isFastMode || !localPlayerBonusMap[BonusType::SuperBall] )
+	if ( !isFastMode || !localPlayerInfo.bonusMap[BonusType::SuperBall] )
 		DeleteDeadBullets();
 	DeleteDeadTiles();
 }
@@ -405,9 +391,10 @@ bool GameManager::IsSuperBullet( const Player owner ) const
 	if ( !isFastMode )
 		return false;
 
-	if ( owner == Player::Local && localPlayerBonusMap.at(BonusType::SuperBall) )
+	if ( owner == Player::Local && localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		return true;
-	else if ( owner == Player::Remote && remotePlayerBonusMap.at(BonusType::SuperBall) )
+
+	else if ( owner == Player::Remote && remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		return true;
 
 	return false;
@@ -621,7 +608,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	{
 		return;
 	}
-	if ( remotePlayerBonusMap[BonusType::SuperBall] )
+	if ( remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
 		tile->Hit();
@@ -726,7 +713,7 @@ void GameManager::SendPlayerName()
 	TCPMessage msg;
 
 	msg.SetMessageType( MessageType::PlayerName );
-	msg.SetPlayerName( localPlayerName );
+	msg.SetPlayerName( localPlayerInfo.name );
 
 	SendMessage( msg, MessageTarget::Oponent );
 
@@ -983,9 +970,10 @@ void GameManager::UpdateBallSpeed()
 	auto setBallSpeed = [=]( std::shared_ptr< Ball > curr )
 	{
 		if ( curr->GetOwner() == Player::Local )
-			curr->SetSpeed( localPlayerBallSpeed );
+			curr->SetSpeed( localPlayerInfo.ballSpeed );
 		else
-			curr->SetSpeed( remotePlayerBallSpeed );
+
+			curr->SetSpeed( remotePlayerInfo.ballSpeed );
 	};
 	std::for_each( ballList.begin(), ballList.end(), setBallSpeed );
 }
@@ -1196,10 +1184,10 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{
-			if ( localPlayerActiveBalls == 0 )
+			if ( localPlayerInfo.activeBalls == 0 )
 				AddBall( Player::Local, ballCount );
 
-			if ( localPlayerBonusMap[BonusType::FireBullets] )
+			if ( localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
 				FireBullets();
 		}
 	}
@@ -1276,10 +1264,10 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				AddBall( Player::Local, ballCount );
 				break;
 			case SDLK_s:
-				localPlayerBonusMap[BonusType::SuperBall] = true;
+				localPlayerInfo.SetBonusActive( BonusType::SuperBall, true );
 				break;
 			case SDLK_f:
-				localPlayerBonusMap[BonusType::FireBullets] = true;
+				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true );
 				break;
 			case SDLK_u:
 				ResetScale();
@@ -1301,19 +1289,20 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::Update( double delta )
 {
-	if ( isFastMode && localPlayerBonusMap[BonusType::SuperBall] && localPlayerBonusMap[BonusType::FireBullets])
+	if ( isFastMode && localPlayerInfo.IsBonusActive( BonusType::SuperBall ) && localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
 	{
-		if ( localPlayerBallSpeed < ballSpeedFastMode )
+		if ( localPlayerInfo.ballSpeed < ballSpeedFastMode )
 		{
-			localPlayerBallSpeed += delta * 0.0005;
+			localPlayerInfo.ballSpeed += delta * 0.0005;
 			UpdateBallSpeed();
 		}
 	}
-	if ( isFastMode && remotePlayerBonusMap[BonusType::SuperBall] && remotePlayerBonusMap[BonusType::FireBullets])
+
+	if ( isFastMode && remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) && remotePlayerInfo.IsBonusActive( BonusType::FireBullets ) )
 	{
-		if ( remotePlayerBallSpeed < ballSpeedFastMode )
+		if ( remotePlayerInfo.ballSpeed < ballSpeedFastMode )
 		{
-			remotePlayerBallSpeed += delta * 0.0005;
+			remotePlayerInfo.ballSpeed += delta * 0.0005;
 			UpdateBallSpeed();
 		}
 	}
@@ -1340,7 +1329,7 @@ void GameManager::Update( double delta )
 	UpdateBonusBoxes( delta );
 	renderer.Update( delta );
 
-	if ( localPlayerLives == 0 && remotePlayerLives == 0 )
+	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
 	{
 		std::cout << "GameManager.cpp@" << __LINE__
 			<< " =========="
@@ -1485,7 +1474,7 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 	if ( ball->GetOwner() == Player::Local )
 		SendBallDataMessage( ball );
 
-	if ( localPlayerBonusMap[BonusType::SuperBall] )
+	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
 		tile->Hit();
@@ -1497,9 +1486,9 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 bool GameManager::IsSuperBall( std::shared_ptr< Ball > ball )
 {
 	if ( ball->GetOwner() == Player::Local )
-		return localPlayerBonusMap[BonusType::SuperBall];
+		return localPlayerInfo.IsBonusActive( BonusType::SuperBall );
 	else
-		return remotePlayerBonusMap[BonusType::SuperBall];
+		return remotePlayerInfo.IsBonusActive( BonusType::SuperBall );
 }
 void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
@@ -1678,11 +1667,11 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 		case BonusType::ExtraLife:
 			if ( ptr->GetOwner() == Player::Local )
 			{
-				++localPlayerLives;
+				++localPlayerInfo.lives;
 				renderer.RenderText( "Extra Life!", Player::Local, true );
 			}
 			else
-				++remotePlayerLives;
+				++remotePlayerInfo.lives;
 			break;
 		case BonusType::Death:
 			{
@@ -1711,20 +1700,20 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 		case BonusType::SuperBall:
 			if ( ptr->GetOwner() == Player::Local )
 			{
-				localPlayerBonusMap[BonusType::SuperBall] = true;
+				localPlayerInfo.SetBonusActive( BonusType::SuperBall, true);
 				renderer.RenderText( "Super Ball!", Player::Local, true );
 			}
 			else
-				remotePlayerBonusMap[BonusType::SuperBall] = true;
+				remotePlayerInfo.SetBonusActive( BonusType::SuperBall, true);
 			break;
 		case BonusType::FireBullets:
 			if ( ptr->GetOwner() == Player::Local )
 			{
-				localPlayerBonusMap[BonusType::FireBullets] = true;
+				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true);
 				renderer.RenderText( "Lazarz!", Player::Local, true );
 			}
 			else
-				remotePlayerBonusMap[BonusType::FireBullets] = true;
+				remotePlayerInfo.SetBonusActive( BonusType::FireBullets, true);
 			break;
 
 		default:
@@ -1759,15 +1748,18 @@ void GameManager::UpdateGUI( )
 }
 void GameManager::RendererScores()
 {
-	renderer.RenderPoints   ( localPlayerPoints, Player::Local );
-	renderer.RenderLives    ( localPlayerLives, Player::Local );
-	renderer.RenderBallCount( localPlayerActiveBalls, Player::Local );
+
+
+	renderer.RenderPoints   ( localPlayerInfo.points, Player::Local );
+	renderer.RenderLives    ( localPlayerInfo.lives, Player::Local );
+	renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
 
 	if ( menuManager.IsTwoPlayerMode() )
 	{
-		renderer.RenderLives    ( remotePlayerLives, Player::Remote );
-		renderer.RenderPoints   ( remotePlayerPoints, Player::Remote );
-		renderer.RenderBallCount( remotePlayerActiveBalls, Player::Remote );
+
+		renderer.RenderPoints   ( remotePlayerInfo.points, Player::Remote );
+		renderer.RenderLives    ( remotePlayerInfo.lives, Player::Remote );
+		renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
 	}
 }
 void GameManager::RenderInGame()
@@ -1778,10 +1770,10 @@ void GameManager::RenderInGame()
 		return;
 	}
 
-	if ( localPlayerActiveBalls != 0 )
+	if ( localPlayerInfo.activeBalls != 0 )
 		return;
 
-	if ( localPlayerLives != 0 )
+	if ( localPlayerInfo.lives != 0 )
 	{
 		renderer.RenderText( "Press enter to launch ball", Player::Local  );
 		return;
@@ -1793,20 +1785,21 @@ void GameManager::RenderEndGame()
 {
 	if ( !menuManager.IsTwoPlayerMode() )
 	{
-		if ( localPlayerLives == 0 )
+
+		if ( localPlayerInfo.lives == 0 )
 			renderer.RenderText( "No more lives!", Player::Local  );
 		else
 			renderer.RenderText( "No more levels!", Player::Local  );
 		return;
 	}
 
-	if ( !IsLevelDone() && remotePlayerLives > 0 )
+	if ( !IsLevelDone() && remotePlayerInfo.lives > 0 )
 	{
 		renderer.RenderText( "Waiting for oponent...", Player::Local );
 		return;
 	}
 
-	if ( localPlayerPoints < remotePlayerPoints )
+	if ( localPlayerInfo.points < remotePlayerInfo.points )
 		renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
 	else
 		renderer.RenderText( "Yay, you won!!", Player::Local  );
@@ -1871,8 +1864,8 @@ void GameManager::ClearBoard()
 	tileList.clear();
 	ballList.clear();
 
-	localPlayerActiveBalls = 0;
-	remotePlayerActiveBalls = 0;
+	localPlayerInfo.activeBalls = 0;
+	remotePlayerInfo.activeBalls = 0;
 
 	renderer.ClearBoard();
 }
@@ -1880,16 +1873,17 @@ void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player bal
 {
 	if ( ballOwner == Player::Local )
 	{
-		localPlayerPoints += 10;
+		localPlayerInfo.points += 10;
 
 		if ( isDestroyed )
-			localPlayerPoints += points[ tileType ];
+			localPlayerInfo.points += points[ tileType ];
 	} else if ( ballOwner == Player::Remote )
 	{
-		remotePlayerPoints += 10;
+
+		remotePlayerInfo.points += 10;
 
 		if ( isDestroyed )
-			remotePlayerPoints += points[ tileType ];
+			remotePlayerInfo.points += points[ tileType ];
 	}
 }
 void GameManager::ReducePlayerLifes( Player player )
@@ -1898,26 +1892,28 @@ void GameManager::ReducePlayerLifes( Player player )
 
 	if ( player == Player::Local )
 	{
-		if ( localPlayerLives == 0 )
+		if ( localPlayerInfo.lives == 0 )
 			return;
 
-		--localPlayerLives;
-		localPlayerBonusMap[BonusType::FireBullets] = false;
-		localPlayerBonusMap[BonusType::SuperBall] = false;
+		--localPlayerInfo.lives;
 
-		if ( localPlayerLives == 0 )
+		localPlayerInfo.SetBonusActive( BonusType::FireBullets, false );
+		localPlayerInfo.SetBonusActive( BonusType::SuperBall, false );
+
+		if ( localPlayerInfo.lives == 0 )
 			RemoveDeadBallsAndBoxes( Player::Local );
 	}
 	else
 	{
-		if ( remotePlayerLives == 0 )
+		if ( remotePlayerInfo.lives == 0 )
 			return;
 
-		--remotePlayerLives;
-		remotePlayerBonusMap[BonusType::FireBullets] = false;
-		remotePlayerBonusMap[BonusType::SuperBall] = false;
+		--remotePlayerInfo.lives;
 
-		if ( remotePlayerLives == 0 )
+		remotePlayerInfo.SetBonusActive( BonusType::FireBullets, false );
+		remotePlayerInfo.SetBonusActive( BonusType::SuperBall, false );
+
+		if ( remotePlayerInfo.lives == 0 )
 			RemoveDeadBallsAndBoxes( Player::Remote );
 	}
 }
