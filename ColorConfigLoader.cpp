@@ -2,7 +2,7 @@
 
 void ColorConfigLoader::LoadConfig()
 {
-	std::ifstream configFile( "media/ColorCfg.txt" );
+	std::ifstream configFile( "config/ColorCfg.txt" );
 	std::string configLine;
 	std::cout << "ColorConfigLoader.cpp@" << __LINE__ << " Loading config...";
 
