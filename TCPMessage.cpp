@@ -107,6 +107,10 @@ unsigned int TCPMessage::GetObjectID() const
 {
 	return objectID;
 }
+unsigned int TCPMessage::GetObjectID2() const
+{
+	return objectID2;
+}
 std::string TCPMessage::GetBonusTypeAsString() const
 {
 	switch ( bonusType )
@@ -210,7 +214,10 @@ void TCPMessage::SetObjectID( unsigned int objectID_ )
 {
 	objectID = objectID_;
 }
-
+void TCPMessage::SetObjectID2( unsigned int objectID_ )
+{
+	objectID2 = objectID_;
+}
 void TCPMessage::SetBonusType( BonusType bonusType_ )
 {
 	bonusType = bonusType_;

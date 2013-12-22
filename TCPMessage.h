@@ -19,6 +19,7 @@ class TCPMessage
 		int GetTypeAsInt() const;
 		MessageType GetType() const;
 		unsigned int GetObjectID() const;
+		unsigned int GetObjectID2() const;
 
 		std::string GetBonusTypeAsString() const;
 		BonusType GetBonusType() const;
@@ -42,6 +43,7 @@ class TCPMessage
 		void SetMessageType( MessageType msgType_ );
 		void SetMessageType( int  msgType_ );
 		void SetObjectID( unsigned int objectID_ );
+		void SetObjectID2( unsigned int objectID_ );
 
 		void SetBonusType( int32_t bonustType_ );
 		void SetBonusType( BonusType bonustType_ );
@@ -88,6 +90,7 @@ class TCPMessage
 	private:
 		MessageType msgType;
 		unsigned int objectID;
+		unsigned int objectID2;
 
 		BonusType bonusType;
 
@@ -132,6 +135,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case BallKilled:
 		case BonusPickup:
 		case GetGameList:
+		case BulletKilled:
 			return is;
 		// Game Settings uses xSize and ySize
 		case GameSettings:
@@ -181,13 +185,15 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 			}
 		case BulletFire:
 			{
+				int32_t ID2 = 0;
 				double xPos = 0.0;
 				double yPos = 0.0;
 				double xPos2 = 0.0;
 				double yPos2 = 0.0;
 
-				is >> xPos >> yPos  >> xPos2  >> yPos2;
+				is >> ID2 >> xPos >> yPos  >> xPos2  >> yPos2;
 
+				msg.SetObjectID2( ID2 );
 				msg.SetXPos( xPos );
 				msg.SetYPos( yPos );
 				msg.SetXPos2( xPos2 );
@@ -206,6 +212,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case NewGame:
 			{
 				std::string ip;
+
 				uint16_t port;
 
 				is >> ip  >> port;
@@ -249,6 +256,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case BallKilled:
 		case GetGameList:
 		case BonusPickup:
+		case BulletKilled:
 			break;
 		// Game Settings uses xSize and ySize
 		case GameSettings:
@@ -275,6 +283,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			break;
 		case BulletFire:
 			os
+				<< message.GetObjectID2() << " "
 				<< message.GetXPos() << " "
 				<< message.GetYPos() << " "
 				<< message.GetXPos2() << " "

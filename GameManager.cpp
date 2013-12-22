@@ -49,6 +49,7 @@
 	,	tileCount( 0 )
 	,	ballCount( 0 )
 	,	bonusCount( 0 )
+	,	bulletCount( 0 )
 
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
@@ -369,8 +370,10 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 
 	if ( !IsSuperBullet( owner ) )
 	{
+		SendBulletKilledMessage( bullet );
 		tile->Hit();
 		bullet->Kill();
+
 	} else
 		tile->Kill();
 
@@ -493,6 +496,9 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			break;
 		case MessageType::BulletFire:
 			RecieveBulletFireMessage( message );
+			break;
+		case MessageType::BulletKilled:
+			RecieveBulletKillMessage( message );
 			break;
 		case MessageType::LevelDone:
 			RecieveLevelDoneMessage( message );
@@ -660,19 +666,31 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 {
-	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
+	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( message.GetObjectID() );
 	bullet->SetPosition( message.GetXPos(),  message.GetYPos() );
 	bullet->SetSpeed( bulletSpeed );
 	bullet->SetOwner( Player::Remote );
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
 
-	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
+	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( message.GetObjectID2() );
 	bullet2->SetPosition( message.GetXPos2(), message.GetYPos2() );
 	bullet2->SetSpeed( bulletSpeed );
 	bullet2->SetOwner( Player::Remote );
 	bulletList.push_back( bullet2 );
 	renderer.AddBullet( bullet2 );
+}
+void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
+{
+	if ( ballList.size() > 0 )
+	{
+		auto p = GetBulletFromID( message.GetObjectID() );
+
+		std::cout << "Deleing bullet wiht ID : " << message.GetObjectID() << std::endl;
+		p->Kill();
+	}
+
+	DeleteDeadBullets();
 }
 void GameManager::SendPaddlePosMessage( )
 {
@@ -840,7 +858,8 @@ void GameManager::SendBulletFireMessage( const std::shared_ptr< Bullet > &bullet
 	std::stringstream ss;
 
 	msg.SetMessageType( MessageType::BulletFire );
-	msg.SetObjectID( 0 );
+	msg.SetObjectID( bulletLeft->GetObjectID() );
+	msg.SetObjectID2( bulletRight->GetObjectID() );
 
 	msg.SetXPos( bulletLeft->rect.x );
 	msg.SetYPos( windowSize.h - bulletLeft->rect.y );
@@ -850,6 +869,19 @@ void GameManager::SendBulletFireMessage( const std::shared_ptr< Bullet > &bullet
 
 	ss << msg;
 	netManager.SendMessage( ss.str() );
+
+}
+void GameManager::SendBulletKilledMessage( const std::shared_ptr< Bullet > &bullet )
+{
+	if ( !menuManager.IsTwoPlayerMode() )
+		return;
+
+	TCPMessage msg;
+
+	msg.SetMessageType( MessageType::BulletKilled );
+	msg.SetObjectID(  bullet->GetObjectID() );
+
+	SendMessage( msg, MessageTarget::Oponent );
 
 }
 void GameManager::SendGameStateChangedMessage()
@@ -1053,14 +1085,14 @@ void GameManager::DeleteAllBonusBoxes()
 }
 void GameManager::FireBullets()
 {
-	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( 0 );
+	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( bulletCount++ );
 	bullet->SetOwner( Player::Local );
 	bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
 	bullet->SetSpeed( bulletSpeed );
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
 
-	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( 0 );
+	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( bulletCount++ );
 	bullet2->SetOwner( Player::Local );
 	bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w - bullet2->rect.w, localPaddle->rect.y - 10 );
 	bullet2->SetSpeed( bulletSpeed );
@@ -1072,6 +1104,18 @@ void GameManager::FireBullets()
 std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
 {
 	for ( auto p : ballList )
+	{
+		if ( ID == p->GetObjectID() )
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
+}
+std::shared_ptr< Bullet > GameManager::GetBulletFromID( int32_t ID )
+{
+	for ( auto p : bulletList )
 	{
 		if ( ID == p->GetObjectID() )
 		{
