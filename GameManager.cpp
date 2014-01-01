@@ -68,10 +68,9 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	localPlayerInfo.name = localPlayerName_;
 	localPlayerInfo.Reset();
 	remotePlayerInfo.Reset();
-	localPlayerName = localPlayerName_;
 
 	windowSize = size;
-	bool server = localPlayerName ==  "server";
+	bool server = localPlayerName_ ==  "server";
 
 	if ( !renderer.Init( windowSize, startFS, server ) )
 		return false;

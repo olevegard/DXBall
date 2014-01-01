@@ -221,7 +221,6 @@ class GameManager
 		bool isAIControlled;
 
 		PlayerInfo localPlayerInfo;
-		std::string localPlayerName;
 
 		PlayerInfo remotePlayerInfo;
 		std::string remotePlayerName;
