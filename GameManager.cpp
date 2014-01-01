@@ -66,6 +66,8 @@
 bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &size, bool startFS )
 {
 	localPlayerInfo.name = localPlayerName_;
+	localPlayerInfo.Reset();
+	remotePlayerInfo.Reset();
 	localPlayerName = localPlayerName_;
 
 	windowSize = size;
