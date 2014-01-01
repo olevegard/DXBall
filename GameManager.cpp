@@ -198,8 +198,8 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 		{
 			return nullptr;
 		}
-		++localPlayerInfo.activeBalls;
-		speed = localPlayerInfo.ballSpeed;
+		++remotePlayerInfo.activeBalls;
+		speed = remotePlayerInfo.ballSpeed;
 	}
 
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
@@ -370,7 +370,8 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 
 	if ( !IsSuperBullet( owner ) )
 	{
-		SendBulletKilledMessage( bullet );
+		if ( bullet->IsAlive() )
+			SendBulletKilledMessage( bullet );
 		tile->Hit();
 		bullet->Kill();
 
