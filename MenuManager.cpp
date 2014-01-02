@@ -344,7 +344,8 @@ bool MenuManager::HasLobbyStateChanged()
 }
 bool MenuManager::WasGameStarted() const
 {
-	return ( currentGameState == GameState::InGame && prevGameState != GameState::Paused );
+	return ( ( currentGameState == GameState::InGame || currentGameState == GameState::InGameWait )
+			&& prevGameState != GameState::Paused && prevGameState != GameState::InGameWait );
 }
 bool MenuManager::WasGameQuited() const
 {
