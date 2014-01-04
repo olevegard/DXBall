@@ -116,13 +116,8 @@ SDL_Rect SetResolution( const std::string &str )
 std::string Replace( const std::string &str, char replace, char replaceWith )
 {
 	std::string retStr = str;
+	std::replace(retStr.begin(), retStr.end(), replace, replaceWith );
 
-	auto func = [ replace, replaceWith ] ( char c )
-	{
-		return ( c != replace ) ?  c : replaceWith;
-
-	};
-	std::transform( retStr.begin(), retStr.end(), retStr.begin(), func);
 	return retStr;
 }
 std::string ReplaceUnderscores( const std::string &str )
