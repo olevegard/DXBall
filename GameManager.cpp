@@ -345,16 +345,34 @@ void GameManager::UpdateBullets( double delta )
 	{
 		bullet->Update( delta );
 
+		bool bulletHitTile = false;
+		std::shared_ptr< Tile > lowestTile;
+		double lowestTileY = 0;
+
 		for ( auto tile : tileList )
 		{
 			if ( !tile->IsAlive() )
 				continue;
 
-			if (tile->rect.CheckTileIntersection( bullet->rect ) )
+			if ( !bullet->HasHitTile( tile->rect ) )
+				continue;
+
+			if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 			{
 				HandleBulletTileIntersection( bullet, tile );
+				continue;
+			}
+
+			bulletHitTile = true;
+
+			if ( tile->rect.y > lowestTileY )
+			{
+				lowestTile = tile;
+				lowestTileY = tile->rect.y;
 			}
 		}
+		if ( bulletHitTile )
+			HandleBulletTileIntersection( bullet, lowestTile );
 	}
 
 	if ( !isFastMode || !localPlayerInfo.bonusMap[BonusType::SuperBall] )

@@ -28,3 +28,19 @@ void Bullet::SetPosition( double x, double y )
 	rect.x = x;
 	rect.y = y;
 }
+
+bool Bullet::HasHitTile( const Rect &rectToHit ) const
+{
+	double tileLeft   = rectToHit.x;
+	double tileRight  = rectToHit.x + rectToHit.w;
+	double tileBottom = rectToHit.y + rectToHit.h;
+
+	double bulletLeft   = rect.x;
+	double bulletRight  = rect.x + rect.w;
+	double bulletTop    = rect.y;
+
+	if  ( bulletRight < tileLeft || bulletLeft > tileRight )
+		return false;
+
+	return ( bulletTop < tileBottom );
+}
