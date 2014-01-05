@@ -62,7 +62,6 @@ struct Ball : GamePiece
 	double dirY;
 
 	unsigned int lastTileHit;
-	bool paddleHitInPrevFrame;
 
 	bool debugMode;
 

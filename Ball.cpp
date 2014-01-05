@@ -15,7 +15,6 @@
 Ball::Ball( const SDL_Rect &windowSize, const Player &owner, int32_t ID   )
 	:	dirX( -0.83205f )
 	,	dirY(-0.5547f )
-	,	paddleHitInPrevFrame( false )
 	,	debugMode( false )
 	,	ballOwner( owner )
 {
@@ -49,8 +48,6 @@ void Ball::Reset( const SDL_Rect &windowSize )
 		dirY = Math::GenRandomNumber(  0.1, 0.9 );
 		rect.y = 150;
 	}
-
-	paddleHitInPrevFrame = false;
 
 	NormalizeDirection();
 }
@@ -140,23 +137,15 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 {
 	if ( paddleRect.CheckTileIntersection( rect ) )
 	{
-		if ( !paddleHitInPrevFrame )
+		HandlePaddleHit( paddleRect );
+		if ( ballOwner == Player::Remote )
 		{
-			paddleHitInPrevFrame = true;
-			HandlePaddleHit( paddleRect );
-			if ( ballOwner == Player::Remote )
-			{
-				dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
-			}
-
-			return true;
-		} else
-		{
-			return false;
+			dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
 		}
+
+		return true;
 	}
 
-	paddleHitInPrevFrame = false;
 	return false;
 }
 void Ball::HandlePaddleHit( const Rect &paddleRect )
