@@ -13,7 +13,6 @@
 #include "enums/Corner.h"
 
 Ball::Ball( const SDL_Rect &windowSize, const Player &owner, int32_t ID   )
-	//:	speed( 0.0705f )
 	:	dirX( -0.83205f )
 	,	dirY(-0.5547f )
 	,	paddleHitInPrevFrame( false )
@@ -29,14 +28,11 @@ Ball::Ball( const SDL_Rect &windowSize, const Player &owner, int32_t ID   )
 
 	Reset( windowSize );
 }
-
 Ball::~Ball()
 {
 }
-
 void Ball::Reset( const SDL_Rect &windowSize )
 {
-	//speed = 0.3f * Math::GenRandomNumber( 1 );
 	SetSpeed(0.3f * Math::GenRandomNumber( 1 ));
 
 	// X pos and dirX is the same for both local and remote player
@@ -46,7 +42,7 @@ void Ball::Reset( const SDL_Rect &windowSize )
 	if ( ballOwner == Player::Local )
 	{
 		dirY = Math::GenRandomNumber( -0.9, -0.1 );
-		rect.y  = windowSize.h - 50;
+		rect.y = windowSize.h - 75;
 	}
 	else if ( ballOwner == Player::Remote )
 	{
@@ -58,7 +54,6 @@ void Ball::Reset( const SDL_Rect &windowSize )
 
 	NormalizeDirection();
 }
-
 void Ball::NormalizeDirection()
 {
 	double length = sqrt( ( dirX * dirX ) + ( dirY * dirY ) );
@@ -74,7 +69,6 @@ void Ball::Update( double tick )
 	rect.x += tick * GetSpeed() * dirX;
 	rect.y += tick * GetSpeed() * dirY;
 }
-
 bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 {
 	double left   = static_cast< double > ( boundsRect.x );
@@ -118,38 +112,33 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 
 	return false;
 }
-
 bool Ball::DeathCheck( const SDL_Rect &boundsRect )
 {
-
 	if ( ballOwner == Player::Local )
 	{
 		double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
 
 		if (  ( rect.y + rect.h ) > bottom  )
 		{
-			Reset( boundsRect) ;
-			dirY *= -1.0f;
+			Reset( boundsRect);
 			return true;
 		}
 	} else  if ( ballOwner == Player::Remote )
 	{
 		double top  = static_cast< double > ( boundsRect.y );
 
-		if ( rect.y  < top  )
+		if ( rect.y < top  )
 		{
 			Reset( boundsRect );
-			dirY *= -1.0f;
 			return true;
 		}
 	}
 
 	return false;
 }
-
 bool Ball::PaddleCheck( const Rect &paddleRect )
 {
-	if ( CheckTileIntersection( paddleRect, rect ) )
+	if ( paddleRect.CheckTileIntersection( rect ) )
 	{
 		if ( !paddleHitInPrevFrame )
 		{
@@ -167,11 +156,9 @@ bool Ball::PaddleCheck( const Rect &paddleRect )
 		}
 	}
 
-
 	paddleHitInPrevFrame = false;
 	return false;
 }
-
 void Ball::HandlePaddleHit( const Rect &paddleRect )
 {
 	double hitPosition = CalculatePaddleHitPosition( paddleRect );
@@ -179,6 +166,15 @@ void Ball::HandlePaddleHit( const Rect &paddleRect )
 	CalculateNewBallDirection( hitPosition );
 
 	SetSpeed( GetSpeed() * 1.0005f);
+
+	double bottom = rect.y + rect.h;
+	double delta = bottom - paddleRect.y;
+
+	oldRect.x = rect.x;
+	oldRect.y = rect.y;
+
+	rect.x += delta * dirX;
+	rect.y += delta * dirY;
 }
 double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
 {
@@ -197,7 +193,7 @@ void  Ball::CalculateNewBallDirection( double hitPosition )
 }
 bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID, bool isSuperBall )
 {
-	if ( !CheckTileIntersection( tileRect, rect ) )
+	if ( !tileRect.CheckTileIntersection( rect ) )
 		return false;
 
 	if ( debugMode )
@@ -234,36 +230,13 @@ bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID, bool isSuperBal
 		RectHelpers::PrintPosition( rect    , "Ball cur ");
 		RectHelpers::PrintPosition( oldRect , "Ball old ");
 	}
+
 	lastTileHit = tileID;
+
 	if ( !isSuperBall )
 		FindIntersectingSide( tileRect );
-	//HandleTileIntersection( tileRect );
-	//HandleTileIntersection2( tileRect );
 
 	return true;
-}
-
-
-
-bool Ball::CheckTileIntersection( const Rect &tile, const Rect &ball ) const
-{
-	double tileLeft =   tile.x;
-	double tileTop =    tile.y;
-	double tileRight =  tile.x + tile.w;
-	double tileBottom = tile.y + tile.h;
-
-	double ballLeft =   ball.x;
-	double ballTop =    ball.y;
-	double ballRight =  ball.x + ball.w;
-	double ballBottom = ball.y + ball.h;
-
-	// Intersection test
-	return !(
-			ballTop    > tileBottom
-			|| ballLeft   > tileRight
-			|| ballRight  < tileLeft
-			|| ballBottom < tileTop
-		);
 }
 bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball, double &retDistance ) const
 {
@@ -312,8 +285,6 @@ bool Ball::CheckTileSphereIntersection( const Rect &tile, const Rect &ball, doub
 
 	return true;
 }
-
-
 bool Ball::LineLineIntersectionTestV2( const Vector2f &tile1, const Vector2f &tile2, const Vector2f &ball1, const Vector2f &ball2, double &ret ) const
 {
 	Vector2f tile( tile2 - tile1 );
@@ -467,7 +438,6 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected top\n";
@@ -482,7 +452,6 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	// ========================================================================================
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected rigt 1\n";
@@ -498,7 +467,6 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Bl, ballEstOldPos_Bl, dist ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected right 2\n";
@@ -514,7 +482,6 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 
 	if ( LineLineIntersectionTestV2( rect_Tr, rect_Br, ballEstNewPos_Ml, ballEstOldPos_Ml, dist ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected right 3\n";
@@ -532,7 +499,6 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	// ========================================================================================
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tl, ballEstOldPos_Tl, dist  ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected bottom\n";
@@ -545,10 +511,8 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			collisionSide = Side::Bottom;
 		}
 	}
-
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Br, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected bottom\n";
@@ -566,7 +530,6 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	// ========================================================================================
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Br, ballEstOldPos_Br, dist  ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected left\n";
@@ -583,7 +546,6 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 	// Check intersection left II
 	if ( LineLineIntersectionTestV2( rect_Bl, rect_Tl, ballEstNewPos_Tr, ballEstOldPos_Tr, dist  ) )
 	{
-
 		if ( debugMode )
 		{
 			std::cout << "\n\tIntersected left\n";
@@ -613,30 +575,12 @@ int Ball::FindIntersectingSide( const Rect &tileRect )
 			break;
 		case Side::Unknown :
 			std::cout << "Ball.cpp@" << __LINE__ << " Uknown collosion\n";
-			//std::cin.ignore();
 			dirX *= -1.0f;
 			dirY *= -1.0f;
 			break;
 	}
 
 	return 0;
-}
-Vector2f Ball::GetEsimtatedDir( ) const
-{
-	Vector2f ballCurrentPos( rect.x   , rect.y );
-	Vector2f ballPrevPos   ( oldRect.x, oldRect.y );
-
-	return Vector2f( ballCurrentPos - ballPrevPos  );
-}
-Vector2f Ball::GetDirection( ) const
-{
-	return Vector2f( dirX, dirY );
-}
-
-void Ball::SetDirection( const Vector2f &newDir )
-{
-	dirX = newDir.x;
-	dirY = newDir.y;
 }
 Vector2f Ball::Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const
 {
@@ -652,190 +596,31 @@ Vector2f Ball::Transform( const Vector2f &vec, const Corner &side, const Rect &s
 			return Vector2f( vec.x + size.w, vec.y + size.h );
 	}
 }
-
-void Ball::HandleTileIntersection( const Rect &tileRect )
+Vector2f Ball::GetEsimtatedDir( ) const
 {
-	// Check Which Face Collided
-	// 0,0 = upper left
-	double tileLeft =   tileRect.x;
-	double tileTop =    tileRect.y;
-	double tileRight =  tileRect.x + tileRect.w;
-	double tileBottom = tileRect.y + tileRect.h;
+	Vector2f ballCurrentPos( rect.x   , rect.y );
+	Vector2f ballPrevPos   ( oldRect.x, oldRect.y );
 
-	double oldLeft   = oldRect.x;
-	double oldTop    = oldRect.y;
-	double oldRight  = oldLeft + rect.w;
-	double oldBottom = oldTop  + rect.h;
-
-	if ( oldTop > tileBottom )
-	{
-		if ( debugMode )
-			std::cout << "\tColided with bottom side of tile\n";
-
-		if ( dirY < 0.0f )
-			dirY *= -1.0f;
-	}
-
-	else if ( oldBottom < tileTop )
-	{
-		if ( debugMode )
-			std::cout << "\tColided with top side of tile\n";
-
-		if ( dirY > 0.0f )
-			dirY *= -1.0f;
-	}
-	else if ( oldRight < tileLeft )
-	{
-		if ( debugMode )
-			std::cout << "\tColided with left side of tile\n";
-
-		if ( dirX > 0.0f )
-			dirX *= -1.0f;
-	}
-	else if ( oldLeft > tileRight )
-	{
-		if ( debugMode )
-			std::cout << "\tColided with right side of tile\n";
-
-		if ( dirX < 0.0f )
-			dirX *= -1.0f;
-	} else
-	{
-		// At this point, we know there was a collision in the previous frame.
-		std::cout << "\tCould not determine collision edge\n";
-
-		std::cout << "\tBall direction       : " << dirX << " , " << dirY << std::endl << std::endl;
-
-		//std::cin.ignore();
-		//dirX *= -1.0f; dirY *= -1.0f;
-	}
-
-	if ( debugMode )
-	{
-		std::cout << "\tNew ball direction   : " << dirX << " , " << dirY << std::endl << std::endl;
-	}
+	return Vector2f( ballCurrentPos - ballPrevPos  );
 }
-void Ball::HandleTileIntersection2( const Rect &tileRect )
+Vector2f Ball::GetDirection( ) const
 {
-	bool stop = true;
-
-	double tileLeft =   tileRect.x;
-	double tileTop =    tileRect.y;
-	double tileRight =  tileRect.x + tileRect.w;
-	double tileBottom = tileRect.y + tileRect.h;
-
-	double oldLeft   = oldRect.x;
-	double oldTop    = oldRect.y;
-	double oldRight  = oldLeft + rect.w;
-	double oldBottom = oldTop  + rect.h;
-
-	RectHelpers::PrintPosition( tileRect,"Tile");
-	RectHelpers::PrintPosition( rect    , "Ball cur ");
-	RectHelpers::PrintPosition( oldRect , "Ball old ");
-
-	if ( dirY < 0.0f )
-	{
-		std::cout << "\tChecking collision bottom : \n\n";
-		double distBottom = oldTop - tileBottom;
-
-		double intersect = distBottom / dirY;
-		double intersectPosLeft  = oldLeft + dirX * fabs( intersect );
-		double intersectPosRight = intersectPosLeft + rect.w;
-
-		std::cout << "\tDist bottom      : " << distBottom << std::endl;
-		std::cout << "\tIntersect        : " << intersect << std::endl;
-		std::cout << "\tIntersect left   : " << intersectPosLeft << std::endl;
-		std::cout << "\tIntersect right  : " << intersectPosRight << std::endl;
-
-		std::cout << "\tif ( " << intersectPosLeft  << " > " << tileLeft  << " )" << std::endl;
-		std::cout << "\tif ( " << intersectPosRight << " < " << tileRight << " )" << std::endl;
-
-		if ( distBottom > 0.0f && intersectPosRight > tileLeft && intersectPosLeft < tileRight )
-		{
-			std::cout << "\t\tIntersected bottom" << std::endl;
-			stop = false;
-		}
-		else
-		{
-			std::cout << "\t\tMissed bottom" << std::endl;
-		}
-	} else
-	{
-		std::cout << "\tChecking collision top : \n\n";
-		double distTop = tileTop - oldBottom;
-
-		double intersect = distTop / dirY;
-		double intersectPosLeft  = oldLeft + dirX * intersect;
-		double intersectPosRight = intersectPosLeft + rect.w;
-
-		std::cout << "\tDist bottom      : " << distTop << std::endl;
-		std::cout << "\tIntersect        : " << intersect << std::endl;
-		std::cout << "\tIntersect left   : " << intersectPosLeft << std::endl;
-		std::cout << "\tIntersect right  : " << intersectPosRight << std::endl;
-
-		std::cout << "\tif ( " << intersectPosLeft  << " > " << tileLeft  << " )" << std::endl;
-		std::cout << "\tif ( " << intersectPosRight << " < " << tileRight << " )" << std::endl;
-
-		if ( distTop > 0.0f &&  intersectPosRight > tileLeft && intersectPosLeft < tileRight )
-		{
-			std::cout << "\t\tIntersected top" << std::endl;
-			stop = false;
-		}
-		else
-			std::cout << "\t\tMissed top" << std::endl;
-	}
-
-	if ( dirX > 0.0f )
-	{
-		std::cout << "\tChecking collision left : \n\n";
-		double distLeft = tileLeft - oldRight;
-
-		double intersect = distLeft / dirX;
-		double intersectPosTop     = oldTop + dirY * fabs( intersect );
-		double intersectPosBottom  = intersectPosTop + rect.h;
-
-		std::cout << "\tDist lwf          : " << distLeft           << std::endl;
-		std::cout << "\tIntersect         : " << intersect          << std::endl;
-		std::cout << "\tIntersect top     : " << intersectPosTop    << std::endl;
-		std::cout << "\tIntersect bottom  : " << intersectPosBottom << std::endl;
-
-		std::cout << "\tif ( " << intersectPosTop    << " < " << tileBottom  << " )" << std::endl;
-		std::cout << "\tif ( " << intersectPosBottom << " > " << tileTop     << " )" << std::endl;
-
-		if ( distLeft > 0.0f && intersectPosTop < tileBottom && intersectPosBottom > tileTop )
-		{
-			std::cout << "\t\tIntersected left" << std::endl;
-			stop = false;
-		}
-		else
-		{
-			std::cout << "\t\tMissed left" << std::endl;
-		}
-	} else if ( dirX < 0.0f )
-	{
-		std::cout << "\tChecking collision left : \n\n";
-		double distRight = oldLeft - tileRight;
-
-		double intersect = distRight / dirX;
-		double intersectPosTop     = oldTop + dirY * fabs( intersect );
-		double intersectPosBottom  = intersectPosTop + rect.h;
-
-		std::cout << "\tDist right        : " << distRight          << std::endl;
-		std::cout << "\tIntersect         : " << intersect          << std::endl;
-		std::cout << "\tIntersect top     : " << intersectPosTop    << std::endl;
-		std::cout << "\tIntersect bottom  : " << intersectPosBottom << std::endl;
-
-		std::cout << "\tif ( " << intersectPosTop    << " < " << tileBottom  << " )" << std::endl;
-		std::cout << "\tif ( " << intersectPosBottom << " > " << tileTop     << " )" << std::endl;
-
-		if ( distRight > 0.0f && intersectPosTop < tileBottom && intersectPosBottom > tileTop )
-		{
-			std::cout << "\t\tIntersected right" << std::endl;
-			stop = false;
-		}
-		else
-		{
-			std::cout << "\t\tMissed right" << std::endl;
-		}
-	}
+	return Vector2f( dirX, dirY );
+}
+void Ball::SetDirection( const Vector2f &newDir )
+{
+	dirX = newDir.x;
+	dirY = newDir.y;
+}
+void Ball::SetOwner( Player owner )
+{
+	ballOwner = owner;
+}
+Player Ball::GetOwner( ) const
+{
+	return ballOwner;
+}
+void Ball::SetRemoteScale( double scale_ )
+{
+	SetSpeed( GetSpeed() * scale_ );
 }
