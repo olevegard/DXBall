@@ -22,3 +22,5 @@ boards/*
 Server/Server
 backup/
 build/
+TODOList.txt
+*.html
