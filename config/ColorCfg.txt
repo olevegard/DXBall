@@ -2,7 +2,7 @@ background_color 0 0 0 255
 text_color 140 0 140 255
 local_player_color 0 140 0 255
 remote_player_color 140 0 0 255
-grey_area 0 140 0 255
+grey_area 255 0 0 255
 
 bonus_extra_life 255 255 255 255
 bonus_death 0 0 0 255
