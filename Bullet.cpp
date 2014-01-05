@@ -18,6 +18,8 @@ Player Bullet::GetOwner() const
 }
 void Bullet::Update( double delta )
 {
+	oldRect.y = rect.y;
+
 	if ( owner == Player::Local )
 		rect.y -= delta * GetSpeed();
 	else
