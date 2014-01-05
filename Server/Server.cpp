@@ -351,7 +351,7 @@ void Server::SendGameList( int32_t connectionNo )
 		std::stringstream ss;
 		ss << msg;
 		connection.Send( ss.str(), connectionNo );
-		std::cout << "Sending : " << ss.str() << std::endl;
+		std::cout << "Sending : " << msg.Print() << " to " << connectionNo <<  std::endl;
 	}
 
 	std::cout << "========= DONE SENDING ==========\n";
@@ -400,4 +400,5 @@ void Server::SendMessageToAll( const TCPMessage &msg )
 		ss << msg;
 		connection.Send( ss.str(), i );
 	}
+	std::cout << "Sending to all : " << msg.Print()  << std::endl;
 }
