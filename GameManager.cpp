@@ -98,7 +98,7 @@ void GameManager::InitPaddles()
 	localPaddle->rect.h = 30;
 	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
 	localPaddle->SetScale( scale );
-	std::cout << "GameManager@" << __LINE__ << " : Local paddle : " << localPaddle << std::endl;
+	std::cout << "GameManager@" << __LINE__ << " Local paddle : " << localPaddle << std::endl;
 	renderer.SetLocalPaddle( localPaddle );
 
 	remotePaddle = std::make_shared< Paddle > ();
@@ -107,14 +107,14 @@ void GameManager::InitPaddles()
 	remotePaddle->rect.h = 30;
 	remotePaddle->rect.x = 400;
 	remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
-	std::cout << "GameManager@" << __LINE__ << " : Remote paddle : " << remotePaddle << std::endl;
+	std::cout << "GameManager@" << __LINE__ << " Remote paddle : " << remotePaddle << std::endl;
 	renderer.SetRemotePaddle( remotePaddle );
 }
 void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
 	ip = ip_;
 	port = port_;
-	std::cout << "IP : " << ip << " | Port : " << port << "\n";
+	std::cout << "GameManager@" << __LINE__ <<  " IP : " << ip << " | Port : " << port << "\n";
 	netManager.Init( false  );
 
 	GameInfo gameInfo;
@@ -305,12 +305,10 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 	bonusBox->SetOwner( owner  );
 	bonusBox->SetBonusType( GetRandomBonusType()  );
 	bonusBox->SetSpeed( bonusBoxSpeed );
-	std::cout << "Setting speed to : " << bonusBoxSpeed << std::endl;
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
 	SendBonusBoxSpawnedMessage( bonusBox );
-
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
@@ -524,7 +522,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveLevelDoneMessage( message );
 			break;
 		default:
-			std::cout << "GameManager@" << __LINE__ << " : UpdateNetwork unknown message received " << message << std::endl;
+			std::Tout << "GameManager@" << __LINE__ << " UpdateNetwork unknown message received " << message << std::endl;
 			std::cin.ignore();
 			break;
 	}
@@ -617,7 +615,15 @@ void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 	PrintRecv( message );
 	if ( ballList.size() > 0 )
 	{
-		GetBallFromID( message.GetObjectID() )->Kill();
+		auto ball =  GetBallFromID( message.GetObjectID() );
+
+		if ( ball == nullptr )
+		{
+			std::cout << "GameManager@" << __LINE__ << " Ball with ID : " << message.GetObjectID() << " doesn't exist\n";
+			return;
+		}
+
+		ball->Kill();
 	}
 
 	DeleteDeadBalls();
@@ -632,6 +638,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 
 	if ( tile == nullptr )
 	{
+		std::cout << "GameManager@" << __LINE__ << " Tile with ID : " << message.GetObjectID() << " doesn't exist\n";
 		return;
 	}
 	if ( remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
@@ -681,8 +688,13 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 	PrintRecv( message );
 	auto bb = GetBonusBoxFromID( message.GetObjectID() );
 
-	if ( bb )
-		ApplyBonus( bb );
+	if ( bb == nullptr )
+	{
+		std::cout << "GameManager@" << __LINE__ << " BonusBox with ID : " << message.GetObjectID() << " doesn't exist\n";
+		return;
+	}
+
+	ApplyBonus( bb );
 }
 void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 {
@@ -706,7 +718,12 @@ void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 	{
 		auto p = GetBulletFromID( message.GetObjectID() );
 
-		std::cout << "Deleing bullet wiht ID : " << message.GetObjectID() << std::endl;
+		if ( p == nullptr )
+		{
+			std::cout << "GameManager@" << __LINE__ << " BonusBox with ID : " << message.GetObjectID() << " doesn't exist\n";
+			return;
+		}
+
 		p->Kill();
 	}
 
@@ -825,10 +842,9 @@ void GameManager::SendTileHitMessage( unsigned int tileID )
 	auto p = GetTileFromID( tileID );
 	if ( p == nullptr )
 	{
-		std::cout << "Trying non-existing tile : " << tileID << std::endl;
+		std::cout << "GameManager@" << __LINE__ << " Tile with ID : " << tileID << " doesn't exist\n";
 		return;
 	}
-	std::cout << "Tile hit : " << tileID << " hits left : " << p->GetHitsLeft() << " alive? " << std::boolalpha << p->IsAlive() << std::endl;
 
 	msg.SetMessageType( MessageType::TileHit );
 	msg.SetObjectID( tileID );
@@ -1203,7 +1219,7 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.GetGameState() == GameState::Lobby )
 	{
-		std::cout << "GameMAanager@" << __LINE__ << " GameState::Lobby..\n";
+		std::cout << "GameMaanager@" << __LINE__ << " GameState::Lobby..\n";
 		UpdateGameList();
 	}
 	else if ( menuManager.WasGameStarted()  )
@@ -1382,7 +1398,7 @@ void GameManager::Update( double delta )
 
 	if ( IsTimeForNewBoard() )
 	{
-		std::cout << "Generating board...\n";
+		std::cout << "GameManager@" << __LINE__ << " Generating board...\n";
 		DeleteAllBullets();
 		GenerateBoard();
 	}
@@ -1395,7 +1411,7 @@ void GameManager::Update( double delta )
 
 	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
 	{
-		std::cout << "GameManager.cpp@" << __LINE__
+		std::cout << "GameManager@" << __LINE__
 			<< " =========="
 			<< " GAME OVER "
 			<< " =========="
@@ -1424,13 +1440,13 @@ void GameManager::UpdateLobbyState()
 			JoinGame();
 			break;
 		case LobbyMenuItem::Unknown:
-			std::cout << "GameManager.cpp@" << __LINE__ << " Unkown new game state\n";
+			std::cout << "GameManager@" << __LINE__ << " Unkown new game state\n";
 			break;
 	}
 }
 void GameManager::StartNewGame()
 {
-	std::cout << "GameManager.cpp@" << __LINE__ << " New game\n";
+	std::cout << "GameManager@" << __LINE__ << " New game\n";
 	SendNewGameMessage();
 	menuManager.SetGameState( GameState::InGameWait );
 	boardLoader.SetIsServer( true );
@@ -1449,7 +1465,7 @@ void GameManager::JoinGame()
 	GameInfo gameInfo = menuManager.GetSelectedGameInfo();
 	gameID = gameInfo.GetGameID();
 
-	std::cout << "GameManager.cpp@" << __LINE__
+	std::cout << "GameManager@" << __LINE__
 		<< " Selected game in list : "<< gameInfo.GetAsSrting()
 		<< std::endl;
 
@@ -1752,7 +1768,6 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 					++countKilled;
 					p->Kill();
 					renderer.RemoveText();
-					std::cout << "\tBallRemoved\n";
 				}
 			}
 			if ( countKilled != 0 )
@@ -1883,8 +1898,7 @@ void GameManager::GenerateBoard()
 
 	if ( !boardLoader.IsLastLevel() )
 	{
-		std::cout << "GameManager@" << __LINE__ << " Last level..\n";
-		std::cout << "GameManager.cpp@" << __LINE__
+		std::cout << "GameManager@" << __LINE__
 			<< " =========="
 			<< " GAME OVER "
 			<< " =========="
@@ -2012,7 +2026,7 @@ void GameManager::SetLocalPaddlePosition( int x, int y )
 }
 void GameManager::SetScale( double scale_ )
 {
-	std::cout << "GameManager.cpp@" << __LINE__ << " Scale : " << scale_ << std::endl;
+	std::cout << "GameManager@" << __LINE__ << " Scale : " << scale_ << std::endl;
 	scale = scale_;
 	ApplyScale();
 }
