@@ -135,9 +135,12 @@ void TCPConnection::Close()
 	{
 		SDLNet_TCP_DelSocket( socketSet, serverSocket );
 		SDLNet_TCP_Close( serverSocket );
+		SDLNet_FreeSocketSet( socketSet );
 	}
 	else
+	{
 		SDLNet_TCP_Close( tcpSocket );
+	}
 
 	isConnected = false;
 }
