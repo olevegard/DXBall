@@ -25,17 +25,19 @@ void NetManager::Connect( std::string ip, unsigned short port )
 
 	if ( isServer )
 	{
-		gameServer.Init( ip, port, true );
+		while ( !gameServer.Init( ip, port, true ) );
 		gameServer.StartServer();
 	} else
 	{
 		// Temporary code to give the server some time to start up...
-		SDL_Delay( 100 );
-		gameClient.Init( ip, port, false );
+		//SDL_Delay( 100 );
+		while ( !gameClient.Init( ip, port, false ) );
 	}
+	std::cout << "Connected!!!!!!!\n";
 }
 void NetManager::Close()
 {
+	isReady = false;
 	gameServer.Close();
 }
 void NetManager::Update()
