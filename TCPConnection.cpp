@@ -34,24 +34,38 @@ bool TCPConnection::ResolveHost()
 	int success = 0;
 
 	if ( isServer )
+	{
 		// IP is null becasue this is a server
 		// Port is listening port
 		success = SDLNet_ResolveHost( &ipAddress, nullptr, portNr );
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Resolving host :"
+			"\nIP Adress : " << hostName <<
+			"\nPort : " << portNr <<
+			std::endl;
+	}
 	else
+	{
 		// IP is the IP of the server
 		// Port is the port the serer listens on ( seea above )
 		success = SDLNet_ResolveHost( &ipAddress, hostName.c_str(), portNr );
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Resolving Host :"
+			"\nIP Adress : " << hostName <<
+			"\nPort : " << portNr <<
+			std::endl;
+	}
 
 	if ( success == -1 )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << " Failed to open port host :"
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Failed to resolve host :"
 			"\nIP Adress : " << hostName <<
 			"\nPort : " << portNr <<
 			"\nError : " << SDLNet_GetError() <<
-			"\nLine : " << __LINE__
-			<< std::endl;
+			std::endl;
+
 		return false;
 	}
+
+	std::cout << "TCPConnection.cpp@" << __LINE__ << " Host resolved\n";
 
 	return true;
 }
@@ -72,8 +86,12 @@ bool TCPConnection::OpenConnectionToHost( )
 			"\nLine : " << __LINE__
 			<< std::endl;
 		return false;
-
 	}
+
+	std::cout << "TCPConnection.cpp@" << __LINE__ << " Connection Opened : "
+		"\nIP Adress : " << hostName <<
+		"\nPort : " << portNr <<
+		std::endl;
 	return true;
 }
 
@@ -161,7 +179,7 @@ bool TCPConnection::AcceptConnection()
 
 	if ( serverSocket  == nullptr )
 	{
-		//std::cout << "TCPConnection.cpp@" << __LINE__ << " Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
+		std::cout << "TCPConnection.cpp@" << __LINE__ << " Cannot accept TCP connection : " << SDLNet_GetError()  << std::endl;
 		isConnected = false;
 		return false;
 	}
@@ -183,8 +201,8 @@ bool TCPConnection::SetServerSocket()
 
 	std::cout << "TCPConnection.cpp@" << __LINE__
 		<< " Host connected : "
-		<< SDLNet_Read32( &ipRemote->host )
-		<< " : " << SDLNet_Read16( &ipRemote->port ) << std::endl;
+		<< ( ipRemote->host )
+		<< " : " << ( ipRemote->port ) << std::endl;
 
 	isConnected = true;
 	return true;
