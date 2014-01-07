@@ -41,7 +41,8 @@ struct Ball : GamePiece
 	//==================================
 	void HandlePaddleHit( const Rect &paddleRect );
 	double CalculatePaddleHitPosition( const Rect &paddleRect ) const;
-	void  CalculateNewBallDirection( double  hitPosition );
+	void CalculateNewBallDirection( double  hitPosition );
+	void MoveBallOutOfPaddle( double paddleEdge );
 
 	// Find intersectin side
 	// ==================================
@@ -54,6 +55,7 @@ struct Ball : GamePiece
 			double &ret
 	) const;
 	bool CheckDotProducts( double dot, double dotTile, double dotBall ) const;
+	void ChangeBallDirection( const Side &side );
 
 	Vector2f GetEsimtatedDir( ) const;
 	Vector2f Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const;
@@ -63,7 +65,7 @@ struct Ball : GamePiece
 
 	unsigned int lastTileHit;
 
-	bool debugMode;
+	//bool debugMode;
 
 	Player ballOwner;
 
