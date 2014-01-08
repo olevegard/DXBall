@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-#include "MenuItem.h"
+#include "structs/menu_items/MenuItem.h"
 #include "GameInfo.h"
 
 #include "math/Rect.h"

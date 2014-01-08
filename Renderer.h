@@ -24,8 +24,8 @@
 
 #include "enums/GameState.h"
 
-#include "MainMenuItem.h"
-#include "PauseMenuItem.h"
+#include "structs/menu_items/MainMenuItem.h"
+#include "structs/menu_items/PauseMenuItem.h"
 #include "MenuList.h"
 
 // Forward declarations

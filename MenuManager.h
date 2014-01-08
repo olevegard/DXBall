@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Renderer.h"
-#include "MenuItem.h"
-
 #include "MenuList.h"
 #include "GameInfo.h"
+
+#include "structs/menu_items/MenuItem.h"
 
 #include "enums/GameState.h"
 #include "enums/LobbyState.h"
