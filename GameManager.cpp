@@ -1,10 +1,11 @@
 #include "GameManager.h"
 
-#include "Ball.h"
-#include "Tile.h"
 #include "Board.h"
-#include "Paddle.h"
-#include "Bullet.h"
+#include "structs/game_objects/Ball.h"
+#include "structs/game_objects/Tile.h"
+#include "structs/game_objects/Paddle.h"
+#include "structs/game_objects/Bullet.h"
+
 #include "BoardLoader.h"
 
 #include "math/Math.h"

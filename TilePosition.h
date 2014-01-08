@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Tile.h"
+#include "structs/game_objects/Tile.h"
 
 
 // The location and type of a single tile

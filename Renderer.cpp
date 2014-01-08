@@ -1,8 +1,8 @@
 #include "Renderer.h"
 
-#include "Ball.h"
-#include "Tile.h"
-#include "Paddle.h"
+#include "structs/game_objects/Ball.h"
+#include "structs/game_objects/Tile.h"
+#include "structs/game_objects/Paddle.h"
 
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"

@@ -18,11 +18,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "GamePiece.h"
-#include "BonusBox.h"
-#include "Bullet.h"
 
 #include "enums/GameState.h"
+
+#include "structs/game_objects/GamePiece.h"
+#include "structs/game_objects/BonusBox.h"
+#include "structs/game_objects/Bullet.h"
 
 #include "structs/menu_items/MainMenuItem.h"
 #include "structs/menu_items/PauseMenuItem.h"
