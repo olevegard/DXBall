@@ -4,9 +4,9 @@
 #include <iostream>
 #include <sstream>
 
-#include "enums/MessageType.h"
-#include "enums/BonusType.h"
-#include "enums/GameState.h"
+#include "../../enums/MessageType.h"
+#include "../../enums/BonusType.h"
+#include "../../enums/GameState.h"
 
 class TCPMessage
 {

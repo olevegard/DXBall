@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "TCPMessage.h"
+#include "structs/net/TCPMessage.h"
 
 void NetManager::Init( bool server)
 {

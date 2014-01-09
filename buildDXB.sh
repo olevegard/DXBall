@@ -51,7 +51,7 @@ CompileServer="clang++
 	Server/main.cpp
 	Server/TCPConnectionServer.cpp
 	Server/Server.cpp
-	TCPMessage.cpp
+	structs/net/TCPMessage.cpp
 	-o Server/Server
 	-std=c++11
 	-lSDL2

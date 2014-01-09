@@ -11,7 +11,7 @@
 #include "math/Math.h"
 #include "math/RectHelpers.h"
 
-#include "TCPMessage.h"
+#include "structs/net/TCPMessage.h"
 
 #include "enums/MessageType.h"
 #include "enums/LobbyMenuItem.h"

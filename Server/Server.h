@@ -8,7 +8,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "TCPConnectionServer.h"
-#include "../TCPMessage.h"
+#include "../structs/net/TCPMessage.h"
 #include "../GameInfo.h"
 
 class Server

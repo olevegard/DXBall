@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TCPConnection.h"
+#include "structs/net/TCPConnection.h"
 #include <iostream>
 
 class NetManager
