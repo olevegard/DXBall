@@ -23,7 +23,7 @@ SOURCES += ../math/Vector2f.cpp
 SOURCES += ../math/Rect.cpp
 
 DIST =
-TARGET = ../DXBall
+TARGET = ../DXBall_exe
 
 CONFIG -= qt
 

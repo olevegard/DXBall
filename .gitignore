@@ -1,10 +1,7 @@
 tags
-DXBall*
 *.swp
 *.swo
 *~
- tags
-DXBall*
 +README~
 tags
 README~
@@ -21,6 +18,9 @@ notes/*
 boards/*
 Server/Server
 backup/
-build/
+build/.obj
 TODOList.txt
 *.html
+_*
+*_exe
+

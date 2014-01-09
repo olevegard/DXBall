@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 RunGame=false
 RunGDB=false
 RunValgrind=false
@@ -52,7 +50,7 @@ CompileServer="clang++
 	server/TCPConnectionServer.cpp
 	server/Server.cpp
 	structs/net/TCPMessage.cpp
-	-o server/Server
+	-o server/Server_exe
 	-std=c++11
 	-lSDL2
 	-lSDL2_ttf
@@ -63,10 +61,10 @@ CompileServer="clang++
 
 #RunString="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1280x720 -twoPlayer false"
 RunString="sudo optirun ./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 1920x1080 -twoPlayer false -startfs true -port 2003"
-RunStringClient="./DXBall -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -port 29382"
-RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -server true -AIControlled true -port 49124 "
+RunStringClient="./DXBall_exe -lPlayer client -rPlayer server -fpsLimit 0 -resolution 960x540 -port 29382"
+RunStringServer="./DXBall_exe -lPlayer server -rPlayer client -fpsLimit 0 -resolution 960x540 -server true -AIControlled true -port 49124 "
 #RunStringServer="./DXBall -lPlayer server -rPlayer client -fpsLimit 0 -resolution 1920x1080 -twoPlayer true -server true"
-RunStringGameServer="cd server && ./Server"
+RunStringGameServer="cd server && ./Server_exe"
 
 GDBString="gdb -ex run --args $RunString"
 GDBStringServer="gdb -ex run --args $RunStringServer"
