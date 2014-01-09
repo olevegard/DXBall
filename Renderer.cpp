@@ -140,31 +140,39 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 	fullscreen = startFS;
 	background = rect;
 
-	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to initialize SDL : " << SDL_GetError() << std::endl;
-		return false;
-	}
-
 	if ( fullscreen )
 		screenFlags = SDL_WINDOW_FULLSCREEN;
 	else
 		screenFlags = SDL_WINDOW_OPENGL;
 
+	if ( !InitSDLSubSystems())
+		return false;
+
 	// Set up screen
 	if ( !CreateWindow( server ) )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to apply video mode\n";
 		return false;
-	}
 
 	if ( !CreateRenderer() )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to apply video mode\n";
 		return false;
-	}
 
 	Setup();
+
+	if ( !LoadAssets() )
+		return false;
+
+	return true;
+}
+
+// ============================================================================================
+// ===================================== Setup ================================================
+// ============================================================================================
+bool Renderer::InitSDLSubSystems() const
+{
+	if ( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
+	{
+		std::cout << "Renderer@" << __LINE__  << " Failed to initialize SDL : " << SDL_GetError() << std::endl;
+		return false;
+	}
 
 	if ( TTF_Init( ) == -1 )
 	{
@@ -172,18 +180,8 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 		return false;
 	}
 
-	if ( !LoadFontAndText() )
-		return false;
-
-
-	LoadColors();
-	LoadImages();
 	return true;
 }
-
-// ============================================================================================
-// ===================================== Setup ================================================
-// ============================================================================================
 bool Renderer::CreateRenderer()
 {
 	renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );//SDL_RENDERER_PREVENTVSYNC
@@ -195,7 +193,6 @@ bool Renderer::CreateRenderer()
 	}
 
 	SDL_RenderSetLogicalSize( renderer, background.w, background.h );
-
 
 	SDL_SetRenderDrawColor( renderer, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a );
 	SDL_RenderClear( renderer );
@@ -218,7 +215,7 @@ bool Renderer::CreateWindow(bool server )
 
 	if ( window == nullptr )
 	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to apply video mode\n";
+		std::cout << "Renderer@" << __LINE__  << " Failed to apply video mode : " << SDL_GetError();
 		return false;
 	}
 
@@ -262,6 +259,18 @@ bool Renderer::SetFullscreen( bool fullscreenOn )
 // ============================================================================================
 // ================================ Texture helpers ===========================================
 // ============================================================================================
+bool Renderer::LoadAssets()
+{
+	if ( !LoadFontAndText() )
+		return false;
+
+	LoadColors();
+
+	if( !LoadImages() )
+		return false;
+
+	return true;
+}
 bool Renderer::LoadImages()
 {
 	localPlayerBallTexture  = RenderHelpers::InitSurface( background.w, background.h, localPlayerColor , renderer );
@@ -661,20 +670,13 @@ TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
 bool Renderer::LoadFontAndText()
 {
 	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 20 );
-
 	font = LoadFont( "media/fonts/sketchy.ttf", 28 );
-
 	mediumFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 41 );
-
 	bigFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 57 );
-
 	hugeFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 100 );
 
 	if ( bigFont == nullptr || font == nullptr || tinyFont == nullptr || mediumFont == nullptr || hugeFont == nullptr )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Fonts not initialized properly\n";
 		return false;
-	}
 
 	return true;
 }

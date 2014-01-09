@@ -157,6 +157,7 @@ private:
 
 	void Setup();
 	bool CreateRenderer();
+	bool InitSDLSubSystems() const;
 
 	bool CreateWindow( bool server );
 	void SetFlags_VideoMode();
@@ -182,6 +183,7 @@ private:
 
 	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list );
 
+	bool LoadAssets();
 	bool LoadImages();
 	void LoadColors();
 
