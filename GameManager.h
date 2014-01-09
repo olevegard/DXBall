@@ -28,6 +28,7 @@ class GameManager
 		// Startup options
 		bool Init( const std::string &localPlayerName, const SDL_Rect &size, bool startFS );
 		void InitPaddles();
+		void InitMenu();
 
 		// Setters
 		void SetFPSLimit( unsigned short limit );

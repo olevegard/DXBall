@@ -67,8 +67,6 @@
 bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &size, bool startFS )
 {
 	localPlayerInfo.name = localPlayerName_;
-	localPlayerInfo.Reset();
-	remotePlayerInfo.Reset();
 
 	windowSize = size;
 	bool server = localPlayerName_ ==  "server";
@@ -81,15 +79,17 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	renderer.RenderPlayerCaption( localPlayerInfo.name, Player::Local );
 
 	InitPaddles();
+	InitMenu();
 
-	menuManager.Init( renderer );
-	menuManager.SetGameState( GameState::MainMenu );
-	CreateMenu();
-
-	configLodaer.LoadConfig();
 	LoadConfig();
 
 	return true;
+}
+void GameManager::InitMenu()
+{
+	menuManager.Init( renderer );
+	menuManager.SetGameState( GameState::MainMenu );
+	CreateMenu();
 }
 void GameManager::InitPaddles()
 {
@@ -123,6 +123,7 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 }
 void GameManager::LoadConfig()
 {
+	configLodaer.LoadConfig();
 	bonusBoxSpeed = configLodaer.GetBonusBoxSpeed();
 	localPlayerInfo.ballSpeed = configLodaer.GetBallSpeed();
 	remotePlayerInfo.ballSpeed = configLodaer.GetBallSpeed();
@@ -146,8 +147,6 @@ void GameManager::Restart()
 		<< " RESTART "
 		<< "=============================="
 		<< std::endl;
-	tileCount = 0;
-	ballCount = 0;
 
 	boardLoader.Reset();
 
@@ -160,6 +159,9 @@ void GameManager::Restart()
 		remotePaddle->SetScale( scale );
 	}
 
+	DeleteAllBonusBoxes();
+	DeleteAllBullets();
+
 	GenerateBoard();
 
 	localPlayerInfo.Reset();
@@ -171,10 +173,6 @@ void GameManager::Restart()
 	renderer.ResetText();
 
 	UpdateGUI();
-
-	DeleteAllBonusBoxes();
-	DeleteAllBullets();
-
 }
 std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
@@ -1941,7 +1939,13 @@ bool GameManager::IsTimeForNewBoard()
 void GameManager::ClearBoard()
 {
 	tileList.clear();
+	tileCount = 0;
+
 	ballList.clear();
+	ballCount = 0;
+
+	DeleteAllBullets();
+	DeleteAllBonusBoxes();
 
 	localPlayerInfo.activeBalls = 0;
 	remotePlayerInfo.activeBalls = 0;
