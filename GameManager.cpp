@@ -237,29 +237,29 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	if ( !ball )
 		return;
 
-	if ( ball->GetOwner() == Player::Local )
-	{
-		--localPlayerInfo.activeBalls;
-
-		SendBallKilledMessage( ball );
-	}
-	else
-	{
-
-		--remotePlayerInfo.activeBalls;
-
-		renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
-	}
-
-	if ( localPlayerInfo.activeBalls == 0 && ball->GetOwner() == Player::Local )
-			ReducePlayerLifes( Player::Local );
-
-
-	if ( remotePlayerInfo.activeBalls == 0 && ball->GetOwner() == Player::Remote )
-			ReducePlayerLifes( Player::Remote );
+	ReduceActiveBalls( ball->GetOwner(), ball->GetObjectID() );
 
 	renderer.RemoveBall( ball );
 	UpdateGUI();
+}
+void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
+{
+	if ( player ==  Player::Local )
+	{
+		--localPlayerInfo.activeBalls;
+
+		SendBallKilledMessage( ballID );
+
+		if ( localPlayerInfo.activeBalls == 0 )
+			ReducePlayerLifes( Player::Local );
+	}
+	else
+	{
+		--remotePlayerInfo.activeBalls;
+
+		if ( remotePlayerInfo.activeBalls == 0 )
+			ReducePlayerLifes( Player::Remote );
+	}
 }
 void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
@@ -831,7 +831,7 @@ void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
 
 	//PrintSend(msg);
 }
-void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
+void GameManager::SendBallKilledMessage( uint32_t ballID )
 {
 	if ( !menuManager.IsTwoPlayerMode() )
 		return;
@@ -839,7 +839,7 @@ void GameManager::SendBallKilledMessage( const std::shared_ptr<Ball> &ball)
 	TCPMessage msg;
 
 	msg.SetMessageType( MessageType::BallKilled );
-	msg.SetObjectID(  ball->GetObjectID() );
+	msg.SetObjectID(  ballID  );
 
 	SendMessage( msg, MessageTarget::Oponent );
 

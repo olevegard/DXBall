@@ -48,6 +48,7 @@ class GameManager
 		double GetBallSpeed( const Player &player ) const;
 
 		void RemoveBall( std::shared_ptr< Ball > pBall );
+		void ReduceActiveBalls( const Player &player, uint32_t ballID );
 
 		void AddTile( short posX, short posY, TileType tileType );
 		void RemoveTile( std::shared_ptr< Tile > pTile );
@@ -177,7 +178,7 @@ class GameManager
 		void SendTileHitMessage( unsigned int tileID );
 		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
 		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
-		void SendBallKilledMessage( const std::shared_ptr<Ball> &ball);
+		void SendBallKilledMessage( uint32_t ballID );
 		void SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
 		void SendBulletFireMessage( const std::shared_ptr< Bullet > &bulletLeft, const std::shared_ptr< Bullet > &bulletRight  );
