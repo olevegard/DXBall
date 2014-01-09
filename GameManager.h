@@ -42,6 +42,11 @@ class GameManager
 	private:
 		// Add / Remoe game objects
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
+		bool CanPlayerFireBall( const Player &player ) const;
+		std::shared_ptr< Ball >  LaunchBall( const Player &player, uint32_t ballID );
+		void IncreaseActiveBalls( const Player &player );
+		double GetBallSpeed( const Player &player ) const;
+
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 
 		void AddTile( short posX, short posY, TileType tileType );

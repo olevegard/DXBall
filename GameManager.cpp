@@ -176,39 +176,12 @@ void GameManager::Restart()
 }
 std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
-	if ( menuManager.GetGameState() != GameState::InGame )
+	if ( menuManager.GetGameState() != GameState::InGame || !CanPlayerFireBall( owner ) )
 		return nullptr;
 
-	double speed = 0.2;
-	if ( owner == Player::Local )
-	{
-		if (  localPlayerInfo.lives == 0 )
-		{
-			return nullptr;
-		}
-		if ( localPlayerInfo.activeBalls == 0 )
-			renderer.StartFade();
+	IncreaseActiveBalls( owner );
 
-		++localPlayerInfo.activeBalls;
-		speed  = localPlayerInfo.ballSpeed;
-	}
-	else  if ( owner == Player::Remote )
-	{
-		if (  remotePlayerInfo.lives == 0 )
-		{
-			return nullptr;
-		}
-		++remotePlayerInfo.activeBalls;
-		speed = remotePlayerInfo.ballSpeed;
-	}
-
-	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
-	ball->textureType = TextureType::e_Ball;
-	ball->SetScale( scale );
-	ball->SetSpeed( speed );
-
-	ballList.push_back( ball );
-	renderer.AddBall( ball );
+	auto ball = LaunchBall( owner, ballID );
 
 	if ( owner == Player::Local )
 		SendBallSpawnMessage( ball );
@@ -217,7 +190,48 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 
 	return ball;
 }
+std::shared_ptr< Ball >  GameManager::LaunchBall( const Player &player, uint32_t ballID )
+{
+	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, player, ballID );
+	ball->textureType = TextureType::e_Ball;
+	ball->SetScale( scale );
+	ball->SetSpeed( GetBallSpeed( player ) );
 
+	ballList.push_back( ball );
+	renderer.AddBall( ball );
+
+	return ball;
+}
+void GameManager::IncreaseActiveBalls( const Player &player )
+{
+	if ( player == Player::Local )
+	{
+		if ( localPlayerInfo.activeBalls == 0 )
+			renderer.StartFade();
+
+		++localPlayerInfo.activeBalls;
+	}
+	else
+	{
+		++remotePlayerInfo.activeBalls;
+	}
+}
+double GameManager::GetBallSpeed( const Player &player ) const
+{
+	if ( player == Player::Local )
+		return localPlayerInfo.ballSpeed;
+	else
+		return remotePlayerInfo.ballSpeed;
+}
+bool GameManager::CanPlayerFireBall( const Player &player ) const
+{
+	if (  player == Player::Local && localPlayerInfo.lives == 0 )
+		return false;
+	else if ( player == Player::Remote && remotePlayerInfo.lives == 0)
+		return false;
+
+	return true;
+}
 void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 {
 	if ( !ball )
