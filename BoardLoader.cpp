@@ -1,8 +1,7 @@
 #include "BoardLoader.h"
 
 #include "structs/game_objects/Tile.h"
-#include "Board.h"
-#include "TilePosition.h"
+#include "structs/board/TilePosition.h"
 #include "tools/TilePositionHelpers.h"
 
 #include <algorithm>

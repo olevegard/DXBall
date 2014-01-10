@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -10,8 +11,9 @@
 #include "enums/TileType.h"
 #include "enums/BonusType.h"
 
-#include "TileColor.h"
+#include <SDL2/SDL.h>
 
+#include "tools/SDLColorHelper.h"
 
 class ConfigLoader
 {

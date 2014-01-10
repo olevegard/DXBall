@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Board.h"
+#include "structs/board/Board.h"
 
 #include <string>
 

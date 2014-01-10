@@ -8,8 +8,7 @@
 #include "enums/TileType.h"
 #include "enums/BonusType.h"
 
-#include "TileColor.h"
-
+#include "structs/board/TileColor.h"
 
 class ColorConfigLoader
 {
