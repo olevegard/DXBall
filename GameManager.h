@@ -55,6 +55,10 @@ class GameManager
 
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed = 1 );
+		bool WasBonusBoxSpawned( int32_t tilesDestroyed ) const;
+		void SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const Player &owner, const Vector2f &pos  ) const;
+		void SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir ) const;
+
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 		void DeleteAllBonusBoxes();
 

@@ -293,6 +293,20 @@ void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, doubl
 }
 void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed )
 {
+	if (!WasBonusBoxSpawned( tilesDestroyed ) )
+		return;
+
+	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ( bonusCount++ );
+
+	SetBonusBoxData( bonusBox, owner, pos );
+	SetBonusBoxDirection( bonusBox, dir );
+
+	bonusBoxList.push_back( bonusBox );
+	renderer.AddBonusBox( bonusBox );
+	SendBonusBoxSpawnedMessage( bonusBox );
+}
+bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
+{
 	int randMax = bonusBoxChance;
 	if ( tilesDestroyed != 1 )
 	{
@@ -301,27 +315,26 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
 	}
 
-	if ( Math::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) != 1 )
-		return;
-
-	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ( bonusCount++ );
+	return ( Math::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) == 1 );
+}
+void GameManager::SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const Player &owner, const Vector2f &pos  ) const
+{
 	bonusBox->rect.x = pos.x;
 	bonusBox->rect.y = pos.y;
 
-	// Force correct y dir
-	if ( owner == Player::Local )
+	bonusBox->SetOwner( owner  );
+	bonusBox->SetBonusType( GetRandomBonusType()  );
+	bonusBox->SetSpeed( bonusBoxSpeed );
+}
+void GameManager::SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir_ ) const
+{
+	Vector2f dir = dir_;
+	if ( bonusBox->GetOwner()  == Player::Local )
 		dir.y = ( dir.y > 0.0 ) ? dir.y : dir.y * -1.0;
 	else
 		dir.y = ( dir.y < 0.0 ) ? dir.y : dir.y * -1.0;
 
 	bonusBox->SetDirection( dir );
-	bonusBox->SetOwner( owner  );
-	bonusBox->SetBonusType( GetRandomBonusType()  );
-	bonusBox->SetSpeed( bonusBoxSpeed );
-
-	bonusBoxList.push_back( bonusBox );
-	renderer.AddBonusBox( bonusBox );
-	SendBonusBoxSpawnedMessage( bonusBox );
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
