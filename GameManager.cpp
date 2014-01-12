@@ -369,39 +369,52 @@ void GameManager::UpdateBullets( double delta )
 	{
 		bullet->Update( delta );
 
-		bool bulletHitTile = false;
-		std::shared_ptr< Tile > lowestTile;
-		double lowestTileY = 0;
+		CheckBulletTileIntersections( bullet );
 
-		for ( auto tile : tileList )
-		{
-			if ( !tile->IsAlive() )
-				continue;
-
-			if ( !bullet->HasHitTile( tile->rect ) )
-				continue;
-
-			if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
-			{
-				HandleBulletTileIntersection( bullet, tile );
-				continue;
-			}
-
-			bulletHitTile = true;
-
-			if ( tile->rect.y > lowestTileY )
-			{
-				lowestTile = tile;
-				lowestTileY = tile->rect.y;
-			}
-		}
-		if ( bulletHitTile )
-			HandleBulletTileIntersection( bullet, lowestTile );
 	}
 
 	if ( !isFastMode || !localPlayerInfo.bonusMap[BonusType::SuperBall] )
 		DeleteDeadBullets();
 	DeleteDeadTiles();
+}
+bool GameManager::DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
+{
+	if ( !tile->IsAlive() )
+		return false;
+
+	if ( !bullet->HasHitTile( tile->rect ) )
+		return false;
+
+	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
+	{
+		HandleBulletTileIntersection( bullet, tile );
+		return false;
+	}
+
+	return true;
+}
+void GameManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet )
+{
+	bool bulletHitTile = false;
+	std::shared_ptr< Tile > lowestTile;
+	double lowestTileY = 0;
+
+	for ( auto tile : tileList )
+	{
+		if ( !DidBulletHitTile( bullet, tile ) )
+			continue;
+
+		bulletHitTile = true;
+
+		if ( tile->rect.y > lowestTileY )
+		{
+			lowestTile = tile;
+			lowestTileY = tile->rect.y;
+		}
+	}
+	if ( bulletHitTile )
+		HandleBulletTileIntersection( bullet, lowestTile );
+
 }
 void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
 {
