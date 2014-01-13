@@ -1406,9 +1406,20 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 		SDL_Delay( delay );
 	}
 }
-void GameManager::Update( double delta )
+void GameManager::CheckBallSpeedFastMode( double delta )
 {
-	if ( isFastMode && localPlayerInfo.IsBonusActive( BonusType::SuperBall ) && localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
+	if ( !isFastMode )
+		return;
+
+	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) && localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
+		IncreaseBallSpeedFastMode( Player::Local, delta );
+
+	if ( remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) && remotePlayerInfo.IsBonusActive( BonusType::FireBullets ) )
+		IncreaseBallSpeedFastMode( Player::Remote, delta );
+}
+void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta )
+{
+	if ( player == Player::Local )
 	{
 		if ( localPlayerInfo.ballSpeed < ballSpeedFastMode )
 		{
@@ -1416,8 +1427,7 @@ void GameManager::Update( double delta )
 			UpdateBallSpeed();
 		}
 	}
-
-	if ( isFastMode && remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) && remotePlayerInfo.IsBonusActive( BonusType::FireBullets ) )
+	else
 	{
 		if ( remotePlayerInfo.ballSpeed < ballSpeedFastMode )
 		{
@@ -1425,6 +1435,10 @@ void GameManager::Update( double delta )
 			UpdateBallSpeed();
 		}
 	}
+}
+void GameManager::Update( double delta )
+{
+	CheckBallSpeedFastMode( delta );
 
 	UpdateGUI();
 	UpdateNetwork();

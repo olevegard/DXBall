@@ -130,6 +130,10 @@ class GameManager
 		void UpdateLobbyState();
 		void UpdateGameList();
 
+
+		void CheckBallSpeedFastMode( double delta);
+		void IncreaseBallSpeedFastMode( const Player &player, double delta );
+
 		// Bonus boxes
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
