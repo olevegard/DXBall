@@ -1,17 +1,14 @@
 #include "GameManager.h"
 
-#include "Board.h"
+#include "structs/board/Board.h"
 #include "structs/game_objects/Ball.h"
 #include "structs/game_objects/Tile.h"
 #include "structs/game_objects/Paddle.h"
 #include "structs/game_objects/Bullet.h"
-
-#include "BoardLoader.h"
+#include "structs/net/TCPMessage.h"
 
 #include "math/Math.h"
 #include "math/RectHelpers.h"
-
-#include "structs/net/TCPMessage.h"
 
 #include "enums/MessageType.h"
 #include "enums/LobbyMenuItem.h"
@@ -22,9 +19,9 @@
 #include <iostream>
 #include <algorithm>
 #include <sstream>
-
 #include <cmath>
 
+#include "BoardLoader.h"
 #include "ConfigLoader.h"
 
 
@@ -370,7 +367,6 @@ void GameManager::UpdateBullets( double delta )
 		bullet->Update( delta );
 
 		CheckBulletTileIntersections( bullet );
-
 	}
 
 	if ( !isFastMode || !localPlayerInfo.bonusMap[BonusType::SuperBall] )
@@ -414,7 +410,6 @@ void GameManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet
 	}
 	if ( bulletHitTile )
 		HandleBulletTileIntersection( bullet, lowestTile );
-
 }
 void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
 {
@@ -561,7 +556,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveLevelDoneMessage( message );
 			break;
 		default:
-			std::Tout << "GameManager@" << __LINE__ << " UpdateNetwork unknown message received " << message << std::endl;
+			std::cout << "GameManager@" << __LINE__ << " UpdateNetwork unknown message received " << message << std::endl;
 			std::cin.ignore();
 			break;
 	}
@@ -1176,54 +1171,7 @@ void GameManager::FireBullets()
 
 	SendBulletFireMessage( bullet, bullet2 );
 }
-std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
-{
-	for ( auto p : ballList )
-	{
-		if ( ID == p->GetObjectID() )
-		{
-			return p;
-		}
-	}
 
-	return nullptr;
-}
-std::shared_ptr< Bullet > GameManager::GetBulletFromID( int32_t ID )
-{
-	for ( auto p : bulletList )
-	{
-		if ( ID == p->GetObjectID() )
-		{
-			return p;
-		}
-	}
-
-	return nullptr;
-}
-std::shared_ptr< Tile > GameManager::GetTileFromID( int32_t ID )
-{
-	for ( auto p : tileList )
-	{
-		if ( ID == p->GetObjectID() )
-			return p;
-	}
-
-	return nullptr;
-}
-
-std::shared_ptr< BonusBox > GameManager::GetBonusBoxFromID( int32_t ID )
-{
-	for ( auto p : bonusBoxList )
-	{
-		if ( ID == p->GetObjectID() )
-		{
-			return p;
-		}
-	}
-
-	return nullptr;
-
-}
 void GameManager::Run()
 {
 	unsigned int ticks;
@@ -1601,7 +1549,7 @@ void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 }
 void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
-	if ( !tile || !ball->TileCheck( tile->rect, tile->GetObjectID(), IsSuperBall( ball )) )
+	if ( !tile || !ball->TileCheck( tile->rect, IsSuperBall( ball )) )
 		return;
 
 	if ( ball->GetOwner() == Player::Local )
@@ -1882,8 +1830,6 @@ void GameManager::UpdateGUI( )
 }
 void GameManager::RendererScores()
 {
-
-
 	renderer.RenderPoints   ( localPlayerInfo.points, Player::Local );
 	renderer.RenderLives    ( localPlayerInfo.lives, Player::Local );
 	renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
@@ -2125,4 +2071,51 @@ void GameManager::ResetScale( )
 	{
 		p->SetScale( tempScale );
 	}
+}
+std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
+{
+	for ( auto p : ballList )
+	{
+		if ( ID == p->GetObjectID() )
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
+}
+std::shared_ptr< Bullet > GameManager::GetBulletFromID( int32_t ID )
+{
+	for ( auto p : bulletList )
+	{
+		if ( ID == p->GetObjectID() )
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
+}
+std::shared_ptr< Tile > GameManager::GetTileFromID( int32_t ID )
+{
+	for ( auto p : tileList )
+	{
+		if ( ID == p->GetObjectID() )
+			return p;
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr< BonusBox > GameManager::GetBonusBoxFromID( int32_t ID )
+{
+	for ( auto p : bonusBoxList )
+	{
+		if ( ID == p->GetObjectID() )
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
 }
