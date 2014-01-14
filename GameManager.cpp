@@ -1807,27 +1807,7 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 				++remotePlayerInfo.lives;
 			break;
 		case BonusType::Death:
-			{
-			if ( ptr->GetOwner() == Player::Local )
-			{
-				renderer.RenderText( "Death!!", Player::Local, true );
-			}
-
-			int32_t countKilled = 0;
-			for ( auto p : ballList )
-			{
-				if ( p->GetOwner() == ptr->GetOwner() )
-				{
-					++countKilled;
-					p->Kill();
-					renderer.RemoveText();
-				}
-			}
-			if ( countKilled != 0 )
-				DeleteDeadBalls();
-			else
-				ReducePlayerLifes( ptr->GetOwner() );
-			}
+			ApplyBonus_Death( ptr->GetOwner() );
 			break;
 		case BonusType::SuperBall:
 			if ( ptr->GetOwner() == Player::Local )
@@ -1854,6 +1834,28 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 	}
 
 	ptr->Kill();
+}
+void GameManager::ApplyBonus_Death( const Player &player )
+{
+	if ( player == Player::Local )
+		renderer.RenderText( "Death!!", Player::Local, true );
+
+	if ( KillAllTilesWithOwner( player ) )
+		// Delete all dead Balls, will in turns reduce Player life
+		DeleteDeadBalls();
+}
+bool GameManager::KillAllTilesWithOwner( const Player &player )
+{
+	bool tilesKilled = false;
+	for ( auto p : ballList )
+	{
+		if ( p->GetOwner() == player )
+		{
+			p->Kill();
+			tilesKilled = true;
+		}
+	}
+	return tilesKilled;
 }
 BonusType GameManager::GetRandomBonusType() const
 {

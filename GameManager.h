@@ -138,7 +138,11 @@ class GameManager
 		void UpdateBonusBoxes( double delta );
 		void MoveBonusBoxes( double delta );
 		void RemoveDeadBonusBoxes();
+
 		void ApplyBonus( std::shared_ptr< BonusBox > &ptr );
+		void ApplyBonus_Death( const Player &player );
+
+		bool KillAllTilesWithOwner( const Player &player );
 		BonusType GetRandomBonusType() const;
 
 		// Network
