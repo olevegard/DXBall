@@ -124,7 +124,7 @@ class GameManager
 
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 		void ReducePlayerLifes( Player player );
-		void RemoveDeadBallsAndBoxes( Player player );
+		void KillBallsAndBonusBoxes( const Player &player );
 
 		void Update( double delta );
 		void UpdateLobbyState();

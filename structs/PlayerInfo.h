@@ -25,6 +25,19 @@ struct PlayerInfo
 	{
 		 bonusMap[ bonusType ] = isActive;
 	}
+	void ReduceLifes()
+	{
+		if ( lives == 0 )
+			return;
+
+		--lives;
+		RemoveAllBonuses();
+	}
+	void RemoveAllBonuses()
+	{
+		for ( auto &p : bonusMap )
+			p.second = false;
+	}
 
 	std::string name;
 	unsigned int points;

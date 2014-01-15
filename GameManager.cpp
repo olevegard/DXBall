@@ -1977,32 +1977,20 @@ void GameManager::ReducePlayerLifes( Player player )
 
 	if ( player == Player::Local )
 	{
-		if ( localPlayerInfo.lives == 0 )
-			return;
-
-		--localPlayerInfo.lives;
-
-		localPlayerInfo.SetBonusActive( BonusType::FireBullets, false );
-		localPlayerInfo.SetBonusActive( BonusType::SuperBall, false );
+		localPlayerInfo.ReduceLifes();
 
 		if ( localPlayerInfo.lives == 0 )
-			RemoveDeadBallsAndBoxes( Player::Local );
+			KillBallsAndBonusBoxes( Player::Local );
 	}
 	else
 	{
-		if ( remotePlayerInfo.lives == 0 )
-			return;
-
-		--remotePlayerInfo.lives;
-
-		remotePlayerInfo.SetBonusActive( BonusType::FireBullets, false );
-		remotePlayerInfo.SetBonusActive( BonusType::SuperBall, false );
+		remotePlayerInfo.ReduceLifes();
 
 		if ( remotePlayerInfo.lives == 0 )
-			RemoveDeadBallsAndBoxes( Player::Remote );
+			KillBallsAndBonusBoxes( Player::Remote );
 	}
 }
-void GameManager::RemoveDeadBallsAndBoxes( Player player )
+void GameManager::KillBallsAndBonusBoxes( const Player &player )
 {
 	for ( auto p : ballList )
 	{
@@ -2015,7 +2003,6 @@ void GameManager::RemoveDeadBallsAndBoxes( Player player )
 			p->Kill();
 	}
 }
-
 void GameManager::SetLocalPaddlePosition( int x, int y )
 {
 	if ( x != 0 && y != 0 )
