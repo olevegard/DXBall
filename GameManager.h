@@ -92,6 +92,7 @@ class GameManager
 		// Game status
 		void HandleStatusChange( );
 		void Restart();
+		void CheckIfGameIsOver();
 
 		// AI
 		void AIMove();
@@ -127,6 +128,8 @@ class GameManager
 		void KillBallsAndBonusBoxes( const Player &player );
 
 		void Update( double delta );
+		void UpdateGameObjects( double delta );
+		void UpdateBoard();
 		void UpdateLobbyState();
 		void UpdateGameList();
 

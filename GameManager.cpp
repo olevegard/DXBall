@@ -339,6 +339,8 @@ void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 }
 void GameManager::UpdateBalls( double delta )
 {
+	CheckBallSpeedFastMode( delta );
+
 	for ( auto p : ballList )
 	{
 		p->Update( delta );
@@ -1386,8 +1388,6 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 }
 void GameManager::Update( double delta )
 {
-	CheckBallSpeedFastMode( delta );
-
 	UpdateGUI();
 	UpdateNetwork();
 
@@ -1397,19 +1397,29 @@ void GameManager::Update( double delta )
 		return;
 	}
 
+	AIMove();
+	UpdateBoard();
+	UpdateGameObjects( delta );
+	renderer.Update( delta );
+	CheckIfGameIsOver();
+}
+void GameManager::UpdateGameObjects( double delta )
+{
+	UpdateBalls( delta );
+	UpdateBullets( delta );
+	UpdateBonusBoxes( delta );
+}
+void GameManager::UpdateBoard()
+{
 	if ( IsTimeForNewBoard() )
 	{
 		std::cout << "GameManager@" << __LINE__ << " Generating board...\n";
 		DeleteAllBullets();
 		GenerateBoard();
 	}
-
-	AIMove();
-	UpdateBalls( delta );
-	UpdateBullets( delta );
-	UpdateBonusBoxes( delta );
-	renderer.Update( delta );
-
+}
+void GameManager::CheckIfGameIsOver()
+{
 	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
 	{
 		std::cout << "GameManager@" << __LINE__
@@ -1418,7 +1428,6 @@ void GameManager::Update( double delta )
 			<< " =========="
 			<< std::endl;
 		menuManager.SetGameState( GameState::GameOver );
-		return;
 	}
 }
 void GameManager::UpdateLobbyState()
