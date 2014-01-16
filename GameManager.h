@@ -28,10 +28,9 @@ class GameManager
 {
 	public:
 		GameManager();
+
 		// Startup options
 		bool Init( const std::string &localPlayerName, const SDL_Rect &size, bool startFS );
-		void InitPaddles();
-		void InitMenu();
 
 		// Setters
 		void SetFPSLimit( unsigned short limit );
@@ -39,73 +38,94 @@ class GameManager
 
 		// Ipdate
 		void Run();
-		void UpdateGUI( );
 
 		void InitNetManager( std::string ip_, uint16_t port_ );
 	private:
-		// Add / Remoe game objects
-		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
-		bool CanPlayerFireBall( const Player &player ) const;
-		std::shared_ptr< Ball >  LaunchBall( const Player &player, uint32_t ballID );
-		void IncreaseActiveBalls( const Player &player );
-		double GetBallSpeed( const Player &player ) const;
-
-		void RemoveBall( std::shared_ptr< Ball > pBall );
-		void ReduceActiveBalls( const Player &player, uint32_t ballID );
-
-		void AddTile( short posX, short posY, TileType tileType );
-		void RemoveTile( std::shared_ptr< Tile > pTile );
+		// Bonus Boxes
+		// ===========================================
+		void SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const Player &owner, const Vector2f &pos  ) const;
+		void SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir ) const;
+		void MoveBonusBoxes( double delta );
+		bool WasBonusBoxSpawned( int32_t tilesDestroyed ) const;
+		BonusType GetRandomBonusType() const;
 
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed = 1 );
-		bool WasBonusBoxSpawned( int32_t tilesDestroyed ) const;
-		void SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const Player &owner, const Vector2f &pos  ) const;
-		void SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir ) const;
-
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
+		void KillBallsAndBonusBoxes( const Player &player );
 		void DeleteAllBonusBoxes();
+		void RemoveDeadBonusBoxes();
 
-		// Config
-		void LoadConfig();
+		std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID );
+		void ApplyBonus( std::shared_ptr< BonusBox > &ptr );
+		void ApplyBonus_Death( const Player &player );
+		bool KillAllTilesWithOwner( const Player &player );
 
-		// Ball checks
-		void UpdateBalls( double delta );
+		// Ball
+		// ===========================================
 		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
+		void UpdateBallSpeed();
+		std::shared_ptr< Ball >  LaunchBall( const Player &player, uint32_t ballID );
+		void IncreaseActiveBalls( const Player &player );
+		void ReduceActiveBalls( const Player &player, uint32_t ballID );
+		void CheckBallSpeedFastMode( double delta);
+		void IncreaseBallSpeedFastMode( const Player &player, double delta );
+
 		void DeleteDeadBalls();
 		void DeleteDeadTiles();
-		void UpdateBallSpeed();
+		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
+		void RemoveBall( std::shared_ptr< Ball > pBall );
+
+		bool IsSuperBall( std::shared_ptr< Ball > ball );
+		double GetBallSpeed( const Player &player ) const;
+		bool CanPlayerFireBall( const Player &player ) const;
+
+		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
 
 		// Bullets
-		void UpdateBullets( double delta );
-		bool DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
+		// ===========================================
 		void CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet );
 		void HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
-		bool IsSuperBullet( const Player owner ) const;
+
 		void DeleteDeadBullets();
 		void DeleteAllBullets();
 		void FireBullets();
 
-		// Input
-		void HandleEvent( const SDL_Event &event );
-		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
-		void HandleKeyboardEvent( const SDL_Event &event );
-		void HandleMenuKeys( const SDL_Event &event );
-		void HandleGameKeys( const SDL_Event &event );
+		bool DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
+		std::shared_ptr< Bullet > GetBulletFromID( int32_t ID );
+		bool IsSuperBullet( const Player owner ) const;
+
+		// Tiles
+		// ==========================================
+		void AddTile( short posX, short posY, TileType tileType );
+		void RemoveTile( std::shared_ptr< Tile > pTile );
+		std::shared_ptr< Tile > GetTileFromID( int32_t ID );
+
+		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
+		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
+		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
+
+		// Paddles
+		// ===========================================
+		void SetLocalPaddlePosition( int x, int y );
+
+		// Config
+		// ===========================================
+		void LoadConfig();
 
 		// Joystick
-		void InitJoystick();
-		void UpdateJoystick( );
-		void HandleJoystickEvent( const SDL_JoyButtonEvent &event );
+		// ==========================================
 		DirectionX GetJoystickDirection( int32_t axis );
 		void DoJoystickMovement( const DirectionX &dirX );
 
-
 		// Game status
+		// ==========================================
 		void HandleStatusChange( );
 		void Restart();
 		void CheckIfGameIsOver();
 
 		// AI
+		// ==========================================
 		void AIMove();
 		std::shared_ptr< Ball > FindHighestBall();
 		bool IsTimeForAIMove( std::shared_ptr< Ball > highest ) const;
@@ -113,59 +133,68 @@ class GameManager
 		void CreateMenu();
 
 		// New Game / Join Game / Update
+		// ==========================================
 		void StartNewGame();
 		void JoinGame();
 
-		// Tile collisions
-		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
-		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
-		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
-		bool IsSuperBall( std::shared_ptr< Ball > ball );
-
 		// Explotion related
+		// ===========================================
 		int HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
 		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
 		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
 
 		// Board handling
+		// ===========================================
 		void GenerateBoard();
 		void ClearBoard();
 		bool IsLevelDone();
 		int32_t CountDestroyableTiles();
 		bool IsTimeForNewBoard();
 
+		// Points / Lives
+		// ===========================================
 		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
 		void ReducePlayerLifes( Player player );
-		void KillBallsAndBonusBoxes( const Player &player );
 
+		// Update
+		// ===========================================
 		void Update( double delta );
 		void UpdateGameObjects( double delta );
-		void UpdateBoard();
-		void UpdateLobbyState();
-		void UpdateGameList();
-
-
-		void CheckBallSpeedFastMode( double delta);
-		void IncreaseBallSpeedFastMode( const Player &player, double delta );
-
-		// Bonus boxes
 		void UpdateBonusBoxes( double delta );
-		void MoveBonusBoxes( double delta );
-		void RemoveDeadBonusBoxes();
+		void UpdateBullets( double delta );
+		void UpdateBalls( double delta );
 
-		void ApplyBonus( std::shared_ptr< BonusBox > &ptr );
-		void ApplyBonus_Death( const Player &player );
+		void UpdateLobbyState();
+		void UpdateJoystick( );
+		void UpdateGameList();
+		void UpdateNetwork();
+		void UpdateBoard();
+		void UpdateGUI( );
 
-		bool KillAllTilesWithOwner( const Player &player );
-		BonusType GetRandomBonusType() const;
+		// Input
+		// ===========================================
+		void HandleEvent( const SDL_Event &event );
+		void HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent );
+		void HandleKeyboardEvent( const SDL_Event &event );
+		void HandleMenuKeys( const SDL_Event &event );
+		void HandleGameKeys( const SDL_Event &event );
+		void HandleJoystickEvent( const SDL_JoyButtonEvent &event );
+
+		// Input
+		// ===========================================
+		void InitJoystick();
+		void InitPaddles();
+		void InitMenu();
+
 
 		// Network
+		// ===========================================
 		void PrintSend( const TCPMessage &msg ) const;
 		void PrintRecv( const TCPMessage &msg ) const;
 
-		void UpdateNetwork();
 
 		// Recieve messages
+		// ===========================================
 		void ReadMessages( );
 		void ReadMessagesFromServer( );
 		void HandleRecieveMessage( const TCPMessage &message );
@@ -188,9 +217,8 @@ class GameManager
 		void RecieveBulletFireMessage( const TCPMessage &message );
 		void RecieveBulletKillMessage( const TCPMessage &message );
 
-		// Send messages
-
-		// System messages
+		// Send system messages
+		// ===========================================
 		void SendPlayerName();
 		void SendJoinGameMessage(const GameInfo &gameInfo );
 		void SendGameSettingsMessage();
@@ -198,6 +226,7 @@ class GameManager
 		void SendLevelDoneMessage( );
 
 		// Server messages
+		// ===========================================
 		void SendNewGameMessage( );
 		void SendEndGameMessage( );
 		void SendGetGameListMessage( );
@@ -214,37 +243,32 @@ class GameManager
 
 		void SendMessage( const TCPMessage &message, const MessageTarget &target );
 
-		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
-		std::shared_ptr< Bullet > GetBulletFromID( int32_t ID );
-		std::shared_ptr< Tile > GetTileFromID( int32_t ID );
-		std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID );
-
-		// Paddles
-		void SetLocalPaddlePosition( int x, int y );
-
 		void DoFPSDelay( unsigned int ticks );
 
 		// Scaling
+		// ===========================================
 		void SetScale( double scale );
 		void ApplyScale( );
 		void ResetScale( );
 
 		// Rendering
+		// ===========================================
 		void RendererScores();
 		void RenderInGame();
 		void RenderEndGame();
 
 		// Variables
+		// ===========================================
 		BoardLoader boardLoader;
 		Renderer renderer;
 		Timer timer;
 		MenuManager menuManager;
 		GameConfig gameConfig;
+		NetManager netManager;
 
 		bool runGame;
 		bool isOpnonentDoneWithLevel;
 
-		NetManager netManager;
 		std::string ip;
 		uint16_t port;
 		int32_t gameID;
@@ -266,9 +290,8 @@ class GameManager
 
 		SDL_Rect windowSize;
 		double scale;
-		unsigned int points[4];
-
 		double remoteResolutionScale;
+		unsigned int points[4];
 
 		unsigned int tileCount;
 		unsigned int ballCount;
