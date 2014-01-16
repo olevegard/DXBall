@@ -280,10 +280,7 @@ GameState MenuManager::GetPrevGameState() const
 void MenuManager::SetGameState( const GameState &gs )
 {
 	if ( !IsGameStateChangeValid( gs ) )
-	{
-		std::cout << "MenuManager.cpp@" << __LINE__ << " : GameState Invalid\n";
 		return;
-	}
 
 	std::cout << "MenuManager.cpp@" << __LINE__ << " Changing game state from : "
 		<< static_cast< int32_t > ( currentGameState  ) << " to "
@@ -297,10 +294,16 @@ void MenuManager::SetGameState( const GameState &gs )
 bool MenuManager::IsGameStateChangeValid( const GameState &gs) const
 {
 	if ( gs == GameState::Paused && currentGameState == GameState::MainMenu )
+	{
+		std::cout << "MenuManager.cpp@" << __LINE__ << " : GameState Invalid\n";
 		return false;
+	}
 
 	if ( gs == currentGameState )
+	{
+		std::cout << "MenuManager.cpp@" << __LINE__ << " : GameState Same as before\n";
 		return false;
+	}
 
 	return true;
 }
