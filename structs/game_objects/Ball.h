@@ -22,7 +22,8 @@ struct Ball : GamePiece
 	bool BoundCheck( const SDL_Rect &boundsRect );
 	bool DeathCheck( const SDL_Rect &boundsRect );
 	bool PaddleCheck( const Rect &paddleRect );
-	bool TileCheck( const Rect &paddleRect, unsigned int tileID, bool isSuperBall );
+	bool TileCheck( const Rect &tileRect, bool isSuperBall );
+	bool DidBallHitTile( const Rect &tileRect );
 
 	bool CheckTileSphereIntersection( const Rect &tile, const Rect &ball, double &retDistance ) const;
 
@@ -36,6 +37,11 @@ struct Ball : GamePiece
 	private:
 
 	void NormalizeDirection();
+
+	// Bounds Check Helpers
+	//==================================
+	bool CheckSideCollisions( const SDL_Rect &boundsRect );
+	bool CheckTopBottomCollision( const SDL_Rect &boundsRect );
 
 	// Paddle Hit
 	//==================================
@@ -63,7 +69,7 @@ struct Ball : GamePiece
 	double dirX;
 	double dirY;
 
-	unsigned int lastTileHit;
+	//unsigned int lastTileHit;
 
 	//bool debugMode;
 

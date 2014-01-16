@@ -89,10 +89,18 @@ void Ball::Update( double tick )
 }
 bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 {
+	if ( CheckSideCollisions( boundsRect ) )
+		return true;
+
+	if ( CheckTopBottomCollision( boundsRect ) )
+		return true;
+
+	return false;
+}
+bool Ball::CheckSideCollisions( const SDL_Rect &boundsRect )
+{
 	double left   = static_cast< double > ( boundsRect.x );
-	double right  = static_cast< double > ( boundsRect.x ) + boundsRect.w;
-	double top    = static_cast< double > ( boundsRect.y );
-	double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
+	double right  = static_cast< double > ( boundsRect.x + boundsRect.w );
 
 	if ( rect.x < left )
 	{
@@ -108,8 +116,13 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 		return true;
 	}
 
+	return false;
+}
+bool Ball::CheckTopBottomCollision( const SDL_Rect &boundsRect )
+{
 	if ( ballOwner == Player::Local )
 	{
+		double top    = static_cast< double > ( boundsRect.y );
 		if ( rect.y < top )
 		{
 			rect.y = top;
@@ -117,9 +130,9 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 			return true;
 		}
 	}
-
-	if ( ballOwner == Player::Remote )
+	else if ( ballOwner == Player::Remote )
 	{
+		double bottom = static_cast< double > ( boundsRect.y + boundsRect.h );
 		if ( ( rect.y + rect.h ) > bottom )
 		{
 			rect.y = bottom - rect.h;
@@ -127,7 +140,6 @@ bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 			return true;
 		}
 	}
-
 	return false;
 }
 bool Ball::DeathCheck( const SDL_Rect &boundsRect )
@@ -199,21 +211,23 @@ void  Ball::CalculateNewBallDirection( double hitPosition )
 
 	NormalizeDirection();
 }
-bool Ball::TileCheck( const Rect &tileRect, unsigned int tileID, bool isSuperBall )
+bool Ball::DidBallHitTile( const Rect &tileRect )
 {
-	// If the ball collided with the same rect in previous frame too,
-	// This means the ball needs an extra frame to get fully out of the tile
-	if ( lastTileHit == tileID )
-		return false;
-
 	if ( !tileRect.CheckTileIntersection( rect ) )
 		return false;
 
-	double dist = 0;
+	double dist = 0.0;
 	if ( !CheckTileSphereIntersection( tileRect, rect, dist ) )
 		return false;
 
-	lastTileHit = tileID;
+	return true;
+}
+bool Ball::TileCheck( const Rect &tileRect, bool isSuperBall )
+{
+	// If the ball collided with the same rect in previous frame too,
+	// This means the ball needs an extra frame to get fully out of the tile
+	//if ( lastTileHit == tileID ) return false;
+	//lastTileHit = tileID;
 
 	if ( !isSuperBall )
 		FindIntersectingSide( tileRect );
