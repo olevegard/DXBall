@@ -11,6 +11,9 @@
 
 #include <vector>
 
+
+enum class DirectionX{ Left, Middle, Right };
+
 // Forward declarations
 class TCPMessage;
 enum class TileType : int;
@@ -88,6 +91,14 @@ class GameManager
 		void HandleKeyboardEvent( const SDL_Event &event );
 		void HandleMenuKeys( const SDL_Event &event );
 		void HandleGameKeys( const SDL_Event &event );
+
+		// Joystick
+		void InitJoystick();
+		void UpdateJoystick( );
+		void HandleJoystickEvent( const SDL_JoyButtonEvent &event );
+		DirectionX GetJoystickDirection( int32_t axis );
+		void DoJoystickMovement( const DirectionX &dirX );
+
 
 		// Game status
 		void HandleStatusChange( );
@@ -271,4 +282,6 @@ class GameManager
 		double ballSpeedFastMode;
 		double bonusBoxSpeed;
 		double bulletSpeed;
+
+		SDL_Joystick *stick;
 };

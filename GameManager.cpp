@@ -54,6 +54,8 @@
 	,	ballSpeedFastMode( 1.0 )
 	,	bonusBoxSpeed( 0.2 )
 	,	bulletSpeed( 1.0 )
+
+	,	stick( nullptr )
 {
 	windowSize.x = 0.0;
 	windowSize.y = 0.0;
@@ -77,6 +79,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
 	InitPaddles();
 	InitMenu();
+	InitJoystick();
 
 	LoadConfig();
 
@@ -1187,6 +1190,7 @@ void GameManager::Run()
 			HandleEvent( event );
 		}
 
+
 		HandleStatusChange();
 
 		Update( timer.GetDelta( ) );
@@ -1244,6 +1248,10 @@ void GameManager::HandleEvent( const SDL_Event &event )
 	{
 		HandleKeyboardEvent( event );
 	}
+	else if ( event.type == SDL_JOYBUTTONDOWN || event.type == SDL_JOYBUTTONUP )
+	{
+		HandleJoystickEvent( event.jbutton );
+	}
 }
 void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
@@ -1276,6 +1284,55 @@ void GameManager::HandleKeyboardEvent( const SDL_Event &event )
 {
 	HandleMenuKeys( event );
 	HandleGameKeys( event );
+}
+void GameManager::InitJoystick()
+{
+	if ( SDL_NumJoysticks() > 0 )
+	{
+		stick = SDL_JoystickOpen( 0 );
+		if ( stick == nullptr )
+			std::cout << "GameMaanager@" << __LINE__ << " Could not grab joystick\n";
+	}
+	else
+		std::cout << "GameMaanager@" << __LINE__ << " No  joysticks where found!\n";
+
+}
+void GameManager::HandleJoystickEvent( const SDL_JoyButtonEvent &event )
+{
+	if ( event.state == SDL_PRESSED )
+		AddBall( Player::Local, ballCount );
+
+	//std::cout << "eve " << static_cast< int32_t > ( event.button ) << std::endl;
+}
+void GameManager::UpdateJoystick( )
+{
+	DirectionX dirX = GetJoystickDirection( 0 );
+	DoJoystickMovement( dirX );
+}
+DirectionX GameManager::GetJoystickDirection( int32_t axis )
+{
+	DirectionX dirX = DirectionX::Middle;
+	if ( SDL_JoystickGetAxis( stick, axis ) > 0 )
+		dirX = DirectionX::Right;
+	else if ( SDL_JoystickGetAxis( stick, axis ) < 0 )
+		dirX = DirectionX::Left;
+
+	return dirX;
+}
+void GameManager::DoJoystickMovement( const DirectionX &dirX )
+{
+	if ( dirX == DirectionX::Right )
+	{
+		localPaddle->rect.x += 10;
+		if ( localPaddle->rect.x > windowSize.w )
+			localPaddle->rect.x = 0;
+	}
+	else if ( dirX == DirectionX::Left )
+	{
+		localPaddle->rect.x -= 10;
+		if ( localPaddle->rect.x < 0 )
+			localPaddle->rect.x = windowSize.w;
+	}
 }
 void GameManager::HandleMenuKeys( const SDL_Event &event )
 {
@@ -1388,6 +1445,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 }
 void GameManager::Update( double delta )
 {
+	UpdateJoystick( );
 	UpdateGUI();
 	UpdateNetwork();
 
