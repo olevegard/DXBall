@@ -26,10 +26,10 @@
 
 
 	GameManager::GameManager()
-	:	runGame( true )
-	,	renderer()
+	:	renderer()
 	,	timer()
-	,	isFastMode( true )
+
+	,	runGame( true )
 	,	isOpnonentDoneWithLevel( false )
 
 	,	gameID( 0 )
@@ -51,9 +51,6 @@
 
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
-	,	ballSpeedFastMode( 1.0 )
-	,	bonusBoxSpeed( 0.2 )
-	,	bulletSpeed( 1.0 )
 
 	,	stick( nullptr )
 {
@@ -123,16 +120,10 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 }
 void GameManager::LoadConfig()
 {
-	configLodaer.LoadConfig();
-	bonusBoxSpeed = configLodaer.GetBonusBoxSpeed();
-	localPlayerInfo.ballSpeed = configLodaer.GetBallSpeed();
-	remotePlayerInfo.ballSpeed = configLodaer.GetBallSpeed();
-	ballSpeedFastMode = configLodaer.GetBallSpeedFastMode();
-	bulletSpeed = configLodaer.GetBulletSpeed();
+	gameConfig.LoadConfig();
 
-	isFastMode = configLodaer.GetIsFastMode();
-
-	bonusBoxChance = configLodaer.GetBonusBoxChance();
+	localPlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
+	remotePlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
 }
 void GameManager::CreateMenu()
 {
@@ -307,7 +298,7 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 }
 bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
 {
-	int randMax = bonusBoxChance;
+	int randMax = gameConfig.GetBonusBoxChance();
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
@@ -324,7 +315,7 @@ void GameManager::SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const P
 
 	bonusBox->SetOwner( owner  );
 	bonusBox->SetBonusType( GetRandomBonusType()  );
-	bonusBox->SetSpeed( bonusBoxSpeed );
+	bonusBox->SetSpeed( gameConfig.GetBonusBoxSpeed());
 }
 void GameManager::SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir_ ) const
 {
@@ -374,7 +365,7 @@ void GameManager::UpdateBullets( double delta )
 		CheckBulletTileIntersections( bullet );
 	}
 
-	if ( !isFastMode || !localPlayerInfo.bonusMap[BonusType::SuperBall] )
+	if ( !gameConfig.IsFastMode() || !localPlayerInfo.bonusMap[BonusType::SuperBall] )
 		DeleteDeadBullets();
 	DeleteDeadTiles();
 }
@@ -448,7 +439,7 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 }
 bool GameManager::IsSuperBullet( const Player owner ) const
 {
-	if ( !isFastMode )
+	if ( !gameConfig.IsFastMode() )
 		return false;
 
 	if ( owner == Player::Local && localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
@@ -717,7 +708,7 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 	bonusBox->SetOwner( Player::Remote );
 	bonusBox->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() * -1.0 ) );
 	bonusBox->SetBonusType( message.GetBonusType() );
-	bonusBox->SetSpeed( bonusBoxSpeed );
+	bonusBox->SetSpeed( gameConfig.GetBonusBoxSpeed());
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -739,14 +730,14 @@ void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 {
 	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( message.GetObjectID() );
 	bullet->SetPosition( message.GetXPos(),  message.GetYPos() );
-	bullet->SetSpeed( bulletSpeed );
+	bullet->SetSpeed( gameConfig.GetBulletSpeed() );
 	bullet->SetOwner( Player::Remote );
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
 
 	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( message.GetObjectID2() );
 	bullet2->SetPosition( message.GetXPos2(), message.GetYPos2() );
-	bullet2->SetSpeed( bulletSpeed );
+	bullet2->SetSpeed( gameConfig.GetBulletSpeed() );
 	bullet2->SetOwner( Player::Remote );
 	bulletList.push_back( bullet2 );
 	renderer.AddBullet( bullet2 );
@@ -1163,14 +1154,14 @@ void GameManager::FireBullets()
 	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( bulletCount++ );
 	bullet->SetOwner( Player::Local );
 	bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
-	bullet->SetSpeed( bulletSpeed );
+	bullet->SetSpeed( gameConfig.GetBulletSpeed() );
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
 
 	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( bulletCount++ );
 	bullet2->SetOwner( Player::Local );
 	bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w - bullet2->rect.w, localPaddle->rect.y - 10 );
-	bullet2->SetSpeed( bulletSpeed );
+	bullet2->SetSpeed( gameConfig.GetBulletSpeed() );
 	bulletList.push_back( bullet2 );
 	renderer.AddBullet( bullet2 );
 
@@ -1415,7 +1406,7 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 }
 void GameManager::CheckBallSpeedFastMode( double delta )
 {
-	if ( !isFastMode )
+	if ( !gameConfig.IsFastMode() )
 		return;
 
 	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) && localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
@@ -1428,7 +1419,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerInfo.ballSpeed < ballSpeedFastMode )
+		if ( localPlayerInfo.ballSpeed < gameConfig.GetBallSpeedFastMode())
 		{
 			localPlayerInfo.ballSpeed += delta * 0.0005;
 			UpdateBallSpeed();
@@ -1436,7 +1427,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 	}
 	else
 	{
-		if ( remotePlayerInfo.ballSpeed < ballSpeedFastMode )
+		if ( remotePlayerInfo.ballSpeed < gameConfig.GetBallSpeedFastMode() )
 		{
 			remotePlayerInfo.ballSpeed += delta * 0.0005;
 			UpdateBallSpeed();

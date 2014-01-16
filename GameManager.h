@@ -5,9 +5,9 @@
 #include "NetManager.h"
 #include "BoardLoader.h"
 #include "MenuManager.h"
-#include "ConfigLoader.h"
 
 #include "structs/PlayerInfo.h"
+#include "structs/GameConfig.h"
 
 #include <vector>
 
@@ -235,15 +235,14 @@ class GameManager
 		void RenderEndGame();
 
 		// Variables
-		bool runGame;
 		BoardLoader boardLoader;
 		Renderer renderer;
 		Timer timer;
 		MenuManager menuManager;
-		ConfigLoader configLodaer;
-		bool isFastMode;
+		GameConfig gameConfig;
+
+		bool runGame;
 		bool isOpnonentDoneWithLevel;
-		int32_t bonusBoxChance;
 
 		NetManager netManager;
 		std::string ip;
@@ -278,10 +277,6 @@ class GameManager
 
 		unsigned short fpsLimit;
 		double frameDuration;
-
-		double ballSpeedFastMode;
-		double bonusBoxSpeed;
-		double bulletSpeed;
 
 		SDL_Joystick *stick;
 };
