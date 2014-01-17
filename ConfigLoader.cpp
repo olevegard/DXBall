@@ -66,6 +66,12 @@ void ConfigLoader::LoadConfig()
 			ss >>points[TileType::Unbreakable];
 			continue;
 		}
+		else if (  configLine.find( "points_hit" ) != std::string::npos )
+		{
+			ss >> pointsHit;
+			continue;
+		}
+
 	}
 
 	PrintConfig();

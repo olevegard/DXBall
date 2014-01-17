@@ -58,6 +58,10 @@ class ConfigLoader
 	{
 		return points;
 	}
+	int32_t GetPointsHit()
+	{
+		return pointsHit;
+	}
 	private:
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
 	void PrintIndented( const std::string &colorName );
@@ -74,5 +78,6 @@ class ConfigLoader
 	int32_t bonusBoxChance;
 
 	std::map< TileType, int32_t > points;
+	int32_t pointsHit;
 };
 

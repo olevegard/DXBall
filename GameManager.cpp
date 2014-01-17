@@ -2013,13 +2013,13 @@ void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, P
 {
 	if ( ballOwner == Player::Local )
 	{
-		localPlayerInfo.points += 10;
+		localPlayerInfo.points += gameConfig.GetPointsHit();
 
 		if ( isDestroyed )
 			localPlayerInfo.points += gameConfig.GetTilePoints( tileType );
 	} else if ( ballOwner == Player::Remote )
 	{
-		remotePlayerInfo.points += 10;
+		remotePlayerInfo.points += gameConfig.GetPointsHit();
 
 		if ( isDestroyed )
 			remotePlayerInfo.points += gameConfig.GetTilePoints( tileType );
