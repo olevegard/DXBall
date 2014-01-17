@@ -42,13 +42,21 @@ class ConfigLoader
 	{
 		return bonusBoxSpeed;
 	}
-	bool GetIsFastMode() const
+	bool IsFastMode() const
 	{
 		return isFastMode;
 	}
 	int32_t GetBonusBoxChance() const
 	{
 		return bonusBoxChance;
+	}
+	int32_t GetTilePoints( const TileType &tt )
+	{
+		return points[tt];
+	}
+	std::map< TileType, int32_t > GetPoints() const
+	{
+		return points;
 	}
 	private:
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
@@ -64,5 +72,7 @@ class ConfigLoader
 	bool isFastMode;
 
 	int32_t bonusBoxChance;
+
+	std::map< TileType, int32_t > points;
 };
 

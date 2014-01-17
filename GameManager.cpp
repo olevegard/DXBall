@@ -40,7 +40,6 @@
 	,	ballList()
 	,	windowSize()
 	,	scale( 1.0 )
-	,	points{ 20, 50, 100, 500 }
 
 	,	remoteResolutionScale( 1.0 )
 
@@ -96,7 +95,6 @@ void GameManager::InitPaddles()
 	localPaddle->rect.h = 30;
 	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
 	localPaddle->SetScale( scale );
-	std::cout << "GameManager@" << __LINE__ << " Local paddle : " << localPaddle << std::endl;
 	renderer.SetLocalPaddle( localPaddle );
 
 	remotePaddle = std::make_shared< Paddle > ();
@@ -105,7 +103,6 @@ void GameManager::InitPaddles()
 	remotePaddle->rect.h = 30;
 	remotePaddle->rect.x = 400;
 	remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
-	std::cout << "GameManager@" << __LINE__ << " Remote paddle : " << remotePaddle << std::endl;
 	renderer.SetRemotePaddle( remotePaddle );
 }
 void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
@@ -425,7 +422,7 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 	} else
 		tile->Kill();
 
-	IncrementPoints( tile->GetTileTypeAsIndex(), !tile->IsAlive(), owner );
+	IncrementPoints( tile->GetTileType(), !tile->IsAlive(), owner );
 
 	if ( tile->IsAlive() )
 		return;
@@ -677,7 +674,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 		tile->Hit();
 
 	bool isDestroyed = !tile->IsAlive();
-	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, Player::Remote );
+	IncrementPoints( tile->GetTileType(), isDestroyed, Player::Remote );
 
 	if ( tile->GetTileType() == TileType::Explosive )
 	{
@@ -1632,7 +1629,7 @@ bool GameManager::IsSuperBall( std::shared_ptr< Ball > ball )
 void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
 	bool isDestroyed = !tile->IsAlive();
-	IncrementPoints( tile->GetTileTypeAsIndex(), isDestroyed, ball->GetOwner() );
+	IncrementPoints( tile->GetTileType(), isDestroyed, ball->GetOwner() );
 
 	if ( !isDestroyed )
 		return;
@@ -1680,7 +1677,7 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 		if ( !RectHelpers::CheckTileIntersection( rectVec, curr->rect) )
 			return;
 
-		IncrementPoints( curr->GetTileTypeAsIndex(), true, ballOwner );
+		IncrementPoints( curr->GetTileType(), true, ballOwner );
 		++countDestroyedTiles;
 		curr->Kill();
 	};
@@ -2012,21 +2009,20 @@ void GameManager::ClearBoard()
 
 	renderer.ClearBoard();
 }
-void GameManager::IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner )
+void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, Player ballOwner )
 {
 	if ( ballOwner == Player::Local )
 	{
 		localPlayerInfo.points += 10;
 
 		if ( isDestroyed )
-			localPlayerInfo.points += points[ tileType ];
+			localPlayerInfo.points += gameConfig.GetTilePoints( tileType );
 	} else if ( ballOwner == Player::Remote )
 	{
-
 		remotePlayerInfo.points += 10;
 
 		if ( isDestroyed )
-			remotePlayerInfo.points += points[ tileType ];
+			remotePlayerInfo.points += gameConfig.GetTilePoints( tileType );
 	}
 }
 void GameManager::ReducePlayerLifes( Player player )

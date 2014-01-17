@@ -4,19 +4,15 @@ void ColorConfigLoader::LoadConfig()
 {
 	std::ifstream configFile( "config/ColorCfg.txt" );
 	std::string configLine;
-	std::cout << "ColorConfigLoader.cpp@" << __LINE__ << " Loading config...";
 
 	while ( getline( configFile, configLine ) )
 	{
-
-		// local_player_color
 		if (  configLine.find( "local_player_color" ) != std::string::npos )
 		{
 			std::stringstream ss(configLine);
 			std::string str;
 			ss >> str;
 			ss >> localPlayerColor;
-			PrintColor( "local player color", localPlayerColor);
 			continue;
 		}
 		else if (  configLine.find( "remote_player_color" ) != std::string::npos )
@@ -25,7 +21,6 @@ void ColorConfigLoader::LoadConfig()
 			std::string str;
 			ss >> str;
 			ss >> remotePlayerColor;
-			PrintColor( "remote player color", remotePlayerColor);
 			continue;
 		}
 		else if (  configLine.find( "background_color" ) != std::string::npos )
@@ -34,7 +29,6 @@ void ColorConfigLoader::LoadConfig()
 			std::string str;
 			ss >> str;
 			ss >> backgroundColor;
-			PrintColor( "background color", backgroundColor);
 			continue;
 		}
 		else if (  configLine.find( "text_color" ) != std::string::npos )
@@ -43,7 +37,6 @@ void ColorConfigLoader::LoadConfig()
 			std::string str;
 			ss >> str;
 			ss >> textColor;
-			PrintColor( "text color", textColor);
 			continue;
 		}
 		else if (  configLine.find( "grey_area " ) != std::string::npos )
@@ -52,7 +45,6 @@ void ColorConfigLoader::LoadConfig()
 			std::string str;
 			ss >> str;
 			ss >> greayAreaColor;;
-			PrintColor( "grey area color", greayAreaColor);
 			continue;
 		}
 		else if (  configLine.find( "bonus_extra_life " ) != std::string::npos )
@@ -62,7 +54,6 @@ void ColorConfigLoader::LoadConfig()
 			SDL_Color color;
 			ss >> str;
 			ss >> color;;
-			PrintColor( "bonus extra life", color );
 			bonusTypeColors.insert( std::make_pair( BonusType::ExtraLife, color ) );
 			continue;
 		}
@@ -73,7 +64,6 @@ void ColorConfigLoader::LoadConfig()
 			SDL_Color color;
 			ss >> str;
 			ss >> color;;
-			PrintColor( "bonus death", color );
 			bonusTypeColors.insert( std::make_pair( BonusType::Death, color ) );
 			continue;
 		}
@@ -84,7 +74,6 @@ void ColorConfigLoader::LoadConfig()
 			SDL_Color color;
 			ss >> str;
 			ss >> color;;
-			PrintColor( "bonus super ball", color );
 			bonusTypeColors.insert( std::make_pair( BonusType::SuperBall, color ) );
 			continue;
 		}
@@ -95,7 +84,6 @@ void ColorConfigLoader::LoadConfig()
 			SDL_Color color;
 			ss >> str;
 			ss >> color;;
-			PrintColor( "bonus fire bullets", color );
 			bonusTypeColors.insert( std::make_pair( BonusType::FireBullets, color ) );
 			continue;
 		}
@@ -109,8 +97,6 @@ void ColorConfigLoader::LoadConfig()
 		ss >> tc;
 		colorConfig.push_back( tc );
 	}
-
-	PrintConfig();
 }
 void ColorConfigLoader::PrintColor( const std::string &colorName, const SDL_Color &color )
 {

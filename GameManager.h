@@ -5,9 +5,9 @@
 #include "NetManager.h"
 #include "BoardLoader.h"
 #include "MenuManager.h"
+#include "ConfigLoader.h"
 
 #include "structs/PlayerInfo.h"
-#include "structs/GameConfig.h"
 
 #include <vector>
 
@@ -153,7 +153,7 @@ class GameManager
 
 		// Points / Lives
 		// ===========================================
-		void IncrementPoints( size_t tileType, bool isDestroyed, Player ballOwner );
+		void IncrementPoints( const TileType &tileType, bool isDestroyed, Player ballOwner );
 		void ReducePlayerLifes( Player player );
 
 		// Update
@@ -263,7 +263,7 @@ class GameManager
 		Renderer renderer;
 		Timer timer;
 		MenuManager menuManager;
-		GameConfig gameConfig;
+		ConfigLoader gameConfig;
 		NetManager netManager;
 
 		bool runGame;
@@ -291,7 +291,6 @@ class GameManager
 		SDL_Rect windowSize;
 		double scale;
 		double remoteResolutionScale;
-		unsigned int points[4];
 
 		unsigned int tileCount;
 		unsigned int ballCount;

@@ -26,16 +26,11 @@ void BoardLoader::BuildLevelList()
 	std::string line;
 	std::ifstream boardFile( "boards/boardlist.txt" );
 
-	std::cout << "BoardLoader@" << __LINE__ << " Adding board files : \n";
 	while ( getline( boardFile, line ) )
 	{
 		if ( line[0] == '#' || line.empty() )
-		{
-			std::cout << "Skipping : " << line << std::endl;
 			continue;
-		}
 
-		std::cout << "\tAdding : " << line << std::endl;
 		levelTextFiles.push_back( line );
 	}
 }
@@ -44,7 +39,6 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 {
 	std::string filePath = "boards/";
 	filePath.append( textFile );
-	std::cout << "BoardLoader@" << __LINE__ << " Loading level : " << filePath << std::endl;
 
 	std::ifstream boardFile( filePath );
 	TilePosition pos;
