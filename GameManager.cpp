@@ -451,9 +451,7 @@ void GameManager::UpdateNetwork()
 {
 	ReadMessagesFromServer();
 
-	netManager.Update();
-
-	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
+	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() || menuManager.GetGameState() == GameState::InGameWait )
 		return;
 
 	ReadMessages();
@@ -557,12 +555,19 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 
 void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 {
+	PrintRecv( message );
+	if ( !netManager.IsConnected() )
+	{
+		std::cout << "GameManager@" << __LINE__ << " Recieved GameJoined"
+			"\n\tThis means the client has connectied, acccpting connection..." << std::endl;
+		netManager.Update();
+	}
+
 	UpdateGameList();
 
 	SendGameSettingsMessage();
 	SendPlayerName();
 
-	PrintRecv( message );
 }
 void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 {
@@ -773,7 +778,10 @@ void GameManager::SendPaddlePosMessage( )
 void GameManager::SendGameSettingsMessage()
 {
 	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() || !netManager.IsServer()  )
+	{
+		std::cout << "GameManager@" << __LINE__ << " failed to send : GameSettings" << std::endl;
 		return;
+	}
 
 	TCPMessage msg;
 
@@ -1520,10 +1528,6 @@ void GameManager::JoinGame()
 
 	GameInfo gameInfo = menuManager.GetSelectedGameInfo();
 	gameID = gameInfo.GetGameID();
-
-	std::cout << "GameManager@" << __LINE__
-		<< " Selected game in list : "<< gameInfo.GetAsSrting()
-		<< std::endl;
 
 	boardLoader.SetIsServer( false );
 	netManager.SetIsServer( false );
