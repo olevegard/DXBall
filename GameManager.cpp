@@ -77,6 +77,9 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	InitMenu();
 	InitJoystick();
 
+	logger.Init( "log.txt", localPlayerName_ );
+	logger.Log( __FILE__, __LINE__, "Init" );
+
 	LoadConfig();
 
 	return true;
