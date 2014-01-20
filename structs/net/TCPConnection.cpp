@@ -215,7 +215,7 @@ std::string TCPConnection::ReadMessages()
 	if ( !CheckForActivity() )
 		return "";
 
-	char buffer[1024];
+	char buffer[50000];
 	memset( buffer, 0, bufferSize );
 
 	int byteCount  = 0;
