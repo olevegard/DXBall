@@ -75,8 +75,9 @@ struct Ball : GamePiece
 
 	Player ballOwner;
 
-	Ball( const Ball &other) = delete;
-	Ball& operator=( const Ball &other) = delete;
+	//Ball( const Ball &other) = delete;
+	Ball( const Ball &other);
+	Ball& operator=( const Ball &other);
 };
 
 inline bool operator==( const Ball &ball1, const Ball &ball2)

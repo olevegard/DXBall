@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <cstdint>
 
 #include "../../enums/MessageType.h"
 #include "../../enums/BonusType.h"

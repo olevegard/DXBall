@@ -23,4 +23,12 @@ TODOList.txt
 *.html
 _*
 *_exe
-
+*.stackdump
+*.obj
+*.dll
+*.log
+*.exe
+*.ilk
+*.pdb
+*.idb
+DXBall.tlog*

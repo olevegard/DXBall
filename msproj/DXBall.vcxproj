@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{458A7FC5-6C75-4185-A6C5-09447EFF7FD5}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>DXBall</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>$(ProjectName)</TargetName>
+    <OutDir>$(SolutionDir)..\</OutDir>
+    <IntDir>$(SolutionDir)..\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\libs_2;C:\Users\Ole Vegard\Programming\DXBall</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\libs_2\SDL2_image-devel-2.0.0-VC\SDL2_image-2.0.0\lib\x86;E:\libs_2\SDL2_ttf-2.0.12\lib\x86;E:\libs_2\SDL2_net-2.0.0\lib\x86;E:\libs_2\SDL2-devel-2.0.1-VC\SDL2-2.0.1\lib\x86;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2_image.lib;SDL2_ttf.lib;SDL2_net.lib;SDL2.lib;ws2_32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\BoardLoader.cpp" />
+    <ClCompile Include="..\ColorConfigLoader.cpp" />
+    <ClCompile Include="..\ConfigLoader.cpp" />
+    <ClCompile Include="..\GameManager.cpp" />
+    <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\math\Rect.cpp" />
+    <ClCompile Include="..\math\Vector2f.cpp" />
+    <ClCompile Include="..\MenuList.cpp" />
+    <ClCompile Include="..\MenuManager.cpp" />
+    <ClCompile Include="..\NetManager.cpp" />
+    <ClCompile Include="..\Renderer.cpp" />
+    <ClCompile Include="..\structs\board\Board.cpp" />
+    <ClCompile Include="..\structs\board\TilePosition.cpp" />
+    <ClCompile Include="..\structs\game_objects\Ball.cpp" />
+    <ClCompile Include="..\structs\game_objects\BonusBox.cpp" />
+    <ClCompile Include="..\structs\game_objects\Bullet.cpp" />
+    <ClCompile Include="..\structs\game_objects\GamePiece.cpp" />
+    <ClCompile Include="..\structs\game_objects\Paddle.cpp" />
+    <ClCompile Include="..\structs\game_objects\Tile.cpp" />
+    <ClCompile Include="..\structs\net\TCPConnection.cpp" />
+    <ClCompile Include="..\structs\net\TCPMessage.cpp" />
+    <ClCompile Include="..\Timer.cpp" />
+    <ClCompile Include="..\tools\RenderTools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\BoardLoader.h" />
+    <ClInclude Include="..\ColorConfigLoader.h" />
+    <ClInclude Include="..\ConfigLoader.h" />
+    <ClInclude Include="..\enums\BonusType.h" />
+    <ClInclude Include="..\enums\Corner.h" />
+    <ClInclude Include="..\enums\GameState.h" />
+    <ClInclude Include="..\enums\LobbyMenuItem.h" />
+    <ClInclude Include="..\enums\LobbyState.h" />
+    <ClInclude Include="..\enums\MainMenuItemType.h" />
+    <ClInclude Include="..\enums\MessageTarget.h" />
+    <ClInclude Include="..\enums\MessageType.h" />
+    <ClInclude Include="..\enums\PauseMenuItemType.h" />
+    <ClInclude Include="..\enums\Player.h" />
+    <ClInclude Include="..\enums\Side.h" />
+    <ClInclude Include="..\enums\TextureType.h" />
+    <ClInclude Include="..\enums\TileType.h" />
+    <ClInclude Include="..\GameInfo.h" />
+    <ClInclude Include="..\GameManager.h" />
+    <ClInclude Include="..\InputManager.h" />
+    <ClInclude Include="..\math\Math.h" />
+    <ClInclude Include="..\math\Rect.h" />
+    <ClInclude Include="..\math\RectHelpers.h" />
+    <ClInclude Include="..\math\Vector2f.h" />
+    <ClInclude Include="..\math\VectorHelpers.h" />
+    <ClInclude Include="..\MenuList.h" />
+    <ClInclude Include="..\MenuManager.h" />
+    <ClInclude Include="..\NetManager.h" />
+    <ClInclude Include="..\Renderer.h" />
+    <ClInclude Include="..\structs\board\Board.h" />
+    <ClInclude Include="..\structs\board\TileColor.h" />
+    <ClInclude Include="..\structs\board\TilePosition.h" />
+    <ClInclude Include="..\structs\game_objects\Ball.h" />
+    <ClInclude Include="..\structs\game_objects\BonusBox.h" />
+    <ClInclude Include="..\structs\game_objects\Bullet.h" />
+    <ClInclude Include="..\structs\game_objects\GamePiece.h" />
+    <ClInclude Include="..\structs\game_objects\Paddle.h" />
+    <ClInclude Include="..\structs\game_objects\Tile.h" />
+    <ClInclude Include="..\structs\menu_items\MainMenuItem.h" />
+    <ClInclude Include="..\structs\menu_items\MenuItem.h" />
+    <ClInclude Include="..\structs\menu_items\PauseMenuItem.h" />
+    <ClInclude Include="..\structs\net\TCPConnection.h" />
+    <ClInclude Include="..\structs\net\TCPMessage.h" />
+    <ClInclude Include="..\structs\PlayerInfo.h" />
+    <ClInclude Include="..\Timer.h" />
+    <ClInclude Include="..\tools\RenderTools.h" />
+    <ClInclude Include="..\tools\SDLColorHelper.h" />
+    <ClInclude Include="..\tools\TilePositionHelpers.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

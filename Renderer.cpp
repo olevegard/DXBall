@@ -38,16 +38,18 @@
 	,	amask( 0xff000000 )
 #endif
 
-	,	background{ 0, 0, 1920 / 2, 1080 / 2 }
+	,	background({ 0, 0, 1920 / 2, 1080 / 2 })
 	,	SCREEN_BPP ( 32 )
 	,	screenFlags( SDL_WINDOW_OPENGL  )
 	,	fullscreen( false )
-	,	backgroundColor{ 0, 0, 0, 255 }// 40, 20, 40, 255
+	,	backgroundColor({ 0, 0, 0, 255 })// 40, 20, 40, 255
 								/*uuuuunnuuuuuusesssd*/
-	,	tileColors{ {102, 0, 0, 255}, {255, 55, 13, 255}, {140, 140, 140, 255}, {255, 183, 13, 255} }
+#ifdef linux
+	,	tileColors{ {102, 0, 0, 255}, {255, 55, 13, 255}, {140, 140, 140, 255}, {255, 183, 13, 255} }1
 	,	tileTextures{ nullptr, nullptr, nullptr, nullptr }
 	,	hardTileColors{ { 255, 145, 0, 255}, { 200, 100, 0, 255}, { 150, 60, 0, 255},{ 50, 40, 0, 255}, { 20, 15, 0, 255} }
 	,	hardTileTextures{ nullptr, nullptr, nullptr, nullptr, nullptr }
+	#endif
 
 	,	ballList(  )
 	,	tileList(  )
@@ -55,11 +57,11 @@
 	,	remotePaddle( nullptr )
 
 	,	isTwoPlayerMode( false )
-	,	localPlayerColor{ 0, 140, 0,255 }
+	,	localPlayerColor({ 0, 140, 0,255 })
 	,	localPlayerBallTexture( nullptr )
 	,	localPlayerPaddle( nullptr )
 
-	,	remotePlayerColor{ 140, 0, 0, 255 }
+	,	remotePlayerColor({ 140, 0, 0, 255 })
 	,	remotePlayerBallTexture( nullptr )
 	,	remotePlayerPaddle( nullptr )
 
@@ -68,8 +70,8 @@
 	,	mediumFont()
 	,	bigFont()
 
-	,	textColor{ 0, 140, 140, 255 }
-	,	greyAreaColor{ 0, 0, 128, 255}
+	,	textColor({ 0, 140, 140, 255 })
+	,	greyAreaColor({ 0, 0, 128, 255})
 
 	,	localPlayerTextTexture( )
 	,	localPlayerTextRect( )
@@ -137,6 +139,11 @@ Renderer::~Renderer()
 }
 bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 {
+#if defined(_WIN32)
+	tileTextures.resize( 4 );
+	hardTileTextures.resize( 5 );
+#endif
+
 	fullscreen = startFS;
 	background = rect;
 
@@ -209,9 +216,9 @@ void Renderer::Setup()
 bool Renderer::CreateWindow(bool server )
 {
 	if ( !server )
-		window = SDL_CreateWindow( "Client", background.w, 0, background.w, background.h, screenFlags );
+		window = SDL_CreateWindow( "Client", background.w, 50, background.w, background.h, screenFlags );
 	else
-		window = SDL_CreateWindow( "Server", 0, 0, background.w, background.h, screenFlags );
+		window = SDL_CreateWindow( "Server", 0, 50, background.w, background.h, screenFlags );
 
 	if ( window == nullptr )
 	{
@@ -664,19 +671,25 @@ TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
 	{
 		std::cout << "Renderer@" << __LINE__  << " Failed to open font : " << fontName << " : " << TTF_GetError() << std::endl;
 	}
+	else
+		std::cout << "Renderer@" << __LINE__  << " Font opened : " << fontName << " : " << TTF_GetError() << std::endl;
 
 	return tempFont;
 }
 bool Renderer::LoadFontAndText()
 {
-	tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 20 );
+	//tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 20 );
 	font = LoadFont( "media/fonts/sketchy.ttf", 28 );
 	mediumFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 41 );
 	bigFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 57 );
 	hugeFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 100 );
 
-	if ( bigFont == nullptr || font == nullptr || tinyFont == nullptr || mediumFont == nullptr || hugeFont == nullptr )
+	if ( bigFont == nullptr || font == nullptr ||/* tinyFont == nullptr ||*/ mediumFont == nullptr || hugeFont == nullptr )
+	{
+		std::cout << "Loading failed" << std::endl;
+		std::cin.ignore();
 		return false;
+	}
 
 	return true;
 }

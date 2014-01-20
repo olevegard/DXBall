@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ConfigLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MenuList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\NetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\game_objects\Ball.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\game_objects\BonusBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\game_objects\Bullet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\game_objects\GamePiece.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\game_objects\Paddle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\game_objects\Tile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\math\Rect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\math\Vector2f.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\net\TCPConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\net\TCPMessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tools\RenderTools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\board\Board.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\structs\board\TilePosition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\BoardLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MenuManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ColorConfigLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\GameManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MenuManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\NetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ColorConfigLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ConfigLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MenuList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\BonusType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\Corner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\GameState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\MainMenuItemType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\PauseMenuItemType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\Side.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\TextureType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\TileType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\LobbyMenuItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\LobbyState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\MessageTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\enums\MessageType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\game_objects\Ball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\game_objects\BonusBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\game_objects\Bullet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\game_objects\GamePiece.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\game_objects\Paddle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\game_objects\Tile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\math\Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\math\Rect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\math\RectHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\math\Vector2f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\math\VectorHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\menu_items\MainMenuItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\menu_items\MenuItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\menu_items\PauseMenuItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\net\TCPConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\net\TCPMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\PlayerInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tools\RenderTools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tools\SDLColorHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tools\TilePositionHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\board\Board.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\board\TileColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\structs\board\TilePosition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\BoardLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
