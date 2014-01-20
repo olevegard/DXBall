@@ -31,8 +31,9 @@ _*
 *.ilk
 *.pdb
 *.idb
-DXBall.tlog*
+*.tlog*
 log*
 *.opensdf
 *.sdf
-
+server/ReadMe.txt
+msproj/Server*

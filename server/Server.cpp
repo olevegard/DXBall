@@ -4,8 +4,16 @@ Server::Server()
 	:	gameCount( 0 )
 
 	,	lastHeight( 0 )
+#if defined (WIN32)
+	
+#else
 	,	screenRect( { 0, 0, 500, 800 } )
+#endif
 {
+	screenRect.x = 20;
+	screenRect.y = 20;
+	screenRect.w = 500;
+	screenRect.h = 800;
 }
 bool Server::InitSDL()
 {

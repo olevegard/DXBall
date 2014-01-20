@@ -20,7 +20,7 @@ int wmain( int argc, char* args[] )
 int main( int argc, char* args[] )
 #endif
 {
-	std::string localPlayerName  = "Player 1";
+	std::string localPlayerName  = "Player1";
 	unsigned short fpsLimit = 100;
 	SDL_Rect resolution;
 	resolution.x = 0;

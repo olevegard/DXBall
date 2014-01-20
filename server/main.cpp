@@ -1,6 +1,10 @@
 #include "Server.h"
 
-int main()
+#if defined(_WIN32)
+int wmain( int argc, char* args[] )
+#else
+int main( int argc, char* args[] )
+#endif
 {
 	Server server;
 

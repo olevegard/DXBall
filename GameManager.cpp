@@ -113,7 +113,7 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 	ip = ip_;
 	port = port_;
 	std::cout << "GameManager@" << __LINE__ <<  " IP : " << ip << " | Port : " << port << "\n";
-	//netManager.Init( false  );
+	netManager.Init( false  );
 
 	GameInfo gameInfo;
 	gameInfo.Set( ip, port );
@@ -1444,11 +1444,9 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 }
 void GameManager::Update( double delta )
 {
-	std::cout << "Delta : " << delta << std::endl;
-
 	UpdateJoystick( );
 	UpdateGUI();
-	//UpdateNetwork();
+	UpdateNetwork();
 
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
@@ -1519,8 +1517,8 @@ void GameManager::StartNewGame()
 	SendNewGameMessage();
 	menuManager.SetGameState( GameState::InGameWait );
 	boardLoader.SetIsServer( true );
-	//netManager.SetIsServer( true );
-	//netManager.Connect( ip, port );
+	netManager.SetIsServer( true );
+	netManager.Connect( ip, port );
 
 	// This is a temporary fix, setting the port to this client to something else
 	// The code should be changed so that it's not necesseary to change port.
@@ -1535,8 +1533,8 @@ void GameManager::JoinGame()
 	gameID = gameInfo.GetGameID();
 
 	boardLoader.SetIsServer( false );
-	//netManager.SetIsServer( false );
-	//netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
+	netManager.SetIsServer( false );
+	netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
 
 	SendJoinGameMessage( gameInfo );
 }
