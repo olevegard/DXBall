@@ -32,3 +32,5 @@ _*
 *.pdb
 *.idb
 DXBall.tlog*
+log*
+
