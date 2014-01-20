@@ -5,7 +5,7 @@
 
 bool TCPConnection::Init( const std::string &host, unsigned short port, bool server )
 {
-	bufferSize = 1024;
+	
 	isConnected = false;
 
 	isServer = server;
@@ -215,7 +215,7 @@ std::string TCPConnection::ReadMessages()
 	if ( !CheckForActivity() )
 		return "";
 
-	char buffer[bufferSize];
+	char buffer[1024];
 	memset( buffer, 0, bufferSize );
 
 	int byteCount  = 0;

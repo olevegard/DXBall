@@ -1,3 +1,5 @@
+#include <SDL2/SDL.h>
+
 inline std::istream& operator>>( std::istream &is, SDL_Color &color )
 {
 	int32_t r = 0;

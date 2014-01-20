@@ -9,6 +9,7 @@ class TCPConnection
 public:
 	TCPConnection()
 		:	isConnected( false )
+		,   bufferSize( 1024 )
 	{
 
 	}
@@ -36,7 +37,7 @@ private:
 	unsigned short portNr;
 	bool isConnected;
 	IPaddress ipAddress;
-	int bufferSize;
+	const int bufferSize;
 
 	TCPsocket tcpSocket;
 	TCPsocket serverSocket;

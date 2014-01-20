@@ -14,8 +14,11 @@ std::string ToLower( const std::string &str );
 SDL_Rect SetResolution( const std::string &str );
 
 bool StrToBool( const std::string &str );
-
+#if defined(_WIN32)
+int wmain( int argc, char* args[] )
+#else
 int main( int argc, char* args[] )
+#endif
 {
 	std::string localPlayerName  = "Player 1";
 	unsigned short fpsLimit = 100;

@@ -1,6 +1,12 @@
 #include "Timer.h"
 
+#if defined(_WIN32)
+#include <Windows.h>
+#else
 #include <time.h>
+#endif
+#include <cstdint>
+#include <iostream>
 
 Timer::Timer()
 	:	start(0)
@@ -10,36 +16,40 @@ Timer::Timer()
 {
 	Restart();
 }
-
 // Restars everything
 void Timer::Restart()
 {
 	// Get current time
-	start = GetCurrentTime();
+	start = GetCurrentTimeMicroS();
 
 	// Initilize timestamp to the same as start
 	delta = start;
 	update = start;
 }
-
 // Time since last frame ( for framerate calculation )
 double Timer::GetDelta( )
 {
 	// Get diff ms
-	unsigned long long deltaCurrent = GetCurrentTime();
-	unsigned long long diff = deltaCurrent - delta;
+	unsigned long long timeCurrent = GetCurrentTimeMicroS();
+	unsigned long long diff = timeCurrent - delta;
 	double  deltaMSec = static_cast< double > ( diff / 1000000.0f );
 
 	// Reset delta
-	delta = deltaCurrent;
+	delta = timeCurrent;
+
+	
+	if ( deltaMSec < 0.0 || deltaMSec > 0.99 )
+	{
+		std::cout << "DeltaCurrent : " << timeCurrent << std::endl;
+		std::cout << "Delta : " << deltaMSec << std::endl;
+	}
 
 	return deltaMSec;
 }
-
 // Elapsed time since last reset ( used for regular updates and elapsed game time )
 unsigned int Timer::GetElapsed( bool reset /*= false*/ )
 {
-	unsigned long long currentTime = GetCurrentTime();
+	unsigned long long currentTime = GetCurrentTimeMicroS();
 	unsigned long long diff = currentTime - update;
 
 	if ( reset )
@@ -59,31 +69,42 @@ bool Timer::IsUpdateTime()
 
 	return isUpdateTime;
 }
-
-/*
-   int Timer::GetSleepTime()
-   {
-   unsigned int elapsed = GetElapsed();
-   return  sleepTime - elapsed;
-   }
-   */
 void Timer::ResetPrevTime()
 {
-	update = GetCurrentTime();
+	update = GetCurrentTimeMicroS();
 }
-
 // Returns current time ( with 0 == program startup )
-unsigned long long Timer::GetCurrentTime() const
+unsigned long long Timer::GetCurrentTimeMicroS() const
 {
+#if defined(_WIN32)
+	SYSTEMTIME st;
+	GetSystemTime(&st);
+	return CreateTimeStamp( st.wSecond, st.wMilliseconds );
+#else
 	timespec tmCurrent;
 	clock_gettime( CLOCK_MONOTONIC_RAW, &tmCurrent);
 
 	return CreateTimeStamp( tmCurrent );
+#endif
 }
-
 // Convert timespec to a timespac in nanoseconds.
-unsigned long long Timer::CreateTimeStamp( const timespec &tm ) const
+#if defined(_WIN32)
+unsigned long long Timer::CreateTimeStamp(  unsigned short sec, unsigned short msec ) const
 {
-	unsigned long long timeStamp = static_cast< unsigned long long > ( tm.tv_sec * 1000000000 + tm.tv_nsec );
+	// Get time in µsec ( microseconds )
+	unsigned long long timeStamp = static_cast< unsigned long long > ( sec * 1000000 + msec * 1000  );
+
 	return timeStamp;
 }
+#else
+unsigned long long Timer::CreateTimeStamp( const timespec &tm ) const
+{
+	// Get time in nsec ( nanoseconds )
+	unsigned long long timeStamp = static_cast< unsigned long long > ( tm.tv_sec * 1000000000 + tm.tv_nsec );
+
+	// Convert to  µsec ( microseconds )
+	timeStamp /= 1000;
+
+	return timeStamp;
+}
+#endif

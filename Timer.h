@@ -21,10 +21,14 @@ private:
 	void ResetPrevTime();
 
 	// Returns current time ( with 0 == program startup )
-	unsigned long long GetCurrentTime() const;
+	unsigned long long GetCurrentTimeMicroS() const;
 
+#if defined(_WIN32)
+	unsigned long long CreateTimeStamp(  unsigned short sec,  unsigned short msec ) const;
+#else
 	// Convert timespec to a timespac in nanoseconds.
 	unsigned long long CreateTimeStamp( const timespec &tm ) const;
+#endif
 
 	unsigned long long start;
 	unsigned long long delta;
