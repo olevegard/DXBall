@@ -44,8 +44,9 @@
 	,	fullscreen( false )
 	,	backgroundColor({ 0, 0, 0, 255 })// 40, 20, 40, 255
 								/*uuuuunnuuuuuusesssd*/
-#ifdef linux
-	,	tileColors{ {102, 0, 0, 255}, {255, 55, 13, 255}, {140, 140, 140, 255}, {255, 183, 13, 255} }1
+#if defined ( WIN32 )
+#else
+	,	tileColors{ {102, 0, 0, 255}, {255, 55, 13, 255}, {140, 140, 140, 255}, {255, 183, 13, 255} }
 	,	tileTextures{ nullptr, nullptr, nullptr, nullptr }
 	,	hardTileColors{ { 255, 145, 0, 255}, { 200, 100, 0, 255}, { 150, 60, 0, 255},{ 50, 40, 0, 255}, { 20, 15, 0, 255} }
 	,	hardTileTextures{ nullptr, nullptr, nullptr, nullptr, nullptr }
