@@ -1,6 +1,6 @@
 # DXBall
 	A simple DX Ball clone using SDL 2
-[![DXBall screenshot](screenshots/screenshot1.png)]
+![DXBall screenshot](screenshots/screenshot1.png)
 
 ###3 Features:
 	-Multiplayer
