@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Timer.h"
+#include "Logger.h"
 #include "Renderer.h"
 #include "NetManager.h"
 #include "BoardLoader.h"
@@ -265,6 +266,7 @@ class GameManager
 		MenuManager menuManager;
 		ConfigLoader gameConfig;
 		NetManager netManager;
+		Logger logger;
 
 		bool runGame;
 		bool isOpnonentDoneWithLevel;
