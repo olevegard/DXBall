@@ -1,8 +1,14 @@
-ball_speed_normal 0.2
+ball_speed_normal 50.2
 ball_speed_fastmode 0.3
-bullet_speed 1.0
+bullet_speed 100.0
 bonus_box_speed 0.6
 
 bonus_box_chance 100
 
 is_fast_mode false
+
+points_hit 1
+points_regular 4
+points_hard 8
+points_unbreakable 16
+points_explosive 32

@@ -17,12 +17,19 @@ struct TileColor
 	std::array< int32_t, 5 > a;
 	std::array< SDL_Color, 5 > colors;
 	TileColor()
+
+#if defined ( WIN32 )
 		:	r({ 0, 0, 0, 0, 0 })
 		,	g({ 0, 0, 0, 0, 0 })
 		,	b({ 0, 0, 0, 0, 0 })
 		,	a({ 0, 0, 0, 0, 0 })
-#ifdef linux //  The line below causes the error C1001 : An internal error has occured in the compiler
-		,	colors({ { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 } })
+		//,	colors({ { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 } })
+#else
+		:	r{{ 0, 0, 0, 0, 0 }}
+		,	g{{ 0, 0, 0, 0, 0 }}
+		,	b{{ 0, 0, 0, 0, 0 }}
+		,	a{{ 0, 0, 0, 0, 0 }}
+		,	colors{{ { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 },  { 0, 0, 0, 0 } }}
 #endif
 	{
 

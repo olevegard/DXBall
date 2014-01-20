@@ -33,4 +33,6 @@ _*
 *.idb
 DXBall.tlog*
 log*
+*.opensdf
+*.sdf
 
