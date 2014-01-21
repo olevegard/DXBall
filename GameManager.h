@@ -7,6 +7,7 @@
 #include "BoardLoader.h"
 #include "MenuManager.h"
 #include "ConfigLoader.h"
+#include "MessageSender.h"
 
 #include "structs/PlayerInfo.h"
 
@@ -218,32 +219,6 @@ class GameManager
 		void RecieveBulletFireMessage( const TCPMessage &message );
 		void RecieveBulletKillMessage( const TCPMessage &message );
 
-		// Send system messages
-		// ===========================================
-		void SendPlayerName();
-		void SendJoinGameMessage(const GameInfo &gameInfo );
-		void SendGameSettingsMessage();
-		void SendGameStateChangedMessage( );
-		void SendLevelDoneMessage( );
-
-		// Server messages
-		// ===========================================
-		void SendNewGameMessage( );
-		void SendEndGameMessage( );
-		void SendGetGameListMessage( );
-
-		void SendPaddlePosMessage( );
-		void SendTileHitMessage( unsigned int tileID );
-		void SendBallDataMessage( const std::shared_ptr<Ball> &ball);
-		void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball);
-		void SendBallKilledMessage( uint32_t ballID );
-		void SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox );
-		void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox );
-		void SendBulletFireMessage( const std::shared_ptr< Bullet > &bulletLeft, const std::shared_ptr< Bullet > &bulletRight  );
-		void SendBulletKilledMessage( const std::shared_ptr< Bullet > &bulletLeft );
-
-		void SendMessage( const TCPMessage &message, const MessageTarget &target );
-
 		void DoFPSDelay( unsigned int ticks );
 
 		// Scaling
@@ -267,6 +242,7 @@ class GameManager
 		ConfigLoader gameConfig;
 		NetManager netManager;
 		Logger logger;
+		MessageSender messageSender;
 
 		bool runGame;
 		bool isOpnonentDoneWithLevel;
