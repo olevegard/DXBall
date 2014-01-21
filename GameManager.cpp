@@ -28,6 +28,7 @@
 	GameManager::GameManager()
 	:	renderer()
 	,	timer()
+	,	messageSender( netManager )
 
 	,	runGame( true )
 	,	isOpnonentDoneWithLevel( false )
@@ -175,7 +176,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	auto ball = LaunchBall( owner, ballID );
 
 	if ( owner == Player::Local )
-		SendBallSpawnMessage( ball );
+		messageSender.SendBallSpawnMessage( ball, windowSize.h );
 
 	++ballCount;
 
@@ -239,7 +240,7 @@ void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 	{
 		--localPlayerInfo.activeBalls;
 
-		SendBallKilledMessage( ballID );
+		messageSender.SendBallKilledMessage( ballID );
 
 		if ( localPlayerInfo.activeBalls == 0 )
 			ReducePlayerLifes( Player::Local );
@@ -294,7 +295,8 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
-	SendBonusBoxSpawnedMessage( bonusBox );
+
+	messageSender.SendBonusBoxSpawnedMessage( bonusBox, windowSize.h );
 }
 bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
 {
@@ -344,7 +346,7 @@ void GameManager::UpdateBalls( double delta )
 
 		if ( p->BoundCheck( windowSize ) || p->PaddleCheck( localPaddle->rect )  )
 		{
-			SendBallDataMessage( p );
+			messageSender.SendBallDataMessage( p, windowSize.h );
 			continue;
 		}
 
@@ -413,12 +415,12 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 	if ( owner == Player::Remote )
 		return;
 
-	SendTileHitMessage( tile->GetObjectID() );
+	messageSender.SendTileHitMessage( tile->GetObjectID() );
 
 	if ( !IsSuperBullet( owner ) )
 	{
 		if ( bullet->IsAlive() )
-			SendBulletKilledMessage( bullet );
+			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
 		tile->Hit();
 		bullet->Kill();
 
@@ -568,8 +570,9 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 
 	UpdateGameList();
 
-	SendGameSettingsMessage();
-	SendPlayerName();
+	//SendGameSettingsMessage();
+	menuManager.SetGameState( GameState::InGame );
+	messageSender.SendPlayerName( localPlayerInfo.name );
 
 }
 void GameManager::RecieveNewGameMessage( const TCPMessage &message )
@@ -716,6 +719,7 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 	bonusBox->SetSpeed( gameConfig.GetBonusBoxSpeed());
 
 	bonusBoxList.push_back( bonusBox );
+
 	renderer.AddBonusBox( bonusBox );
 }
 void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
@@ -763,286 +767,6 @@ void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 	}
 
 	DeleteDeadBullets();
-}
-void GameManager::SendPaddlePosMessage( )
-{
-	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() )
-		return;
-
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::PaddlePosition );
-	msg.SetXPos( localPaddle->rect.x );
-
-	SendMessage( msg, MessageTarget::Oponent );
-	//PrintSend(msg);
-}
-
-void GameManager::SendGameSettingsMessage()
-{
-	if ( !menuManager.IsTwoPlayerMode() || !netManager.IsConnected() || !netManager.IsServer()  )
-	{
-		std::cout << "GameManager@" << __LINE__ << " failed to send : GameSettings" << std::endl;
-		return;
-	}
-
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::GameSettings );
-	msg.SetObjectID( 0 );
-
-	msg.SetXSize( windowSize.w );
-	msg.SetYSize( windowSize.h );
-
-	msg.SetBoardScale( scale  );
-
-	SendMessage( msg, MessageTarget::Oponent );
-
-	menuManager.SetGameState( GameState::InGame );
-	PrintSend(msg);
-}
-void GameManager::SendPlayerName()
-{
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::PlayerName );
-	msg.SetPlayerName( localPlayerInfo.name );
-
-	SendMessage( msg, MessageTarget::Oponent );
-
-	PrintSend(msg);
-}
-void GameManager::SendBallSpawnMessage( const std::shared_ptr<Ball> &ball)
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	Rect r = ball->rect;
-
-	msg.SetMessageType( MessageType::BallSpawned );
-	msg.SetObjectID( ball->GetObjectID() );
-
-	msg.SetXPos( r.x );
-	msg.SetYPos( windowSize.h - r.y );
-
-	msg.SetXDir( ball->GetDirection().x );
-	msg.SetYDir( ball->GetDirection().y * -1.0 );
-
-	SendMessage( msg, MessageTarget::Oponent );
-
-	PrintSend(msg);
-}
-void GameManager::SendBallDataMessage( const std::shared_ptr<Ball> &ball)
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	Rect r = ball->rect;
-
-	msg.SetMessageType( MessageType::BallData );
-	msg.SetObjectID( ball->GetObjectID()  );
-
-	msg.SetXPos( r.x );
-	msg.SetYPos(  windowSize.h - r.y );
-
-	msg.SetXDir( ball->GetDirection().x );
-	msg.SetYDir( ball->GetDirection().y * -1.0 );
-
-	SendMessage( msg, MessageTarget::Oponent );
-
-	//PrintSend(msg);
-}
-void GameManager::SendBallKilledMessage( uint32_t ballID )
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::BallKilled );
-	msg.SetObjectID(  ballID  );
-
-	SendMessage( msg, MessageTarget::Oponent );
-
-	//PrintSend(msg);
-}
-void GameManager::SendTileHitMessage( unsigned int tileID )
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	auto p = GetTileFromID( tileID );
-	if ( p == nullptr )
-	{
-		std::cout << "GameManager@" << __LINE__ << " Tile with ID : " << tileID << " doesn't exist\n";
-		return;
-	}
-
-	msg.SetMessageType( MessageType::TileHit );
-	msg.SetObjectID( tileID );
-
-	SendMessage( msg, MessageTarget::Oponent );
-}
-void GameManager::SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox )
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::BonusSpawned );
-	msg.SetObjectID( bonusBox->GetObjectID() );
-	msg.SetBonusType( bonusBox->GetBonusType() );
-
-	msg.SetXPos( bonusBox->rect.x );
-	msg.SetYPos( windowSize.h - bonusBox->rect.y );
-
-	msg.SetXDir( bonusBox->GetDirection().x );
-	msg.SetYDir( bonusBox->GetDirection().y );
-
-	SendMessage( msg, MessageTarget::Oponent );
-
-	//PrintSend( msg );
-}
-void GameManager::SendBonusBoxPickupMessage( const std::shared_ptr< BonusBox > &bonusBox )
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-	std::stringstream ss;
-
-	msg.SetMessageType( MessageType::BonusPickup );
-	msg.SetObjectID( bonusBox->GetObjectID() );
-
-	ss << msg;
-	netManager.SendMessage( ss.str() );
-
-	PrintSend( msg );
-}
-void GameManager::SendBulletFireMessage( const std::shared_ptr< Bullet > &bulletLeft, const std::shared_ptr< Bullet > &bulletRight  )
-{
-	TCPMessage msg;
-	std::stringstream ss;
-
-	msg.SetMessageType( MessageType::BulletFire );
-	msg.SetObjectID( bulletLeft->GetObjectID() );
-	msg.SetObjectID2( bulletRight->GetObjectID() );
-
-	msg.SetXPos( bulletLeft->rect.x );
-	msg.SetYPos( windowSize.h - bulletLeft->rect.y );
-
-	msg.SetXPos2( bulletRight->rect.x );
-	msg.SetYPos2( windowSize.h - bulletRight->rect.y );
-
-	ss << msg;
-	netManager.SendMessage( ss.str() );
-
-}
-void GameManager::SendBulletKilledMessage( const std::shared_ptr< Bullet > &bullet )
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::BulletKilled );
-	msg.SetObjectID(  bullet->GetObjectID() );
-
-	SendMessage( msg, MessageTarget::Oponent );
-
-}
-void GameManager::SendGameStateChangedMessage()
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::GameStateChanged );
-	msg.SetObjectID( 0 );
-	msg.SetGameState( menuManager.GetGameState() );
-
-	SendMessage( msg, MessageTarget::Oponent );
-	PrintSend( msg );
-}
-void GameManager::SendLevelDoneMessage( )
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-		return;
-
-	TCPMessage msg;
-
-	msg.SetMessageType( MessageType::LevelDone );
-	msg.SetObjectID( 0 );
-
-	SendMessage( msg, MessageTarget::Oponent );
-	PrintSend( msg );
-}
-void GameManager::SendNewGameMessage( )
-{
-	TCPMessage msg;
-	msg.SetMessageType( MessageType::NewGame );
-	msg.SetIPAdress( ip  );
-	msg.SetPort( port );
-
-	SendMessage( msg, MessageTarget::Server );
-
-	PrintSend( msg );
-}
-void GameManager::SendJoinGameMessage( const GameInfo &gameInfo )
-{
-	TCPMessage msg;
-	msg.SetMessageType( MessageType::GameJoined );
-	msg.SetObjectID( gameInfo.GetGameID() );
-
-	SendMessage( msg, MessageTarget::Server );
-
-	PrintSend( msg );
-}
-void GameManager::SendEndGameMessage( )
-{
-	TCPMessage msg;
-	msg.SetMessageType( MessageType::EndGame );
-
-	msg.SetObjectID( gameID );
-	msg.SetIPAdress( ip );
-	msg.SetPort( port );
-
-	SendMessage( msg, MessageTarget::Server );
-
-	PrintSend( msg );
-}
-void GameManager::SendGetGameListMessage()
-{
-	TCPMessage msg;
-	msg.SetMessageType( MessageType::GetGameList );
-
-	std::stringstream ss;
-	ss << msg;
-	netManager.SendMessageToServer( ss.str() );
-
-	//PrintSend( msg );
-}
-void GameManager::SendMessage( const TCPMessage &message, const MessageTarget &target )
-{
-	std::stringstream ss;
-	ss << message;
-
-	if ( target == MessageTarget::Oponent )
-		netManager.SendMessage( ss.str() );
-	else
-		netManager.SendMessageToServer( ss.str() );
-}
-void GameManager::PrintSend( const TCPMessage &msg ) const
-{
-	std::cout << "Sending : " << msg.Print();
 }
 void GameManager::PrintRecv( const TCPMessage &msg ) const
 {
@@ -1105,7 +829,7 @@ void GameManager::DeleteDeadTiles()
 	tileList.erase( newEnd, tileList.end( ) );
 
 	if ( deadTile && tileList.size() == 0 )
-		SendLevelDoneMessage();
+		messageSender.SendLevelDoneMessage();
 }
 void GameManager::DeleteDeadBullets()
 {
@@ -1173,9 +897,8 @@ void GameManager::FireBullets()
 	bulletList.push_back( bullet2 );
 	renderer.AddBullet( bullet2 );
 
-	SendBulletFireMessage( bullet, bullet2 );
+	messageSender.SendBulletFireMessage( bullet, bullet2, windowSize.h );
 }
-
 void GameManager::Run()
 {
 	unsigned int ticks;
@@ -1202,7 +925,7 @@ void GameManager::HandleStatusChange( )
 	if ( !menuManager.HasGameStateChanged() )
 		return;
 
-	SendGameStateChangedMessage();
+	messageSender.SendGameStateChangedMessage( menuManager.GetGameState() );
 	renderer.SetGameState( menuManager.GetGameState() );
 
 	if ( menuManager.GetGameState() == GameState::Quit )
@@ -1224,7 +947,7 @@ void GameManager::HandleStatusChange( )
 			<< " Game was quited game state : " << static_cast< int32_t > ( menuManager.GetGameState() )
 			<< " prev : " << static_cast< int32_t > ( menuManager.GetPrevGameState() )
 			<< std::endl;
-		SendEndGameMessage();
+		messageSender.SendEndGameMessage( gameID, ip, port );
 		netManager.Close();
 	}
 	else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() == GameState::Paused )
@@ -1514,7 +1237,7 @@ void GameManager::UpdateLobbyState()
 void GameManager::StartNewGame()
 {
 	std::cout << "GameManager@" << __LINE__ << " New game\n";
-	SendNewGameMessage();
+	messageSender.SendNewGameMessage( ip, port );
 	menuManager.SetGameState( GameState::InGameWait );
 	boardLoader.SetIsServer( true );
 	netManager.SetIsServer( true );
@@ -1536,12 +1259,12 @@ void GameManager::JoinGame()
 	netManager.SetIsServer( false );
 	netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
 
-	SendJoinGameMessage( gameInfo );
+	messageSender.SendJoinGameMessage( gameInfo.GetGameID() );
 }
 void GameManager::UpdateGameList()
 {
 	menuManager.ClearGameList();
-	SendGetGameListMessage();
+	messageSender.SendGetGameListMessage();
 }
 void GameManager::AIMove()
 {
@@ -1558,7 +1281,7 @@ void GameManager::AIMove()
 		  Math::GenRandomNumber( -1.0, 1.0 ) );
 
 	localPaddle->rect.x = deadCenter;
-	SendPaddlePosMessage();
+	messageSender.SendPaddlePosMessage( localPaddle->rect.x );
 }
 bool GameManager::IsTimeForAIMove( std::shared_ptr< Ball > highest ) const
 {
@@ -1615,14 +1338,14 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 		return;
 
 	if ( ball->GetOwner() == Player::Local )
-		SendBallDataMessage( ball );
+		messageSender.SendBallDataMessage( ball, windowSize.h );
 
 	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
 		tile->Hit();
 
-	SendTileHitMessage( tile->GetObjectID() );
+	messageSender.SendTileHitMessage( tile->GetObjectID() );
 
 	UpdateTileHit( ball, tile );
 }
@@ -1759,7 +1482,7 @@ void GameManager::UpdateBonusBoxes( double delta )
 		{
 			if ( p->rect.CheckTileIntersection( localPaddle->rect ) )
 			{
-				SendBonusBoxPickupMessage( p );
+				messageSender.SendBonusBoxPickupMessage( p->GetObjectID() );
 				ApplyBonus( p );
 			}
 		}
@@ -1975,7 +1698,7 @@ void GameManager::GenerateBoard()
 	std::vector<TilePosition> vec = b.GetTiles();
 
 	if ( vec.size() == 0 )
-		SendLevelDoneMessage();
+		messageSender.SendLevelDoneMessage();
 
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
@@ -2076,7 +1799,7 @@ void GameManager::SetLocalPaddlePosition( int x, int y )
 		if ( localPaddle->rect.x  <= 0  )
 			localPaddle->rect.x = 0;
 
-		SendPaddlePosMessage();
+		messageSender.SendPaddlePosMessage( localPaddle->rect.x );
 	}
 }
 void GameManager::SetScale( double scale_ )
