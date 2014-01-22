@@ -34,15 +34,15 @@ double Timer::GetDelta( )
 	unsigned long long diff = timeCurrent - delta;
 	double  deltaMSec = static_cast< double > ( diff / 1000000.0f );
 
-	// Reset delta
-	delta = timeCurrent;
-
-	
 	if ( deltaMSec < 0.0 || deltaMSec > 0.99 )
 	{
-		std::cout << "DeltaCurrent : " << timeCurrent << std::endl;
-		std::cout << "Delta : " << deltaMSec << std::endl;
+		deltaMSec = prevDelta;
 	}
+	else
+		prevDelta = deltaMSec;
+
+	// Reset delta
+	delta = timeCurrent;
 
 	return deltaMSec;
 }

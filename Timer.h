@@ -35,4 +35,6 @@ private:
 	unsigned long long update;
 
 	unsigned int sleepTime;
+
+	double prevDelta;
 };
