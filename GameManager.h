@@ -8,6 +8,7 @@
 #include "MenuManager.h"
 #include "ConfigLoader.h"
 #include "MessageSender.h"
+#include "PhysicsManager.h"
 
 #include "structs/PlayerInfo.h"
 
@@ -46,22 +47,18 @@ class GameManager
 		// Bonus Boxes
 		// ===========================================
 		void SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const Player &owner, const Vector2f &pos  ) const;
-		void SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir ) const;
-		void MoveBonusBoxes( double delta );
 		bool WasBonusBoxSpawned( int32_t tilesDestroyed ) const;
 		BonusType GetRandomBonusType() const;
 
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed = 1 );
 		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
-		void KillBallsAndBonusBoxes( const Player &player );
 		void DeleteAllBonusBoxes();
 		void RemoveDeadBonusBoxes();
 
 		std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID );
 		void ApplyBonus( std::shared_ptr< BonusBox > &ptr );
 		void ApplyBonus_Death( const Player &player );
-		bool KillAllTilesWithOwner( const Player &player );
 
 		// Ball
 		// ===========================================
@@ -104,7 +101,6 @@ class GameManager
 		std::shared_ptr< Tile > GetTileFromID( int32_t ID );
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
-		std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
 		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
 
 		// Paddles
@@ -129,7 +125,6 @@ class GameManager
 		// AI
 		// ==========================================
 		void AIMove();
-		std::shared_ptr< Ball > FindHighestBall();
 		bool IsTimeForAIMove( std::shared_ptr< Ball > highest ) const;
 
 		void CreateMenu();
@@ -142,8 +137,6 @@ class GameManager
 		// Explotion related
 		// ===========================================
 		int HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
-		std::vector< std::shared_ptr< Tile > > FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const;
-		std::vector< Rect > GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const;
 
 		// Board handling
 		// ===========================================
@@ -224,8 +217,6 @@ class GameManager
 		// Scaling
 		// ===========================================
 		void SetScale( double scale );
-		void ApplyScale( );
-		void ResetScale( );
 
 		// Rendering
 		// ===========================================
@@ -235,6 +226,9 @@ class GameManager
 
 		// Variables
 		// ===========================================
+		PlayerInfo localPlayerInfo;
+		PlayerInfo remotePlayerInfo;
+
 		BoardLoader boardLoader;
 		Renderer renderer;
 		Timer timer;
@@ -243,6 +237,7 @@ class GameManager
 		NetManager netManager;
 		Logger logger;
 		MessageSender messageSender;
+		PhysicsManager physicsManager;
 
 		bool runGame;
 		bool isOpnonentDoneWithLevel;
@@ -255,11 +250,6 @@ class GameManager
 		std::shared_ptr < Paddle > remotePaddle;
 
 		bool isAIControlled;
-
-		PlayerInfo localPlayerInfo;
-
-		PlayerInfo remotePlayerInfo;
-		std::string remotePlayerName;
 
 		std::vector< std::shared_ptr< Ball     > > ballList;
 		std::vector< std::shared_ptr< Tile     > > tileList;

@@ -29,6 +29,7 @@
 	:	renderer()
 	,	timer()
 	,	messageSender( netManager )
+	,	physicsManager( messageSender )
 
 	,	runGame( true )
 	,	isOpnonentDoneWithLevel( false )
@@ -190,6 +191,7 @@ std::shared_ptr< Ball >  GameManager::LaunchBall( const Player &player, uint32_t
 	ball->SetSpeed( GetBallSpeed( player ) );
 
 	ballList.push_back( ball );
+	physicsManager.AddBall( ball );
 	renderer.AddBall( ball );
 
 	return ball;
@@ -265,6 +267,7 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 
 	tileList.push_back( tile );
 
+	physicsManager.AddTile( tile );
 	renderer.AddTile( tile );
 }
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
@@ -291,9 +294,11 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ( bonusCount++ );
 
 	SetBonusBoxData( bonusBox, owner, pos );
-	SetBonusBoxDirection( bonusBox, dir );
+	physicsManager.SetBonusBoxDirection( bonusBox, dir );
 
 	bonusBoxList.push_back( bonusBox );
+
+	physicsManager.AddBonusBox( bonusBox );
 	renderer.AddBonusBox( bonusBox );
 
 	messageSender.SendBonusBoxSpawnedMessage( bonusBox, windowSize.h );
@@ -318,16 +323,6 @@ void GameManager::SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const P
 	bonusBox->SetOwner( owner  );
 	bonusBox->SetBonusType( GetRandomBonusType()  );
 	bonusBox->SetSpeed( gameConfig.GetBonusBoxSpeed());
-}
-void GameManager::SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir_ ) const
-{
-	Vector2f dir = dir_;
-	if ( bonusBox->GetOwner()  == Player::Local )
-		dir.y = ( dir.y > 0.0 ) ? dir.y : dir.y * -1.0;
-	else
-		dir.y = ( dir.y < 0.0 ) ? dir.y : dir.y * -1.0;
-
-	bonusBox->SetDirection( dir );
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
@@ -452,6 +447,7 @@ bool GameManager::IsSuperBullet( const Player owner ) const
 
 	return false;
 }
+
 void GameManager::UpdateNetwork()
 {
 	ReadMessagesFromServer();
@@ -573,7 +569,6 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 	//SendGameSettingsMessage();
 	menuManager.SetGameState( GameState::InGame );
 	messageSender.SendPlayerName( localPlayerInfo.name );
-
 }
 void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 {
@@ -633,7 +628,7 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 	if ( ballList.size() == 0 )
 		return;
 
-	std::shared_ptr< Ball > ball = GetBallFromID( message.GetObjectID() );
+	std::shared_ptr< Ball > ball = physicsManager.GetBallFromID( message.GetObjectID() );
 
 	if ( !ball )
 	{
@@ -653,7 +648,7 @@ void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 	PrintRecv( message );
 	if ( ballList.size() > 0 )
 	{
-		auto ball =  GetBallFromID( message.GetObjectID() );
+		auto ball =  physicsManager.GetBallFromID( message.GetObjectID() );
 
 		if ( ball == nullptr )
 		{
@@ -672,7 +667,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	if ( tileList.size() == 0 )
 		return;
 
-	std::shared_ptr< Tile > tile = GetTileFromID( message.GetObjectID() );
+	std::shared_ptr< Tile > tile = physicsManager.GetTileFromID( message.GetObjectID() );
 
 	if ( tile == nullptr )
 	{
@@ -721,11 +716,12 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 	bonusBoxList.push_back( bonusBox );
 
 	renderer.AddBonusBox( bonusBox );
+	physicsManager.AddBonusBox( bonusBox );
 }
 void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
 	PrintRecv( message );
-	auto bb = GetBonusBoxFromID( message.GetObjectID() );
+	auto bb = physicsManager.GetBonusBoxFromID( message.GetObjectID() );
 
 	if ( bb == nullptr )
 	{
@@ -742,6 +738,7 @@ void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 	bullet->SetSpeed( gameConfig.GetBulletSpeed() );
 	bullet->SetOwner( Player::Remote );
 	bulletList.push_back( bullet );
+	physicsManager.AddBullet( bullet );
 	renderer.AddBullet( bullet );
 
 	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( message.GetObjectID2() );
@@ -749,13 +746,14 @@ void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 	bullet2->SetSpeed( gameConfig.GetBulletSpeed() );
 	bullet2->SetOwner( Player::Remote );
 	bulletList.push_back( bullet2 );
+	physicsManager.AddBullet( bullet2 );
 	renderer.AddBullet( bullet2 );
 }
 void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 {
 	if ( ballList.size() > 0 )
 	{
-		auto p = GetBulletFromID( message.GetObjectID() );
+		auto p = physicsManager.GetBulletFromID( message.GetObjectID() );
 
 		if ( p == nullptr )
 		{
@@ -797,15 +795,7 @@ void GameManager::DeleteDeadBalls()
 }
 void GameManager::UpdateBallSpeed()
 {
-	auto setBallSpeed = [=]( std::shared_ptr< Ball > curr )
-	{
-		if ( curr->GetOwner() == Player::Local )
-			curr->SetSpeed( localPlayerInfo.ballSpeed );
-		else
-
-			curr->SetSpeed( remotePlayerInfo.ballSpeed );
-	};
-	std::for_each( ballList.begin(), ballList.end(), setBallSpeed );
+	physicsManager.UpdateBallSpeed( localPlayerInfo.ballSpeed, remotePlayerInfo.ballSpeed );
 }
 void GameManager::DeleteDeadTiles()
 {
@@ -887,14 +877,18 @@ void GameManager::FireBullets()
 	bullet->SetOwner( Player::Local );
 	bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
 	bullet->SetSpeed( gameConfig.GetBulletSpeed() );
+
 	bulletList.push_back( bullet );
+	physicsManager.AddBullet( bullet );
 	renderer.AddBullet( bullet );
 
 	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( bulletCount++ );
 	bullet2->SetOwner( Player::Local );
 	bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w - bullet2->rect.w, localPaddle->rect.y - 10 );
+
 	bullet2->SetSpeed( gameConfig.GetBulletSpeed() );
 	bulletList.push_back( bullet2 );
+	physicsManager.AddBullet( bullet2 );
 	renderer.AddBullet( bullet2 );
 
 	messageSender.SendBulletFireMessage( bullet, bullet2, windowSize.h );
@@ -1015,9 +1009,6 @@ void GameManager::InitJoystick()
 		if ( stick == nullptr )
 			std::cout << "GameMaanager@" << __LINE__ << " Could not grab joystick\n";
 	}
-	else
-		std::cout << "GameMaanager@" << __LINE__ << " No  joysticks where found!\n";
-
 }
 void GameManager::HandleJoystickEvent( const SDL_JoyButtonEvent &event )
 {
@@ -1118,7 +1109,7 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true );
 				break;
 			case SDLK_u:
-				ResetScale();
+				scale = physicsManager.ResetScale( windowSize, scale);
 				break;
 			default:
 				break;
@@ -1152,7 +1143,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 	{
 		if ( localPlayerInfo.ballSpeed < gameConfig.GetBallSpeedFastMode())
 		{
-			localPlayerInfo.ballSpeed += delta * 0.0005;
+			localPlayerInfo.ballSpeed += delta * 1000;
 			UpdateBallSpeed();
 		}
 	}
@@ -1271,7 +1262,7 @@ void GameManager::AIMove()
 	if ( !isAIControlled )
 		return;
 
-	auto highest = FindHighestBall();
+	auto highest = physicsManager.FindHighestBall();
 
 	if ( !IsTimeForAIMove( highest ) )
 		return;
@@ -1305,31 +1296,9 @@ bool GameManager::IsTimeForAIMove( std::shared_ptr< Ball > highest ) const
 
 	return true;
 }
-
-void GameManager::SetAIControlled( bool isAIControlled_ )
-{
-	isAIControlled = isAIControlled_;
-}
-std::shared_ptr< Ball > GameManager::FindHighestBall()
-{
-	double yMax = 0;
-	std::shared_ptr< Ball > highest = nullptr;;
-	for ( auto p : ballList )
-	{
-		if ( p->GetOwner() == Player::Local )
-		{
-			if ( p->rect.y > yMax )
-			{
-				highest = p;
-				yMax = p->rect.y;
-			}
-		}
-	}
-	return highest;
-}
 void GameManager::CheckBallTileIntersection( std::shared_ptr< Ball > ball )
 {
-	std::shared_ptr< Tile > closestTile = FindClosestIntersectingTile( ball );
+	std::shared_ptr< Tile > closestTile = physicsManager.FindClosestIntersectingTile( ball );
 	RemoveClosestTile( ball, closestTile );
 }
 void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
@@ -1370,35 +1339,9 @@ void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< 
 
 	AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
 }
-std::shared_ptr< Tile > GameManager::FindClosestIntersectingTile( std::shared_ptr< Ball > ball )
-{
-	std::shared_ptr< Tile > closestTile;
-	double closest = std::numeric_limits< double >::max();
-	double current = closest;
-
-	for ( auto p : tileList)
-	{
-		if ( !p->IsAlive() )
-			continue;
-
-		if ( !ball->CheckTileSphereIntersection( p->rect, ball->rect, current ) )
-		{
-			current = std::numeric_limits< double >::max();
-			continue;
-		}
-
-		if ( current < closest )
-		{
-			closest = current;
-			closestTile = p;
-		}
-	}
-
-	return closestTile;
-}
 int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner )
 {
-	std::vector< Rect > rectVec = GenereateExplosionRects( explodingTile );
+	std::vector< Rect > rectVec = physicsManager.GenereateExplosionRects( explodingTile );
 
 	int countDestroyedTiles = 0;
 
@@ -1417,63 +1360,6 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 
 	return countDestroyedTiles;
 }
-std::vector< Rect > GameManager::GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const
-{
-	std::vector< std::shared_ptr< Tile > > explodeVec = FindAllExplosiveTilesExcept( explodingTile );
-
-	// The remaning tiles' vects are added if the tile intersects the originating explosions.
-	Rect explodeRect( explodingTile->rect );
-	explodeRect.DoubleRectSizes();
-
-	std::vector< Rect > explodedTileRects;
-	explodedTileRects.push_back( explodeRect );
-
-	bool newExplosion = true;
-	while ( explodeVec.size() > 0 && newExplosion )
-	{
-		newExplosion = false;
-
-		for ( auto p : explodeVec )
-		{
-			if ( RectHelpers::CheckTileIntersection( explodedTileRects, p->rect) )
-			{
-				Rect r = p->rect;
-				r.DoubleRectSizes();
-				explodedTileRects.push_back( r );
-
-				p->Kill();
-				newExplosion = true;
-			}
-		}
-
-		// Remove tiles marked as killed
-		auto newEnd = std::remove_if( explodeVec.begin(), explodeVec.end(), []( std::shared_ptr< Tile > curr ){ return !curr->IsAlive(); } );
-		explodeVec.erase( newEnd, explodeVec.end( ) );
-	}
-
-	return explodedTileRects;
-}
-std::vector< std::shared_ptr< Tile > > GameManager::FindAllExplosiveTilesExcept( const std::shared_ptr< Tile > &explodingTile ) const
-{
-	std::vector< std::shared_ptr< Tile > > explodingTileVec;
-
-	// A simple lambda to only copy explosive and thoose that are different from explodinTile
-	auto copyExplosive = [ explodingTile ]( std::shared_ptr< Tile > tile )
-	{
-		return  ( tile->GetTileType() == TileType::Explosive ) &&
-			( tile != explodingTile );
-	};
-
-	// Back inserter because std::copy/std::copy_if expects an iterator that can write to the vector. The ones obtained by std::begin() can't.
-	std::copy_if(
-			tileList.begin(),
-			tileList.end(),
-			std::back_inserter( explodingTileVec ),
-			copyExplosive
-			);
-
-	return explodingTileVec;
-}
 void GameManager::UpdateBonusBoxes( double delta )
 {
 	for ( auto p  : bonusBoxList )
@@ -1489,26 +1375,8 @@ void GameManager::UpdateBonusBoxes( double delta )
 		// Remote BonusBoxe Pickup are handled by messages
 	}
 
-	MoveBonusBoxes ( delta );
+	physicsManager.MoveBonusBoxes ( delta, windowSize.w );
 	RemoveDeadBonusBoxes();
-}
-
-void GameManager::MoveBonusBoxes ( double delta )
-{
-	auto func = [ = ] ( std::shared_ptr< BonusBox > curr )
-	{
-		Vector2f direction = curr->GetDirection();
-
-		curr->rect.x += direction.x * delta * curr->GetSpeed();
-		curr->rect.y += direction.y * delta * curr->GetSpeed();
-
-		if ( curr->rect.x < 0.0 || ( curr->rect.x + curr->rect.w ) > windowSize.w )
-			curr->FlipXDir();
-
-		return curr;
-	};
-
-	std::transform( bonusBoxList.begin(), bonusBoxList.end(), bonusBoxList.begin() , func );
 }
 void GameManager::RemoveDeadBonusBoxes()
 {
@@ -1573,22 +1441,9 @@ void GameManager::ApplyBonus_Death( const Player &player )
 	if ( player == Player::Local )
 		renderer.RenderText( "Death!!", Player::Local, true );
 
-	if ( KillAllTilesWithOwner( player ) )
+	if ( physicsManager.KillAllTilesWithOwner( player ) )
 		// Delete all dead Balls, will in turns reduce Player life
 		DeleteDeadBalls();
-}
-bool GameManager::KillAllTilesWithOwner( const Player &player )
-{
-	bool tilesKilled = false;
-	for ( auto p : ballList )
-	{
-		if ( p->GetOwner() == player )
-		{
-			p->Kill();
-			tilesKilled = true;
-		}
-	}
-	return tilesKilled;
 }
 BonusType GameManager::GetRandomBonusType() const
 {
@@ -1601,7 +1456,6 @@ BonusType GameManager::GetRandomBonusType() const
 		return BonusType::ExtraLife;
 	else
 		return BonusType::Death;
-
 }
 void GameManager::UpdateGUI( )
 {
@@ -1716,8 +1570,7 @@ int32_t GameManager::CountDestroyableTiles()
 	if ( menuManager.GetGameState() != GameState::InGame && menuManager.GetGameState() != GameState::Paused )
 		return 0;
 
-	auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile ){ return ( tile->GetTileType() != TileType::Unbreakable ); };
-	return static_cast< int32_t > ( std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable ) );
+	return physicsManager.CountDestroyableTiles();
 }
 bool GameManager::IsTimeForNewBoard()
 {
@@ -1764,27 +1617,14 @@ void GameManager::ReducePlayerLifes( Player player )
 		localPlayerInfo.ReduceLifes();
 
 		if ( localPlayerInfo.lives == 0 )
-			KillBallsAndBonusBoxes( Player::Local );
+			physicsManager.KillBallsAndBonusBoxes( Player::Local );
 	}
 	else
 	{
 		remotePlayerInfo.ReduceLifes();
 
 		if ( remotePlayerInfo.lives == 0 )
-			KillBallsAndBonusBoxes( Player::Remote );
-	}
-}
-void GameManager::KillBallsAndBonusBoxes( const Player &player )
-{
-	for ( auto p : ballList )
-	{
-		if ( p->GetOwner() == player )
-			p->Kill();
-	}
-	for ( auto p : bonusBoxList )
-	{
-		if ( p->GetOwner() == player )
-			p->Kill();
+			physicsManager.KillBallsAndBonusBoxes( Player::Remote );
 	}
 }
 void GameManager::SetLocalPaddlePosition( int x, int y )
@@ -1806,87 +1646,9 @@ void GameManager::SetScale( double scale_ )
 {
 	std::cout << "GameManager@" << __LINE__ << " Scale : " << scale_ << std::endl;
 	scale = scale_;
-	ApplyScale();
+	physicsManager.ApplyScale( windowSize, scale );
 }
-void GameManager::ApplyScale( )
+void GameManager::SetAIControlled( bool isAIControlled_ )
 {
-	for ( auto& p : tileList )
-	{
-		p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
-		p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
-
-		p->ResetScale();
-		p->SetScale( scale );
-	}
-
-	for ( auto& p : ballList )
-	{
-		p->ResetScale();
-		p->SetScale( scale );
-	}
-}
-void GameManager::ResetScale( )
-{
-	double tempScale = 1.0 / scale;
-	scale = 1.0;
-
-	for ( auto& p : tileList )
-	{
-		p->rect.x = ( p->rect.x * tempScale ) + ( ( windowSize.w - ( windowSize.w * tempScale ) ) * 0.5 );
-		p->rect.y = ( p->rect.y * tempScale ) + ( ( windowSize.h - ( windowSize.h * tempScale ) ) * 0.5 );
-
-		p->SetScale( tempScale );
-	}
-
-	for ( auto& p : ballList )
-	{
-		p->SetScale( tempScale );
-	}
-}
-std::shared_ptr< Ball > GameManager::GetBallFromID( int32_t ID )
-{
-	for ( auto p : ballList )
-	{
-		if ( ID == p->GetObjectID() )
-		{
-			return p;
-		}
-	}
-
-	return nullptr;
-}
-std::shared_ptr< Bullet > GameManager::GetBulletFromID( int32_t ID )
-{
-	for ( auto p : bulletList )
-	{
-		if ( ID == p->GetObjectID() )
-		{
-			return p;
-		}
-	}
-
-	return nullptr;
-}
-std::shared_ptr< Tile > GameManager::GetTileFromID( int32_t ID )
-{
-	for ( auto p : tileList )
-	{
-		if ( ID == p->GetObjectID() )
-			return p;
-	}
-
-	return nullptr;
-}
-
-std::shared_ptr< BonusBox > GameManager::GetBonusBoxFromID( int32_t ID )
-{
-	for ( auto p : bonusBoxList )
-	{
-		if ( ID == p->GetObjectID() )
-		{
-			return p;
-		}
-	}
-
-	return nullptr;
+	isAIControlled = isAIControlled_;
 }
