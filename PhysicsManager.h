@@ -8,6 +8,7 @@
 #include "structs/game_objects/Ball.h"
 #include "structs/game_objects/Tile.h"
 #include "structs/game_objects/Bullet.h"
+#include "structs/game_objects/Paddle.h"
 #include "structs/game_objects/BonusBox.h"
 
 class PhysicsManager
@@ -17,7 +18,7 @@ public:
 	PhysicsManager( MessageSender &msgSender )
 		:	messageSender( msgSender )
 	{
-		
+		messageSender.SendBulletKilledMessage( -1 );
 	}
 	void AddTile( const std::shared_ptr< Tile > &tile )
 	{
@@ -51,7 +52,46 @@ public:
 	{
 		bulletList.push_back( bullet );
 	}
+	void SetWindowSize( const SDL_Rect &wSize )
+	{
+		windowSize = wSize;
+	}
+	void SetPaddles( std::shared_ptr < Paddle > localPaddle_, std::shared_ptr < Paddle > remotePaddle_ )
+	{
+		localPaddle = localPaddle_;
+		remotePaddle = remotePaddle_;
+	}
+	void SetPaddleData( double scale )
+	{
+		localPaddle->textureType = TextureType::e_Paddle;
+		localPaddle->rect.w = 120;
+		localPaddle->rect.h = 30;
+		localPaddle->rect.x = 400;
+		localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
+		localPaddle->SetScale( scale );
 
+		remotePaddle->textureType = TextureType::e_Paddle;
+		remotePaddle->rect.w = 120;
+		remotePaddle->rect.h = 30;
+		remotePaddle->rect.x = 400;
+		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
+		remotePaddle->SetScale( scale );
+	}
+	void SetLocalPaddlePosition( int x, int y )
+	{
+		if ( x != 0 && y != 0 )
+		{
+			localPaddle->rect.x = static_cast< double > ( x ) - ( localPaddle->rect.w / 2 );
+
+			if ( ( localPaddle->rect.x + localPaddle->rect.w ) > windowSize.w )
+				localPaddle->rect.x = static_cast< double > ( windowSize.w ) - localPaddle->rect.w;
+
+			if ( localPaddle->rect.x  <= 0  )
+				localPaddle->rect.x = 0;
+
+			messageSender.SendPaddlePosMessage( localPaddle->rect.x );
+		}
+	}
 	void RemoveBullet( const std::shared_ptr< Bullet >  &bullet )
 	{
 		bulletList.erase( std::find( bulletList.begin(), bulletList.end(), bullet) );
@@ -102,7 +142,7 @@ public:
 
 		return nullptr;
 	}
-	void UpdateBallSpeed( int32_t localPlayerSpeed, int32_t remotePlayerSpeed )
+	void UpdateBallSpeed( double localPlayerSpeed, double remotePlayerSpeed )
 	{
 		auto setBallSpeed = [=]( std::shared_ptr< Ball > curr )
 		{
@@ -214,7 +254,7 @@ public:
 
 		return explodingTileVec;
 	}
-	void MoveBonusBoxes( double delta, double windowSize )
+	void MoveBonusBoxes( double delta )
 	{
 		auto func = [ = ] ( std::shared_ptr< BonusBox > curr )
 		{
@@ -223,7 +263,7 @@ public:
 			curr->rect.x += direction.x * delta * curr->GetSpeed();
 			curr->rect.y += direction.y * delta * curr->GetSpeed();
 
-			if ( curr->rect.x < 0.0 || ( curr->rect.x + curr->rect.w ) > windowSize )
+			if ( curr->rect.x < 0.0 || ( curr->rect.x + curr->rect.w ) > windowSize.w )
 				curr->FlipXDir();
 
 			return curr;
@@ -247,13 +287,13 @@ public:
 	int32_t CountDestroyableTiles()
 	{
 		auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile )
-		{ 
-			return ( tile->GetTileType() != TileType::Unbreakable ); 
+		{
+			return ( tile->GetTileType() != TileType::Unbreakable );
 		};
 
 		return static_cast< int32_t > ( std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable ) );
 	}
-	double ResetScale( const SDL_Rect windowSize, double scale )
+	double ResetScale( double scale )
 	{
 		double tempScale = 1.0 / scale;
 		scale = 1.0;
@@ -272,7 +312,7 @@ public:
 		}
 		return scale;
 	}
-	void ApplyScale(const SDL_Rect &windowSize, double scale )
+	void ApplyScale( double scale )
 	{
 		for ( auto& p : tileList )
 		{
@@ -318,5 +358,10 @@ private:
 	std::vector< std::shared_ptr< BonusBox > > bonusBoxList;
 	std::vector< std::shared_ptr< Bullet > > bulletList;
 
+	std::shared_ptr < Paddle > localPaddle;
+	std::shared_ptr < Paddle > remotePaddle;
+
 	MessageSender &messageSender;
+
+	SDL_Rect windowSize;
 };

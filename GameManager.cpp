@@ -74,6 +74,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	UpdateGUI();
 
 	renderer.RenderPlayerCaption( localPlayerInfo.name, Player::Local );
+ 	physicsManager.SetWindowSize( windowSize );
 
 	InitPaddles();
 	InitMenu();
@@ -95,19 +96,12 @@ void GameManager::InitMenu()
 void GameManager::InitPaddles()
 {
 	localPaddle = std::make_shared< Paddle > ();
-	localPaddle->textureType = TextureType::e_Paddle;
-	localPaddle->rect.w = 120;
-	localPaddle->rect.h = 30;
-	localPaddle->rect.y = windowSize.h - ( localPaddle->rect.h * 1.5 );
-	localPaddle->SetScale( scale );
-	renderer.SetLocalPaddle( localPaddle );
-
 	remotePaddle = std::make_shared< Paddle > ();
-	remotePaddle->textureType = TextureType::e_Paddle;
-	remotePaddle->rect.w = 120;
-	remotePaddle->rect.h = 30;
-	remotePaddle->rect.x = 400;
-	remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
+
+	physicsManager.SetPaddles( localPaddle, remotePaddle );
+	physicsManager.SetPaddleData( scale );
+
+	renderer.SetLocalPaddle( localPaddle );
 	renderer.SetRemotePaddle( remotePaddle );
 }
 void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
@@ -1109,7 +1103,7 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true );
 				break;
 			case SDLK_u:
-				scale = physicsManager.ResetScale( windowSize, scale);
+				scale = physicsManager.ResetScale( scale);
 				break;
 			default:
 				break;
@@ -1375,7 +1369,7 @@ void GameManager::UpdateBonusBoxes( double delta )
 		// Remote BonusBoxe Pickup are handled by messages
 	}
 
-	physicsManager.MoveBonusBoxes ( delta, windowSize.w );
+	physicsManager.MoveBonusBoxes ( delta );
 	RemoveDeadBonusBoxes();
 }
 void GameManager::RemoveDeadBonusBoxes()
@@ -1646,7 +1640,7 @@ void GameManager::SetScale( double scale_ )
 {
 	std::cout << "GameManager@" << __LINE__ << " Scale : " << scale_ << std::endl;
 	scale = scale_;
-	physicsManager.ApplyScale( windowSize, scale );
+	physicsManager.ApplyScale( scale );
 }
 void GameManager::SetAIControlled( bool isAIControlled_ )
 {
