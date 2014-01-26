@@ -866,14 +866,14 @@ void GameManager::FireBullets()
 {
 	auto bullet1 = FireBullet
 	(
-		static_cast< int32_t > ( bulletList.size() ),
+		static_cast< int32_t > ( bulletCount++ ),
 		Player::Local,
 		localPaddle->rect.x,
 		localPaddle->rect.y
 	);
 	auto bullet2 = FireBullet
 	(
-		 static_cast< int32_t > ( bulletList.size() ),
+		 static_cast< int32_t > ( bulletCount++  ),
 		 Player::Local,
 		 localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w,
 		 localPaddle->rect.y - 10
@@ -1567,6 +1567,7 @@ void GameManager::ClearBoard()
 {
 	tileList.clear();
 	tileCount = 0;
+	bulletCount++;
 
 	ballList.clear();
 	ballCount = 0;
