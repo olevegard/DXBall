@@ -40,10 +40,15 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 	std::string filePath = "boards/";
 	filePath.append( textFile );
 
-	std::ifstream boardFile( filePath );
+	Board board;
 	TilePosition pos;
 	std::string line;
-	Board board;
+
+	std::ifstream boardFile( filePath );
+
+	if ( !boardFile.is_open() )
+		return board;
+
 	while ( getline( boardFile, line ) )
 	{
 		std::stringstream ss( line );
@@ -54,9 +59,9 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 		ss >> pos;
 		board.AddTile( pos );
 	}
+
 	return board;
 }
-
 bool BoardLoader::IsLastLevel() const
 {
 	return ! ( currentLevel >= levelTextFiles.size() );

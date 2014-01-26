@@ -228,6 +228,8 @@ void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 	ReduceActiveBalls( ball->GetOwner(), ball->GetObjectID() );
 
 	renderer.RemoveBall( ball );
+	physicsManager.RemoveBall( ball );
+
 	UpdateGUI();
 }
 void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
@@ -272,6 +274,7 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	tile->Kill();
 
 	renderer.RemoveTile( tile );
+	physicsManager.RemoveTile( tile );
 
 	// Decrement tile count
 	--tileCount;
@@ -321,6 +324,7 @@ void GameManager::SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const P
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
 	renderer.RemoveBonusBox( bb );
+	physicsManager.RemoveBonusBox( bb );
 }
 void GameManager::UpdateBalls( double delta )
 {
@@ -779,6 +783,7 @@ void GameManager::DeleteDeadBalls()
 			remotePlayerBallDeleted = true;
 
 		RemoveBall( ball );
+
 		return true;
 	};
 
@@ -826,6 +831,7 @@ void GameManager::DeleteDeadBullets()
 			return false;
 
 		renderer.RemoveBullet( (bullet ));
+		physicsManager.RemoveBullet( bullet );
 		//bulletList.erase( p );
 
 		return true;
@@ -843,6 +849,7 @@ void GameManager::DeleteAllBullets()
 	[=]( std::shared_ptr< Bullet > bullet )
 	{
 		renderer.RemoveBullet( (bullet ));
+		physicsManager.RemoveBullet( bullet );
 
 		return true;
 	} );
@@ -858,6 +865,7 @@ void GameManager::DeleteAllBonusBoxes()
 	[=]( std::shared_ptr< BonusBox > bonusBox )
 	{
 		renderer.RemoveBonusBox( bonusBox );
+		physicsManager.RemoveBonusBox( bonusBox );
 
 		return true;
 	} );
@@ -1380,6 +1388,8 @@ void GameManager::RemoveDeadBonusBoxes()
 			return false;
 
 		renderer.RemoveBonusBox( curr );
+		physicsManager.RemoveBonusBox( curr );
+
 		return true;
 	};
 
@@ -1545,9 +1555,6 @@ void GameManager::GenerateBoard()
 	Board b = boardLoader.GenerateBoard( windowSize );
 	std::vector<TilePosition> vec = b.GetTiles();
 
-	if ( vec.size() == 0 )
-		messageSender.SendLevelDoneMessage();
-
 	for ( const auto &tile : vec )
 		AddTile( tile.xPos, tile.yPos, tile.type );
 
@@ -1568,7 +1575,7 @@ int32_t GameManager::CountDestroyableTiles()
 }
 bool GameManager::IsTimeForNewBoard()
 {
-	return ( tileList.size() == 0 && ( !menuManager.IsTwoPlayerMode() ||  isOpnonentDoneWithLevel ) );
+	return ( tileList.size() == 0 || ( menuManager.IsTwoPlayerMode() &&  isOpnonentDoneWithLevel ) );
 }
 void GameManager::ClearBoard()
 {
@@ -1584,6 +1591,7 @@ void GameManager::ClearBoard()
 	localPlayerInfo.activeBalls = 0;
 	remotePlayerInfo.activeBalls = 0;
 
+	physicsManager.Clear();
 	renderer.ClearBoard();
 }
 void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, Player ballOwner )

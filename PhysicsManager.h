@@ -61,6 +61,13 @@ public:
 		localPaddle = localPaddle_;
 		remotePaddle = remotePaddle_;
 	}
+	void Clear()
+	{
+		bulletList.clear();
+		bonusBoxList.clear();
+		tileList.clear();
+		ballList.clear();
+	}
 	void SetPaddleData( double scale )
 	{
 		localPaddle->textureType = TextureType::e_Paddle;
