@@ -115,6 +115,20 @@ public:
 
 		return nullptr;
 	}
+	void KillBulletWithID( int32_t id )
+	{
+		auto bullet = GetBulletFromID( id );
+
+		if ( bullet == nullptr )
+		{
+			std::cout << "PhysicsManager@" << __LINE__ << " Bullet with ID : " << id << " doesn't exist\n";
+			return;
+		}
+		else
+			std::cout << "PhysicsManager@" << __LINE__ << " Deleting bullet with ID : " << id << std::endl;
+
+		bullet->Kill();
+	}
 	std::shared_ptr< Bullet > GetBulletFromID( int32_t ID )
 	{
 		for ( auto p : bulletList )

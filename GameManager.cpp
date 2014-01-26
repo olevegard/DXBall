@@ -751,17 +751,7 @@ void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 {
 	if ( ballList.size() > 0 )
-	{
-		auto p = physicsManager.GetBulletFromID( message.GetObjectID() );
-
-		if ( p == nullptr )
-		{
-			std::cout << "GameManager@" << __LINE__ << " BonusBox with ID : " << message.GetObjectID() << " doesn't exist\n";
-			return;
-		}
-
-		p->Kill();
-	}
+		physicsManager.KillBulletWithID( message.GetObjectID() );
 
 	DeleteDeadBullets();
 }
@@ -833,14 +823,12 @@ void GameManager::DeleteDeadBullets()
 
 		renderer.RemoveBullet( (bullet ));
 		physicsManager.RemoveBullet( bullet );
-		//bulletList.erase( p );
 
 		return true;
 	} );
 
 	// Remove item returned by remove_if
 	bulletList.erase( newEnd, bulletList.end( ) );
-
 }
 void GameManager::DeleteAllBullets()
 {
