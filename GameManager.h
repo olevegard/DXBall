@@ -89,6 +89,7 @@ class GameManager
 		void DeleteDeadBullets();
 		void DeleteAllBullets();
 		void FireBullets();
+		std::shared_ptr< Bullet >  FireBullet( int32_t id, const Player &owner, double xPos, double yPos );
 
 		bool DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
 		std::shared_ptr< Bullet > GetBulletFromID( int32_t ID );

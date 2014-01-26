@@ -729,23 +729,24 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 
 	ApplyBonus( bb );
 }
-void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
+std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, double xPos, double yPos )
 {
-	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( message.GetObjectID() );
-	bullet->SetPosition( message.GetXPos(),  message.GetYPos() );
+	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( id );
+
 	bullet->SetSpeed( gameConfig.GetBulletSpeed() );
-	bullet->SetOwner( Player::Remote );
+	bullet->SetPosition( xPos, yPos );
+	bullet->SetOwner( owner );
+
 	bulletList.push_back( bullet );
 	physicsManager.AddBullet( bullet );
 	renderer.AddBullet( bullet );
 
-	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( message.GetObjectID2() );
-	bullet2->SetPosition( message.GetXPos2(), message.GetYPos2() );
-	bullet2->SetSpeed( gameConfig.GetBulletSpeed() );
-	bullet2->SetOwner( Player::Remote );
-	bulletList.push_back( bullet2 );
-	physicsManager.AddBullet( bullet2 );
-	renderer.AddBullet( bullet2 );
+	return bullet;
+}
+void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
+{
+	FireBullet( message.GetObjectID() , Player::Remote, message.GetXPos() , message.GetYPos()  );
+	FireBullet( message.GetObjectID2(), Player::Remote, message.GetXPos2(), message.GetYPos2() );
 }
 void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 {
@@ -875,25 +876,22 @@ void GameManager::DeleteAllBonusBoxes()
 }
 void GameManager::FireBullets()
 {
-	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( bulletCount++ );
-	bullet->SetOwner( Player::Local );
-	bullet->SetPosition( localPaddle->rect.x, localPaddle->rect.y - 10 );
-	bullet->SetSpeed( gameConfig.GetBulletSpeed() );
+	auto bullet1 = FireBullet
+	(
+		static_cast< int32_t > ( bulletList.size() ),
+		Player::Local,
+		localPaddle->rect.x,
+		localPaddle->rect.y
+	);
+	auto bullet2 = FireBullet
+	(
+		 static_cast< int32_t > ( bulletList.size() ),
+		 Player::Local,
+		 localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w,
+		 localPaddle->rect.y - 10
+	);
 
-	bulletList.push_back( bullet );
-	physicsManager.AddBullet( bullet );
-	renderer.AddBullet( bullet );
-
-	std::shared_ptr< Bullet > bullet2 = std::make_shared< Bullet >( bulletCount++ );
-	bullet2->SetOwner( Player::Local );
-	bullet2->SetPosition( localPaddle->rect.x + localPaddle->rect.w - bullet2->rect.w, localPaddle->rect.y - 10 );
-
-	bullet2->SetSpeed( gameConfig.GetBulletSpeed() );
-	bulletList.push_back( bullet2 );
-	physicsManager.AddBullet( bullet2 );
-	renderer.AddBullet( bullet2 );
-
-	messageSender.SendBulletFireMessage( bullet, bullet2, windowSize.h );
+	messageSender.SendBulletFireMessage( bullet1, bullet2, windowSize.h );
 }
 void GameManager::Run()
 {
