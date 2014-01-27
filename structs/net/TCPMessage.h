@@ -186,15 +186,15 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 			}
 		case BulletFire:
 			{
-				int32_t ID2 = 0;
+				int32_t objectID2 = 0;
 				double xPos = 0.0;
 				double yPos = 0.0;
 				double xPos2 = 0.0;
 				double yPos2 = 0.0;
 
-				is >> ID2 >> xPos >> yPos  >> xPos2  >> yPos2;
+				is >> xPos >> yPos >> objectID2  >> xPos2  >> yPos2;
 
-				msg.SetObjectID2( ID2 );
+				msg.SetObjectID2( objectID2 );
 				msg.SetXPos( xPos );
 				msg.SetYPos( yPos );
 				msg.SetXPos2( xPos2 );
@@ -284,9 +284,9 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			break;
 		case BulletFire:
 			os
-				<< message.GetObjectID2() << " "
 				<< message.GetXPos() << " "
 				<< message.GetYPos() << " "
+				<< message.GetObjectID2() << " "
 				<< message.GetXPos2() << " "
 				<< message.GetYPos2() << " ";
 			break;

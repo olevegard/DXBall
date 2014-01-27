@@ -45,7 +45,7 @@ std::string TCPMessage::Print() const
 			ss << " : " << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
 			break;
 		case BulletFire:
-			ss << " : " << xPos << " , " << yPos << " , " << xPos2 << " , " << yPos2 << "\n";
+			ss << " : " << xPos << " , " << yPos << " Object 2 ID : " << objectID2 << " Pos : " << xPos2 << " , " << yPos2 << "\n";
 			break;
 		default:
 			ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
