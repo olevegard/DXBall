@@ -261,7 +261,6 @@ class GameManager
 		double scale;
 		double remoteResolutionScale;
 
-		unsigned int tileCount;
 		unsigned int ballCount;
 		unsigned int bonusCount;
 		unsigned int bulletCount;

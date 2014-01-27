@@ -45,7 +45,6 @@
 
 	,	remoteResolutionScale( 1.0 )
 
-	,	tileCount( 0 )
 	,	ballCount( 0 )
 	,	bonusCount( 0 )
 	,	bulletCount( 0 )
@@ -99,7 +98,7 @@ void GameManager::InitPaddles()
 	remotePaddle = std::make_shared< Paddle > ();
 
 	physicsManager.SetPaddles( localPaddle, remotePaddle );
-	physicsManager.SetPaddleData( scale );
+	physicsManager.SetPaddleData( );
 
 	renderer.SetLocalPaddle( localPaddle );
 	renderer.SetRemotePaddle( remotePaddle );
@@ -253,16 +252,9 @@ void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 }
 void GameManager::AddTile( short posX, short posY, TileType tileType )
 {
-	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
-	tile->textureType = TextureType::e_Tile;
-
-	tile->rect.x = posX;
-	tile->rect.y = posY;
-	tile->rect.w = 60 * scale;
-	tile->rect.h = 20 * scale;
+	auto tile = physicsManager.CreateTile( posX, posY, tileType );
 
 	tileList.push_back( tile );
-
 	physicsManager.AddTile( tile );
 	renderer.AddTile( tile );
 }
@@ -277,7 +269,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 	physicsManager.RemoveTile( tile );
 
 	// Decrement tile count
-	--tileCount;
 }
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
@@ -1097,7 +1088,7 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true );
 				break;
 			case SDLK_u:
-				scale = physicsManager.ResetScale( scale);
+				scale = physicsManager.ResetScale( );
 				break;
 			default:
 				break;
@@ -1566,7 +1557,6 @@ bool GameManager::IsTimeForNewBoard()
 void GameManager::ClearBoard()
 {
 	tileList.clear();
-	tileCount = 0;
 	bulletCount++;
 
 	ballList.clear();

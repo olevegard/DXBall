@@ -17,6 +17,8 @@ public:
 
 	PhysicsManager( MessageSender &msgSender )
 		:	messageSender( msgSender )
+		,	scale( 1.0 )
+		,	tileCount( 0 )
 	{
 		messageSender.SendBulletKilledMessage( -1 );
 	}
@@ -27,9 +29,21 @@ public:
 
 	void RemoveTile( const std::shared_ptr< Tile >  &tile )
 	{
+		--tileCount;
 		tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 	}
+	std::shared_ptr< Tile > CreateTile( int16_t xPos, int16_t yPos, const TileType &tileType )
+	{
+		std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
+		tile->textureType = TextureType::e_Tile;
 
+		tile->rect.x = xPos;
+		tile->rect.y = yPos;
+		tile->rect.w = 60 * scale;
+		tile->rect.h = 20 * scale;
+
+		return tile;
+	}
 	void AddBall( const std::shared_ptr< Ball > &ball )
 	{
 		ballList.push_back( ball );
@@ -67,8 +81,9 @@ public:
 		bonusBoxList.clear();
 		tileList.clear();
 		ballList.clear();
+		tileCount = 0;
 	}
-	void SetPaddleData( double scale )
+	void SetPaddleData( )
 	{
 		localPaddle->textureType = TextureType::e_Paddle;
 		localPaddle->rect.w = 120;
@@ -311,7 +326,7 @@ public:
 
 		return static_cast< int32_t > ( std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable ) );
 	}
-	double ResetScale( double scale )
+	double ResetScale( )
 	{
 		double tempScale = 1.0 / scale;
 		scale = 1.0;
@@ -330,8 +345,10 @@ public:
 		}
 		return scale;
 	}
-	void ApplyScale( double scale )
+	void ApplyScale( double scale_ )
 	{
+		scale = scale_;
+
 		for ( auto& p : tileList )
 		{
 			p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
@@ -370,6 +387,12 @@ public:
 
 		bonusBox->SetDirection( dir );
 	}
+	void SetScale( double scale_ )
+	{
+		scale = scale_;
+	}
+
+
 private:
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;
@@ -382,4 +405,7 @@ private:
 	MessageSender &messageSender;
 
 	SDL_Rect windowSize;
+	double scale;
+
+	uint32_t tileCount;
 };
