@@ -961,7 +961,7 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 {
 	if ( menuManager.GetGameState() == GameState::InGame && !isAIControlled )
 	{
-		SetLocalPaddlePosition( buttonEvent.x, buttonEvent.y );
+		physicsManager.SetLocalPaddlePosition( buttonEvent.x );
 
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{
@@ -1614,21 +1614,6 @@ void GameManager::ReducePlayerLifes( Player player )
 
 		if ( remotePlayerInfo.lives == 0 )
 			physicsManager.KillBallsAndBonusBoxes( Player::Remote );
-	}
-}
-void GameManager::SetLocalPaddlePosition( int x, int y )
-{
-	if ( x != 0 && y != 0 )
-	{
-		localPaddle->rect.x = static_cast< double > ( x ) - ( localPaddle->rect.w / 2 );
-
-		if ( ( localPaddle->rect.x + localPaddle->rect.w ) > windowSize.w )
-			localPaddle->rect.x = static_cast< double > ( windowSize.w ) - localPaddle->rect.w;
-
-		if ( localPaddle->rect.x  <= 0  )
-			localPaddle->rect.x = 0;
-
-		messageSender.SendPaddlePosMessage( localPaddle->rect.x );
 	}
 }
 void GameManager::SetScale( double scale_ )

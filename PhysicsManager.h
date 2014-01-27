@@ -84,20 +84,17 @@ public:
 		remotePaddle->rect.y = remotePaddle->rect.h * 0.5;
 		remotePaddle->SetScale( scale );
 	}
-	void SetLocalPaddlePosition( int x, int y )
+	void SetLocalPaddlePosition( int32_t x )
 	{
-		if ( x != 0 && y != 0 )
-		{
-			localPaddle->rect.x = static_cast< double > ( x ) - ( localPaddle->rect.w / 2 );
+		localPaddle->rect.x = static_cast< double > ( x ) - ( localPaddle->rect.w / 2 );
 
-			if ( ( localPaddle->rect.x + localPaddle->rect.w ) > windowSize.w )
-				localPaddle->rect.x = static_cast< double > ( windowSize.w ) - localPaddle->rect.w;
+		if ( ( localPaddle->rect.x + localPaddle->rect.w ) > windowSize.w )
+			localPaddle->rect.x = static_cast< double > ( windowSize.w ) - localPaddle->rect.w;
 
-			if ( localPaddle->rect.x  <= 0  )
-				localPaddle->rect.x = 0;
+		if ( localPaddle->rect.x  <= 0  )
+			localPaddle->rect.x = 0;
 
-			messageSender.SendPaddlePosMessage( localPaddle->rect.x );
-		}
+		messageSender.SendPaddlePosMessage( localPaddle->rect.x );
 	}
 	void RemoveBullet( const std::shared_ptr< Bullet >  &bullet )
 	{
