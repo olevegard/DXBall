@@ -1205,7 +1205,7 @@ void Renderer::Update( double delta )
 
 	if ( localPlayerTextAlpha  > 0.0 )
 	{
-		localPlayerTextAlpha -= ( delta * 0.0005 );
+		localPlayerTextAlpha -= ( delta * 0.888 );
 
 		if ( localPlayerTextAlpha < 0.0 )
 		{
