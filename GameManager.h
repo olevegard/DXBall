@@ -144,7 +144,6 @@ class GameManager
 		void GenerateBoard();
 		void ClearBoard();
 		bool IsLevelDone();
-		int32_t CountDestroyableTiles();
 		bool IsTimeForNewBoard();
 
 		// Points / Lives

@@ -1541,14 +1541,7 @@ void GameManager::GenerateBoard()
 }
 bool GameManager::IsLevelDone()
 {
-	return CountDestroyableTiles() == 0;
-}
-int32_t GameManager::CountDestroyableTiles()
-{
-	if ( menuManager.GetGameState() != GameState::InGame && menuManager.GetGameState() != GameState::Paused )
-		return 0;
-
-	return physicsManager.CountDestroyableTiles();
+	return physicsManager.CountDestroyableTiles() == 0;
 }
 bool GameManager::IsTimeForNewBoard()
 {
