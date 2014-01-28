@@ -20,7 +20,6 @@ public:
 		,	scale( 1.0 )
 		,	tileCount( 0 )
 	{
-		messageSender.SendBulletKilledMessage( -1 );
 	}
 	void AddTile( const std::shared_ptr< Tile > &tile )
 	{
@@ -69,6 +68,18 @@ public:
 	void SetWindowSize( const SDL_Rect &wSize )
 	{
 		windowSize = wSize;
+	}
+	std::shared_ptr< Bullet >  FireBullet( int32_t id, const Player &owner, double xPos, double yPos )
+	{
+		std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( id );
+
+		bullet->SetSpeed( bulletSpeed  );
+		bullet->SetPosition( xPos, yPos );
+		bullet->SetOwner( owner );
+
+		bulletList.push_back( bullet );
+
+		return bullet;
 	}
 	void SetPaddles( std::shared_ptr < Paddle > localPaddle_, std::shared_ptr < Paddle > remotePaddle_ )
 	{
@@ -391,7 +402,10 @@ public:
 	{
 		scale = scale_;
 	}
-
+	void SetBulletSpeed( double bulletSpeed_ )
+	{
+		bulletSpeed = bulletSpeed_;
+	}
 
 private:
 	std::vector< std::shared_ptr< Ball >  > ballList;
@@ -406,6 +420,8 @@ private:
 
 	SDL_Rect windowSize;
 	double scale;
+
+	double bulletSpeed;
 
 	uint32_t tileCount;
 };

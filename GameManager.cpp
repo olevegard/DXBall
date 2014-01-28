@@ -116,6 +116,7 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 void GameManager::LoadConfig()
 {
 	gameConfig.LoadConfig();
+	physicsManager.SetBulletSpeed( gameConfig.GetBulletSpeed() );
 
 	localPlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
 	remotePlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
@@ -722,14 +723,9 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 }
 std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, double xPos, double yPos )
 {
-	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( id );
-
-	bullet->SetSpeed( gameConfig.GetBulletSpeed() );
-	bullet->SetPosition( xPos, yPos );
-	bullet->SetOwner( owner );
+	auto bullet = physicsManager.FireBullet( id, owner, xPos, yPos );
 
 	bulletList.push_back( bullet );
-	physicsManager.AddBullet( bullet );
 	renderer.AddBullet( bullet );
 
 	return bullet;
