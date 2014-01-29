@@ -126,11 +126,11 @@ public:
 	{
 		bulletList.erase( std::find( bulletList.begin(), bulletList.end(), bullet) );
 	}
-	std::shared_ptr< Ball > GetBallFromID( int32_t ID )
+	std::shared_ptr< Ball > GetBallFromID( int32_t ID, const Player &owner )
 	{
 		for ( auto p : ballList )
 		{
-			if ( ID == p->GetObjectID() )
+			if ( ID == p->GetObjectID() && p->GetOwner() == owner  )
 			{
 				return p;
 			}
@@ -138,9 +138,9 @@ public:
 
 		return nullptr;
 	}
-	void KillBulletWithID( int32_t id )
+	void KillBulletWithID( int32_t id, const Player &owner )
 	{
-		auto bullet = GetBulletFromID( id );
+		auto bullet = GetBulletFromID( id, owner );
 
 		if ( bullet == nullptr )
 		{
@@ -152,11 +152,11 @@ public:
 
 		bullet->Kill();
 	}
-	std::shared_ptr< Bullet > GetBulletFromID( int32_t ID )
+	std::shared_ptr< Bullet > GetBulletFromID( int32_t ID, const Player &owner  )
 	{
 		for ( auto p : bulletList )
 		{
-			if ( ID == p->GetObjectID() )
+			if ( ID == p->GetObjectID() && owner == p->GetOwner() )
 			{
 				return p;
 			}
@@ -164,7 +164,7 @@ public:
 
 		return nullptr;
 	}
-	std::shared_ptr< Tile > GetTileFromID( int32_t ID )
+	std::shared_ptr< Tile > GetTileFromID( int32_t ID)
 	{
 		for ( auto p : tileList )
 		{
@@ -174,11 +174,11 @@ public:
 
 		return nullptr;
 	}
-	std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID )
+	std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID, const Player &owner   )
 	{
 		for ( auto p : bonusBoxList )
 		{
-			if ( ID == p->GetObjectID() )
+			if ( ID == p->GetObjectID() && owner == p->GetOwner()  )
 			{
 				return p;
 			}

@@ -618,7 +618,7 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 	if ( ballList.size() == 0 )
 		return;
 
-	std::shared_ptr< Ball > ball = physicsManager.GetBallFromID( message.GetObjectID() );
+	std::shared_ptr< Ball > ball = physicsManager.GetBallFromID( message.GetObjectID(), Player::Remote );
 
 	if ( !ball )
 	{
@@ -638,7 +638,7 @@ void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 	PrintRecv( message );
 	if ( ballList.size() > 0 )
 	{
-		auto ball =  physicsManager.GetBallFromID( message.GetObjectID() );
+		auto ball =  physicsManager.GetBallFromID( message.GetObjectID(), Player::Remote );
 
 		if ( ball == nullptr )
 		{
@@ -711,7 +711,7 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
 	PrintRecv( message );
-	auto bb = physicsManager.GetBonusBoxFromID( message.GetObjectID() );
+	auto bb = physicsManager.GetBonusBoxFromID( message.GetObjectID(), Player::Remote );
 
 	if ( bb == nullptr )
 	{
@@ -738,7 +738,7 @@ void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 {
 	if ( ballList.size() > 0 )
-		physicsManager.KillBulletWithID( message.GetObjectID() );
+		physicsManager.KillBulletWithID( message.GetObjectID(), Player::Remote  );
 
 	DeleteDeadBullets();
 }
