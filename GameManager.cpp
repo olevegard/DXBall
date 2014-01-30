@@ -723,7 +723,7 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 }
 std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, double xPos, double yPos )
 {
-	auto bullet = physicsManager.FireBullet( id, owner, xPos, yPos );
+	auto bullet = physicsManager.CreateBullet( id, owner, xPos, yPos );
 
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );

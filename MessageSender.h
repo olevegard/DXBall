@@ -5,6 +5,10 @@
 
 #include "structs/net/TCPMessage.h"
 #include "structs/game_objects/Ball.h"
+#include "structs/game_objects/Tile.h"
+#include "structs/game_objects/Bullet.h"
+#include "structs/game_objects/Paddle.h"
+#include "structs/game_objects/BonusBox.h"
 
 #include "enums/MessageTarget.h"
 #include "enums/GameState.h"
@@ -15,7 +19,7 @@ public:
 	MessageSender( NetManager &netMan )
 		:	netManager( netMan )
 	{
-		
+
 	}
 	void SendBulletKilledMessage( uint32_t bulletID )
 	{
