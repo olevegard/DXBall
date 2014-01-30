@@ -64,7 +64,6 @@ class GameManager
 		// ===========================================
 		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
 		void UpdateBallSpeed();
-		std::shared_ptr< Ball >  LaunchBall( const Player &player, uint32_t ballID );
 		void IncreaseActiveBalls( const Player &player );
 		void ReduceActiveBalls( const Player &player, uint32_t ballID );
 		void CheckBallSpeedFastMode( double delta);
@@ -72,6 +71,7 @@ class GameManager
 
 		void DeleteDeadBalls();
 		void DeleteDeadTiles();
+		std::shared_ptr<Ball> AddBall( );
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
 		void RemoveBall( std::shared_ptr< Ball > pBall );
 

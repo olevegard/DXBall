@@ -101,6 +101,17 @@ void PhysicsManager::RemoveBall( const std::shared_ptr< Ball >  &ball )
 {
 	ballList.erase( std::find( ballList.begin(), ballList.end(), ball) );
 }
+std::shared_ptr< Ball >  PhysicsManager::CreateBall( const Player &player, uint32_t ballID, double speed )
+{
+	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, player, ballID );
+	ball->textureType = TextureType::e_Ball;
+	ball->SetScale( scale );
+	ball->SetSpeed( speed );
+
+	ballList.push_back( ball );
+
+	return ball;
+}
 std::shared_ptr< Ball > PhysicsManager::GetBallFromID( int32_t ID, const Player &owner )
 {
 	for ( auto p : ballList )

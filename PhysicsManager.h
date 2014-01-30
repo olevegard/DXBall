@@ -20,6 +20,7 @@ public:
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
 	std::shared_ptr< Tile > CreateTile( int16_t xPos, int16_t yPos, const TileType &tileType );
 
+
 	std::shared_ptr< Tile > GetTileFromID( int32_t ID);
 
 	std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
@@ -30,6 +31,7 @@ public:
 	// =============================================================================================================
 	void AddBall( const std::shared_ptr< Ball > &ball );
 	void RemoveBall( const std::shared_ptr< Ball >  &ball );
+	std::shared_ptr< Ball >  CreateBall( const Player &player, uint32_t ballID, double speed );
 
 	std::shared_ptr< Ball > GetBallFromID( int32_t ID, const Player &owner );
 

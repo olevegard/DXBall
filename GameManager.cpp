@@ -159,6 +159,11 @@ void GameManager::Restart()
 
 	UpdateGUI();
 }
+
+std::shared_ptr<Ball> GameManager::AddBall( )
+{
+	return AddBall( Player::Local, 0 );
+}
 std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
 	if ( menuManager.GetGameState() != GameState::InGame || !CanPlayerFireBall( owner ) )
@@ -166,24 +171,20 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 
 	IncreaseActiveBalls( owner );
 
-	auto ball = LaunchBall( owner, ballID );
+	std::shared_ptr< Ball >  ball;
 
 	if ( owner == Player::Local )
+	{
+		ball = physicsManager.CreateBall( owner, ++objectCount, GetBallSpeed( owner ) );
 		messageSender.SendBallSpawnMessage( ball, windowSize.h );
+	}
+	else
+	{
+		ball = physicsManager.CreateBall( owner, ballID, GetBallSpeed( owner ) );
+	}
 
-	++ballCount;
-
-	return ball;
-}
-std::shared_ptr< Ball >  GameManager::LaunchBall( const Player &player, uint32_t ballID )
-{
-	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, player, ballID );
-	ball->textureType = TextureType::e_Ball;
-	ball->SetScale( scale );
-	ball->SetSpeed( GetBallSpeed( player ) );
 
 	ballList.push_back( ball );
-	physicsManager.AddBall( ball );
 	renderer.AddBall( ball );
 
 	return ball;
@@ -951,7 +952,7 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{
 			if ( localPlayerInfo.activeBalls == 0 )
-				AddBall( Player::Local, ballCount );
+				AddBall( );
 
 			if ( localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
 				FireBullets();
@@ -986,7 +987,7 @@ void GameManager::InitJoystick()
 void GameManager::HandleJoystickEvent( const SDL_JoyButtonEvent &event )
 {
 	if ( event.state == SDL_PRESSED )
-		AddBall( Player::Local, ballCount );
+		AddBall( );
 
 	//std::cout << "eve " << static_cast< int32_t > ( event.button ) << std::endl;
 }
@@ -1073,7 +1074,7 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				break;
 			case SDLK_RETURN:
 			case SDLK_b:
-				AddBall( Player::Local, ballCount );
+				AddBall( );
 				break;
 			case SDLK_s:
 				localPlayerInfo.SetBonusActive( BonusType::SuperBall, true );
