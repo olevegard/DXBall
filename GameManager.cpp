@@ -1243,7 +1243,7 @@ void GameManager::AIMove()
 
 	double deadCenter = ( highest->rect.x + highest->rect.w / 2 ) -
 		( ( localPaddle->rect.w / 2.0) *
-		  Math::GenRandomNumber( -1.0, 1.0 ) );
+		  RandomHelper::GenRandomNumber( -1.0, 1.0 ) );
 
 	localPaddle->rect.x = deadCenter;
 	messageSender.SendPaddlePosMessage( localPaddle->rect.x );

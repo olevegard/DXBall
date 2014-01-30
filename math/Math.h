@@ -2,8 +2,9 @@
 
 #include <random>
 
-namespace Math
+class RandomHelper
 {
+	public:
 	static double GenRandomNumber( double min, double max )
 	{
 		static std::random_device rseed;
@@ -20,4 +21,4 @@ namespace Math
 
 		return rdist(rgen);
 	}
-}
+};
