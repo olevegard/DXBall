@@ -45,9 +45,7 @@
 
 	,	remoteResolutionScale( 1.0 )
 
-	,	ballCount( 0 )
-	,	bonusCount( 0 )
-	,	bulletCount( 0 )
+	,	objectCount( 0 )
 
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
@@ -280,7 +278,7 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 	if (!WasBonusBoxSpawned( tilesDestroyed ) )
 		return;
 
-	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ( bonusCount++ );
+	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ( ++objectCount);
 
 	SetBonusBoxData( bonusBox, owner, pos );
 	physicsManager.SetBonusBoxDirection( bonusBox, dir );
@@ -853,14 +851,14 @@ void GameManager::FireBullets()
 {
 	auto bullet1 = FireBullet
 	(
-		static_cast< int32_t > ( bulletCount++ ),
+		static_cast< int32_t > ( ++objectCount ),
 		Player::Local,
 		localPaddle->rect.x,
 		localPaddle->rect.y
 	);
 	auto bullet2 = FireBullet
 	(
-		 static_cast< int32_t > ( bulletCount++  ),
+		 static_cast< int32_t > ( ++objectCount ),
 		 Player::Local,
 		 localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w,
 		 localPaddle->rect.y - 10
@@ -1546,10 +1544,8 @@ bool GameManager::IsTimeForNewBoard()
 void GameManager::ClearBoard()
 {
 	tileList.clear();
-	bulletCount++;
-
 	ballList.clear();
-	ballCount = 0;
+	objectCount = 0;
 
 	DeleteAllBullets();
 	DeleteAllBonusBoxes();

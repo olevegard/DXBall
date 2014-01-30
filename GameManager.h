@@ -260,9 +260,7 @@ class GameManager
 		double scale;
 		double remoteResolutionScale;
 
-		unsigned int ballCount;
-		unsigned int bonusCount;
-		unsigned int bulletCount;
+		uint32_t objectCount;
 
 		unsigned short fpsLimit;
 		double frameDuration;
