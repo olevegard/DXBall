@@ -3,11 +3,12 @@
 #include <algorithm>
 
 #include "math/RectHelpers.h"
+#include "math/Math.h"
 
 PhysicsManager::PhysicsManager( MessageSender &msgSender )
 	:	messageSender( msgSender )
 	,	scale( 1.0 )
-	,	tileCount( 0 )
+	,	objectCount ( 0 )
 {
 }
 void PhysicsManager::AddTile( const std::shared_ptr< Tile > &tile )
@@ -17,7 +18,6 @@ void PhysicsManager::AddTile( const std::shared_ptr< Tile > &tile )
 
 void PhysicsManager::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
-	--tileCount;
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
 std::shared_ptr< Tile > PhysicsManager::GetTileFromID( int32_t ID)
@@ -32,7 +32,7 @@ std::shared_ptr< Tile > PhysicsManager::GetTileFromID( int32_t ID)
 }
 std::shared_ptr< Tile > PhysicsManager::CreateTile( int16_t xPos, int16_t yPos, const TileType &tileType )
 {
-	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileCount++ );
+	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, ++objectCount );
 	tile->textureType = TextureType::e_Tile;
 
 	tile->rect.x = xPos;
@@ -164,6 +164,26 @@ void PhysicsManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
 	bonusBoxList.erase( std::find( bonusBoxList.begin(), bonusBoxList.end(), bb) );
 }
+std::shared_ptr< BonusBox > PhysicsManager::CreateBonusBox( uint32_t ID, const Player &owner, const Vector2f &dir, const Vector2f &pos )
+{
+	std::shared_ptr< BonusBox > bonusBox = std::make_shared< BonusBox >( ID );
+
+	if ( owner == Player::Local )
+	{
+		bonusBox->SetObjectID( ++objectCount );
+		bonusBox->SetBonusType( GetRandomBonusType() );
+	}
+
+	bonusBox->rect.x = pos.x;
+	bonusBox->rect.y = pos.y;
+
+	bonusBox->SetOwner( owner  );
+	bonusBox->SetSpeed( bonusBoxSpeed );
+	SetBonusBoxDirection( bonusBox, dir );
+
+	bonusBoxList.push_back( bonusBox );
+	return bonusBox;
+}
 std::shared_ptr< BonusBox > PhysicsManager::GetBonusBoxFromID( int32_t ID, const Player &owner   )
 {
 	for ( auto p : bonusBoxList )
@@ -202,6 +222,18 @@ void PhysicsManager::SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox,
 		dir.y = ( dir.y < 0.0 ) ? dir.y : dir.y * -1.0;
 
 	bonusBox->SetDirection( dir );
+}
+BonusType PhysicsManager::GetRandomBonusType() const
+{
+	int rand = RandomHelper::GenRandomNumber( 1000 );
+	if ( rand < 250 )
+		return BonusType::FireBullets;
+	if ( rand < 500 )
+		return BonusType::SuperBall;
+	if ( rand < 750 )
+		return BonusType::ExtraLife;
+	else
+		return BonusType::Death;
 }
 // Bullets
 // =============================================================================================================
@@ -403,6 +435,10 @@ void PhysicsManager::SetBulletSpeed( double bulletSpeed_ )
 {
 	bulletSpeed = bulletSpeed_;
 }
+void PhysicsManager::SetBonusBoxSpeed( double bonusBoxSpeed_ )
+{
+	bonusBoxSpeed = bonusBoxSpeed_;
+}
 void PhysicsManager::SetWindowSize( const SDL_Rect &wSize )
 {
 	windowSize = wSize;
@@ -418,5 +454,5 @@ void PhysicsManager::Clear()
 	bonusBoxList.clear();
 	tileList.clear();
 	ballList.clear();
-	tileCount = 0;
+	objectCount = 0;
 }

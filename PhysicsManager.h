@@ -16,10 +16,12 @@ class PhysicsManager
 public:
 
 	PhysicsManager( MessageSender &msgSender );
+
+	// Tiles
+	// =============================================================================================================
 	void AddTile( const std::shared_ptr< Tile > &tile );
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
 	std::shared_ptr< Tile > CreateTile( int16_t xPos, int16_t yPos, const TileType &tileType );
-
 
 	std::shared_ptr< Tile > GetTileFromID( int32_t ID);
 
@@ -42,11 +44,13 @@ public:
 	// =============================================================================================================
 	void AddBonusBox( const std::shared_ptr< BonusBox > &bb );
 	void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
+	std::shared_ptr< BonusBox > CreateBonusBox( uint32_t ID, const Player &owner, const Vector2f &dir, const Vector2f &pos );
 
 	std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID, const Player &owner   );
 
 	void MoveBonusBoxes( double delta );
 	void SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir_ ) const;
+	BonusType GetRandomBonusType() const;
 
 	// Bullets
 	// =============================================================================================================
@@ -74,6 +78,7 @@ public:
 
 	void SetScale( double scale_ );
 	void SetBulletSpeed( double bulletSpeed_ );
+	void SetBonusBoxSpeed( double bonusBoxSpeed_ );
 	void SetWindowSize( const SDL_Rect &wSize );
 	void SetPaddles( std::shared_ptr < Paddle > localPaddle_, std::shared_ptr < Paddle > remotePaddle_ );
 
@@ -94,6 +99,7 @@ private:
 	double scale;
 
 	double bulletSpeed;
+	double bonusBoxSpeed;
 
-	uint32_t tileCount;
+	uint32_t objectCount;
 };

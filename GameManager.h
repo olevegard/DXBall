@@ -46,7 +46,6 @@ class GameManager
 	private:
 		// Bonus Boxes
 		// ===========================================
-		void SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const Player &owner, const Vector2f &pos  ) const;
 		bool WasBonusBoxSpawned( int32_t tilesDestroyed ) const;
 		BonusType GetRandomBonusType() const;
 

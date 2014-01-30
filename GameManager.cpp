@@ -115,6 +115,7 @@ void GameManager::LoadConfig()
 {
 	gameConfig.LoadConfig();
 	physicsManager.SetBulletSpeed( gameConfig.GetBulletSpeed() );
+	physicsManager.SetBonusBoxSpeed( gameConfig.GetBonusBoxSpeed() );
 
 	localPlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
 	remotePlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
@@ -279,14 +280,9 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 	if (!WasBonusBoxSpawned( tilesDestroyed ) )
 		return;
 
-	std::shared_ptr< BonusBox > bonusBox  = std::make_shared< BonusBox > ( ++objectCount);
-
-	SetBonusBoxData( bonusBox, owner, pos );
-	physicsManager.SetBonusBoxDirection( bonusBox, dir );
+	auto bonusBox = physicsManager.CreateBonusBox( ++objectCount, owner, dir, pos );
 
 	bonusBoxList.push_back( bonusBox );
-
-	physicsManager.AddBonusBox( bonusBox );
 	renderer.AddBonusBox( bonusBox );
 
 	messageSender.SendBonusBoxSpawnedMessage( bonusBox, windowSize.h );
@@ -301,16 +297,7 @@ bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
 		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
 	}
 
-	return ( Math::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) == 1 );
-}
-void GameManager::SetBonusBoxData( std::shared_ptr< BonusBox > bonusBox, const Player &owner, const Vector2f &pos  ) const
-{
-	bonusBox->rect.x = pos.x;
-	bonusBox->rect.y = pos.y;
-
-	bonusBox->SetOwner( owner  );
-	bonusBox->SetBonusType( GetRandomBonusType()  );
-	bonusBox->SetSpeed( gameConfig.GetBonusBoxSpeed());
+	return ( RandomHelper::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) == 1 );
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
@@ -691,21 +678,15 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 {
-	//PrintRecv( message );
-	std::shared_ptr< BonusBox > bonusBox = std::make_shared< BonusBox >( message.GetObjectID()  );
+	Vector2f dir( message.GetXDir(), message.GetYDir() * -1.0 );
 
-	bonusBox->rect.x = message.GetXPos() * remoteResolutionScale;
-	bonusBox->rect.y = ( message.GetYPos() * remoteResolutionScale ) - bonusBox->rect.h;
-
-	bonusBox->SetOwner( Player::Remote );
-	bonusBox->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() * -1.0 ) );
+	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, dir, pos );
 	bonusBox->SetBonusType( message.GetBonusType() );
-	bonusBox->SetSpeed( gameConfig.GetBonusBoxSpeed());
+	bonusBox->rect.x = message.GetXPos() * remoteResolutionScale;
+	bonusBox->rect.y = message.GetYPos() * remoteResolutionScale - bonusBox->rect.h;
 
 	bonusBoxList.push_back( bonusBox );
-
 	renderer.AddBonusBox( bonusBox );
-	physicsManager.AddBonusBox( bonusBox );
 }
 void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
@@ -1421,18 +1402,7 @@ void GameManager::ApplyBonus_Death( const Player &player )
 		// Delete all dead Balls, will in turns reduce Player life
 		DeleteDeadBalls();
 }
-BonusType GameManager::GetRandomBonusType() const
-{
-	int rand = Math::GenRandomNumber( 1000 );
-	if ( rand < 250 )
-		return BonusType::FireBullets;
-	if ( rand < 500 )
-		return BonusType::SuperBall;
-	if ( rand < 750 )
-		return BonusType::ExtraLife;
-	else
-		return BonusType::Death;
-}
+
 void GameManager::UpdateGUI( )
 {
 	if ( menuManager.GetGameState() == GameState::InGame || menuManager.GetGameState() == GameState::InGameWait )
