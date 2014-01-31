@@ -259,8 +259,6 @@ class GameManager
 		double scale;
 		double remoteResolutionScale;
 
-		uint32_t objectCount;
-
 		unsigned short fpsLimit;
 		double frameDuration;
 

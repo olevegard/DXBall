@@ -101,9 +101,12 @@ void PhysicsManager::RemoveBall( const std::shared_ptr< Ball >  &ball )
 {
 	ballList.erase( std::find( ballList.begin(), ballList.end(), ball) );
 }
-std::shared_ptr< Ball >  PhysicsManager::CreateBall( const Player &player, uint32_t ballID, double speed )
+std::shared_ptr< Ball >  PhysicsManager::CreateBall( const Player &owner, uint32_t ballID, double speed )
 {
-	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, player, ballID );
+	if ( owner == Player::Local )
+		ballID = ++objectCount;
+
+	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
 	ball->textureType = TextureType::e_Ball;
 	ball->SetScale( scale );
 	ball->SetSpeed( speed );
@@ -172,11 +175,10 @@ std::shared_ptr< BonusBox > PhysicsManager::CreateBonusBox( uint32_t ID, const P
 	{
 		bonusBox->SetObjectID( ++objectCount );
 		bonusBox->SetBonusType( GetRandomBonusType() );
+
+		bonusBox->rect.x = pos.x;
+		bonusBox->rect.y = pos.y;
 	}
-
-	bonusBox->rect.x = pos.x;
-	bonusBox->rect.y = pos.y;
-
 	bonusBox->SetOwner( owner  );
 	bonusBox->SetSpeed( bonusBoxSpeed );
 	SetBonusBoxDirection( bonusBox, dir );
@@ -259,6 +261,8 @@ std::shared_ptr< Bullet > PhysicsManager::GetBulletFromID( int32_t ID, const Pla
 }
 std::shared_ptr< Bullet >  PhysicsManager::CreateBullet( int32_t id, const Player &owner, double xPos, double yPos )
 {
+	if ( owner == Player::Local )
+		id = ++objectCount;
 	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( id );
 
 	bullet->SetSpeed( bulletSpeed  );

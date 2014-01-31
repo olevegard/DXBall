@@ -45,8 +45,6 @@
 
 	,	remoteResolutionScale( 1.0 )
 
-	,	objectCount( 0 )
-
 	,	fpsLimit( 60 )
 	,	frameDuration( 1000.0 / 60.0 )
 
@@ -176,7 +174,7 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 
 	if ( owner == Player::Local )
 	{
-		ball = physicsManager.CreateBall( owner, ++objectCount, GetBallSpeed( owner ) );
+		ball = physicsManager.CreateBall( owner, 0, GetBallSpeed( owner ) );
 		messageSender.SendBallSpawnMessage( ball, windowSize.h );
 	}
 	else
@@ -280,7 +278,7 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 	if (!WasBonusBoxSpawned( tilesDestroyed ) )
 		return;
 
-	auto bonusBox = physicsManager.CreateBonusBox( ++objectCount, owner, dir, pos );
+	auto bonusBox = physicsManager.CreateBonusBox( 0, owner, dir, pos );
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -680,7 +678,7 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 {
 	Vector2f dir( message.GetXDir(), message.GetYDir() * -1.0 );
 
-	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, dir, pos );
+	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, dir, Vector2f() );
 	bonusBox->SetBonusType( message.GetBonusType() );
 	bonusBox->rect.x = message.GetXPos() * remoteResolutionScale;
 	bonusBox->rect.y = message.GetYPos() * remoteResolutionScale - bonusBox->rect.h;
@@ -833,17 +831,17 @@ void GameManager::FireBullets()
 {
 	auto bullet1 = FireBullet
 	(
-		static_cast< int32_t > ( ++objectCount ),
+		0,
 		Player::Local,
 		localPaddle->rect.x,
 		localPaddle->rect.y
 	);
 	auto bullet2 = FireBullet
 	(
-		 static_cast< int32_t > ( ++objectCount ),
-		 Player::Local,
-		 localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w,
-		 localPaddle->rect.y - 10
+	 	0,
+		Player::Local,
+		localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w,
+		localPaddle->rect.y - 10
 	);
 
 	messageSender.SendBulletFireMessage( bullet1, bullet2, windowSize.h );
@@ -1516,7 +1514,6 @@ void GameManager::ClearBoard()
 {
 	tileList.clear();
 	ballList.clear();
-	objectCount = 0;
 
 	DeleteAllBullets();
 	DeleteAllBonusBoxes();
