@@ -533,7 +533,7 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 	if ( !netManager.IsConnected() )
 	{
 		std::cout << "GameManager@" << __LINE__ << " Recieved GameJoined"
-			"\n\tThis means the client has connectied, acccpting connection..." << std::endl;
+			"\n\tThis means the client has connectied, acccpting connection..."  << message.GetObjectID() << std::endl;
 		netManager.Update();
 	}
 
@@ -552,6 +552,7 @@ void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 }
 void GameManager::RecieveEndGameMessage( const TCPMessage &message )
 {
+	std::cout << "ID : " << message.GetObjectID() << std::endl;
 	UpdateGameList();
 	menuManager.ClearGameList();
 }
@@ -574,6 +575,7 @@ void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
 }
 void GameManager::RecieveLevelDoneMessage( const TCPMessage &message )
 {
+	std::cout << "ID : " << message.GetObjectID() << std::endl;
 	isOpnonentDoneWithLevel = true;
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )

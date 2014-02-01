@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "math/Rect.h"
+#include "math/Vector2f.h"
 
 #include "enums/TextureType.h"
 
@@ -52,6 +53,14 @@ struct GamePiece
 	double GetSpeed() const
 	{
 		return speed;
+	}
+	void SetPosition( const Vector2f &pos )
+	{
+		oldRect.x = rect.x;
+		oldRect.y = rect.y;
+
+		rect.x = pos.x;
+		rect.y = pos.y;
 	}
 	private:
 	GamePiece( const GamePiece &gamePiece );

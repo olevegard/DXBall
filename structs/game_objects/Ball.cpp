@@ -7,7 +7,6 @@
 #include "math/Math.h"
 #include "math/RectHelpers.h"
 #include "math/Vector2f.h"
-#include "math/VectorHelpers.h"
 
 #include "enums/Side.h"
 #include "enums/Corner.h"
@@ -31,20 +30,20 @@ Ball::~Ball()
 }
 void Ball::Reset( const SDL_Rect &windowSize )
 {
-	SetSpeed(0.3f * Math::GenRandomNumber( 1 ));
+	SetSpeed(0.3f * RandomHelper::GenRandomNumber( 1 ));
 
 	// X pos and dirX is the same for both local and remote player
-	dirX = Math::GenRandomNumber( -1.0, 1.0 );
+	dirX = RandomHelper::GenRandomNumber( -1.0, 1.0 );
 	rect.x = ( windowSize.w * 0.5 ) - ( rect.w * 0.5 );
 
 	if ( ballOwner == Player::Local )
 	{
-		dirY = Math::GenRandomNumber( -0.9, -0.1 );
+		dirY = RandomHelper::GenRandomNumber( -0.9, -0.1 );
 		rect.y = windowSize.h - 75;
 	}
 	else if ( ballOwner == Player::Remote )
 	{
-		dirY = Math::GenRandomNumber(  0.1, 0.9 );
+		dirY = RandomHelper::GenRandomNumber(  0.1, 0.9 );
 		rect.y = 150;
 	}
 
