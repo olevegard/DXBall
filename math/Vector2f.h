@@ -1,5 +1,8 @@
 #pragma once
 
+
+#include <iostream>
+
 struct Vector2f{
 	Vector2f( double posX, double posY)
 		:   x(0)
@@ -43,6 +46,18 @@ struct Vector2f{
 };
 
 
+inline std::istream& operator>>( std::istream &is, Vector2f &vec )
+{
+	// The char enables << to output the vecotr like 'x, y' as oposed to 'x y'
+	char ch;
+	is >> vec.x >> ch >> vec.y;
+	return is;
+}
+inline std::ostream& operator<<( std::ostream &os, const Vector2f &vec )
+{
+	os << vec.x << ", " <<  vec.y;
+	return os;
+}
 inline bool operator==( const Vector2f &vec1, const Vector2f &vec2)
 {
 	return ( ( vec1.x == vec2.x ) && vec1.y == vec2.y );
