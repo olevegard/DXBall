@@ -540,7 +540,6 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 
 	UpdateGameList();
 
-	//SendGameSettingsMessage();
 	menuManager.SetGameState( GameState::InGame );
 	messageSender.SendPlayerName( localPlayerInfo.name );
 }
@@ -619,20 +618,7 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 {
-	PrintRecv( message );
-	if ( ballList.size() > 0 )
-	{
-		auto ball =  physicsManager.GetBallFromID( message.GetObjectID(), Player::Remote );
-
-		if ( ball == nullptr )
-		{
-			std::cout << "GameManager@" << __LINE__ << " Ball with ID : " << message.GetObjectID() << " doesn't exist\n";
-			return;
-		}
-
-		ball->Kill();
-	}
-
+	physicsManager.RemoveBallWithID( message.GetObjectID(), Player::Remote );
 	DeleteDeadBalls();
 }
 void GameManager::RecieveTileHitMessage( const TCPMessage &message )

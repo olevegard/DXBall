@@ -115,6 +115,21 @@ std::shared_ptr< Ball >  PhysicsManager::CreateBall( const Player &owner, uint32
 
 	return ball;
 }
+void PhysicsManager::RemoveBallWithID( int32_t ID, const Player &owner )
+{
+	if ( ballList.size() > 0 )
+	{
+		auto ball =  GetBallFromID(  ID, owner );
+
+		if ( ball == nullptr )
+		{
+			std::cout << "PhysicsManager@" << __LINE__ << " Ball with ID : " << ID  << " doesn't exist\n";
+			return;
+		}
+
+		ball->Kill();
+	}
+}
 std::shared_ptr< Ball > PhysicsManager::GetBallFromID( int32_t ID, const Player &owner )
 {
 	for ( auto p : ballList )

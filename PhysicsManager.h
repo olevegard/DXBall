@@ -36,6 +36,7 @@ public:
 	std::shared_ptr< Ball >  CreateBall( const Player &player, uint32_t ballID, double speed );
 
 	std::shared_ptr< Ball > GetBallFromID( int32_t ID, const Player &owner );
+	void RemoveBallWithID( int32_t ID, const Player &owner );
 
 	void UpdateBallSpeed( double localPlayerSpeed, double remotePlayerSpeed );
 	std::shared_ptr< Ball > FindHighestBall();
