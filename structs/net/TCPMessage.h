@@ -9,6 +9,8 @@
 #include "../../enums/BonusType.h"
 #include "../../enums/GameState.h"
 
+#include "../../math/Vector2f.h"
+
 class TCPMessage
 {
 	public:
@@ -30,8 +32,6 @@ class TCPMessage
 		GameState GetGameState() const;
 		int32_t GetGameStateAsInt() const;
 
-		double GetXPos() const;
-		double GetYPos() const;
 		double GetXPos2() const;
 		double GetYPos2() const;
 		double GetXDir() const;
@@ -52,8 +52,6 @@ class TCPMessage
 		void SetGameState( int32_t bonustType_ );
 		void SetGameState( GameState bonustType_ );
 
-		void SetXPos( double xPos_ );
-		void SetYPos( double yPos_ );
 		void SetXPos2( double xPos_ );
 		void SetYPos2( double yPos_ );
 		void SetXDir( double xDir_ );
@@ -88,6 +86,14 @@ class TCPMessage
 		{
 			return playerName;
 		}
+		void SetPos( Vector2f pos )
+		{
+			pos1 = pos;
+		}
+		Vector2f GetPos() const
+		{
+			return pos1;
+		}
 	private:
 		MessageType msgType;
 		unsigned int objectID;
@@ -97,9 +103,6 @@ class TCPMessage
 
 		GameState newGameState;
 
-		double xPos;
-		double yPos;
-
 		double xPos2;
 		double yPos2;
 
@@ -108,6 +111,8 @@ class TCPMessage
 
 		double xSize;
 		double ySize;
+
+		Vector2f pos1;
 
 		double boardScale;
 
@@ -156,29 +161,41 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		// Paddle position only has xPos
 		case PaddlePosition:
 			{
-				double xPos = 0.0;
+				double pos = 0.0;
 
-				is >> xPos;
+				is >> pos;
 
-				msg.SetXPos( xPos );
+				msg.SetPos( Vector2f( pos, 0.0 ) );
 				return is;
 			}
 		// BallData has both pos and dir
 		case BallSpawned:
+			{
+				Vector2f pos_;
+				double xDir = 0.0;
+				double yDir = 0.0;
+
+				is >> pos_ >> xDir >> yDir;
+
+				msg.SetPos( pos_ );
+
+				msg.SetXDir( xDir );
+				msg.SetYDir( yDir );
+
+				return is;
+			}
 		case BallData:
 		case BonusSpawned:
 			{
 				int bonusType;
-				double xPos = 0.0;
-				double yPos = 0.0;
+				Vector2f pos;
 				double xDir = 0.0;
 				double yDir = 0.0;
 
-				is >> bonusType >> xPos  >> yPos  >> xDir >> yDir;
+				is >> bonusType >> pos >> xDir >> yDir;
 
 				msg.SetBonusType( bonusType );
-				msg.SetXPos( xPos );
-				msg.SetYPos( yPos );
+				msg.SetPos( pos );
 				msg.SetXDir( xDir );
 				msg.SetYDir( yDir );
 
@@ -187,16 +204,14 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case BulletFire:
 			{
 				int32_t objectID2 = 0;
-				double xPos = 0.0;
-				double yPos = 0.0;
+				Vector2f pos_;
 				double xPos2 = 0.0;
 				double yPos2 = 0.0;
 
-				is >> xPos >> yPos >> objectID2  >> xPos2  >> yPos2;
+				is >> pos_ >> objectID2  >> xPos2  >> yPos2;
 
 				msg.SetObjectID2( objectID2 );
-				msg.SetXPos( xPos );
-				msg.SetYPos( yPos );
+				msg.SetPos( pos_ );
 				msg.SetXPos2( xPos2 );
 				msg.SetYPos2( yPos2 );
 
@@ -269,23 +284,29 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		// Paddle position only has xPos
 		case PaddlePosition:
 			os
-				<< message.GetXPos() << " ";
+				<< message.GetPos().x << " ";
 			break;
 		// BallData has both pos and dir
 		case BallSpawned:
+			{
+			os
+				<< message.GetPos() << " "
+				<< message.GetXDir() << " "
+				<< message.GetYDir() << " ";
+
+			break;
+			}
 		case BallData:
 		case BonusSpawned:
 			os
 				<< message.GetBonusTypeAsInt()  << " "
-				<< message.GetXPos() << " "
-				<< message.GetYPos() << " "
+				<< message.GetPos() << " "
 				<< message.GetXDir() << " "
 				<< message.GetYDir() << " ";
 			break;
 		case BulletFire:
 			os
-				<< message.GetXPos() << " "
-				<< message.GetYPos() << " "
+				<< message.GetPos() << " "
 				<< message.GetObjectID2() << " "
 				<< message.GetXPos2() << " "
 				<< message.GetYPos2() << " ";

@@ -39,12 +39,12 @@ public:
 		msg.SetObjectID( bulletLeft->GetObjectID() );
 		msg.SetObjectID2( bulletRight->GetObjectID() );
 
-		msg.SetXPos( bulletLeft->rect.x );
-		msg.SetYPos( height - bulletLeft->rect.y );
+		msg.SetPos( Vector2f( bulletLeft->rect.x, height - bulletLeft->rect.y ) );
 
 		msg.SetXPos2( bulletRight->rect.x );
 		msg.SetYPos2( height - bulletRight->rect.y );
 
+		std::cout << "Sending : " << msg << std::endl;
 		SendMessage( msg, MessageTarget::Oponent );
 	}
 	void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox, double windowHeight )
@@ -55,8 +55,7 @@ public:
 		msg.SetObjectID( bonusBox->GetObjectID() );
 		msg.SetBonusType( bonusBox->GetBonusType() );
 
-		msg.SetXPos( bonusBox->rect.x );
-		msg.SetYPos( windowHeight - bonusBox->rect.y );
+		msg.SetPos( Vector2f( bonusBox->rect.x, windowHeight - bonusBox->rect.y ) );
 
 		msg.SetXDir( bonusBox->GetDirection().x );
 		msg.SetYDir( bonusBox->GetDirection().y );
@@ -89,8 +88,7 @@ public:
 		msg.SetMessageType( MessageType::BallSpawned );
 		msg.SetObjectID( ball->GetObjectID() );
 
-		msg.SetXPos( r.x );
-		msg.SetYPos( windowHeight - r.y );
+		msg.SetPos( Vector2f( r.x, windowHeight - r.y ));
 
 		msg.SetXDir( ball->GetDirection().x );
 		msg.SetYDir( ball->GetDirection().y * -1.0 );
@@ -105,8 +103,7 @@ public:
 		msg.SetMessageType( MessageType::BallData );
 		msg.SetObjectID( ball->GetObjectID()  );
 
-		msg.SetXPos( r.x );
-		msg.SetYPos(  windowHeight - r.y );
+		msg.SetPos( Vector2f( r.x, windowHeight - r.y  ) );
 
 		msg.SetXDir( ball->GetDirection().x );
 		msg.SetYDir( ball->GetDirection().y * -1.0 );
@@ -136,7 +133,7 @@ public:
 		TCPMessage msg;
 
 		msg.SetMessageType( MessageType::PaddlePosition );
-		msg.SetXPos( xPos );
+		msg.SetPos( Vector2f( xPos, 0 ) );
 
 		std::stringstream ss;
 		ss << msg;

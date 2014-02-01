@@ -3,8 +3,6 @@
 TCPMessage::TCPMessage()
 	:	msgType( MessageType::PaddlePosition )
 	,	objectID( 0 )
-	,	xPos(0.0)
-	,	yPos(0.0)
 	,	xDir(0.0)
 	,	yDir(0.0)
 {}
@@ -24,13 +22,13 @@ std::string TCPMessage::Print() const
 			ss << "\n";
 			break;
 		case PaddlePosition:
-			ss << " : "  << xPos << "\n";
+			ss << " : "  << pos1.x << "\n";
 			break;
 		case GameSettings:
 			ss << " : "  << xSize << " , " << ySize << " board scale : " << boardScale <<  "\n";
 			break;
 		case BonusSpawned:
-			ss << " : " << GetBonusTypeAsString() << " , "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+			ss << " : " << GetBonusTypeAsString() << " , "  << pos1 << " , " << xDir << " , " << yDir << "\n";
 			break;
 		case GameStateChanged:
 			ss << " : " << GetGameStateAsString() << "\n";
@@ -42,13 +40,13 @@ std::string TCPMessage::Print() const
 			ss << " : " << GetPlayerName() << "\n";
 			break;
 		case BonusPickup:
-			ss << " : " << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+			ss << " : " << pos1 << " , " << xDir << " , " << yDir << "\n";
 			break;
 		case BulletFire:
-			ss << " : " << xPos << " , " << yPos << " Object 2 ID : " << objectID2 << " Pos : " << xPos2 << " , " << yPos2 << "\n";
+			ss << " : " << pos1 << " Object 2 ID : " << objectID2 << " Pos : " << xPos2 << " , " << yPos2 << "\n";
 			break;
 		default:
-			ss << " : "  << xPos << " , " << yPos << " , " << xDir << " , " << yDir << "\n";
+			ss << " : "  << pos1  << " , " << xDir << " , " << yDir << "\n";
 			break;
 	}
 
@@ -165,14 +163,6 @@ int32_t TCPMessage::GetGameStateAsInt() const
 {
 	return static_cast< int32_t > ( newGameState );
 }
-double TCPMessage::GetXPos() const
-{
-	return xPos;
-}
-double TCPMessage::GetYPos() const
-{
-	return yPos;
-}
 double TCPMessage::GetXPos2() const
 {
 	return xPos2;
@@ -233,14 +223,6 @@ void TCPMessage::SetGameState( int32_t gameState_ )
 void TCPMessage::SetGameState( GameState gameState_ )
 {
 	newGameState = gameState_;
-}
-void TCPMessage::SetXPos( double xPos_ )
-{
-	xPos = xPos_;
-}
-void TCPMessage::SetYPos( double yPos_ )
-{
-	yPos = yPos_;
 }
 void TCPMessage::SetXPos2( double xPos_ )
 {
