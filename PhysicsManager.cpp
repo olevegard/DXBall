@@ -189,8 +189,7 @@ std::shared_ptr< BonusBox > PhysicsManager::CreateBonusBox( uint32_t ID, const P
 		bonusBox->SetObjectID( ++objectCount );
 		bonusBox->SetBonusType( GetRandomBonusType() );
 
-		bonusBox->rect.x = pos.x;
-		bonusBox->rect.y = pos.y;
+		bonusBox->SetPosition( pos );
 	}
 	bonusBox->SetOwner( owner  );
 	bonusBox->SetSpeed( bonusBoxSpeed );

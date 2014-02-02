@@ -62,6 +62,10 @@ struct GamePiece
 		rect.x = pos.x;
 		rect.y = pos.y;
 	}
+	Vector2f GetPosition() const
+	{
+		return Vector2f( rect.x, rect.y );
+	}
 	private:
 	GamePiece( const GamePiece &gamePiece );
 	GamePiece& operator=( const GamePiece &gamePiece );

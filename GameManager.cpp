@@ -582,8 +582,8 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
 	std::shared_ptr< Ball > ball = AddBall( Player::Remote, message.GetObjectID() );
 
-	ball->rect.x = message.GetPos().x * remoteResolutionScale;
-	ball->rect.y = message.GetPos().y * remoteResolutionScale;
+	ball->rect.x = message.GetPos1().x * remoteResolutionScale;
+	ball->rect.y = message.GetPos1().y * remoteResolutionScale;
 
 	ball->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() ) );
 	ball->SetRemoteScale( remoteResolutionScale );
@@ -603,8 +603,8 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 
 	// Need to add ball's height, because ball it traveling in oposite direction.
 	// The board is also flipped, so the ball will have the oposite horizontal collision edge.
-	ball->rect.x = message.GetPos().x * remoteResolutionScale;
-	ball->rect.y = ( message.GetPos().y  * remoteResolutionScale ) - ball->rect.h ;
+	ball->rect.x = message.GetPos1().x * remoteResolutionScale;
+	ball->rect.y = ( message.GetPos1().y  * remoteResolutionScale ) - ball->rect.h ;
 
 	ball->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() ) );
 }
@@ -644,7 +644,7 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 {
 	if ( !remotePaddle )
 		return;
-	double xPos = message.GetPos().x;
+	double xPos = message.GetPos1().x;
 	if ( xPos > 0 && xPos < windowSize.w )
 	{
 		remotePaddle->rect.x = xPos;
@@ -656,8 +656,8 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 
 	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, dir, Vector2f() );
 	bonusBox->SetBonusType( message.GetBonusType() );
-	bonusBox->rect.x = message.GetPos().x * remoteResolutionScale;
-	bonusBox->rect.y = message.GetPos().y * remoteResolutionScale - bonusBox->rect.h;
+	bonusBox->rect.x = message.GetPos1().x * remoteResolutionScale;
+	bonusBox->rect.y = message.GetPos1().y * remoteResolutionScale - bonusBox->rect.h;
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -685,8 +685,8 @@ std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &ow
 }
 void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 {
-	FireBullet( message.GetObjectID() , Player::Remote, message.GetPos().x, message.GetPos().y  );
-	FireBullet( message.GetObjectID2(), Player::Remote, message.GetXPos2(), message.GetYPos2() );
+	FireBullet( message.GetObjectID() , Player::Remote, message.GetPos1().x, message.GetPos1().y  );
+	FireBullet( message.GetObjectID2(), Player::Remote, message.GetPos2().x, message.GetPos2().y );
 }
 void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 {

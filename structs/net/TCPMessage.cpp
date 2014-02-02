@@ -43,7 +43,7 @@ std::string TCPMessage::Print() const
 			ss << " : " << pos1 << " , " << xDir << " , " << yDir << "\n";
 			break;
 		case BulletFire:
-			ss << " : " << pos1 << " Object 2 ID : " << objectID2 << " Pos : " << xPos2 << " , " << yPos2 << "\n";
+			ss << " : " << pos1 << " Object 2 ID : " << objectID2 << " Pos : " << pos2 << "\n";
 			break;
 		default:
 			ss << " : "  << pos1  << " , " << xDir << " , " << yDir << "\n";
@@ -163,14 +163,6 @@ int32_t TCPMessage::GetGameStateAsInt() const
 {
 	return static_cast< int32_t > ( newGameState );
 }
-double TCPMessage::GetXPos2() const
-{
-	return xPos2;
-}
-double TCPMessage::GetYPos2() const
-{
-	return yPos2;
-}
 double TCPMessage::GetXDir() const
 {
 	return xDir;
@@ -223,14 +215,6 @@ void TCPMessage::SetGameState( int32_t gameState_ )
 void TCPMessage::SetGameState( GameState gameState_ )
 {
 	newGameState = gameState_;
-}
-void TCPMessage::SetXPos2( double xPos_ )
-{
-	xPos2 = xPos_;
-}
-void TCPMessage::SetYPos2( double yPos_ )
-{
-	yPos2 = yPos_;
 }
 void TCPMessage::SetXDir( double xDir_ )
 {

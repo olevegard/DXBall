@@ -32,8 +32,6 @@ class TCPMessage
 		GameState GetGameState() const;
 		int32_t GetGameStateAsInt() const;
 
-		double GetXPos2() const;
-		double GetYPos2() const;
 		double GetXDir() const;
 		double GetYDir() const;
 		double GetXSize() const;
@@ -52,8 +50,6 @@ class TCPMessage
 		void SetGameState( int32_t bonustType_ );
 		void SetGameState( GameState bonustType_ );
 
-		void SetXPos2( double xPos_ );
-		void SetYPos2( double yPos_ );
 		void SetXDir( double xDir_ );
 		void SetYDir( double yDir_ );
 		void SetXSize( double xSize_ );
@@ -86,13 +82,21 @@ class TCPMessage
 		{
 			return playerName;
 		}
-		void SetPos( Vector2f pos )
+		void SetPos1( Vector2f pos )
 		{
 			pos1 = pos;
 		}
-		Vector2f GetPos() const
+		Vector2f GetPos1() const
 		{
 			return pos1;
+		}
+		void SetPos2( Vector2f pos )
+		{
+			pos2 = pos;
+		}
+		Vector2f GetPos2() const
+		{
+			return pos2;
 		}
 	private:
 		MessageType msgType;
@@ -103,9 +107,6 @@ class TCPMessage
 
 		GameState newGameState;
 
-		double xPos2;
-		double yPos2;
-
 		double xDir;
 		double yDir;
 
@@ -113,6 +114,7 @@ class TCPMessage
 		double ySize;
 
 		Vector2f pos1;
+		Vector2f pos2;
 
 		double boardScale;
 
@@ -165,7 +167,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				is >> pos;
 
-				msg.SetPos( Vector2f( pos, 0.0 ) );
+				msg.SetPos1( Vector2f( pos, 0.0 ) );
 				return is;
 			}
 		// BallData has both pos and dir
@@ -177,7 +179,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				is >> pos_ >> xDir >> yDir;
 
-				msg.SetPos( pos_ );
+				msg.SetPos1( pos_ );
 
 				msg.SetXDir( xDir );
 				msg.SetYDir( yDir );
@@ -195,7 +197,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				is >> bonusType >> pos >> xDir >> yDir;
 
 				msg.SetBonusType( bonusType );
-				msg.SetPos( pos );
+				msg.SetPos1( pos );
 				msg.SetXDir( xDir );
 				msg.SetYDir( yDir );
 
@@ -205,15 +207,13 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 			{
 				int32_t objectID2 = 0;
 				Vector2f pos_;
-				double xPos2 = 0.0;
-				double yPos2 = 0.0;
+				Vector2f pos2_;
 
-				is >> pos_ >> objectID2  >> xPos2  >> yPos2;
+				is >> pos_ >> objectID2  >> pos2_;
 
 				msg.SetObjectID2( objectID2 );
-				msg.SetPos( pos_ );
-				msg.SetXPos2( xPos2 );
-				msg.SetYPos2( yPos2 );
+				msg.SetPos1( pos_ );
+				msg.SetPos2( pos2_ );
 
 				return is;
 			}
@@ -284,13 +284,13 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		// Paddle position only has xPos
 		case PaddlePosition:
 			os
-				<< message.GetPos().x << " ";
+				<< message.GetPos1().x << " ";
 			break;
 		// BallData has both pos and dir
 		case BallSpawned:
 			{
 			os
-				<< message.GetPos() << " "
+				<< message.GetPos1() << " "
 				<< message.GetXDir() << " "
 				<< message.GetYDir() << " ";
 
@@ -300,16 +300,15 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case BonusSpawned:
 			os
 				<< message.GetBonusTypeAsInt()  << " "
-				<< message.GetPos() << " "
+				<< message.GetPos1() << " "
 				<< message.GetXDir() << " "
 				<< message.GetYDir() << " ";
 			break;
 		case BulletFire:
 			os
-				<< message.GetPos() << " "
+				<< message.GetPos1() << " "
 				<< message.GetObjectID2() << " "
-				<< message.GetXPos2() << " "
-				<< message.GetYPos2() << " ";
+				<< message.GetPos2() << " ";
 			break;
 		case GameStateChanged:
 			os
