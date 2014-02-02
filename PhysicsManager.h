@@ -23,7 +23,7 @@ public:
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
 	std::shared_ptr< Tile > CreateTile( int16_t xPos, int16_t yPos, const TileType &tileType );
 
-	std::shared_ptr< Tile > GetTileFromID( int32_t ID);
+	std::shared_ptr< Tile > GetTileWithID( int32_t ID);
 
 	std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
 	bool KillAllTilesWithOwner( const Player &player );
@@ -35,7 +35,7 @@ public:
 	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 	std::shared_ptr< Ball >  CreateBall( const Player &player, uint32_t ballID, double speed );
 
-	std::shared_ptr< Ball > GetBallFromID( int32_t ID, const Player &owner );
+	std::shared_ptr< Ball > GetBallWithID( int32_t ID, const Player &owner );
 	void RemoveBallWithID( int32_t ID, const Player &owner );
 
 	void UpdateBallSpeed( double localPlayerSpeed, double remotePlayerSpeed );
@@ -47,7 +47,7 @@ public:
 	void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
 	std::shared_ptr< BonusBox > CreateBonusBox( uint32_t ID, const Player &owner, const Vector2f &dir, const Vector2f &pos );
 
-	std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID, const Player &owner   );
+	std::shared_ptr< BonusBox > GetBonusBoxWithID( int32_t ID, const Player &owner   );
 
 	void MoveBonusBoxes( double delta );
 	void SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir_ ) const;
@@ -59,7 +59,7 @@ public:
 	void RemoveBullet( const std::shared_ptr< Bullet >  &bullet );
 	std::shared_ptr< Bullet >  CreateBullet( int32_t id, const Player &owner, double xPos, double yPos );
 
-	std::shared_ptr< Bullet > GetBulletFromID( int32_t ID, const Player &owner  );
+	std::shared_ptr< Bullet > GetBulletWithID( int32_t ID, const Player &owner  );
 
 	void KillBulletWithID( int32_t id, const Player &owner );
 

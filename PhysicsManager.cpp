@@ -20,13 +20,17 @@ void PhysicsManager::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
-std::shared_ptr< Tile > PhysicsManager::GetTileFromID( int32_t ID)
+std::shared_ptr< Tile > PhysicsManager::GetTileWithID( int32_t ID)
 {
 	for ( auto p : tileList )
 	{
 		if ( ID == p->GetObjectID() )
 			return p;
 	}
+
+
+	std::cout << "PhysicsManager@" << __LINE__ << " Tile with ID : " << ID  << " doesn't exist\n";
+	std::cin.ignore();
 
 	return nullptr;
 }
@@ -117,20 +121,12 @@ std::shared_ptr< Ball >  PhysicsManager::CreateBall( const Player &owner, uint32
 }
 void PhysicsManager::RemoveBallWithID( int32_t ID, const Player &owner )
 {
-	if ( ballList.size() > 0 )
-	{
-		auto ball =  GetBallFromID(  ID, owner );
+	auto ball =  GetBallWithID(  ID, owner );
 
-		if ( ball == nullptr )
-		{
-			std::cout << "PhysicsManager@" << __LINE__ << " Ball with ID : " << ID  << " doesn't exist\n";
-			return;
-		}
-
+	if ( ball != nullptr )
 		ball->Kill();
-	}
 }
-std::shared_ptr< Ball > PhysicsManager::GetBallFromID( int32_t ID, const Player &owner )
+std::shared_ptr< Ball > PhysicsManager::GetBallWithID( int32_t ID, const Player &owner )
 {
 	for ( auto p : ballList )
 	{
@@ -139,6 +135,9 @@ std::shared_ptr< Ball > PhysicsManager::GetBallFromID( int32_t ID, const Player 
 			return p;
 		}
 	}
+
+	std::cout << "PhysicsManager@" << __LINE__ << " Ball with ID : " << ID  << " doesn't exist\n";
+	std::cin.ignore();
 
 	return nullptr;
 }
@@ -171,7 +170,6 @@ std::shared_ptr< Ball > PhysicsManager::FindHighestBall()
 	}
 	return highest;
 }
-
 // Bonus Boxes
 // =============================================================================================================
 void PhysicsManager::AddBonusBox( const std::shared_ptr< BonusBox > &bb )
@@ -201,15 +199,18 @@ std::shared_ptr< BonusBox > PhysicsManager::CreateBonusBox( uint32_t ID, const P
 	bonusBoxList.push_back( bonusBox );
 	return bonusBox;
 }
-std::shared_ptr< BonusBox > PhysicsManager::GetBonusBoxFromID( int32_t ID, const Player &owner   )
+std::shared_ptr< BonusBox > PhysicsManager::GetBonusBoxWithID( int32_t ID, const Player &owner )
 {
 	for ( auto p : bonusBoxList )
 	{
-		if ( ID == p->GetObjectID() && owner == p->GetOwner()  )
+		if ( ID == p->GetObjectID() && owner == p->GetOwner() )
 		{
 			return p;
 		}
 	}
+
+	std::cout << "PhysicsManager@" << __LINE__ << " BonusBox with ID : " << ID << " doesn't exist\n";
+	std::cin.ignore();
 
 	return nullptr;
 }
@@ -262,7 +263,7 @@ void PhysicsManager::RemoveBullet( const std::shared_ptr< Bullet >  &bullet )
 {
 	bulletList.erase( std::find( bulletList.begin(), bulletList.end(), bullet) );
 }
-std::shared_ptr< Bullet > PhysicsManager::GetBulletFromID( int32_t ID, const Player &owner  )
+std::shared_ptr< Bullet > PhysicsManager::GetBulletWithID( int32_t ID, const Player &owner  )
 {
 	for ( auto p : bulletList )
 	{
@@ -271,6 +272,9 @@ std::shared_ptr< Bullet > PhysicsManager::GetBulletFromID( int32_t ID, const Pla
 			return p;
 		}
 	}
+
+	std::cout << "PhysicsManager@" << __LINE__ << " Bullet with ID : " << ID << " doesn't exist\n";
+	std::cin.ignore();
 
 	return nullptr;
 }
@@ -290,17 +294,10 @@ std::shared_ptr< Bullet >  PhysicsManager::CreateBullet( int32_t id, const Playe
 }
 void PhysicsManager::KillBulletWithID( int32_t id, const Player &owner )
 {
-	auto bullet = GetBulletFromID( id, owner );
+	auto bullet = GetBulletWithID( id, owner );
 
-	if ( bullet == nullptr )
-	{
-		std::cout << "PhysicsManager@" << __LINE__ << " Bullet with ID : " << id << " doesn't exist\n";
-		return;
-	}
-	else
-		std::cout << "PhysicsManager@" << __LINE__ << " Deleting bullet with ID : " << id << std::endl;
-
-	bullet->Kill();
+	if ( bullet != nullptr )
+		bullet->Kill();
 }
 // Paddles
 // =============================================================================================================

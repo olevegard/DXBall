@@ -593,7 +593,7 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 	if ( ballList.size() == 0 )
 		return;
 
-	std::shared_ptr< Ball > ball = physicsManager.GetBallFromID( message.GetObjectID(), Player::Remote );
+	std::shared_ptr< Ball > ball = physicsManager.GetBallWithID( message.GetObjectID(), Player::Remote );
 
 	if ( !ball )
 	{
@@ -618,7 +618,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	if ( tileList.size() == 0 )
 		return;
 
-	std::shared_ptr< Tile > tile = physicsManager.GetTileFromID( message.GetObjectID() );
+	std::shared_ptr< Tile > tile = physicsManager.GetTileWithID( message.GetObjectID() );
 
 	if ( tile == nullptr )
 	{
@@ -664,7 +664,7 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
-	auto bb = physicsManager.GetBonusBoxFromID( message.GetObjectID(), Player::Remote );
+	auto bb = physicsManager.GetBonusBoxWithID( message.GetObjectID(), Player::Remote );
 
 	if ( bb == nullptr )
 	{
