@@ -25,12 +25,6 @@ void Bullet::Update( double delta )
 	else
 		rect.y += delta * GetSpeed();
 }
-void Bullet::SetPosition( double x, double y )
-{
-	rect.x = x;
-	rect.y = y;
-}
-
 bool Bullet::HasHitTile( const Rect &rectToHit ) const
 {
 	double tileLeft   = rectToHit.x;
