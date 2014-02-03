@@ -674,9 +674,9 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 
 	ApplyBonus( bb );
 }
-std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, double xPos, double yPos )
+std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, Vector2f pos )
 {
-	auto bullet = physicsManager.CreateBullet( id, owner, xPos, yPos );
+	auto bullet = physicsManager.CreateBullet( id, owner, pos );
 
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
@@ -685,8 +685,8 @@ std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &ow
 }
 void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 {
-	FireBullet( message.GetObjectID() , Player::Remote, message.GetPos1().x, message.GetPos1().y  );
-	FireBullet( message.GetObjectID2(), Player::Remote, message.GetPos2().x, message.GetPos2().y );
+	FireBullet( message.GetObjectID() , Player::Remote, message.GetPos1() );
+	FireBullet( message.GetObjectID2(), Player::Remote, message.GetPos2() );
 }
 void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 {
@@ -808,15 +808,15 @@ void GameManager::FireBullets()
 	(
 		0,
 		Player::Local,
-		localPaddle->rect.x,
-		localPaddle->rect.y
+		localPaddle->GetPosition()
 	);
+
+		Vector2f pos2 (localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w, localPaddle->rect.y );
 	auto bullet2 = FireBullet
 	(
 	 	0,
 		Player::Local,
-		localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w,
-		localPaddle->rect.y
+		pos2
 	);
 
 	messageSender.SendBulletFireMessage( bullet1, bullet2, windowSize.h );

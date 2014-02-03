@@ -57,7 +57,7 @@ public:
 	// =============================================================================================================
 	void AddBullet( const std::shared_ptr< Bullet > &bullet );
 	void RemoveBullet( const std::shared_ptr< Bullet >  &bullet );
-	std::shared_ptr< Bullet >  CreateBullet( int32_t id, const Player &owner, double xPos, double yPos );
+	std::shared_ptr< Bullet >  CreateBullet( int32_t id, const Player &owner, Vector2f pos );
 
 	std::shared_ptr< Bullet > GetBulletWithID( int32_t ID, const Player &owner  );
 

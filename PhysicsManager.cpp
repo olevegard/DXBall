@@ -277,14 +277,15 @@ std::shared_ptr< Bullet > PhysicsManager::GetBulletWithID( int32_t ID, const Pla
 
 	return nullptr;
 }
-std::shared_ptr< Bullet >  PhysicsManager::CreateBullet( int32_t id, const Player &owner, double xPos, double yPos )
+
+std::shared_ptr< Bullet >  PhysicsManager::CreateBullet( int32_t id, const Player &owner, Vector2f pos )
 {
 	if ( owner == Player::Local )
 		id = ++objectCount;
 	std::shared_ptr< Bullet > bullet = std::make_shared< Bullet >( id );
 
 	bullet->SetSpeed( bulletSpeed  );
-	bullet->SetPosition( xPos, yPos );
+	bullet->SetPosition( pos );
 	bullet->SetOwner( owner );
 
 	bulletList.push_back( bullet );
