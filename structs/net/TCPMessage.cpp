@@ -3,8 +3,6 @@
 TCPMessage::TCPMessage()
 	:	msgType( MessageType::PaddlePosition )
 	,	objectID( 0 )
-	,	xDir(0.0)
-	,	yDir(0.0)
 {}
 std::string TCPMessage::Print() const
 {
@@ -28,7 +26,7 @@ std::string TCPMessage::Print() const
 			ss << " : "  << xSize << " , " << ySize << " board scale : " << boardScale <<  "\n";
 			break;
 		case BonusSpawned:
-			ss << " : " << GetBonusTypeAsString() << " , "  << pos1 << " , " << xDir << " , " << yDir << "\n";
+			ss << " : " << GetBonusTypeAsString() << " , "  << pos1 << " , " << dir << "\n";
 			break;
 		case GameStateChanged:
 			ss << " : " << GetGameStateAsString() << "\n";
@@ -40,13 +38,13 @@ std::string TCPMessage::Print() const
 			ss << " : " << GetPlayerName() << "\n";
 			break;
 		case BonusPickup:
-			ss << " : " << pos1 << " , " << xDir << " , " << yDir << "\n";
+			ss << " : " << pos1 << " , " << dir << "\n";
 			break;
 		case BulletFire:
 			ss << " : " << pos1 << " Object 2 ID : " << objectID2 << " Pos : " << pos2 << "\n";
 			break;
 		default:
-			ss << " : "  << pos1  << " , " << xDir << " , " << yDir << "\n";
+			ss << " : "  << pos1  << " , " <<  dir << "\n";
 			break;
 	}
 
@@ -163,14 +161,6 @@ int32_t TCPMessage::GetGameStateAsInt() const
 {
 	return static_cast< int32_t > ( newGameState );
 }
-double TCPMessage::GetXDir() const
-{
-	return xDir;
-}
-double TCPMessage::GetYDir() const
-{
-	return yDir;
-}
 double TCPMessage::GetXSize() const
 {
 	return xSize;
@@ -215,14 +205,6 @@ void TCPMessage::SetGameState( int32_t gameState_ )
 void TCPMessage::SetGameState( GameState gameState_ )
 {
 	newGameState = gameState_;
-}
-void TCPMessage::SetXDir( double xDir_ )
-{
-	xDir = xDir_;
-}
-void TCPMessage::SetYDir( double yDir_ )
-{
-	yDir = yDir_;
 }
 void TCPMessage::SetXSize( double xSize_ )
 {

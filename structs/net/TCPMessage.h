@@ -32,8 +32,18 @@ class TCPMessage
 		GameState GetGameState() const;
 		int32_t GetGameStateAsInt() const;
 
-		double GetXDir() const;
-		double GetYDir() const;
+		Vector2f GetDir() const
+		{
+			return dir;
+		}
+		Vector2f GetPos1() const
+		{
+			return pos1;
+		}
+		Vector2f GetPos2() const
+		{
+			return pos2;
+		}
 		double GetXSize() const;
 		double GetYSize() const;
 		double GetBoardScale() const;
@@ -50,8 +60,6 @@ class TCPMessage
 		void SetGameState( int32_t bonustType_ );
 		void SetGameState( GameState bonustType_ );
 
-		void SetXDir( double xDir_ );
-		void SetYDir( double yDir_ );
 		void SetXSize( double xSize_ );
 		void SetYSize( double ySize_ );
 		void SetBoardScale( double boardScale_);
@@ -86,18 +94,17 @@ class TCPMessage
 		{
 			pos1 = pos;
 		}
-		Vector2f GetPos1() const
-		{
-			return pos1;
-		}
+
 		void SetPos2( Vector2f pos )
 		{
 			pos2 = pos;
 		}
-		Vector2f GetPos2() const
+
+		void SetDir( Vector2f dir_ )
 		{
-			return pos2;
+			dir = dir_;
 		}
+
 	private:
 		MessageType msgType;
 		unsigned int objectID;
@@ -107,8 +114,7 @@ class TCPMessage
 
 		GameState newGameState;
 
-		double xDir;
-		double yDir;
+		Vector2f dir;
 
 		double xSize;
 		double ySize;
@@ -174,16 +180,12 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case BallSpawned:
 			{
 				Vector2f pos_;
-				double xDir = 0.0;
-				double yDir = 0.0;
+				Vector2f dir_;
 
-				is >> pos_ >> xDir >> yDir;
+				is >> pos_ >> dir_;
 
 				msg.SetPos1( pos_ );
-
-				msg.SetXDir( xDir );
-				msg.SetYDir( yDir );
-
+				msg.SetDir( dir_ );
 				return is;
 			}
 		case BallData:
@@ -191,15 +193,13 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 			{
 				int bonusType;
 				Vector2f pos;
-				double xDir = 0.0;
-				double yDir = 0.0;
+				Vector2f dir;
 
-				is >> bonusType >> pos >> xDir >> yDir;
+				is >> bonusType >> pos >> dir;
 
 				msg.SetBonusType( bonusType );
 				msg.SetPos1( pos );
-				msg.SetXDir( xDir );
-				msg.SetYDir( yDir );
+				msg.SetDir( dir );
 
 				return is;
 			}
@@ -291,8 +291,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			{
 			os
 				<< message.GetPos1() << " "
-				<< message.GetXDir() << " "
-				<< message.GetYDir() << " ";
+				<< message.GetDir() << " ";
 
 			break;
 			}
@@ -301,8 +300,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 			os
 				<< message.GetBonusTypeAsInt()  << " "
 				<< message.GetPos1() << " "
-				<< message.GetXDir() << " "
-				<< message.GetYDir() << " ";
+				<< message.GetDir() << " ";
 			break;
 		case BulletFire:
 			os

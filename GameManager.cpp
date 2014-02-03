@@ -585,7 +585,7 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 	ball->rect.x = message.GetPos1().x * remoteResolutionScale;
 	ball->rect.y = message.GetPos1().y * remoteResolutionScale;
 
-	ball->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() ) );
+	ball->SetDirection( message.GetDir() );
 	ball->SetRemoteScale( remoteResolutionScale );
 }
 void GameManager::RecieveBallDataMessage( const TCPMessage &message )
@@ -606,7 +606,7 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 	ball->rect.x = message.GetPos1().x * remoteResolutionScale;
 	ball->rect.y = ( message.GetPos1().y  * remoteResolutionScale ) - ball->rect.h ;
 
-	ball->SetDirection( Vector2f( message.GetXDir(), message.GetYDir() ) );
+	ball->SetDirection( message.GetDir() );
 }
 void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 {
@@ -652,7 +652,8 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 {
-	Vector2f dir( message.GetXDir(), message.GetYDir() * -1.0 );
+	Vector2f dir = message.GetDir();
+	dir.y *= -1.0f;
 
 	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, dir, Vector2f() );
 	bonusBox->SetBonusType( message.GetBonusType() );
