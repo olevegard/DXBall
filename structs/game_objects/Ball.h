@@ -32,8 +32,6 @@ struct Ball : GamePiece
 
 	void SetRemoteScale( double scale_ );
 
-	Vector2f GetDirection( ) const;
-	void SetDirection( const Vector2f &newDir );
 	private:
 
 	void NormalizeDirection();
@@ -65,9 +63,6 @@ struct Ball : GamePiece
 
 	Vector2f GetEsimtatedDir( ) const;
 	Vector2f Transform( const Vector2f &vec, const Corner &side, const Rect &size ) const;
-
-	double dirX;
-	double dirY;
 
 	//unsigned int lastTileHit;
 

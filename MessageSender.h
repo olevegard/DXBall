@@ -54,7 +54,7 @@ public:
 		msg.SetBonusType( bonusBox->GetBonusType() );
 
 		msg.SetPos1( Vector2f( bonusBox->rect.x, windowHeight - bonusBox->rect.y ) );
-		msg.SetDir( bonusBox->GetDirection() );
+		msg.SetDir( bonusBox->GetDirection_YFlipped() );
 
 		SendMessage( msg, MessageTarget::Oponent );
 	}
@@ -85,10 +85,7 @@ public:
 		msg.SetObjectID( ball->GetObjectID() );
 
 		msg.SetPos1( Vector2f( r.x, windowHeight - r.y ));
-
-		Vector2f dir = ball->GetDirection();
-		dir.y *= -1.0;
-		msg.SetDir( dir  );
+		msg.SetDir( ball->GetDirection_YFlipped()  );
 
 		SendMessage( msg, MessageTarget::Oponent );
 	}
@@ -101,10 +98,7 @@ public:
 		msg.SetObjectID( ball->GetObjectID()  );
 
 		msg.SetPos1( Vector2f( r.x, windowHeight - r.y  ) );
-
-		Vector2f dir = ball->GetDirection();
-		dir.y *= -1.0;
-		msg.SetDir( dir  );
+		msg.SetDir( ball->GetDirection_YFlipped() );
 
 		SendMessage( msg, MessageTarget::Oponent );
 	}

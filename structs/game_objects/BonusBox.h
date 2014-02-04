@@ -19,8 +19,6 @@ struct BonusBox : GamePiece
 	void SetOwner( const Player &hitBy );
 	Player GetOwner() const;
 
-	void SetDirection( const Vector2f &dir );
-	Vector2f GetDirection( ) const;
 	void FlipXDir();
 
 	BonusType GetBonusType() const

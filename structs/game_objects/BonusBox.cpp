@@ -31,16 +31,6 @@ Player BonusBox::GetOwner() const
 {
 	return owner;
 }
-
-void BonusBox::SetDirection( const Vector2f &dir )
-{
-	direction = dir;
-}
-Vector2f BonusBox::GetDirection( ) const
-{
-	return direction;
-}
-
 void BonusBox::FlipXDir()
 {
 	direction.x *= -1.0;

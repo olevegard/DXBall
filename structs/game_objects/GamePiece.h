@@ -66,9 +66,24 @@ struct GamePiece
 	{
 		return Vector2f( rect.x, rect.y );
 	}
+	void SetDirection( Vector2f dir_ )
+	{
+		dir = dir_;
+	}
+	Vector2f GetDirection( ) const
+	{
+		return dir;
+	}
+	Vector2f GetDirection_YFlipped( ) const
+	{
+		return Vector2f( dir.x, dir.y * -1.0 );
+	}
+	protected:
+	Vector2f dir;
 	private:
 	GamePiece( const GamePiece &gamePiece );
 	GamePiece& operator=( const GamePiece &gamePiece );
+
 	int32_t objectID;
 	bool isAlive;
 	double scale;

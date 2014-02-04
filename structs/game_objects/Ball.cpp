@@ -12,9 +12,7 @@
 #include "enums/Corner.h"
 
 Ball::Ball( const SDL_Rect &windowSize, const Player &owner, int32_t ID   )
-	:	dirX( -0.83205f )
-	,	dirY(-0.5547f )
-	,	ballOwner( owner )
+	:	ballOwner( owner )
 {
 	SetObjectID( ID );
 	rect.w = 20;
@@ -33,17 +31,17 @@ void Ball::Reset( const SDL_Rect &windowSize )
 	SetSpeed(0.3f * RandomHelper::GenRandomNumber( 1 ));
 
 	// X pos and dirX is the same for both local and remote player
-	dirX = RandomHelper::GenRandomNumber( -1.0, 1.0 );
+	dir.x = RandomHelper::GenRandomNumber( -1.0, 1.0 );
 	rect.x = ( windowSize.w * 0.5 ) - ( rect.w * 0.5 );
 
 	if ( ballOwner == Player::Local )
 	{
-		dirY = RandomHelper::GenRandomNumber( -0.9, -0.1 );
+		dir.y = RandomHelper::GenRandomNumber( -0.9, -0.1 );
 		rect.y = windowSize.h - 75;
 	}
 	else if ( ballOwner == Player::Remote )
 	{
-		dirY = RandomHelper::GenRandomNumber(  0.1, 0.9 );
+		dir.y = RandomHelper::GenRandomNumber(  0.1, 0.9 );
 		rect.y = 150;
 	}
 
@@ -51,30 +49,30 @@ void Ball::Reset( const SDL_Rect &windowSize )
 }
 void Ball::NormalizeDirection()
 {
-	double length = sqrt( ( dirX * dirX ) + ( dirY * dirY ) );
-	dirX /= length;
-	dirY /= length;
+	double length = sqrt( ( dir.x * dir.x ) + ( dir.y * dir.y ) );
+	dir.x /= length;
+	dir.y /= length;
 }
 void Ball::ChangeBallDirection( const Side &side)
 {
 	switch ( side )
 	{
 		case Side::Top :
-			dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
+			dir.y = ( dir.y > 0.0f ) ? dir.y * -1.0f : dir.y;
 			break;
 		case Side::Right :
-			dirX = ( dirX < 0.0f ) ? dirX * -1.0f : dirX;
+			dir.x = ( dir.x < 0.0f ) ? dir.x * -1.0f : dir.x;
 			break;
 		case Side::Bottom :
-			dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
+			dir.y = ( dir.y < 0.0f ) ? dir.y * -1.0f : dir.y;
 			break;
 		case Side::Left :
-			dirX = ( dirX > 0.0f ) ? dirX * -1.0f : dirX;
+			dir.x = ( dir.x > 0.0f ) ? dir.x * -1.0f : dir.x;
 			break;
 		case Side::Unknown :
 			std::cout << "Ball.cpp@" << __LINE__ << " Uknown collosion\n";
-			dirX *= -1.0f;
-			dirY *= -1.0f;
+			dir.x *= -1.0f;
+			dir.y *= -1.0f;
 			break;
 	}
 }
@@ -83,8 +81,8 @@ void Ball::Update( double tick )
 	oldRect.x = rect.x;
 	oldRect.y = rect.y;
 
-	rect.x += tick * GetSpeed() * dirX;
-	rect.y += tick * GetSpeed() * dirY;
+	rect.x += tick * GetSpeed() * dir.x;
+	rect.y += tick * GetSpeed() * dir.y;
 }
 bool Ball::BoundCheck( const SDL_Rect &boundsRect )
 {
@@ -104,14 +102,14 @@ bool Ball::CheckSideCollisions( const SDL_Rect &boundsRect )
 	if ( rect.x < left )
 	{
 		rect.x = left;
-		dirX *= -1.0f;
+		dir.x *= -1.0f;
 		return true;
 	}
 
 	if ( ( rect.x + rect.w ) > right )
 	{
 		rect.x = ( right - rect.w );
-		dirX *= -1.0f;
+		dir.x *= -1.0f;
 		return true;
 	}
 
@@ -125,7 +123,7 @@ bool Ball::CheckTopBottomCollision( const SDL_Rect &boundsRect )
 		if ( rect.y < top )
 		{
 			rect.y = top;
-			dirY = ( dirY < 0.0f ) ? dirY * -1.0f : dirY;
+			dir.y = ( dir.y < 0.0f ) ? dir.y * -1.0f : dir.y;
 			return true;
 		}
 	}
@@ -135,7 +133,7 @@ bool Ball::CheckTopBottomCollision( const SDL_Rect &boundsRect )
 		if ( ( rect.y + rect.h ) > bottom )
 		{
 			rect.y = bottom - rect.h;
-			dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
+			dir.y = ( dir.y > 0.0f ) ? dir.y * -1.0f : dir.y;
 			return true;
 		}
 	}
@@ -192,8 +190,8 @@ void Ball::MoveBallOutOfPaddle( double paddleTop )
 	oldRect.x = rect.x;
 	oldRect.y = rect.y;
 
-	rect.x += delta * dirX;
-	rect.y += delta * dirY;
+	rect.x += delta * dir.x;
+	rect.y += delta * dir.y;
 }
 double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
 {
@@ -205,8 +203,8 @@ double Ball::CalculatePaddleHitPosition( const Rect &paddleRect ) const
 }
 void  Ball::CalculateNewBallDirection( double hitPosition )
 {
-	dirX = hitPosition;
-	dirY = ( dirY > 0.0f ) ? dirY * -1.0f : dirY;
+	dir.x = hitPosition;
+	dir.y = ( dir.y > 0.0f ) ? dir.y * -1.0f : dir.y;
 
 	NormalizeDirection();
 }
@@ -466,15 +464,6 @@ Vector2f Ball::GetEsimtatedDir( ) const
 	Vector2f ballPrevPos   ( oldRect.x, oldRect.y );
 
 	return Vector2f( ballCurrentPos - ballPrevPos  );
-}
-Vector2f Ball::GetDirection( ) const
-{
-	return Vector2f( dirX, dirY );
-}
-void Ball::SetDirection( const Vector2f &newDir )
-{
-	dirX = newDir.x;
-	dirY = newDir.y;
 }
 void Ball::SetOwner( Player owner )
 {

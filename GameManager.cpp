@@ -652,10 +652,7 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 {
-	Vector2f dir = message.GetDir();
-	dir.y *= -1.0f;
-
-	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, dir, Vector2f() );
+	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, message.GetDir_YFlipped(), Vector2f() );
 	bonusBox->SetBonusType( message.GetBonusType() );
 	bonusBox->rect.x = message.GetPos1().x * remoteResolutionScale;
 	bonusBox->rect.y = message.GetPos1().y * remoteResolutionScale - bonusBox->rect.h;
