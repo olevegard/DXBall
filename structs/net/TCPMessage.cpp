@@ -165,6 +165,38 @@ double TCPMessage::GetBoardScale() const
 {
 	return boardScale;
 }
+Vector2f TCPMessage::GetDir() const
+{
+	return dir;
+}
+Vector2f TCPMessage::GetDir_YFlipped() const
+{
+	return Vector2f( dir.x, dir.y * -1.0 );
+}
+Vector2f TCPMessage::GetPos1() const
+{
+	return pos1;
+}
+Vector2f TCPMessage::GetPos2() const
+{
+	return pos2;
+}
+Vector2f TCPMessage::GetSize() const
+{
+	return size;
+}
+uint16_t TCPMessage::GetPort() const
+{
+	return port;
+}
+std::string TCPMessage::GetIPAdress() const
+{
+	return ipAddress;
+}
+std::string TCPMessage::GetPlayerName() const
+{
+	return playerName;
+}
 // Setters
 void TCPMessage::SetMessageType( MessageType msgType_ )
 {
@@ -201,4 +233,32 @@ void TCPMessage::SetGameState( GameState gameState_ )
 void TCPMessage::SetBoardScale( double boardScale_)
 {
 	boardScale = boardScale_;
+}
+void TCPMessage::SetPort( uint16_t port_ )
+{
+	port = port_;
+}
+void TCPMessage::SetIPAdress( std::string  ipAddress_ )
+{
+	ipAddress = ipAddress_;
+}
+void TCPMessage::SetPlayerName( std::string playerName_ )
+{
+	playerName = playerName_;
+}
+void TCPMessage::SetPos1( Vector2f pos )
+{
+	pos1 = pos;
+}
+void TCPMessage::SetPos2( Vector2f pos )
+{
+	pos2 = pos;
+}
+void TCPMessage::SetDir( Vector2f dir_ )
+{
+	dir = dir_;
+}
+void TCPMessage::SetSize( Vector2f size_ )
+{
+	size = size_;
 }

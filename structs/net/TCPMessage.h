@@ -31,24 +31,17 @@ class TCPMessage
 		std::string GetGameStateAsString() const;
 		GameState GetGameState() const;
 		int32_t GetGameStateAsInt() const;
-
-		Vector2f GetDir() const
-		{
-			return dir;
-		}
-		Vector2f GetPos1() const
-		{
-			return pos1;
-		}
-		Vector2f GetPos2() const
-		{
-			return pos2;
-		}
-		Vector2f GetSize() const
-		{
-			return size;
-		}
 		double GetBoardScale() const;
+
+		Vector2f GetDir() const;
+		Vector2f GetDir_YFlipped() const;
+		Vector2f GetPos1() const;
+		Vector2f GetPos2() const;
+		Vector2f GetSize() const;
+
+		uint16_t GetPort() const;
+		std::string GetIPAdress() const;
+		std::string GetPlayerName() const;
 
 		// Setters
 		void SetMessageType( MessageType msgType_ );
@@ -64,51 +57,16 @@ class TCPMessage
 
 		void SetBoardScale( double boardScale_);
 
-		void SetPort( uint16_t port_ )
-		{
-			port = port_;
-		}
-		void SetIPAdress( std::string  ipAddress_ )
-		{
-			ipAddress = ipAddress_;
-		}
+		void SetPort( uint16_t port_ );
+		void SetIPAdress( std::string  ipAddress_ );
 
-		void SetPlayerName( std::string playerName_ )
-		{
-			playerName = playerName_;
-		}
+		void SetPlayerName( std::string playerName_ );
 
-		uint16_t GetPort() const
-		{
-			return port;
-		}
-		std::string GetIPAdress() const
-		{
-			return ipAddress;
-		}
-		std::string GetPlayerName() const
-		{
-			return playerName;
-		}
-		void SetPos1( Vector2f pos )
-		{
-			pos1 = pos;
-		}
+		void SetPos1( Vector2f pos );
+		void SetPos2( Vector2f pos );
 
-		void SetPos2( Vector2f pos )
-		{
-			pos2 = pos;
-		}
-
-		void SetDir( Vector2f dir_ )
-		{
-			dir = dir_;
-		}
-		void SetSize( Vector2f size_ )
-		{
-			size = size_;
-		}
-
+		void SetDir( Vector2f dir_ );
+		void SetSize( Vector2f size_ );
 	private:
 		MessageType msgType;
 		unsigned int objectID;
