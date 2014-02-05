@@ -562,7 +562,7 @@ void GameManager::RecievePlayerNameMessage( const TCPMessage &message )
 }
 void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 {
-	remoteResolutionScale = windowSize.w / message.GetXSize();
+	remoteResolutionScale = windowSize.w / message.GetSize().x;
 
 	if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode()  )
 	{

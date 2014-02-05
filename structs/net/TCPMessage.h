@@ -44,8 +44,10 @@ class TCPMessage
 		{
 			return pos2;
 		}
-		double GetXSize() const;
-		double GetYSize() const;
+		Vector2f GetSize() const
+		{
+			return size;
+		}
 		double GetBoardScale() const;
 
 		// Setters
@@ -60,8 +62,6 @@ class TCPMessage
 		void SetGameState( int32_t bonustType_ );
 		void SetGameState( GameState bonustType_ );
 
-		void SetXSize( double xSize_ );
-		void SetYSize( double ySize_ );
 		void SetBoardScale( double boardScale_);
 
 		void SetPort( uint16_t port_ )
@@ -104,6 +104,10 @@ class TCPMessage
 		{
 			dir = dir_;
 		}
+		void SetSize( Vector2f size_ )
+		{
+			size = size_;
+		}
 
 	private:
 		MessageType msgType;
@@ -116,8 +120,7 @@ class TCPMessage
 
 		Vector2f dir;
 
-		double xSize;
-		double ySize;
+		Vector2f size;
 
 		Vector2f pos1;
 		Vector2f pos2;
@@ -154,14 +157,12 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		// Game Settings uses xSize and ySize
 		case GameSettings:
 			{
-				double xSize = 0.0;
-				double ySize = 0.0;
+				Vector2f size_;
 				double boardScale = 0.0;
 
-				is >> xSize  >> ySize >> boardScale;
+				is >> size_ >> boardScale;
 
-				msg.SetXSize( xSize );
-				msg.SetYSize( ySize );
+				msg.SetSize( size_ );
 				msg.SetBoardScale( boardScale );
 
 				return is;
@@ -277,8 +278,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		// Game Settings uses xSize and ySize
 		case GameSettings:
 			os
-				<< message.GetXSize() << " "
-				<< message.GetYSize()  << " "
+				<< message.GetSize() << " "
 				<< message.GetBoardScale() << " ";
 			break;
 		// Paddle position only has xPos

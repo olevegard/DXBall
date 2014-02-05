@@ -141,7 +141,7 @@ public:
 
 		SendMessage( msg, MessageTarget::Oponent );
 	}
-	void SendGameSettingsMessage( double w, double h, double scale )
+	void SendGameSettingsMessage( const Vector2f &size, double scale )
 	{
 		if ( !netManager.IsServer()  )
 		{
@@ -154,8 +154,7 @@ public:
 		msg.SetMessageType( MessageType::GameSettings );
 		msg.SetObjectID( 0 );
 
-		msg.SetXSize( w );
-		msg.SetYSize( h );
+		msg.SetSize( size );
 
 		msg.SetBoardScale( scale  );
 

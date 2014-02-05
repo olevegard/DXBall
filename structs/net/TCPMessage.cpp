@@ -23,7 +23,7 @@ std::string TCPMessage::Print() const
 			ss << " : "  << pos1.x << "\n";
 			break;
 		case GameSettings:
-			ss << " : "  << xSize << " , " << ySize << " board scale : " << boardScale <<  "\n";
+			ss << " : "  << size << " board scale : " << boardScale <<  "\n";
 			break;
 		case BonusSpawned:
 			ss << " : " << GetBonusTypeAsString() << " , "  << pos1 << " , " << dir << "\n";
@@ -161,14 +161,6 @@ int32_t TCPMessage::GetGameStateAsInt() const
 {
 	return static_cast< int32_t > ( newGameState );
 }
-double TCPMessage::GetXSize() const
-{
-	return xSize;
-}
-double TCPMessage::GetYSize() const
-{
-	return ySize;
-}
 double TCPMessage::GetBoardScale() const
 {
 	return boardScale;
@@ -205,14 +197,6 @@ void TCPMessage::SetGameState( int32_t gameState_ )
 void TCPMessage::SetGameState( GameState gameState_ )
 {
 	newGameState = gameState_;
-}
-void TCPMessage::SetXSize( double xSize_ )
-{
-	xSize = xSize_;
-}
-void TCPMessage::SetYSize( double ySize_ )
-{
-	ySize = ySize_;
 }
 void TCPMessage::SetBoardScale( double boardScale_)
 {
