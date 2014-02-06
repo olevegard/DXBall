@@ -539,6 +539,7 @@ void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
 void GameManager::RecieveLevelDoneMessage( const TCPMessage &message )
 {
 	std::cout << "ID : " << message.GetObjectID() << std::endl;
+	GenerateBoard();
 	isOpnonentDoneWithLevel = true;
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
@@ -704,7 +705,7 @@ void GameManager::DeleteDeadTiles()
 	// Remove item returned by remove_if
 	tileList.erase( newEnd, tileList.end( ) );
 
-	if ( deadTile && tileList.size() == 0 )
+	if ( deadTile && tileList.size() == 0 && netManager.IsServer() )
 		messageSender.SendLevelDoneMessage();
 }
 void GameManager::DeleteDeadBullets()
@@ -1065,7 +1066,7 @@ void GameManager::UpdateGameObjects( double delta )
 }
 void GameManager::UpdateBoard()
 {
-	if ( IsTimeForNewBoard() )
+	if ( IsTimeForNewBoard() && ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() ))
 	{
 		std::cout << "GameManager@" << __LINE__ << " Generating board...\n";
 		DeleteAllBullets();
