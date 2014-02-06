@@ -44,6 +44,8 @@ std::shared_ptr< Tile > PhysicsManager::CreateTile( int16_t xPos, int16_t yPos, 
 	tile->rect.w = 60 * scale;
 	tile->rect.h = 20 * scale;
 
+	AddTile( tile );
+
 	return tile;
 }
 std::shared_ptr< Tile > PhysicsManager::FindClosestIntersectingTile( std::shared_ptr< Ball > ball )

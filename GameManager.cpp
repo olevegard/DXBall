@@ -253,7 +253,6 @@ void GameManager::AddTile( short posX, short posY, TileType tileType )
 	auto tile = physicsManager.CreateTile( posX, posY, tileType );
 
 	tileList.push_back( tile );
-	physicsManager.AddTile( tile );
 	renderer.AddTile( tile );
 }
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
@@ -265,8 +264,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 
 	renderer.RemoveTile( tile );
 	physicsManager.RemoveTile( tile );
-
-	// Decrement tile count
 }
 void GameManager::AddBonusBox( const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed /* = 1 */ )
 {
@@ -515,11 +512,10 @@ void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 	info.Set( message.GetIPAdress(), message.GetPort() );
 	info.SetGameID( message.GetObjectID() );
 	menuManager.AddGameToList( renderer, info );
-
 }
 void GameManager::RecieveEndGameMessage( const TCPMessage &message )
 {
-	std::cout << "ID : " << message.GetObjectID() << std::endl;
+	std::cout << "GameManager@" << __LINE__ << " Game ended : " << message.GetObjectID() << std::endl;
 	UpdateGameList();
 	menuManager.ClearGameList();
 }
@@ -631,13 +627,8 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
 	auto bb = physicsManager.GetBonusBoxWithID( message.GetObjectID(), Player::Remote );
 
-	if ( bb == nullptr )
-	{
-		std::cout << "GameManager@" << __LINE__ << " BonusBox with ID : " << message.GetObjectID() << " doesn't exist\n";
-		return;
-	}
-
-	ApplyBonus( bb );
+	if ( bb != nullptr )
+		ApplyBonus( bb );
 }
 std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, Vector2f pos )
 {
@@ -1335,10 +1326,8 @@ void GameManager::ApplyBonus_Death( const Player &player )
 		renderer.RenderText( "Death!!", Player::Local, true );
 
 	if ( physicsManager.KillAllTilesWithOwner( player ) )
-		// Delete all dead Balls, will in turns reduce Player life
 		DeleteDeadBalls();
 }
-
 void GameManager::UpdateGUI( )
 {
 	if ( menuManager.GetGameState() == GameState::InGame || menuManager.GetGameState() == GameState::InGameWait )
@@ -1468,7 +1457,8 @@ void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, P
 
 		if ( isDestroyed )
 			localPlayerInfo.points += gameConfig.GetTilePoints( tileType );
-	} else if ( ballOwner == Player::Remote )
+	}
+	else if ( ballOwner == Player::Remote )
 	{
 		remotePlayerInfo.points += gameConfig.GetPointsHit();
 
