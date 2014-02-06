@@ -158,7 +158,6 @@ void GameManager::Restart()
 
 	UpdateGUI();
 }
-
 std::shared_ptr<Ball> GameManager::AddBall( )
 {
 	return AddBall( Player::Local, 0 );
@@ -340,42 +339,11 @@ void GameManager::UpdateBullets( double delta )
 		DeleteDeadBullets();
 	DeleteDeadTiles();
 }
-bool GameManager::DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
-{
-	if ( !tile->IsAlive() )
-		return false;
-
-	if ( !bullet->HasHitTile( tile->rect ) )
-		return false;
-
-	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
-	{
-		HandleBulletTileIntersection( bullet, tile );
-		return false;
-	}
-
-	return true;
-}
 void GameManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet )
 {
-	bool bulletHitTile = false;
-	std::shared_ptr< Tile > lowestTile;
-	double lowestTileY = 0;
+	std::shared_ptr< Tile > lowestTile = physicsManager.CheckBulletTileIntersections( bullet );
 
-	for ( auto tile : tileList )
-	{
-		if ( !DidBulletHitTile( bullet, tile ) )
-			continue;
-
-		bulletHitTile = true;
-
-		if ( tile->rect.y > lowestTileY )
-		{
-			lowestTile = tile;
-			lowestTileY = tile->rect.y;
-		}
-	}
-	if ( bulletHitTile )
+	if ( lowestTile != nullptr )
 		HandleBulletTileIntersection( bullet, lowestTile );
 }
 void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
@@ -421,7 +389,6 @@ bool GameManager::IsSuperBullet( const Player owner ) const
 
 	return false;
 }
-
 void GameManager::UpdateNetwork()
 {
 	ReadMessagesFromServer();
@@ -831,7 +798,6 @@ void GameManager::Run()
 		{
 			HandleEvent( event );
 		}
-
 
 		HandleStatusChange();
 
@@ -1358,7 +1324,6 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 			break;
 
 		default:
-
 			break;
 	}
 
@@ -1392,7 +1357,6 @@ void GameManager::RendererScores()
 
 	if ( menuManager.IsTwoPlayerMode() )
 	{
-
 		renderer.RenderPoints   ( remotePlayerInfo.points, Player::Remote );
 		renderer.RenderLives    ( remotePlayerInfo.lives, Player::Remote );
 		renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
@@ -1421,7 +1385,6 @@ void GameManager::RenderEndGame()
 {
 	if ( !menuManager.IsTwoPlayerMode() )
 	{
-
 		if ( localPlayerInfo.lives == 0 )
 			renderer.RenderText( "No more lives!", Player::Local  );
 		else

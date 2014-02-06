@@ -32,14 +32,17 @@ public:
 	// Balls
 	// =============================================================================================================
 	void AddBall( const std::shared_ptr< Ball > &ball );
-	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 	std::shared_ptr< Ball >  CreateBall( const Player &player, uint32_t ballID, double speed );
-
-	std::shared_ptr< Ball > GetBallWithID( int32_t ID, const Player &owner );
+	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 	void RemoveBallWithID( int32_t ID, const Player &owner );
 
-	void UpdateBallSpeed( double localPlayerSpeed, double remotePlayerSpeed );
+	std::shared_ptr< Ball > GetBallWithID( int32_t ID, const Player &owner );
 	std::shared_ptr< Ball > FindHighestBall();
+
+	void UpdateBallSpeed( double localPlayerSpeed, double remotePlayerSpeed );
+
+	bool DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
+	std::shared_ptr< Tile > CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet );
 
 	// Bonus Boxes
 	// =============================================================================================================

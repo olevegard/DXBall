@@ -299,6 +299,38 @@ void PhysicsManager::KillBulletWithID( int32_t id, const Player &owner )
 	if ( bullet != nullptr )
 		bullet->Kill();
 }
+bool PhysicsManager::DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
+{
+	if ( !tile->IsAlive() )
+		return false;
+
+	if ( !bullet->HasHitTile( tile->rect ) )
+		return false;
+
+	return true;
+}
+std::shared_ptr< Tile > PhysicsManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet )
+{
+	bool bulletHitTile = false;
+	std::shared_ptr< Tile > lowestTile;
+	double lowestTileY = 0;
+
+	for ( auto tile : tileList )
+	{
+		if ( !DidBulletHitTile( bullet, tile ) )
+			continue;
+
+		bulletHitTile = true;
+
+		if ( tile->rect.y > lowestTileY )
+		{
+			lowestTile = tile;
+			lowestTileY = tile->rect.y;
+		}
+	}
+
+	return lowestTile;
+}
 // Paddles
 // =============================================================================================================
 void PhysicsManager::SetPaddleData( )

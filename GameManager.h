@@ -78,8 +78,6 @@ class GameManager
 		double GetBallSpeed( const Player &player ) const;
 		bool CanPlayerFireBall( const Player &player ) const;
 
-		std::shared_ptr< Ball > GetBallFromID( int32_t ID );
-
 		// Bullets
 		// ===========================================
 		void CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet );
@@ -90,15 +88,12 @@ class GameManager
 		void FireBullets();
 		std::shared_ptr< Bullet >  FireBullet( int32_t id, const Player &owner, Vector2f pos );
 
-		bool DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
-		std::shared_ptr< Bullet > GetBulletFromID( int32_t ID );
 		bool IsSuperBullet( const Player owner ) const;
 
 		// Tiles
 		// ==========================================
 		void AddTile( short posX, short posY, TileType tileType );
 		void RemoveTile( std::shared_ptr< Tile > pTile );
-		std::shared_ptr< Tile > GetTileFromID( int32_t ID );
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
