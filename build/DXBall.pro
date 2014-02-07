@@ -15,12 +15,14 @@ SOURCES += ../math/Rect.cpp
 SOURCES += ../Timer.cpp
 SOURCES += ../Renderer.cpp
 SOURCES += ../GameManager.cpp
+SOURCES += ../PhysicsManager.cpp
 SOURCES += ../BoardLoader.cpp
 SOURCES += ../MenuManager.cpp
 SOURCES += ../NetManager.cpp
 SOURCES += ../ColorConfigLoader.cpp
 SOURCES += ../ConfigLoader.cpp
 SOURCES += ../MenuList.cpp
+SOURCES += ../MessageSender.cpp
 
 DIST =
 TARGET = ../DXBall_exe
