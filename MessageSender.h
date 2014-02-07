@@ -39,13 +39,12 @@ public:
 		msg.SetObjectID( bulletLeft->GetObjectID() );
 		msg.SetObjectID2( bulletRight->GetObjectID() );
 
-		msg.SetPos1(  Vector2f(  bulletLeft->rect.x, height -  bulletLeft->rect.y ) );
-		msg.SetPos2( Vector2f( bulletRight->rect.x, height - bulletRight->rect.y ) );
+		msg.SetPos1( FlipPosition( bulletLeft->rect , height ));
+		msg.SetPos2( FlipPosition( bulletRight->rect, height ));
 
-		std::cout << "Sending : " << msg << std::endl;
 		SendMessage( msg, MessageTarget::Oponent );
 	}
-	void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox, double windowHeight )
+	void SendBonusBoxSpawnedMessage( const std::shared_ptr< BonusBox > &bonusBox, double height )
 	{
 		TCPMessage msg;
 
@@ -53,7 +52,8 @@ public:
 		msg.SetObjectID( bonusBox->GetObjectID() );
 		msg.SetBonusType( bonusBox->GetBonusType() );
 
-		msg.SetPos1( Vector2f( bonusBox->rect.x, windowHeight - bonusBox->rect.y ) );
+		msg.SetPos1( FlipPosition( bonusBox->rect , height ));
+
 		msg.SetDir( bonusBox->GetDirection_YFlipped() );
 
 		SendMessage( msg, MessageTarget::Oponent );
@@ -76,7 +76,7 @@ public:
 
 		SendMessage( msg, MessageTarget::Oponent );
 	}
-	void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball, double windowHeight )
+	void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball, double height )
 	{
 		TCPMessage msg;
 		Rect r = ball->rect;
@@ -84,12 +84,12 @@ public:
 		msg.SetMessageType( MessageType::BallSpawned );
 		msg.SetObjectID( ball->GetObjectID() );
 
-		msg.SetPos1( Vector2f( r.x, windowHeight - r.y ));
+		msg.SetPos1( FlipPosition( r , height ));
 		msg.SetDir( ball->GetDirection_YFlipped()  );
 
 		SendMessage( msg, MessageTarget::Oponent );
 	}
-	void SendBallDataMessage( const std::shared_ptr<Ball> &ball, double windowHeight )
+	void SendBallDataMessage( const std::shared_ptr<Ball> &ball, double height )
 	{
 		TCPMessage msg;
 		Rect r = ball->rect;
@@ -97,7 +97,8 @@ public:
 		msg.SetMessageType( MessageType::BallData );
 		msg.SetObjectID( ball->GetObjectID()  );
 
-		msg.SetPos1( Vector2f( r.x, windowHeight - r.y  ) );
+		//msg.SetPos1( Vector2f( r.x, windowHeight - r.y  ) );
+		msg.SetPos1( FlipPosition( r , height ));
 		msg.SetDir( ball->GetDirection_YFlipped() );
 
 		SendMessage( msg, MessageTarget::Oponent );
@@ -223,6 +224,10 @@ private:
 	void PrintSend( const TCPMessage &msg ) const
 	{
 		std::cout << "Message sent : " << msg.Print();
+	}
+	Vector2f FlipPosition( Rect originalPos, double height )
+	{
+		return Vector2f( originalPos.x , height - originalPos.y  - originalPos.h );
 	}
 	NetManager &netManager;
 };
