@@ -9,7 +9,7 @@ class TCPConnection
 public:
 	TCPConnection()
 		:	isConnected( false )
-		,   bufferSize( 1024 )
+		,   bufferSize( 80000 )
 	{
 
 	}
