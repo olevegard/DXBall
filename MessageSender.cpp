@@ -87,12 +87,34 @@ void MessageSender::SendBallDataMessage( const std::shared_ptr<Ball> &ball, doub
 
 	SendMessage( msg, MessageTarget::Oponent );
 }
+void MessageSender::SendTileSpawnMessage( const std::shared_ptr<Tile> &tile, double height )
+{
+	TCPMessage msg;
+	Rect r = tile->rect;
+
+	msg.SetMessageType( MessageType::TileSpawned );
+	msg.SetObjectID( tile->GetObjectID() );
+
+	msg.SetTileType( tile->GetTileType() );
+	msg.SetPos1( FlipPosition( r , height ));
+
+	SendMessage( msg, MessageTarget::Oponent );
+}
 void MessageSender::SendTileHitMessage( uint32_t tileID )
 {
 	TCPMessage msg;
 
 	msg.SetMessageType( MessageType::TileHit );
 	msg.SetObjectID( tileID );
+
+	SendMessage( msg, MessageTarget::Oponent );
+}
+void MessageSender::SendLastTileMessage( )
+{
+	TCPMessage msg;
+
+	msg.SetMessageType( MessageType::LastTileSent );
+	msg.SetObjectID( 0 );
 
 	SendMessage( msg, MessageTarget::Oponent );
 }

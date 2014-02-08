@@ -25,12 +25,15 @@ public:
 	void SendBallKilledMessage( uint32_t ballID );
 	void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball, double height );
 	void SendBallDataMessage( const std::shared_ptr<Ball> &ball, double height );
-	void SendTileHitMessage( uint32_t tileID );
 	void SendLevelDoneMessage( );
 	void SendPaddlePosMessage( double xPos  );
 	void SendPlayerName( const std::string &playerName );
 	void SendGameSettingsMessage( const Vector2f &size, double scale );
 	void SendGameStateChangedMessage( const GameState &gameState );
+
+	void SendTileSpawnMessage( const std::shared_ptr<Tile> &tile, double height );
+	void SendTileHitMessage( uint32_t tileID );
+	void SendLastTileMessage( );
 
 	void SendNewGameMessage( const std::string &ip, uint16_t port );
 	void SendJoinGameMessage( int32_t gameID );

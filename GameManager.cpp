@@ -482,8 +482,11 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::BulletKilled:
 			RecieveBulletKillMessage( message );
 			break;
-		case MessageType::LevelDone:
-			RecieveLevelDoneMessage( message );
+		case MessageType::TileSpawned:
+			RecieveTileSpawnMessage( message );
+			break;
+		case MessageType::LastTileSent:
+			physicsManager.UpdateScale();
 			break;
 		default:
 			std::cout << "GameManager@" << __LINE__ << " UpdateNetwork unknown message received " << message << std::endl;
@@ -551,6 +554,10 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 
 	ball->SetDirection( message.GetDir() );
 	ball->SetRemoteScale( remoteResolutionScale );
+}
+void GameManager::RecieveTileSpawnMessage( const TCPMessage &message )
+{
+	AddTile(  message.GetPos1(), message.GetTileType()  );
 }
 void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 {

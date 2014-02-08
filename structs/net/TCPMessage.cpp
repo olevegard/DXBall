@@ -17,10 +17,14 @@ std::string TCPMessage::Print() const
 		case GameJoined:
 		case BallKilled:
 		case GetGameList:
+		case LastTileSent:
 			ss << "\n";
 			break;
 		case PaddlePosition:
 			ss << " : "  << pos1.x << "\n";
+			break;
+		case TileSpawned:
+			ss << " : "  << pos1 << " Type : " << GetTileTypeAsString() << "\n";
 			break;
 		case GameSettings:
 			ss << " : "  << size << " board scale : " << boardScale <<  "\n";
@@ -87,6 +91,8 @@ std::string TCPMessage::GetTypeAsString() const
 			return "Bullet Fire";
 		case LevelDone:
 			return "Level Done";
+		case LastTileSent:
+			return "Last Tile Sent";
 		default:
 			return "Unknown";
 	}
@@ -153,6 +159,27 @@ std::string TCPMessage::GetGameStateAsString() const
 			return "Quit";
 	}
 }
+TileType TCPMessage::GetTileType() const
+{
+	return tileType;
+}
+std::string TCPMessage::GetTileTypeAsString() const
+{
+	switch ( tileType )
+	{
+		case TileType::Regular:
+			return "Regular";
+		case TileType::Explosive:
+			return "Explosive";
+		case TileType::Hard:
+			return "Hard";
+		case TileType::Unbreakable:
+			return "Unbreakable";
+		case TileType::Wall_Of_Death:
+			return "Wall_Of_Death";
+		//default: return "Unknown";
+	}
+}
 GameState TCPMessage::GetGameState() const
 {
 	return newGameState;
@@ -170,6 +197,7 @@ Vector2f TCPMessage::GetDir() const
 	return dir;
 }
 Vector2f TCPMessage::GetDir_YFlipped() const
+
 {
 	return Vector2f( dir.x, dir.y * -1.0 );
 }
@@ -261,4 +289,8 @@ void TCPMessage::SetDir( Vector2f dir_ )
 void TCPMessage::SetSize( Vector2f size_ )
 {
 	size = size_;
+}
+void TCPMessage::SetTileType( TileType tileType_ )
+{
+	tileType = tileType_;
 }

@@ -9,6 +9,8 @@ enum MessageType
 	BallData,    		// ID, position, speed, direction
 	BallKilled,  		// ID of ball
 
+	LastTileSent,		// The lat Tile has been sent, calculate and set scale
+	TileSpawned,		// A tile was spawned, this happens when a new game is started and when level is done.
 	TileHit,			// Player hit a tile, remove tile, reduce tile HP or trigger explosion.
 
 	GameSettings,		// Contains resolution of the remote player. Sent during beggining and when resolution chages.

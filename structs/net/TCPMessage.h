@@ -8,6 +8,7 @@
 #include "../../enums/MessageType.h"
 #include "../../enums/BonusType.h"
 #include "../../enums/GameState.h"
+#include "../../enums/TileType.h"
 
 #include "../../math/Vector2f.h"
 
@@ -33,6 +34,9 @@ class TCPMessage
 		int32_t GetGameStateAsInt() const;
 		double GetBoardScale() const;
 
+		TileType GetTileType() const;
+		std::string GetTileTypeAsString() const;
+
 		Vector2f GetDir() const;
 		Vector2f GetDir_YFlipped() const;
 		Vector2f GetPos1() const;
@@ -55,6 +59,8 @@ class TCPMessage
 		void SetGameState( int32_t bonustType_ );
 		void SetGameState( GameState bonustType_ );
 
+		void SetTileType( TileType tileType_ );
+
 		void SetBoardScale( double boardScale_);
 
 		void SetPort( uint16_t port_ );
@@ -73,7 +79,7 @@ class TCPMessage
 		unsigned int objectID2;
 
 		BonusType bonusType;
-
+		TileType tileType;
 		GameState newGameState;
 
 		Vector2f dir;
@@ -111,6 +117,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case BonusPickup:
 		case GetGameList:
 		case BulletKilled:
+		case LastTileSent:
 			return is;
 		// Game Settings uses xSize and ySize
 		case GameSettings:
@@ -145,6 +152,17 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				msg.SetPos1( pos_ );
 				msg.SetDir( dir_ );
+				return is;
+			}
+		case TileSpawned:
+			{
+				Vector2f pos_;
+				int32_t tileType_ = 0;
+
+				is >> tileType_  >> pos_;
+
+				msg.SetPos1( pos_ );
+				msg.SetTileType( static_cast< TileType > ( tileType_ ) );
 				return is;
 			}
 		case BallData:
@@ -232,6 +250,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case GetGameList:
 		case BonusPickup:
 		case BulletKilled:
+		case LastTileSent:
 			break;
 		// Game Settings uses xSize and ySize
 		case GameSettings:
@@ -252,6 +271,12 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 				<< message.GetDir() << " ";
 
 			break;
+			}
+		case TileSpawned:
+			{
+				os << static_cast< int32_t > ( message.GetTileType() ) << " " << message.GetPos1() << " ";
+
+				break;
 			}
 		case BallData:
 		case BonusSpawned:
