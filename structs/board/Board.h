@@ -44,11 +44,10 @@ struct Board
 	double GetScale() const;
 
 	void CalcMaxScale( const SDL_Rect &rect );
-	void CenterAndFlip( const SDL_Rect &rect, bool isServer );
+	void CenterAndFlip( const SDL_Rect &rect );
 
 	private:
 	Edges FindEdges( const SDL_Rect &rect );
-	void FlipBoard( double height );
 
 	std::vector< TilePosition > tiles;
 	double scale;

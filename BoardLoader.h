@@ -22,11 +22,6 @@ struct BoardLoader
 	{
 		currentLevel = 0;
 	}
-
-	void SetIsServer( bool server )
-	{
-		isServer = server;
-	}
 	private:
 	bool DoesFileExist( const std::string &fileName ) const;
 	std::string FindNextExistingBoard();
@@ -34,5 +29,4 @@ struct BoardLoader
 		size_t currentLevel;
 		std::vector< std::string > levelTextFiles;
 		std::vector< Board > levels;
-		bool isServer;
 };

@@ -6,7 +6,7 @@
 #include <algorithm>
 
 
-void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
+void Board::CenterAndFlip( const SDL_Rect &rect )
 {
 	Edges edges = FindEdges( rect );
 
@@ -21,12 +21,9 @@ void Board::CenterAndFlip( const SDL_Rect &rect, bool isServer )
 
 	for ( auto &p : tiles )
 	{
-		p.xPos += boardMoveX;
-		p.yPos += boardMoveY;
+		p.tilePos.x += boardMoveX;
+		p.tilePos.y += boardMoveY;
 	}
-
-	if ( !isServer )
-		FlipBoard( rect.h / 2.0 );
 }
 void Board::CalcMaxScale( const SDL_Rect &rect )
 {
@@ -56,17 +53,6 @@ void Board::CalcMaxScale( const SDL_Rect &rect )
 		scale = ( scale < 1.0 ) ? scale : 1.0;
 	}
 }
-void Board::FlipBoard( double middle )
-{
-	for ( size_t i = 0; i < tiles.size() ; ++i )
-	{
-		double tileMiddle = tiles[i].yPos + 10;
-		if ( tileMiddle  > middle )
-			tiles[i].yPos -= ( tileMiddle - middle ) * 2;
-		if ( tileMiddle  < middle )
-			tiles[i].yPos += ( middle - tileMiddle ) * 2;
-	}
-}
 Edges Board::FindEdges( const SDL_Rect &rect )
 {
 	Edges edges;
@@ -77,17 +63,17 @@ Edges Board::FindEdges( const SDL_Rect &rect )
 
 	for ( const auto &p : tiles )
 	{
-		if ( p.yPos < edges.top )
-			edges.top = p.yPos;
+		if ( p.tilePos.y < edges.top )
+			edges.top = p.tilePos.y ;
 
-		if ( p.yPos > edges.bottom )
-			edges.bottom = p.yPos;
+		if ( p.tilePos.y > edges.bottom )
+			edges.bottom = p.tilePos.y;
 
-		if ( p.xPos < edges.left )
-			edges.left = p.xPos;
+		if ( p.tilePos.x < edges.left )
+			edges.left = p.tilePos.x;
 
-		if ( p.xPos > edges.right )
-			edges.right = p.xPos;
+		if ( p.tilePos.x > edges.right )
+			edges.right = p.tilePos.x;
 	}
 
 	edges.bottom += 20;

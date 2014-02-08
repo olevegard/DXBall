@@ -7,10 +7,9 @@
 struct TilePosition
 {
 	TilePosition();
-	TilePosition( short xPos_, short yPos_, const TileType &tt );
+	TilePosition( double xPos_, double yPos_, const TileType &tt );
 
-	short xPos;
-	short yPos;
+	Vector2f tilePos;
 
 	TileType type;
 };

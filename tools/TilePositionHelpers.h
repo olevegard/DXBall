@@ -6,7 +6,7 @@
 inline std::istream& operator>>( std::istream &is, TilePosition &pos )
 {
 	int type = 0;
-	is >> pos.xPos >> pos.yPos >> type;
+	is >> pos.tilePos.x >>  pos.tilePos.y  >> type;
 	pos.type = static_cast< TileType > ( type );
 
 	if ( type < 0 || type > 5 )
@@ -19,7 +19,7 @@ inline std::istream& operator>>( std::istream &is, TilePosition &pos )
 }
 inline std::ostream& operator<<( std::ostream &os, const TilePosition &pos )
 {
-	os << std::setw(4) << pos.xPos << " " << std::setw(4) << pos.yPos << " ";
+	os << std::setw(4) << pos.tilePos << " ";
 
 	switch ( pos.type )
 	{

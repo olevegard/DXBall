@@ -134,19 +134,8 @@ void GameManager::Restart()
 
 	boardLoader.Reset();
 
-	if ( !menuManager.IsTwoPlayerMode() )
-	{
-		boardLoader.SetIsServer( true );
-	}
-	else
-	{
-		remotePaddle->SetScale( scale );
-	}
-
 	DeleteAllBonusBoxes();
 	DeleteAllBullets();
-
-	GenerateBoard();
 
 	localPlayerInfo.Reset();
 	remotePlayerInfo.Reset();
@@ -355,6 +344,7 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 	{
 		if ( bullet->IsAlive() )
 			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
+
 		tile->Hit();
 		bullet->Kill();
 
@@ -494,7 +484,6 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			break;
 	}
 }
-
 void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 {
 	if ( !netManager.IsConnected() )
@@ -1121,7 +1110,6 @@ void GameManager::StartNewGame()
 	std::cout << "GameManager@" << __LINE__ << " New game\n";
 	messageSender.SendNewGameMessage( ip, port );
 	menuManager.SetGameState( GameState::InGameWait );
-	boardLoader.SetIsServer( true );
 	netManager.SetIsServer( true );
 	netManager.Connect( ip, port );
 
@@ -1137,7 +1125,6 @@ void GameManager::JoinGame()
 	GameInfo gameInfo = menuManager.GetSelectedGameInfo();
 	gameID = gameInfo.GetGameID();
 
-	boardLoader.SetIsServer( false );
 	netManager.SetIsServer( false );
 	netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
 

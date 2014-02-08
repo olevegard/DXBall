@@ -34,7 +34,6 @@ void BoardLoader::BuildLevelList()
 		levelTextFiles.push_back( line );
 	}
 }
-
 Board BoardLoader::LoadLevel( const std::string &textFile )
 {
 	std::cout << "Loading level : " << textFile << std::endl;
@@ -69,7 +68,7 @@ Board BoardLoader::GenerateBoard( const SDL_Rect &rect )
 	Board b = LoadLevel( FindNextExistingBoard() );
 	levels.push_back( b );
 
-	b.CenterAndFlip( rect, isServer );
+	b.CenterAndFlip( rect );
 	b.CalcMaxScale( rect );
 
 	++currentLevel;
