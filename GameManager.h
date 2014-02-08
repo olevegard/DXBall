@@ -92,12 +92,14 @@ class GameManager
 
 		// Tiles
 		// ==========================================
-		void AddTile( short posX, short posY, TileType tileType );
+		void AddTile( const Vector2f &pos, TileType tileType );
+
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
 
+		void RecieveTileSpawnMessage( const TCPMessage &message );
 		// Paddles
 		// ===========================================
 		void SetLocalPaddlePosition( int x, int y );
@@ -138,7 +140,6 @@ class GameManager
 		void GenerateBoard();
 		void ClearBoard();
 		bool IsLevelDone();
-		bool IsTimeForNewBoard();
 
 		// Points / Lives
 		// ===========================================
@@ -194,7 +195,6 @@ class GameManager
 		void RecievePlayerNameMessage( const TCPMessage &message );
 		void RecieveGameSettingsMessage( const TCPMessage &message);
 		void RecieveGameStateChangedMessage( const TCPMessage &message );
-		void RecieveLevelDoneMessage( const TCPMessage &message );
 
 		void RecieveBallSpawnMessage( const TCPMessage &message );
 		void RecieveBallDataMessage( const TCPMessage &message );
@@ -207,10 +207,6 @@ class GameManager
 		void RecieveBulletKillMessage( const TCPMessage &message );
 
 		void DoFPSDelay( unsigned int ticks );
-
-		// Scaling
-		// ===========================================
-		void SetScale( double scale );
 
 		// Rendering
 		// ===========================================
@@ -234,7 +230,6 @@ class GameManager
 		PhysicsManager physicsManager;
 
 		bool runGame;
-		bool isOpnonentDoneWithLevel;
 
 		std::string ip;
 		uint16_t port;
@@ -251,7 +246,6 @@ class GameManager
 		std::vector< std::shared_ptr< Bullet   > > bulletList;
 
 		SDL_Rect windowSize;
-		double scale;
 		double remoteResolutionScale;
 
 		unsigned short fpsLimit;

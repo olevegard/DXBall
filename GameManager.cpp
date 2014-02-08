@@ -32,7 +32,6 @@
 	,	physicsManager( messageSender )
 
 	,	runGame( true )
-	,	isOpnonentDoneWithLevel( false )
 
 	,	gameID( 0 )
 	,	localPaddle()
@@ -41,7 +40,6 @@
 
 	,	ballList()
 	,	windowSize()
-	,	scale( 1.0 )
 
 	,	remoteResolutionScale( 1.0 )
 
@@ -237,9 +235,12 @@ void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 			ReducePlayerLifes( Player::Remote );
 	}
 }
-void GameManager::AddTile( short posX, short posY, TileType tileType )
+void GameManager::AddTile( const Vector2f &pos, TileType tileType )
 {
-	auto tile = physicsManager.CreateTile( posX, posY, tileType );
+	auto tile = physicsManager.CreateTile( pos, tileType );
+
+	if ( netManager.IsServer() )
+		messageSender.SendTileSpawnMessage( tile, windowSize.h );
 
 	tileList.push_back( tile );
 	renderer.AddTile( tile );
@@ -518,21 +519,10 @@ void GameManager::RecievePlayerNameMessage( const TCPMessage &message )
 void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
 {
 	remoteResolutionScale = windowSize.w / message.GetSize().x;
-
-	if ( !netManager.IsServer() || !menuManager.IsTwoPlayerMode()  )
-	{
-		GenerateBoard();
-	}
 }
 void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
 {
 	menuManager.SetGameState( message.GetGameState() );
-}
-void GameManager::RecieveLevelDoneMessage( const TCPMessage &message )
-{
-	std::cout << "ID : " << message.GetObjectID() << std::endl;
-	GenerateBoard();
-	isOpnonentDoneWithLevel = true;
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
@@ -700,9 +690,6 @@ void GameManager::DeleteDeadTiles()
 
 	// Remove item returned by remove_if
 	tileList.erase( newEnd, tileList.end( ) );
-
-	if ( deadTile && tileList.size() == 0 && netManager.IsServer() )
-		messageSender.SendLevelDoneMessage();
 }
 void GameManager::DeleteDeadBullets()
 {
@@ -988,9 +975,6 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 			case SDLK_f:
 				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true );
 				break;
-			case SDLK_u:
-				scale = physicsManager.ResetScale( );
-				break;
 			default:
 				break;
 		}
@@ -1062,7 +1046,7 @@ void GameManager::UpdateGameObjects( double delta )
 }
 void GameManager::UpdateBoard()
 {
-	if ( IsTimeForNewBoard() && ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() ))
+	if ( IsLevelDone() && ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() ))
 	{
 		std::cout << "GameManager@" << __LINE__ << " Generating board...\n";
 		DeleteAllBullets();
@@ -1398,7 +1382,6 @@ void GameManager::SetFPSLimit( unsigned short limit )
 void GameManager::GenerateBoard()
 {
 	ClearBoard();
-	isOpnonentDoneWithLevel = false;
 
 	if ( !boardLoader.IsLastLevel() )
 	{
@@ -1416,19 +1399,14 @@ void GameManager::GenerateBoard()
 	std::vector<TilePosition> vec = b.GetTiles();
 
 	for ( const auto &tile : vec )
-		AddTile( tile.xPos, tile.yPos, tile.type );
+		AddTile( tile.tilePos, tile.type );
 
-	std::cout << "GameManager@" << __LINE__ << " Generate board | Scale : " << b.GetScale() << "\n";
-
-	SetScale( b.GetScale() );
+	messageSender.SendLastTileMessage();
+	physicsManager.UpdateScale();
 }
 bool GameManager::IsLevelDone()
 {
 	return physicsManager.CountDestroyableTiles() == 0;
-}
-bool GameManager::IsTimeForNewBoard()
-{
-	return ( tileList.size() == 0 || ( menuManager.IsTwoPlayerMode() &&  isOpnonentDoneWithLevel ) );
 }
 void GameManager::ClearBoard()
 {
@@ -1479,12 +1457,6 @@ void GameManager::ReducePlayerLifes( Player player )
 		if ( remotePlayerInfo.lives == 0 )
 			physicsManager.KillBallsAndBonusBoxes( Player::Remote );
 	}
-}
-void GameManager::SetScale( double scale_ )
-{
-	std::cout << "GameManager@" << __LINE__ << " Scale : " << scale_ << std::endl;
-	scale = scale_;
-	physicsManager.ApplyScale( scale );
 }
 void GameManager::SetAIControlled( bool isAIControlled_ )
 {

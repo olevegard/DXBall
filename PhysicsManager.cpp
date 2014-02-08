@@ -34,13 +34,13 @@ std::shared_ptr< Tile > PhysicsManager::GetTileWithID( int32_t ID)
 
 	return nullptr;
 }
-std::shared_ptr< Tile > PhysicsManager::CreateTile( int16_t xPos, int16_t yPos, const TileType &tileType )
+std::shared_ptr< Tile > PhysicsManager::CreateTile( const Vector2f &pos, const TileType &tileType )
 {
 	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, ++objectCount );
 	tile->textureType = TextureType::e_Tile;
 
-	tile->rect.x = xPos;
-	tile->rect.y = yPos;
+	tile->rect.x = pos.x;
+	tile->rect.y = pos.y;
 	tile->rect.w = 60 * scale;
 	tile->rect.h = 20 * scale;
 
@@ -505,4 +505,48 @@ void PhysicsManager::Clear()
 	tileList.clear();
 	ballList.clear();
 	objectCount = 0;
+}
+void PhysicsManager::UpdateScale()
+{
+	double left = windowSize.w;
+	double right = 0;
+	double bottom = 0;
+	double top = windowSize.h;
+	double width = 0;
+	double height = 0;
+
+	for ( const auto &p : tileList )
+	{
+		if ( height == 0 || width == 0 )
+		{
+			width = p->rect.w;
+			height = p->rect.h;
+		}
+		if ( p->rect.y > bottom )
+			bottom = p->rect.y;
+
+		if ( p->rect.y < top )
+			top = p->rect.y;
+
+		if ( p->rect.x < left )
+			left = p->rect.x;
+
+		if ( p->rect.x > right )
+			right = p->rect.x;
+	}
+	right += width;
+	bottom += height;
+	Rect boardSize;
+	boardSize.x = left;
+	boardSize.y = top;
+	boardSize.w = right  - left;
+	boardSize.h = bottom - top;
+
+	double minDistToBottom  = 100;
+	double scaleeee= (  boardSize.h - ( ( minDistToBottom - top ) * 2 )) / boardSize.h;
+	std::cout << "Left " << left << " Right " << right << " Top " << top << " Bottom " << bottom << std::endl;
+	std::cout << "Board pos " << boardSize.x << ", " << boardSize.y << " size : " << boardSize.w << " Bottom " << boardSize.h << std::endl;
+	std::cout << "Scale : " << scaleeee<< std::endl;
+
+	ApplyScale( scaleeee );
 }
