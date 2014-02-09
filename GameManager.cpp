@@ -317,6 +317,14 @@ void GameManager::UpdateBullets( double delta )
 {
 	for ( auto  bullet : bulletList )
 	{
+
+		if ( bullet->IsOutOfBounds() )
+		{
+			bullet->Kill();
+			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
+			continue;
+		}
+
 		bullet->Update( delta );
 
 		CheckBulletTileIntersections( bullet );

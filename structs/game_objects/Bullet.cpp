@@ -40,3 +40,7 @@ bool Bullet::HasHitTile( const Rect &rectToHit ) const
 
 	return ( bulletTop < tileBottom );
 }
+bool Bullet::IsOutOfBounds( )
+{
+	return rect.y < 0;
+}

@@ -18,6 +18,9 @@ struct Bullet : GamePiece
 	void Update( double delta );
 
 	bool HasHitTile( const Rect &rectToHit ) const;
+
+	bool IsOutOfBounds( );
+
 	private:
 		Player owner;
 };
