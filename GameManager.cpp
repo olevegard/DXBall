@@ -144,6 +144,7 @@ void GameManager::Restart()
 	renderer.ResetText();
 
 	UpdateGUI();
+
 }
 std::shared_ptr<Ball> GameManager::AddBall( )
 {
@@ -235,9 +236,9 @@ void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 			ReducePlayerLifes( Player::Remote );
 	}
 }
-void GameManager::AddTile( const Vector2f &pos, TileType tileType )
+void GameManager::AddTile( const Vector2f &pos, TileType tileType, int32_t tileID  )
 {
-	auto tile = physicsManager.CreateTile( pos, tileType );
+	auto tile = physicsManager.CreateTile( pos, tileType, tileID  );
 
 	if ( netManager.IsServer() )
 		messageSender.SendTileSpawnMessage( tile, windowSize.h );
@@ -249,8 +250,6 @@ void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
 	if ( tile == nullptr )
 		return;
-
-	tile->Kill();
 
 	renderer.RemoveTile( tile );
 	physicsManager.RemoveTile( tile );
@@ -330,8 +329,7 @@ void GameManager::UpdateBullets( double delta )
 		CheckBulletTileIntersections( bullet );
 	}
 
-	if ( !gameConfig.IsFastMode() || !localPlayerInfo.bonusMap[BonusType::SuperBall] )
-		DeleteDeadBullets();
+	DeleteDeadBullets();
 	DeleteDeadTiles();
 }
 void GameManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet )
@@ -358,7 +356,9 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 		bullet->Kill();
 
 	} else
+	{
 		tile->Kill();
+	}
 
 	IncrementPoints( tile->GetTileType(), !tile->IsAlive(), owner );
 
@@ -485,6 +485,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveTileSpawnMessage( message );
 			break;
 		case MessageType::LastTileSent:
+			std::cout << "================================================================================\n";
 			physicsManager.UpdateScale();
 			break;
 		default:
@@ -500,6 +501,7 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 		std::cout << "GameManager@" << __LINE__ << " Recieved GameJoined"
 			"\n\tThis means the client has connectied, acccpting connection..."  << message.GetObjectID() << std::endl;
 		netManager.Update();
+		GenerateBoard();
 	}
 
 	UpdateGameList();
@@ -544,7 +546,7 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 }
 void GameManager::RecieveTileSpawnMessage( const TCPMessage &message )
 {
-	AddTile(  message.GetPos1(), message.GetTileType()  );
+	AddTile(  message.GetPos1(), message.GetTileType(), message.GetObjectID()  );
 }
 void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 {
@@ -554,10 +556,7 @@ void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 	std::shared_ptr< Ball > ball = physicsManager.GetBallWithID( message.GetObjectID(), Player::Remote );
 
 	if ( !ball )
-	{
-		std::cout << "GameManager@" << __LINE__ << " Could not find ball with ID : " << message.GetObjectID() << std::endl;
 		return;
-	}
 
 	// Need to add ball's height, because ball it traveling in oposite direction.
 	// The board is also flipped, so the ball will have the oposite horizontal collision edge.
@@ -579,10 +578,8 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	std::shared_ptr< Tile > tile = physicsManager.GetTileWithID( message.GetObjectID() );
 
 	if ( tile == nullptr )
-	{
-		std::cout << "GameManager@" << __LINE__ << " Tile with ID : " << message.GetObjectID() << " doesn't exist\n";
 		return;
-	}
+
 	if ( remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
@@ -695,9 +692,11 @@ void GameManager::DeleteDeadTiles()
 
 		return true;
 	} );
-
 	// Remove item returned by remove_if
 	tileList.erase( newEnd, tileList.end( ) );
+
+	if ( deadTile )
+		UpdateBoard();
 }
 void GameManager::DeleteDeadBullets()
 {
@@ -813,8 +812,8 @@ void GameManager::HandleStatusChange( )
 	else if ( menuManager.WasGameQuited() )
 	{
 		std::cout << "GameMAanager@" << __LINE__
-			<< " Game was quited game state : " << static_cast< int32_t > ( menuManager.GetGameState() )
-			<< " prev : " << static_cast< int32_t > ( menuManager.GetPrevGameState() )
+			<< " Game was quited! \nGame state : " << static_cast< int32_t > ( menuManager.GetGameState() )
+			<< " \nPrev : " << static_cast< int32_t > ( menuManager.GetPrevGameState() )
 			<< std::endl;
 		messageSender.SendEndGameMessage( gameID, ip, port );
 		netManager.Close();
@@ -1041,7 +1040,6 @@ void GameManager::Update( double delta )
 	}
 
 	AIMove();
-	UpdateBoard();
 	UpdateGameObjects( delta );
 	renderer.Update( delta );
 	CheckIfGameIsOver();
@@ -1055,11 +1053,7 @@ void GameManager::UpdateGameObjects( double delta )
 void GameManager::UpdateBoard()
 {
 	if ( IsLevelDone() && ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() ))
-	{
-		std::cout << "GameManager@" << __LINE__ << " Generating board...\n";
-		DeleteAllBullets();
 		GenerateBoard();
-	}
 }
 void GameManager::CheckIfGameIsOver()
 {
@@ -1389,8 +1383,6 @@ void GameManager::SetFPSLimit( unsigned short limit )
 }
 void GameManager::GenerateBoard()
 {
-	ClearBoard();
-
 	if ( !boardLoader.IsLastLevel() )
 	{
 		std::cout << "GameManager@" << __LINE__
@@ -1407,14 +1399,24 @@ void GameManager::GenerateBoard()
 	std::vector<TilePosition> vec = b.GetTiles();
 
 	for ( const auto &tile : vec )
-		AddTile( tile.tilePos, tile.type );
+	{
+		AddTile( tile.tilePos, tile.type, -1 );
+	}
 
 	messageSender.SendLastTileMessage();
+	std::cout << "================================================================================\n";
+
 	physicsManager.UpdateScale();
 }
 bool GameManager::IsLevelDone()
 {
-	return physicsManager.CountDestroyableTiles() == 0;
+	if ( physicsManager.CountDestroyableTiles() == 0 )
+	{
+		ClearBoard();
+		DeleteAllBullets();
+		return true;
+	}
+	return false;
 }
 void GameManager::ClearBoard()
 {

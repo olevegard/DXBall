@@ -21,8 +21,8 @@ public:
 	// =============================================================================================================
 	void AddTile( const std::shared_ptr< Tile > &tile );
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
-	std::shared_ptr< Tile > CreateTile( const Vector2f &pos, const TileType &tileType );
-
+	std::shared_ptr< Tile > CreateTile( const Vector2f &pos, const TileType &tileType, int32_t tileID = -1 );
+	void RemoveTileWithID( int32_t ID );
 
 	std::shared_ptr< Tile > GetTileWithID( int32_t ID);
 
@@ -90,7 +90,6 @@ public:
 	void Clear();
 
 	void UpdateScale();
-
 private:
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;

@@ -15,7 +15,6 @@ void PhysicsManager::AddTile( const std::shared_ptr< Tile > &tile )
 {
 	tileList.push_back( tile );
 }
-
 void PhysicsManager::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
@@ -28,19 +27,21 @@ std::shared_ptr< Tile > PhysicsManager::GetTileWithID( int32_t ID)
 			return p;
 	}
 
-
 	std::cout << "PhysicsManager@" << __LINE__ << " Tile with ID : " << ID  << " doesn't exist\n";
 	std::cin.ignore();
 
 	return nullptr;
 }
-std::shared_ptr< Tile > PhysicsManager::CreateTile( const Vector2f &pos, const TileType &tileType )
+std::shared_ptr< Tile > PhysicsManager::CreateTile( const Vector2f &pos, const TileType &tileType, int32_t tileID )
 {
-	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, ++objectCount );
+	if ( tileID == -1 )
+		tileID = ++objectCount;
+
+	std::shared_ptr< Tile > tile = std::make_shared< Tile >( tileType, tileID );
 	tile->textureType = TextureType::e_Tile;
 
-	tile->rect.x = pos.x;
-	tile->rect.y = pos.y;
+	tile->rect.x = static_cast< int32_t > ( pos.x );
+	tile->rect.y = static_cast< int32_t > ( pos.y );
 	tile->rect.w = 60 * scale;
 	tile->rect.h = 20 * scale;
 
@@ -449,8 +450,8 @@ void PhysicsManager::ApplyScale( double scale_ )
 
 	for ( auto& p : tileList )
 	{
-		p->rect.x = ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 );
-		p->rect.y = ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 );
+		p->rect.x = static_cast< int32_t > ( ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 ) );
+		p->rect.y = static_cast< int32_t > ( ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 ) );
 
 		p->ResetScale();
 		p->SetScale( scale );
@@ -504,7 +505,6 @@ void PhysicsManager::Clear()
 	bonusBoxList.clear();
 	tileList.clear();
 	ballList.clear();
-	objectCount = 0;
 }
 void PhysicsManager::UpdateScale()
 {

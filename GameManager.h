@@ -92,7 +92,7 @@ class GameManager
 
 		// Tiles
 		// ==========================================
-		void AddTile( const Vector2f &pos, TileType tileType );
+		void AddTile( const Vector2f &pos, TileType tileType, int32_t tileID  );
 
 		void RemoveTile( std::shared_ptr< Tile > pTile );
 

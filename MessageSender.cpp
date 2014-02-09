@@ -96,9 +96,9 @@ void MessageSender::SendTileSpawnMessage( const std::shared_ptr<Tile> &tile, dou
 	msg.SetObjectID( tile->GetObjectID() );
 
 	msg.SetTileType( tile->GetTileType() );
-	msg.SetPos1( FlipPosition( r , height ));
+	msg.SetPos1( FlipPosition( r, height ));
 
-	SendMessage( msg, MessageTarget::Oponent );
+	SendMessage( msg, MessageTarget::Oponent, true );
 }
 void MessageSender::SendTileHitMessage( uint32_t tileID )
 {
