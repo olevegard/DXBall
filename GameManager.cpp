@@ -316,8 +316,7 @@ void GameManager::UpdateBullets( double delta )
 {
 	for ( auto  bullet : bulletList )
 	{
-
-		if ( bullet->IsOutOfBounds() )
+		if ( bullet->GetOwner() == Player::Local && bullet->IsOutOfBounds() )
 		{
 			bullet->Kill();
 			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
@@ -1303,8 +1302,10 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > &ptr )
 }
 void GameManager::ApplyBonus_Death( const Player &player )
 {
-	if ( player == Player::Local )
-		renderer.RenderText( "Death!!", Player::Local, true );
+	if ( player == Player::Remote )
+		return;
+
+	renderer.RenderText( "Death!!", Player::Local, true );
 
 	if ( physicsManager.KillAllTilesWithOwner( player ) )
 		DeleteDeadBalls();

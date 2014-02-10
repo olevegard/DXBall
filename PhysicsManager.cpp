@@ -5,6 +5,8 @@
 #include "math/RectHelpers.h"
 #include "math/Math.h"
 
+#include <csignal>
+
 PhysicsManager::PhysicsManager( MessageSender &msgSender )
 	:	messageSender( msgSender )
 	,	scale( 1.0 )
@@ -28,7 +30,7 @@ std::shared_ptr< Tile > PhysicsManager::GetTileWithID( int32_t ID)
 	}
 
 	std::cout << "PhysicsManager@" << __LINE__ << " Tile with ID : " << ID  << " doesn't exist\n";
-	std::cin.ignore();
+	raise ( SIGABRT );
 
 	return nullptr;
 }
@@ -140,7 +142,7 @@ std::shared_ptr< Ball > PhysicsManager::GetBallWithID( int32_t ID, const Player 
 	}
 
 	std::cout << "PhysicsManager@" << __LINE__ << " Ball with ID : " << ID  << " doesn't exist\n";
-	std::cin.ignore();
+	raise ( SIGABRT );
 
 	return nullptr;
 }
@@ -212,7 +214,7 @@ std::shared_ptr< BonusBox > PhysicsManager::GetBonusBoxWithID( int32_t ID, const
 	}
 
 	std::cout << "PhysicsManager@" << __LINE__ << " BonusBox with ID : " << ID << " doesn't exist\n";
-	std::cin.ignore();
+	raise ( SIGABRT );
 
 	return nullptr;
 }
@@ -276,7 +278,7 @@ std::shared_ptr< Bullet > PhysicsManager::GetBulletWithID( int32_t ID, const Pla
 	}
 
 	std::cout << "PhysicsManager@" << __LINE__ << " Bullet with ID : " << ID << " doesn't exist\n";
-	std::cin.ignore();
+	raise ( SIGABRT );
 
 	return nullptr;
 }
