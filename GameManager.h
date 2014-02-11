@@ -89,6 +89,7 @@ class GameManager
 		std::shared_ptr< Bullet >  FireBullet( int32_t id, const Player &owner, Vector2f pos );
 
 		bool IsSuperBullet( const Player owner ) const;
+		bool AnyFastModeActive() const;
 
 		// Tiles
 		// ==========================================

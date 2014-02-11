@@ -344,7 +344,6 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 	if ( owner == Player::Remote )
 		return;
 
-	messageSender.SendTileHitMessage( tile->GetObjectID() );
 
 	if ( !IsSuperBullet( owner ) )
 	{
@@ -359,16 +358,24 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 		tile->Kill();
 	}
 
-	IncrementPoints( tile->GetTileType(), !tile->IsAlive(), owner );
+	bool alive = tile->IsAlive();
 
-	if ( tile->IsAlive() )
-		return;
 
 	int32_t count = 1;
 	if ( tile->GetTileType() == TileType::Explosive )
-		count= HandleExplosions( tile, owner );
+	{
+		std::cout << "Explosion on tile : " << tile->GetObjectID() << std::endl;
+		count = HandleExplosions( tile, owner );
+	}
+	else
+		IncrementPoints( tile->GetTileType(), !alive, owner );
 
-	if ( bullet->GetOwner() == Player::Local )
+	std::cout << "Bullet Hit tile :  " << tile->GetObjectID() << std::endl;
+	messageSender.SendTileHitMessage( tile->GetObjectID() );
+
+	DeleteDeadTiles();
+
+	if ( !alive && bullet->GetOwner() == Player::Local )
 		AddBonusBox( bullet->GetOwner(), Vector2f( 0.0f, 1.0f ),  Vector2f( tile->rect.x, tile->rect.y ), count );
 }
 bool GameManager::IsSuperBullet( const Player owner ) const
@@ -383,6 +390,10 @@ bool GameManager::IsSuperBullet( const Player owner ) const
 		return true;
 
 	return false;
+}
+bool GameManager::AnyFastModeActive() const
+{
+	return ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) || remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) );
 }
 void GameManager::UpdateNetwork()
 {
@@ -571,15 +582,21 @@ void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 }
 void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 {
+	//PrintRecv( message );
+
 	if ( tileList.size() == 0 )
+	{
+		std::cout << "GameManager@" << __LINE__ << " Tile list is empty!\n";
+		std::cin.ignore();
 		return;
+	}
 
 	std::shared_ptr< Tile > tile = physicsManager.GetTileWithID( message.GetObjectID() );
 
 	if ( tile == nullptr )
 		return;
 
-	if ( remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
+	if ( message.GetTileKilled() || remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
 		tile->Hit();
@@ -587,11 +604,14 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	bool isDestroyed = !tile->IsAlive();
 	IncrementPoints( tile->GetTileType(), isDestroyed, Player::Remote );
 
-	if ( tile->GetTileType() == TileType::Explosive )
+	if ( tile->GetTileType() == TileType::Explosive && isDestroyed )
 	{
-		HandleExplosions( tile, Player::Remote );
-		return;
+		std::cout << "Explosive tile : " << tile->GetObjectID() << std::endl;
+		//return;
 	}
+	else
+		std::cout << "Regular tile : " << tile->GetObjectID() << std::endl;
+
 	DeleteDeadTiles();
 }
 void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
@@ -1214,6 +1234,8 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 			return;
 
 		IncrementPoints( curr->GetTileType(), true, ballOwner );
+		std::cout << "Explosion killed tile :  " << curr->GetObjectID() << std::endl;
+		messageSender.SendTileHitMessage( curr->GetObjectID(), true );
 		++countDestroyedTiles;
 		curr->Kill();
 	};
