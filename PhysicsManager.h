@@ -28,7 +28,10 @@ public:
 
 	std::shared_ptr< Tile > FindClosestIntersectingTile( std::shared_ptr< Ball > ball );
 	bool KillAllTilesWithOwner( const Player &player );
+
 	int32_t CountDestroyableTiles();
+	int32_t CountAllTiles();
+	void PrintTileList() const;
 
 	// Balls
 	// =============================================================================================================

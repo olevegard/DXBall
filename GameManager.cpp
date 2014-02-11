@@ -1433,7 +1433,7 @@ void GameManager::GenerateBoard()
 }
 bool GameManager::IsLevelDone()
 {
-	if ( physicsManager.CountDestroyableTiles() == 0 )
+	if ( physicsManager.CountAllTiles() == 0 || ( !AnyFastModeActive() && physicsManager.CountDestroyableTiles() == 0 ) )
 	{
 		ClearBoard();
 		DeleteAllBullets();
@@ -1443,8 +1443,8 @@ bool GameManager::IsLevelDone()
 }
 void GameManager::ClearBoard()
 {
-	tileList.clear();
 	ballList.clear();
+	//physicsManager.Clear();
 
 	DeleteAllBullets();
 	DeleteAllBonusBoxes();

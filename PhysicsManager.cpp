@@ -100,6 +100,23 @@ int32_t PhysicsManager::CountDestroyableTiles()
 	return static_cast< int32_t > ( std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable ) );
 }
 
+int32_t PhysicsManager::CountAllTiles()
+{
+	return static_cast< int32_t> ( tileList.size() );
+}
+void PhysicsManager::PrintTileList() const
+{
+
+	std::cout << "==================== Tile List  ====================\n";
+	for ( const auto &tile : tileList )
+	{
+		std::cout
+			<< "Tile ID : " << tile->GetObjectID()
+			<< " | Type : " << tile->GetTileTypeAsIndex()
+			<< " | Pos : " << tile->GetPosition() << "\n";
+	}
+	std::cout << "====================================================" << std::endl;
+}
 // Balls
 // =============================================================================================================
 void PhysicsManager::AddBall( const std::shared_ptr< Ball > &ball )
@@ -503,9 +520,9 @@ void PhysicsManager::SetPaddles( std::shared_ptr < Paddle > localPaddle_, std::s
 }
 void PhysicsManager::Clear()
 {
+	tileList.clear();
 	bulletList.clear();
 	bonusBoxList.clear();
-	tileList.clear();
 	ballList.clear();
 }
 void PhysicsManager::UpdateScale()
