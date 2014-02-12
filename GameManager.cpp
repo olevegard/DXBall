@@ -73,8 +73,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	InitMenu();
 	InitJoystick();
 
-	logger.Init( "log.txt", localPlayerName_ );
-	logger.Log( __FILE__, __LINE__, "Init" );
+	logger.Init( localPlayerName_ );
 
 	LoadConfig();
 
@@ -662,9 +661,9 @@ void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 
 	DeleteDeadBullets();
 }
-void GameManager::PrintRecv( const TCPMessage &msg ) const
+void GameManager::PrintRecv( const TCPMessage &msg )
 {
-	std::cout << "Rceving : " << msg.Print();
+	logger.Log( __FILE__, __LINE__, msg.Print() );
 }
 void GameManager::DeleteDeadBalls()
 {

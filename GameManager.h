@@ -181,7 +181,7 @@ class GameManager
 		// Network
 		// ===========================================
 		void PrintSend( const TCPMessage &msg ) const;
-		void PrintRecv( const TCPMessage &msg ) const;
+		void PrintRecv( const TCPMessage &msg );
 
 
 		// Recieve messages
