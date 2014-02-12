@@ -144,7 +144,7 @@ class GameManager
 
 		// Points / Lives
 		// ===========================================
-		void IncrementPoints( const TileType &tileType, bool isDestroyed, Player ballOwner );
+		void IncrementPoints( const TileType &tileType, bool isDestroyed, const Player &ballOwner );
 		void ReducePlayerLifes( Player player );
 
 		// Update

@@ -1455,22 +1455,17 @@ void GameManager::ClearBoard()
 	physicsManager.Clear();
 	renderer.ClearBoard();
 }
-void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, Player ballOwner )
+void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, const Player &ballOwner )
 {
+	int32_t pointIncrease = gameConfig.GetPointsHit();
+
+	if ( isDestroyed )
+		pointIncrease += gameConfig.GetTilePoints( tileType );
+
 	if ( ballOwner == Player::Local )
-	{
-		localPlayerInfo.points += gameConfig.GetPointsHit();
-
-		if ( isDestroyed )
-			localPlayerInfo.points += gameConfig.GetTilePoints( tileType );
-	}
-	else if ( ballOwner == Player::Remote )
-	{
-		remotePlayerInfo.points += gameConfig.GetPointsHit();
-
-		if ( isDestroyed )
-			remotePlayerInfo.points += gameConfig.GetTilePoints( tileType );
-	}
+		localPlayerInfo.points += pointIncrease;
+	else
+		remotePlayerInfo.points += pointIncrease;
 }
 void GameManager::ReducePlayerLifes( Player player )
 {
