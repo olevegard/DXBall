@@ -3,7 +3,7 @@
 MessageSender::MessageSender( NetManager &netMan )
 :	netManager( netMan )
 {
-
+	logger.Init( "log_ms.txt" );
 }
 void MessageSender::SendBulletKilledMessage( uint32_t bulletID )
 {
@@ -98,16 +98,17 @@ void MessageSender::SendTileSpawnMessage( const std::shared_ptr<Tile> &tile, dou
 	msg.SetTileType( tile->GetTileType() );
 	msg.SetPos1( FlipPosition( r, height ));
 
-	SendMessage( msg, MessageTarget::Oponent, true );
+	SendMessage( msg, MessageTarget::Oponent );
 }
-void MessageSender::SendTileHitMessage( uint32_t tileID )
+void MessageSender::SendTileHitMessage( uint32_t tileID, bool tileKilled )
 {
 	TCPMessage msg;
 
 	msg.SetMessageType( MessageType::TileHit );
 	msg.SetObjectID( tileID );
+	msg.SetTileKilled( tileKilled );
 
-	SendMessage( msg, MessageTarget::Oponent );
+	SendMessage( msg, MessageTarget::Oponent, true);
 }
 void MessageSender::SendLastTileMessage( )
 {
@@ -226,9 +227,10 @@ void MessageSender::SendMessage( const TCPMessage &message, const MessageTarget 
 	if ( print )
 		PrintSend( message );
 }
-void MessageSender::PrintSend( const TCPMessage &msg ) const
+void MessageSender::PrintSend( const TCPMessage &msg )
 {
 	std::cout << "Message sent : " << msg.Print();
+	//logger.Log( __FILE__, __LINE__, msg.Print() );
 }
 Vector2f MessageSender::FlipPosition( Rect originalPos, double height )
 {

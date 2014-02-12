@@ -36,6 +36,7 @@ class TCPMessage
 
 		TileType GetTileType() const;
 		std::string GetTileTypeAsString() const;
+		bool GetTileKilled() const;
 
 		Vector2f GetDir() const;
 		Vector2f GetDir_YFlipped() const;
@@ -60,6 +61,7 @@ class TCPMessage
 		void SetGameState( GameState bonustType_ );
 
 		void SetTileType( TileType tileType_ );
+		void SetTileKilled( bool isKilled );
 
 		void SetBoardScale( double boardScale_);
 
@@ -95,6 +97,8 @@ class TCPMessage
 		uint16_t port;
 
 		std::string playerName;
+
+		bool tileKilled;
 };
 
 inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
@@ -110,7 +114,6 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 	switch ( type )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
-		case TileHit:
 		case LevelDone:
 		case GameJoined:
 		case BallKilled:
@@ -119,6 +122,16 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case BulletKilled:
 		case LastTileSent:
 			return is;
+		case TileHit:
+			{
+				bool killed = false;
+
+				is >> killed;
+
+				msg.SetTileKilled( killed );
+
+				return is;
+			}
 		// Game Settings uses xSize and ySize
 		case GameSettings:
 			{
@@ -243,7 +256,6 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 	switch ( type )
 	{
 		// BallKilled and Tile Hit only needs message type and ID
-		case TileHit:
 		case LevelDone:
 		case GameJoined:
 		case BallKilled:
@@ -251,6 +263,9 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case BonusPickup:
 		case BulletKilled:
 		case LastTileSent:
+			break;
+		case TileHit:
+			os << message.GetTileKilled() << " ";
 			break;
 		// Game Settings uses xSize and ySize
 		case GameSettings:

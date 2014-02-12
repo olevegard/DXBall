@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "NetManager.h"
+#include "Logger.h"
 
 #include "structs/net/TCPMessage.h"
 #include "structs/game_objects/Ball.h"
@@ -32,7 +33,7 @@ public:
 	void SendGameStateChangedMessage( const GameState &gameState );
 
 	void SendTileSpawnMessage( const std::shared_ptr<Tile> &tile, double height );
-	void SendTileHitMessage( uint32_t tileID );
+	void SendTileHitMessage( uint32_t tileID, bool tileKilled = false );
 	void SendLastTileMessage( );
 
 	void SendNewGameMessage( const std::string &ip, uint16_t port );
@@ -41,8 +42,9 @@ public:
 	void SendGetGameListMessage();
 private:
 	void SendMessage( const TCPMessage &message, const MessageTarget &target, bool print = false );
-	void PrintSend( const TCPMessage &msg ) const;
+	void PrintSend( const TCPMessage &msg );
 	Vector2f FlipPosition( Rect originalPos, double height );
 
 	NetManager &netManager;
+	Logger logger;
 };

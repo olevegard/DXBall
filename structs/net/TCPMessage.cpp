@@ -12,13 +12,15 @@ std::string TCPMessage::Print() const
 	switch ( msgType )
 	{
 		case EndGame:
-		case TileHit:
 		case LevelDone:
 		case GameJoined:
 		case BallKilled:
 		case GetGameList:
 		case LastTileSent:
 			ss << "\n";
+			break;
+		case TileHit:
+			ss << " : Killed ? " << std::boolalpha << tileKilled << "\n";
 			break;
 		case PaddlePosition:
 			ss << " : "  << pos1.x << "\n";
@@ -180,6 +182,10 @@ std::string TCPMessage::GetTileTypeAsString() const
 		//default: return "Unknown";
 	}
 }
+bool TCPMessage::GetTileKilled() const
+{
+	return tileKilled;
+}
 GameState TCPMessage::GetGameState() const
 {
 	return newGameState;
@@ -293,4 +299,8 @@ void TCPMessage::SetSize( Vector2f size_ )
 void TCPMessage::SetTileType( TileType tileType_ )
 {
 	tileType = tileType_;
+}
+void TCPMessage::SetTileKilled( bool isKilled )
+{
+	tileKilled = isKilled;
 }
