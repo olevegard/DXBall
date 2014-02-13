@@ -373,7 +373,6 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 {
-	std::cout << "Renderer.cpp@" << __LINE__ << " Deleting Ball : " << ball->GetObjectID() << std::endl;
 	auto p = std::find( ballList.begin(), ballList.end(), ball );
 
 	if ( p == ballList.end() )
@@ -388,8 +387,6 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
 	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
-
-
 
 	// Background
 	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, rmask, gmask, bmask, amask);

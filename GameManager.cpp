@@ -343,7 +343,6 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 	if ( owner == Player::Remote )
 		return;
 
-
 	if ( !IsSuperBullet( owner ) )
 	{
 		if ( bullet->IsAlive() )
@@ -402,6 +401,7 @@ void GameManager::UpdateNetwork()
 void GameManager::ReadMessages( )
 {
 	TCPMessage msg;
+
 	while ( true  )
 	{
 		std::string str = netManager.ReadMessage();
@@ -577,12 +577,10 @@ void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 }
 void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 {
-	//PrintRecv( message );
-
+	PrintRecv( message );
 	if ( tileList.size() == 0 )
 	{
 		std::cout << "GameManager@" << __LINE__ << " Tile list is empty!\n";
-		std::cin.ignore();
 		return;
 	}
 
@@ -893,8 +891,6 @@ void GameManager::HandleJoystickEvent( const SDL_JoyButtonEvent &event )
 {
 	if ( event.state == SDL_PRESSED )
 		AddBall( );
-
-	//std::cout << "eve " << static_cast< int32_t > ( event.button ) << std::endl;
 }
 void GameManager::UpdateJoystick( )
 {
@@ -1220,7 +1216,6 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 			return;
 
 		IncrementPoints( curr->GetTileType(), true, ballOwner );
-		std::cout << "Explosion killed tile :  " << curr->GetObjectID() << std::endl;
 		messageSender.SendTileHitMessage( curr->GetObjectID(), true );
 		++countDestroyedTiles;
 		curr->Kill();
