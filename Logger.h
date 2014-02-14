@@ -24,13 +24,25 @@ class Logger
 
 		std::stringstream ss;
 		ss << std::left << std::setw( 20 ) << fileName << " @ " << std::setw( 5 ) <<  line << " : " << msg;
+		std::string str = ss.str();
 
 		if ( logFile )
-			Write( ss.str() );
-		else
-			std::cout << ss << std::endl;
-	}
+			Write( str  );
 
+		if ( logCout )
+			std::cout << str << std::endl;
+	}
+	template < class T >
+	void Log( const std::string &fileName, int32_t line, const std::string &msg, T object )
+	{
+		if ( !logCout && !logFile )
+			return;
+
+		std::stringstream ss;
+		ss  << msg << " : " << object;
+
+		Log( fileName, line, ss.str() );
+	}
 	void Init( const std::string &fileName = "local" )
 	{
 		std::stringstream ss;
@@ -42,7 +54,6 @@ class Logger
 
 	void Write( const std::string &line )
 	{
-		std::cout << line;
 		if ( inited )
 			file << line;
 	}
