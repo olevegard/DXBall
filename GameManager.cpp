@@ -29,7 +29,7 @@
 	:	renderer()
 	,	timer()
 	,	messageSender( netManager )
-	,	physicsManager( messageSender )
+	,	physicsManager( messageSender, logger )
 
 	,	runGame( true )
 
@@ -100,7 +100,8 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
 	ip = ip_;
 	port = port_;
-	std::cout << "GameManager@" << __LINE__ <<  " IP : " << ip << " | Port : " << port << "\n";
+	logger.Log( __FILE__, __LINE__, "IP", ip );
+	logger.Log( __FILE__, __LINE__, "Port", port );
 	netManager.Init( false  );
 
 	GameInfo gameInfo;
@@ -123,11 +124,7 @@ void GameManager::CreateMenu()
 }
 void GameManager::Restart()
 {
-	std::cout
-		<< "=============================="
-		<< " RESTART "
-		<< "=============================="
-		<< std::endl;
+	logger.Log( __FILE__, __LINE__, "==================== RESET ====================");
 
 	boardLoader.Reset();
 
@@ -318,6 +315,7 @@ void GameManager::UpdateBullets( double delta )
 		if ( bullet->GetOwner() == Player::Local && bullet->IsOutOfBounds() )
 		{
 			bullet->Kill();
+			logger.Log( __FILE__, __LINE__, "Bullet out of bounds", bullet->GetObjectID()  );
 			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
 			continue;
 		}
@@ -349,6 +347,7 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
 
 		tile->Hit();
+		logger.Log( __FILE__, __LINE__, "Tile kille Bullet :  ", bullet->GetObjectID()  );
 		bullet->Kill();
 
 	} else
@@ -490,11 +489,11 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveTileSpawnMessage( message );
 			break;
 		case MessageType::LastTileSent:
-			std::cout << "================================================================================\n";
+			logger.Log( __FILE__, __LINE__, "================================================================================");
 			physicsManager.UpdateScale();
 			break;
 		default:
-			std::cout << "GameManager@" << __LINE__ << " UpdateNetwork unknown message received " << message << std::endl;
+			logger.Log( __FILE__, __LINE__, "UpdateNetwork unknown message received", message );
 			std::cin.ignore();
 			break;
 	}
@@ -503,8 +502,7 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 {
 	if ( !netManager.IsConnected() )
 	{
-		std::cout << "GameManager@" << __LINE__ << " Recieved GameJoined"
-			"\n\tThis means the client has connectied, acccpting connection..."  << message.GetObjectID() << std::endl;
+		logger.Log( __FILE__, __LINE__, "The client has accept the connection", message.GetObjectID() );
 		netManager.Update();
 		GenerateBoard();
 	}
@@ -523,7 +521,7 @@ void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 }
 void GameManager::RecieveEndGameMessage( const TCPMessage &message )
 {
-	std::cout << "GameManager@" << __LINE__ << " Game ended : " << message.GetObjectID() << std::endl;
+	logger.Log( __FILE__, __LINE__, "Game ended", message.GetObjectID() );
 	UpdateGameList();
 	menuManager.ClearGameList();
 }
@@ -580,7 +578,7 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	PrintRecv( message );
 	if ( tileList.size() == 0 )
 	{
-		std::cout << "GameManager@" << __LINE__ << " Tile list is empty!\n";
+		logger.Log( __FILE__, __LINE__, "Tile list is empty" );
 		return;
 	}
 
@@ -805,7 +803,7 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.GetGameState() == GameState::Lobby )
 	{
-		std::cout << "GameMaanager@" << __LINE__ << " GameState::Lobby..\n";
+		logger.Log( __FILE__, __LINE__, "GameState::Lobby" );
 		UpdateGameList();
 	}
 	else if ( menuManager.WasGameStarted()  )
@@ -814,10 +812,7 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.WasGameQuited() )
 	{
-		std::cout << "GameMAanager@" << __LINE__
-			<< " Game was quited! \nGame state : " << static_cast< int32_t > ( menuManager.GetGameState() )
-			<< " \nPrev : " << static_cast< int32_t > ( menuManager.GetPrevGameState() )
-			<< std::endl;
+		logger.Log( __FILE__, __LINE__, "Game was quited" );
 		messageSender.SendEndGameMessage( gameID, ip, port );
 		netManager.Close();
 	}
@@ -884,7 +879,7 @@ void GameManager::InitJoystick()
 	{
 		stick = SDL_JoystickOpen( 0 );
 		if ( stick == nullptr )
-			std::cout << "GameMaanager@" << __LINE__ << " Could not grab joystick\n";
+			logger.Log( __FILE__, __LINE__, "Could noet grab joystick" );
 	}
 }
 void GameManager::HandleJoystickEvent( const SDL_JoyButtonEvent &event )
@@ -1060,11 +1055,8 @@ void GameManager::CheckIfGameIsOver()
 {
 	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
 	{
-		std::cout << "GameManager@" << __LINE__
-			<< " =========="
-			<< " GAME OVER "
-			<< " =========="
-			<< std::endl;
+
+		logger.Log( __FILE__, __LINE__, "========= GAME OVER =====" );
 		menuManager.SetGameState( GameState::GameOver );
 	}
 }
@@ -1088,13 +1080,13 @@ void GameManager::UpdateLobbyState()
 			JoinGame();
 			break;
 		case LobbyMenuItem::Unknown:
-			std::cout << "GameManager@" << __LINE__ << " Unkown new game state\n";
+			logger.Log( __FILE__, __LINE__, "Unkown new game state" );
 			break;
 	}
 }
 void GameManager::StartNewGame()
 {
-	std::cout << "GameManager@" << __LINE__ << " New game\n";
+	logger.Log( __FILE__, __LINE__, "New game" );
 	messageSender.SendNewGameMessage( ip, port );
 	menuManager.SetGameState( GameState::InGameWait );
 	netManager.SetIsServer( true );
@@ -1389,11 +1381,7 @@ void GameManager::GenerateBoard()
 {
 	if ( !boardLoader.IsLastLevel() )
 	{
-		std::cout << "GameManager@" << __LINE__
-			<< " =========="
-			<< " GAME OVER "
-			<< " =========="
-			<< std::endl;
+		logger.Log( __FILE__, __LINE__, " ========= GAME OVER ==========" );
 
 		menuManager.SetGameState( GameState::GameOver );
 		return;
@@ -1408,7 +1396,7 @@ void GameManager::GenerateBoard()
 	}
 
 	messageSender.SendLastTileMessage();
-	std::cout << "================================================================================\n";
+	logger.Log( __FILE__, __LINE__, "Loading of Board is done" );
 
 	physicsManager.UpdateScale();
 }

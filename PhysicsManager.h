@@ -15,7 +15,7 @@ class PhysicsManager
 {
 public:
 
-	PhysicsManager( MessageSender &msgSender );
+	PhysicsManager( MessageSender &msgSender, Logger &logger_ );
 
 	// Tiles
 	// =============================================================================================================
@@ -102,7 +102,8 @@ private:
 	std::shared_ptr < Paddle > localPaddle;
 	std::shared_ptr < Paddle > remotePaddle;
 
-	MessageSender &messageSender;
+	MessageSender 	&messageSender;
+	Logger			&logger;
 
 	SDL_Rect windowSize;
 	double scale;

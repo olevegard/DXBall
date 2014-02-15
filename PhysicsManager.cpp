@@ -7,8 +7,10 @@
 
 #include <csignal>
 
-PhysicsManager::PhysicsManager( MessageSender &msgSender )
+
+PhysicsManager::PhysicsManager( MessageSender &msgSender, Logger &logger_ )
 	:	messageSender( msgSender )
+	,	logger( logger_ )
 	,	scale( 1.0 )
 	,	objectCount ( 0 )
 {
@@ -29,7 +31,7 @@ std::shared_ptr< Tile > PhysicsManager::GetTileWithID( int32_t ID)
 			return p;
 	}
 
-	std::cout << "PhysicsManager@" << __LINE__ << " Tile with ID : " << ID  << " doesn't exist\n";
+	logger.Log( __FILE__, __LINE__, "Tile doesn't exist : ", ID );
 	raise ( SIGABRT );
 
 	return nullptr;
@@ -107,15 +109,15 @@ int32_t PhysicsManager::CountAllTiles()
 void PhysicsManager::PrintTileList() const
 {
 
-	std::cout << "==================== Tile List  ====================\n";
+	logger.Log( __FILE__, __LINE__, "==================== Tile List  ====================");
 	for ( const auto &tile : tileList )
 	{
-		std::cout
-			<< "Tile ID : " << tile->GetObjectID()
-			<< " | Type : " << tile->GetTileTypeAsIndex()
-			<< " | Pos : " << tile->GetPosition() << "\n";
+		logger.Log( __FILE__, __LINE__, "========================New Tile", tile->GetObjectID() );
+		logger.Log( __FILE__, __LINE__, "Tile Type", tile->GetTileTypeAsIndex() );
+		logger.Log( __FILE__, __LINE__, "Tile pos", tile->GetPosition() );
+		logger.Log( __FILE__, __LINE__, "================================", tile->GetObjectID() );
 	}
-	std::cout << "====================================================" << std::endl;
+	logger.Log( __FILE__, __LINE__, "=============================== ====================");
 }
 // Balls
 // =============================================================================================================
@@ -158,7 +160,7 @@ std::shared_ptr< Ball > PhysicsManager::GetBallWithID( int32_t ID, const Player 
 		}
 	}
 
-	std::cout << "PhysicsManager@" << __LINE__ << " Ball with ID : " << ID  << " doesn't exist\n";
+	logger.Log( __FILE__, __LINE__, "Ball doesn't exist : ", ID );
 	raise ( SIGABRT );
 
 	return nullptr;
@@ -230,7 +232,7 @@ std::shared_ptr< BonusBox > PhysicsManager::GetBonusBoxWithID( int32_t ID, const
 		}
 	}
 
-	std::cout << "PhysicsManager@" << __LINE__ << " BonusBox with ID : " << ID << " doesn't exist\n";
+	logger.Log( __FILE__, __LINE__, "BonusBox doesn't exist : ", ID );
 	raise ( SIGABRT );
 
 	return nullptr;
@@ -294,7 +296,7 @@ std::shared_ptr< Bullet > PhysicsManager::GetBulletWithID( int32_t ID, const Pla
 		}
 	}
 
-	std::cout << "PhysicsManager@" << __LINE__ << " Bullet with ID : " << ID << " doesn't exist\n";
+	logger.Log( __FILE__, __LINE__, "Bullet doesn't exist : ", ID );
 	raise ( SIGABRT );
 
 	return nullptr;
@@ -563,9 +565,8 @@ void PhysicsManager::UpdateScale()
 
 	double minDistToBottom  = 100;
 	double scaleeee= (  boardSize.h - ( ( minDistToBottom - top ) * 2 )) / boardSize.h;
-	std::cout << "Left " << left << " Right " << right << " Top " << top << " Bottom " << bottom << std::endl;
-	std::cout << "Board pos " << boardSize.x << ", " << boardSize.y << " size : " << boardSize.w << " Bottom " << boardSize.h << std::endl;
-	std::cout << "Scale : " << scaleeee<< std::endl;
+	logger.Log( __FILE__, __LINE__, "Board before scaling", boardSize );
+	logger.Log( __FILE__, __LINE__, "Scale", scaleeee);
 
 	ApplyScale( scaleeee );
 }
