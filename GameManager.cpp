@@ -312,15 +312,7 @@ void GameManager::UpdateBullets( double delta )
 {
 	for ( auto  bullet : bulletList )
 	{
-		if ( bullet->GetOwner() == Player::Local && bullet->IsOutOfBounds() )
-		{
-			bullet->Kill();
-			logger.Log( __FILE__, __LINE__, "Bullet out of bounds", bullet->GetObjectID()  );
-			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
-			continue;
-		}
-
-		bullet->Update( delta );
+				bullet->Update( delta );
 
 		CheckBulletTileIntersections( bullet );
 	}
@@ -328,9 +320,24 @@ void GameManager::UpdateBullets( double delta )
 	DeleteDeadBullets();
 	DeleteDeadTiles();
 }
+void GameManager::CheckBulletOutOfBounds( std::shared_ptr< Bullet > bullet )
+{
+	if ( bullet->GetOwner() != Player::Local || !bullet->IsOutOfBounds() )
+		return;
+
+	bullet->Kill();
+
+	if ( !IsSuperBullet( bullet->GetOwner() ) )
+		return;
+
+	auto deadTiles = physicsManager.FindAllTilesOnBulletsPath( bullet );
+
+	for ( auto tile :deadTiles )
+		tile->Kill();
+}
 void GameManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet )
 {
-	std::shared_ptr< Tile > lowestTile = physicsManager.CheckBulletTileIntersections( bullet );
+	auto lowestTile = physicsManager.CheckBulletTileIntersections( bullet );
 
 	if ( lowestTile != nullptr )
 		HandleBulletTileIntersection( bullet, lowestTile );
@@ -343,17 +350,12 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 
 	if ( !IsSuperBullet( owner ) )
 	{
-		if ( bullet->IsAlive() )
-			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
-
 		tile->Hit();
-		logger.Log( __FILE__, __LINE__, "Tile kille Bullet :  ", bullet->GetObjectID()  );
 		bullet->Kill();
 
-	} else
-	{
-		tile->Kill();
 	}
+	else
+		tile->Kill();
 
 	bool alive = tile->IsAlive();
 
@@ -639,14 +641,13 @@ void GameManager::RecieveBulletFireMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 {
-	if ( ballList.size() > 0 )
-		physicsManager.KillBulletWithID( message.GetObjectID(), Player::Remote  );
+	physicsManager.KillBulletWithID(  message.GetObjectID(), Player::Remote );
 
 	DeleteDeadBullets();
 }
-void GameManager::PrintRecv( const TCPMessage &msg )
+void GameManager::PrintRecv( const TCPMessage &msg, int32_t line  )
 {
-	logger.Log( __FILE__, __LINE__, msg.Print() );
+	logger.Log( __FILE__, line, msg.Print() );
 }
 void GameManager::DeleteDeadBalls()
 {
@@ -711,6 +712,9 @@ void GameManager::DeleteDeadBullets()
 
 		renderer.RemoveBullet( (bullet ));
 		physicsManager.RemoveBullet( bullet );
+
+		if ( bullet->GetOwner() == Player::Local )
+			messageSender.SendBulletKilledMessage( bullet->GetObjectID() );
 
 		return true;
 	} );

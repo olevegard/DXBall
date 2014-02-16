@@ -20,6 +20,7 @@ struct Bullet : GamePiece
 	bool HasHitTile( const Rect &rectToHit ) const;
 
 	bool IsOutOfBounds( );
+	bool WillHitTile( const Rect &tileRect  );
 
 	private:
 		Player owner;

@@ -355,6 +355,19 @@ std::shared_ptr< Tile > PhysicsManager::CheckBulletTileIntersections( std::share
 
 	return lowestTile;
 }
+std::vector< std::shared_ptr< Tile > >  PhysicsManager::FindAllTilesOnBulletsPath( std::shared_ptr< Bullet > bullet )
+{
+	std::vector< std::shared_ptr< Tile > > tilesHitByBullet;
+	//std::cout << "Bullet : " << bullet->rect.x << std::endl;
+
+	for ( auto tile : tileList )
+	{
+		if ( bullet->WillHitTile( tile ) )
+			tilesHitByBullet.push_back( tile );
+	}
+
+	return tilesHitByBullet;
+}
 // Paddles
 // =============================================================================================================
 void PhysicsManager::SetPaddleData( )

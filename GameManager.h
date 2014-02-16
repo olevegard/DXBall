@@ -81,9 +81,10 @@ class GameManager
 		// Bullets
 		// ===========================================
 		void CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet );
+		void CheckBulletOutOfBounds( std::shared_ptr< Bullet > bullet );
 		void HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
 
-		void DeleteDeadBullets();
+		void DeleteDeadBullets( );
 		void DeleteAllBullets();
 		void FireBullets();
 		std::shared_ptr< Bullet >  FireBullet( int32_t id, const Player &owner, Vector2f pos );
@@ -180,8 +181,7 @@ class GameManager
 
 		// Network
 		// ===========================================
-		void PrintSend( const TCPMessage &msg ) const;
-		void PrintRecv( const TCPMessage &msg );
+		void PrintRecv( const TCPMessage &msg, int32_t line );
 
 
 		// Recieve messages

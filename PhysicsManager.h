@@ -48,6 +48,8 @@ public:
 	bool DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
 	std::shared_ptr< Tile > CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet );
 
+	std::vector< std::shared_ptr< Tile > >  FindAllTilesOnBulletsPath( std::shared_ptr< Bullet > bullet );
+
 	// Bonus Boxes
 	// =============================================================================================================
 	void AddBonusBox( const std::shared_ptr< BonusBox > &bb );

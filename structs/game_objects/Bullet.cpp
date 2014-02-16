@@ -44,3 +44,16 @@ bool Bullet::IsOutOfBounds( )
 {
 	return rect.y < 0;
 }
+bool Bullet::WillHitTile( const Rect &tileRect  )
+{
+	double tileLeft = tileRect.x;
+	double tileRight = tileLeft + tileRect.w;
+
+	double bulletLeft = rect.x;
+	double bulletRight = tileLeft + rect.w;
+
+	if ( bulletLeft > tileRight || bulletRight < tileLeft )
+		return false;
+	else
+		return true;
+}
