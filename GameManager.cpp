@@ -1052,6 +1052,9 @@ void GameManager::UpdateGameObjects( double delta )
 }
 void GameManager::UpdateBoard()
 {
+	if ( menuManager.GetGameState() == GameState::GameOver )
+		return;
+
 	if ( IsLevelDone() && ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() ))
 		GenerateBoard();
 }
@@ -1313,7 +1316,7 @@ void GameManager::UpdateGUI( )
 {
 	if ( menuManager.GetGameState() == GameState::InGame || menuManager.GetGameState() == GameState::InGameWait )
 		RenderInGame();
-	else if ( menuManager.GetGameState() == GameState::GameOver )
+	else if ( menuManager.GetGameState() != GameState::Paused )
 		RenderEndGame();
 
 	renderer.Render( );
@@ -1362,7 +1365,7 @@ void GameManager::RenderEndGame()
 		return;
 	}
 
-	if ( !IsLevelDone() && remotePlayerInfo.lives > 0 )
+	if ( menuManager.GetGameState() != GameState::GameOver &&  remotePlayerInfo.lives > 0 )
 	{
 		renderer.RenderText( "Waiting for oponent...", Player::Local );
 		return;
@@ -1409,18 +1412,16 @@ bool GameManager::IsLevelDone()
 	if ( physicsManager.CountAllTiles() == 0 || ( !AnyFastModeActive() && physicsManager.CountDestroyableTiles() == 0 ) )
 	{
 		ClearBoard();
-		DeleteAllBullets();
 		return true;
 	}
 	return false;
 }
 void GameManager::ClearBoard()
 {
+	logger.Log( __FILE__, __LINE__, "==================== Clear Board ====================");
 	ballList.clear();
-	//physicsManager.Clear();
 
 	DeleteAllBullets();
-	DeleteAllBonusBoxes();
 
 	localPlayerInfo.activeBalls = 0;
 	remotePlayerInfo.activeBalls = 0;
