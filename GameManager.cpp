@@ -1178,8 +1178,6 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 	else
 		tile->Hit();
 
-	messageSender.SendTileHitMessage( tile->GetObjectID() );
-
 	UpdateTileHit( ball, tile );
 }
 bool GameManager::IsSuperBall( std::shared_ptr< Ball > ball )
@@ -1191,15 +1189,14 @@ bool GameManager::IsSuperBall( std::shared_ptr< Ball > ball )
 }
 void GameManager::UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 {
-	bool isDestroyed = !tile->IsAlive();
-	IncrementPoints( tile->GetTileType(), isDestroyed, ball->GetOwner() );
-
-	if ( !isDestroyed )
-		return;
-
 	int32_t count = 1;
 	if (tile->GetTileType() == TileType::Explosive )
 		count = HandleExplosions( tile, ball->GetOwner() );
+	else
+	{
+		messageSender.SendTileHitMessage( tile->GetObjectID() );
+		IncrementPoints( tile->GetTileType(), !tile->IsAlive(), ball->GetOwner() );
+	}
 
 	AddBonusBox( ball, tile->rect.x, tile->rect.y, count );
 }
