@@ -271,9 +271,8 @@ bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
 	int randMax = gameConfig.GetBonusBoxChance();
 	if ( tilesDestroyed != 1 )
 	{
-		double probabilityOfNoBonus = std::pow( 0.99, tilesDestroyed * 2);
-
-		randMax = static_cast< int > ( probabilityOfNoBonus * 100 );
+		double probabilityOfBonus = 1.0 / tilesDestroyed;
+		randMax = static_cast< int > ( probabilityOfBonus * randMax );
 	}
 
 	return ( RandomHelper::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) == 1 );
