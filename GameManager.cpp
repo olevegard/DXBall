@@ -855,7 +855,7 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 			if ( localPlayerInfo.activeBalls == 0 )
 				AddBall( );
 
-			if ( localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
+			if ( localPlayerInfo.IsBonusActive( BonusType::FireBullets )  && localPlayerInfo.CanFireBullet() )
 				FireBullets();
 		}
 	}
