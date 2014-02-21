@@ -7,7 +7,7 @@ TCPMessage::TCPMessage()
 std::string TCPMessage::Print() const
 {
 	std::stringstream ss;
-	ss << "Type : " << std::left << std::setw( 16 ) << GetTypeAsString() << "| Object ID : "  << std::left << std::setw( 4 ) << objectID;
+	ss << "Type : " << std::left << std::setw( 10 ) << GetTypeAsString() << "| Object ID : "  << std::left << std::setw( 4 ) << objectID;
 
 	switch ( msgType )
 	{
@@ -17,40 +17,39 @@ std::string TCPMessage::Print() const
 		case BallKilled:
 		case GetGameList:
 		case LastTileSent:
-			ss << "\n";
 			break;
 		case TileHit:
-			ss << " : Killed ? " << std::boolalpha << tileKilled << "\n";
+			ss << " : Killed ? " << std::boolalpha << tileKilled;
 			break;
 		case PaddlePosition:
-			ss << " : "  << pos1.x << "\n";
+			ss << " : "  << pos1.x;
 			break;
 		case TileSpawned:
-			ss << " : "  << pos1 << " Type : " << GetTileTypeAsString() << "\n";
+			ss << " : "  << pos1 << " Type : " << GetTileTypeAsString();
 			break;
 		case GameSettings:
-			ss << " : "  << size << " board scale : " << boardScale <<  "\n";
+			ss << " : "  << size << " board scale : " << boardScale;
 			break;
 		case BonusSpawned:
-			ss << " : " << GetBonusTypeAsString() << " , "  << pos1 << " , " << dir << "\n";
+			ss << " : " << GetBonusTypeAsString() << " , "  << pos1 << " , " << dir;
 			break;
 		case GameStateChanged:
-			ss << " : " << GetGameStateAsString() << "\n";
+			ss << " : " << GetGameStateAsString();
 			break;
 		case NewGame:
-			ss << " : " << GetIPAdress() << " : " << GetPort() <<  "\n";
+			ss << " : " << GetIPAdress() << " : " << GetPort();
 			break;
 		case PlayerName:
-			ss << " : " << GetPlayerName() << "\n";
+			ss << " : " << GetPlayerName();
 			break;
 		case BonusPickup:
-			ss << " : " << pos1 << " , " << dir << "\n";
+			ss << " : " << pos1 << " , " << dir;
 			break;
 		case BulletFire:
-			ss << " : " << pos1 << " Object 2 ID : " << objectID2 << " Pos : " << pos2 << "\n";
+			ss << " : " << pos1 << " Object 2 ID : " << objectID2 << " Pos : " << pos2;
 			break;
 		default:
-			ss << " : "  << pos1  << " , " <<  dir << "\n";
+			ss << " : "  << pos1  << " , " <<  dir;
 			break;
 	}
 
