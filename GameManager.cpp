@@ -64,11 +64,11 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	if ( !renderer.Init( windowSize, startFS, server ) )
 		return false;
 
-	UpdateGUI();
+	RenderMainText();
 
-	renderer.RenderPlayerCaption( localPlayerInfo.name, Player::Local );
  	physicsManager.SetWindowSize( windowSize );
 
+	InitRenderer();
 	InitPaddles();
 	InitMenu();
 	InitJoystick();
@@ -84,6 +84,12 @@ void GameManager::InitMenu()
 	menuManager.Init( renderer );
 	menuManager.SetGameState( GameState::MainMenu );
 	CreateMenu();
+}
+void GameManager::InitRenderer()
+{
+	RendererScores();
+	renderer.RenderPlayerCaption( localPlayerInfo.name, Player::Local );
+	renderer.Render( );
 }
 void GameManager::InitPaddles()
 {
@@ -139,8 +145,12 @@ void GameManager::Restart()
 	renderer.SetIsTwoPlayerMode( menuManager.IsTwoPlayerMode() );
 	renderer.ResetText();
 
-	UpdateGUI();
+	RenderMainText();
 
+	if ( !menuManager.IsTwoPlayerMode() )
+		GenerateBoard();
+
+	RendererScores();
 }
 std::shared_ptr<Ball> GameManager::AddBall( )
 {
@@ -179,10 +189,14 @@ void GameManager::IncreaseActiveBalls( const Player &player )
 			renderer.StartFade();
 
 		++localPlayerInfo.activeBalls;
+
+		renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
 	}
 	else
 	{
 		++remotePlayerInfo.activeBalls;
+
+		renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
 	}
 }
 double GameManager::GetBallSpeed( const Player &player ) const
@@ -223,6 +237,8 @@ void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 
 		if ( localPlayerInfo.activeBalls == 0 )
 			ReducePlayerLifes( Player::Local );
+
+		renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
 	}
 	else
 	{
@@ -230,6 +246,8 @@ void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 
 		if ( remotePlayerInfo.activeBalls == 0 )
 			ReducePlayerLifes( Player::Remote );
+
+		renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
 	}
 }
 void GameManager::AddTile( const Vector2f &pos, TileType tileType, int32_t tileID  )
@@ -1029,19 +1047,21 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 void GameManager::Update( double delta )
 {
 	UpdateJoystick( );
-	UpdateGUI();
 	UpdateNetwork();
 
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
 		UpdateLobbyState();
+		renderer.Render( );
 		return;
 	}
 
+	IsGameOVer();
 	AIMove();
 	UpdateGameObjects( delta );
+	RenderMainText();
 	renderer.Update( delta );
-	CheckIfGameIsOver();
+	renderer.Render( );
 }
 void GameManager::UpdateGameObjects( double delta )
 {
@@ -1308,20 +1328,36 @@ void GameManager::ApplyBonus_Death( const Player &player )
 	if ( physicsManager.KillAllTilesWithOwner( player ) )
 		DeleteDeadBalls();
 }
-void GameManager::UpdateGUI( )
+void GameManager::RenderMainText( )
 {
-	if ( menuManager.GetGameState() == GameState::InGame || menuManager.GetGameState() == GameState::InGameWait )
-		RenderInGame();
-	else if ( menuManager.GetGameState() != GameState::Paused )
-		RenderEndGame();
-
-	renderer.Render( );
-	RendererScores();
+	if ( menuManager.GetGameState() == GameState::InGameWait )
+		renderer.RenderText( "InGame : Wait...", Player::Local  );
+	else
+		if ( menuManager.GetGameState() == GameState::InGame )
+	{
+		if ( localPlayerInfo.CanSpawnNewBall() )
+			renderer.RenderText( "Press enter to launch ball", Player::Local  );
+		if ( localPlayerInfo.lives == 0 )
+			renderer.RenderText( "No more lives!", Player::Local  );
+	}
+	else
+		if ( menuManager.GetGameState() == GameState::GameOver )
+	{
+		if ( menuManager.IsTwoPlayerMode() )
+		{
+			if ( localPlayerInfo.points < remotePlayerInfo.points )
+				renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
+			else
+				renderer.RenderText( "Yay, you won!!", Player::Local  );
+		}
+		else
+			renderer.RenderText( "Game Over!", Player::Local  );
+	}
 }
 void GameManager::RendererScores()
 {
-	renderer.RenderPoints   ( localPlayerInfo.points, Player::Local );
 	renderer.RenderLives    ( localPlayerInfo.lives, Player::Local );
+	renderer.RenderPoints   ( localPlayerInfo.points, Player::Local );
 	renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
 
 	if ( menuManager.IsTwoPlayerMode() )
@@ -1330,47 +1366,6 @@ void GameManager::RendererScores()
 		renderer.RenderLives    ( remotePlayerInfo.lives, Player::Remote );
 		renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
 	}
-}
-void GameManager::RenderInGame()
-{
-	if ( menuManager.GetGameState() == GameState::InGameWait )
-	{
-		renderer.RenderText( "InGame : Wait...", Player::Local  );
-		return;
-	}
-
-	if ( localPlayerInfo.activeBalls != 0 )
-		return;
-
-	if ( localPlayerInfo.lives != 0 )
-	{
-		renderer.RenderText( "Press enter to launch ball", Player::Local  );
-		return;
-	}
-
-	RenderEndGame();
-}
-void GameManager::RenderEndGame()
-{
-	if ( !menuManager.IsTwoPlayerMode() )
-	{
-		if ( localPlayerInfo.lives == 0 )
-			renderer.RenderText( "No more lives!", Player::Local  );
-		else
-			renderer.RenderText( "No more levels!", Player::Local  );
-		return;
-	}
-
-	if ( menuManager.GetGameState() != GameState::GameOver &&  remotePlayerInfo.lives > 0 )
-	{
-		renderer.RenderText( "Waiting for oponent...", Player::Local );
-		return;
-	}
-
-	if ( localPlayerInfo.points < remotePlayerInfo.points )
-		renderer.RenderText( "Oh no, you lost :\'(", Player::Local  );
-	else
-		renderer.RenderText( "Yay, you won!!", Player::Local  );
 }
 void GameManager::SetFPSLimit( unsigned short limit )
 {
@@ -1433,9 +1428,15 @@ void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, c
 		pointIncrease += gameConfig.GetTilePoints( tileType );
 
 	if ( ballOwner == Player::Local )
+	{
 		localPlayerInfo.points += pointIncrease;
+		renderer.RenderPoints   ( localPlayerInfo.points, ballOwner );
+	}
 	else
+	{
+		renderer.RenderPoints   ( localPlayerInfo.points, ballOwner );
 		remotePlayerInfo.points += pointIncrease;
+	}
 }
 void GameManager::ReducePlayerLifes( Player player )
 {
@@ -1447,6 +1448,8 @@ void GameManager::ReducePlayerLifes( Player player )
 
 		if ( localPlayerInfo.lives == 0 )
 			physicsManager.KillBallsAndBonusBoxes( Player::Local );
+
+		renderer.RenderLives( localPlayerInfo.lives, Player::Local );
 	}
 	else
 	{
@@ -1454,6 +1457,8 @@ void GameManager::ReducePlayerLifes( Player player )
 
 		if ( remotePlayerInfo.lives == 0 )
 			physicsManager.KillBallsAndBonusBoxes( Player::Remote );
+
+		renderer.RenderLives( remotePlayerInfo.lives, Player::Local );
 	}
 }
 void GameManager::SetAIControlled( bool isAIControlled_ )

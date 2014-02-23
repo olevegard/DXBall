@@ -161,7 +161,6 @@ class GameManager
 		void UpdateGameList();
 		void UpdateNetwork();
 		void UpdateBoard();
-		void UpdateGUI( );
 
 		// Input
 		// ===========================================
@@ -174,15 +173,14 @@ class GameManager
 
 		// Input
 		// ===========================================
+		void InitRenderer();
 		void InitJoystick();
 		void InitPaddles();
 		void InitMenu();
 
-
 		// Network
 		// ===========================================
 		void PrintRecv( const TCPMessage &msg, int32_t line );
-
 
 		// Recieve messages
 		// ===========================================
@@ -212,8 +210,6 @@ class GameManager
 		// Rendering
 		// ===========================================
 		void RendererScores();
-		void RenderInGame();
-		void RenderEndGame();
 
 		// Variables
 		// ===========================================
