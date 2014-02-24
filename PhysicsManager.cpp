@@ -108,7 +108,6 @@ int32_t PhysicsManager::CountAllTiles()
 }
 void PhysicsManager::PrintTileList() const
 {
-
 	logger.Log( __FILE__, __LINE__, "==================== Tile List  ====================");
 	for ( const auto &tile : tileList )
 	{
@@ -358,11 +357,10 @@ std::shared_ptr< Tile > PhysicsManager::CheckBulletTileIntersections( std::share
 std::vector< std::shared_ptr< Tile > >  PhysicsManager::FindAllTilesOnBulletsPath( std::shared_ptr< Bullet > bullet )
 {
 	std::vector< std::shared_ptr< Tile > > tilesHitByBullet;
-	//std::cout << "Bullet : " << bullet->rect.x << std::endl;
 
 	for ( auto tile : tileList )
 	{
-		if ( bullet->WillHitTile( tile ) )
+		if ( bullet->WillHitTile( tile->rect ) )
 			tilesHitByBullet.push_back( tile );
 	}
 
@@ -535,10 +533,8 @@ void PhysicsManager::SetPaddles( std::shared_ptr < Paddle > localPaddle_, std::s
 }
 void PhysicsManager::Clear()
 {
-	tileList.clear();
-	bulletList.clear();
-	bonusBoxList.clear();
-	ballList.clear();
+	bulletList.erase( bulletList.begin(), bulletList.end() );
+	ballList.erase( ballList.begin(), ballList.end() );
 }
 void PhysicsManager::UpdateScale()
 {

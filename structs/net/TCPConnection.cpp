@@ -99,7 +99,7 @@ void TCPConnection::Send( std::string str )
 {
 	if ( !isConnected  )
 	{
-		std::cout << "TCPConnection.cpp@" << __LINE__ << " Error! Not connected " << std::endl;
+		//std::cout << "TCPConnection.cpp@" << __LINE__ << " Error! Not connected " << std::endl;
 		return;
 	}
 

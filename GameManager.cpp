@@ -9,6 +9,7 @@
 
 #include "math/Math.h"
 #include "math/RectHelpers.h"
+#include "math/VectorHelpers.h"
 
 #include "enums/MessageType.h"
 #include "enums/LobbyMenuItem.h"
@@ -217,15 +218,12 @@ bool GameManager::CanPlayerFireBall( const Player &player ) const
 }
 void GameManager::RemoveBall( const std::shared_ptr< Ball >  ball )
 {
-	if ( !ball )
-		return;
-
 	ReduceActiveBalls( ball->GetOwner(), ball->GetObjectID() );
 
 	renderer.RemoveBall( ball );
 	physicsManager.RemoveBall( ball );
 
-	UpdateGUI();
+	RenderMainText();
 }
 void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 {
@@ -262,9 +260,6 @@ void GameManager::AddTile( const Vector2f &pos, TileType tileType, int32_t tileI
 }
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
-	if ( tile == nullptr )
-		return;
-
 	renderer.RemoveTile( tile );
 	physicsManager.RemoveTile( tile );
 }
@@ -329,7 +324,10 @@ void GameManager::UpdateBullets( double delta )
 {
 	for ( auto  bullet : bulletList )
 	{
-				bullet->Update( delta );
+		bullet->Update( delta );
+
+		if ( bullet->GetOwner()  == Player::Remote )
+			continue;
 
 		CheckBulletTileIntersections( bullet );
 	}
@@ -362,14 +360,11 @@ void GameManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet
 void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
 {
 	Player owner = bullet->GetOwner();
-	if ( owner == Player::Remote )
-		return;
 
 	if ( !IsSuperBullet( owner ) )
 	{
 		tile->Hit();
 		bullet->Kill();
-
 	}
 	else
 		tile->Kill();
@@ -431,9 +426,7 @@ void GameManager::ReadMessages( )
 		ss << str;
 
 		while ( ss >> msg )
-		{
 			HandleRecieveMessage( msg );
-		}
 	}
 }
 void GameManager::ReadMessagesFromServer( )
@@ -450,9 +443,7 @@ void GameManager::ReadMessagesFromServer( )
 		ss << str;
 
 		while ( ss >> msg )
-		{
 			HandleRecieveMessage( msg );
-		}
 	}
 }
 void GameManager::HandleRecieveMessage( const TCPMessage &message )
@@ -560,9 +551,7 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
 	std::shared_ptr< Ball > ball = AddBall( Player::Remote, message.GetObjectID() );
 
-	ball->rect.x = message.GetPos1().x * remoteResolutionScale;
-	ball->rect.y = message.GetPos1().y * remoteResolutionScale;
-
+	ball->SetPosition( Math::Scale( message.GetPos1(),  remoteResolutionScale ) );
 	ball->SetDirection( message.GetDir() );
 	ball->SetRemoteScale( remoteResolutionScale );
 }
@@ -572,19 +561,9 @@ void GameManager::RecieveTileSpawnMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 {
-	if ( ballList.size() == 0 )
-		return;
-
 	std::shared_ptr< Ball > ball = physicsManager.GetBallWithID( message.GetObjectID(), Player::Remote );
 
-	if ( !ball )
-		return;
-
-	// Need to add ball's height, because ball it traveling in oposite direction.
-	// The board is also flipped, so the ball will have the oposite horizontal collision edge.
-	ball->rect.x = message.GetPos1().x * remoteResolutionScale;
-	ball->rect.y = ( message.GetPos1().y  * remoteResolutionScale ) - ball->rect.h ;
-
+	ball->SetPosition( Math::Scale( message.GetPos1(),  remoteResolutionScale ) );
 	ball->SetDirection( message.GetDir() );
 }
 void GameManager::RecieveBallKillMessage( const TCPMessage &message )
@@ -594,17 +573,7 @@ void GameManager::RecieveBallKillMessage( const TCPMessage &message )
 }
 void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 {
-	PrintRecv( message );
-	if ( tileList.size() == 0 )
-	{
-		logger.Log( __FILE__, __LINE__, "Tile list is empty" );
-		return;
-	}
-
 	std::shared_ptr< Tile > tile = physicsManager.GetTileWithID( message.GetObjectID() );
-
-	if ( tile == nullptr )
-		return;
 
 	if ( message.GetTileKilled() || remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
@@ -619,6 +588,7 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 {
 	if ( !remotePaddle )
 		return;
+
 	double xPos = message.GetPos1().x;
 	if ( xPos > 0 && xPos < windowSize.w )
 	{
@@ -629,8 +599,7 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 {
 	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, message.GetDir_YFlipped(), Vector2f() );
 	bonusBox->SetBonusType( message.GetBonusType() );
-	bonusBox->rect.x = message.GetPos1().x * remoteResolutionScale;
-	bonusBox->rect.y = message.GetPos1().y * remoteResolutionScale - bonusBox->rect.h;
+	bonusBox->SetPosition( Math::Scale( message.GetPos1(),  remoteResolutionScale ) );
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -639,8 +608,7 @@ void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
 	auto bb = physicsManager.GetBonusBoxWithID( message.GetObjectID(), Player::Remote );
 
-	if ( bb != nullptr )
-		ApplyBonus( bb );
+	ApplyBonus( bb );
 }
 std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, Vector2f pos )
 {
@@ -746,7 +714,7 @@ void GameManager::DeleteAllBullets()
 		bulletList.end(),
 	[=]( std::shared_ptr< Bullet > bullet )
 	{
-		renderer.RemoveBullet( (bullet ));
+		renderer.RemoveBullet( bullet );
 		physicsManager.RemoveBullet( bullet );
 
 		return true;
@@ -1077,15 +1045,6 @@ void GameManager::UpdateBoard()
 	if ( IsLevelDone() && ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() ))
 		GenerateBoard();
 }
-void GameManager::CheckIfGameIsOver()
-{
-	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
-	{
-
-		logger.Log( __FILE__, __LINE__, "========= GAME OVER =====" );
-		menuManager.SetGameState( GameState::GameOver );
-	}
-}
 void GameManager::UpdateLobbyState()
 {
 	if ( menuManager.GetGameState() != GameState::Lobby || !menuManager.HasLobbyStateChanged() )
@@ -1159,9 +1118,6 @@ void GameManager::AIMove()
 }
 bool GameManager::IsTimeForAIMove( std::shared_ptr< Ball > highest ) const
 {
-	if ( !isAIControlled )
-		return false;
-
 	if ( !localPaddle )
 		return false;
 
@@ -1245,15 +1201,11 @@ void GameManager::UpdateBonusBoxes( double delta )
 {
 	for ( auto p  : bonusBoxList )
 	{
-		if ( p->GetOwner() == Player::Local )
+		if ( p->GetOwner() == Player::Local &&  p->rect.CheckTileIntersection( localPaddle->rect ) )
 		{
-			if ( p->rect.CheckTileIntersection( localPaddle->rect ) )
-			{
-				messageSender.SendBonusBoxPickupMessage( p->GetObjectID() );
-				ApplyBonus( p );
-			}
+			messageSender.SendBonusBoxPickupMessage( p->GetObjectID() );
+			ApplyBonus( p );
 		}
-		// Remote BonusBoxe Pickup are handled by messages
 	}
 
 	physicsManager.MoveBonusBoxes ( delta );
@@ -1379,7 +1331,7 @@ void GameManager::GenerateBoard()
 {
 	if ( !boardLoader.IsLastLevel() )
 	{
-		logger.Log( __FILE__, __LINE__, " ========= GAME OVER ==========" );
+		logger.Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
 
 		menuManager.SetGameState( GameState::GameOver );
 		return;
@@ -1406,6 +1358,11 @@ bool GameManager::IsLevelDone()
 		return true;
 	}
 	return false;
+}
+void GameManager::IsGameOVer()
+{
+	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
+		menuManager.SetGameState( GameState::GameOver );
 }
 void GameManager::ClearBoard()
 {
@@ -1434,8 +1391,8 @@ void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, c
 	}
 	else
 	{
-		renderer.RenderPoints   ( localPlayerInfo.points, ballOwner );
 		remotePlayerInfo.points += pointIncrease;
+		renderer.RenderPoints   ( localPlayerInfo.points, ballOwner );
 	}
 }
 void GameManager::ReducePlayerLifes( Player player )

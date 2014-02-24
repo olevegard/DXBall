@@ -229,7 +229,7 @@ void MessageSender::SendMessage( const TCPMessage &message, const MessageTarget 
 }
 void MessageSender::PrintSend( const TCPMessage &msg )
 {
-	std::cout << "Message sent : " << msg.Print();
+	std::cout << "Message sent : " << msg.Print() << std::endl;;
 	//logger.Log( __FILE__, __LINE__, msg.Print() );
 }
 Vector2f MessageSender::FlipPosition( Rect originalPos, double height )

@@ -34,20 +34,17 @@ class GameManager
 
 		// Startup options
 		bool Init( const std::string &localPlayerName, const SDL_Rect &size, bool startFS );
+		void InitNetManager( std::string ip_, uint16_t port_ );
 
 		// Setters
 		void SetFPSLimit( unsigned short limit );
 		void SetAIControlled( bool isAIControlled_ );
 
-		// Ipdate
 		void Run();
-
-		void InitNetManager( std::string ip_, uint16_t port_ );
 	private:
 		// Bonus Boxes
 		// ===========================================
 		bool WasBonusBoxSpawned( int32_t tilesDestroyed ) const;
-		BonusType GetRandomBonusType() const;
 
 		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed = 1 );
@@ -69,7 +66,6 @@ class GameManager
 		void IncreaseBallSpeedFastMode( const Player &player, double delta );
 
 		void DeleteDeadBalls();
-		void DeleteDeadTiles();
 		std::shared_ptr<Ball> AddBall( );
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
 		void RemoveBall( std::shared_ptr< Ball > pBall );
@@ -95,13 +91,12 @@ class GameManager
 		// Tiles
 		// ==========================================
 		void AddTile( const Vector2f &pos, TileType tileType, int32_t tileID  );
-
 		void RemoveTile( std::shared_ptr< Tile > pTile );
+		void DeleteDeadTiles();
 
 		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
 		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
 
-		void RecieveTileSpawnMessage( const TCPMessage &message );
 		// Paddles
 		// ===========================================
 		void SetLocalPaddlePosition( int x, int y );
@@ -119,7 +114,8 @@ class GameManager
 		// ==========================================
 		void HandleStatusChange( );
 		void Restart();
-		void CheckIfGameIsOver();
+		bool IsLevelDone();
+		void IsGameOVer();
 
 		// AI
 		// ==========================================
@@ -141,7 +137,6 @@ class GameManager
 		// ===========================================
 		void GenerateBoard();
 		void ClearBoard();
-		bool IsLevelDone();
 
 		// Points / Lives
 		// ===========================================
@@ -195,6 +190,7 @@ class GameManager
 		void RecieveGameSettingsMessage( const TCPMessage &message);
 		void RecieveGameStateChangedMessage( const TCPMessage &message );
 
+		void RecieveTileSpawnMessage( const TCPMessage &message );
 		void RecieveBallSpawnMessage( const TCPMessage &message );
 		void RecieveBallDataMessage( const TCPMessage &message );
 		void RecieveBallKillMessage( const TCPMessage &message );
@@ -210,6 +206,7 @@ class GameManager
 		// Rendering
 		// ===========================================
 		void RendererScores();
+		void RenderMainText( );
 
 		// Variables
 		// ===========================================
