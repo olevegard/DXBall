@@ -939,6 +939,9 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 			case SDLK_u:
 				UpdateGameList();
 				break;
+			case SDLK_y:
+				renderer.GenerateParticleEffect();
+				break;
 			default:
 				break;
 		}
@@ -1017,6 +1020,7 @@ void GameManager::Update( double delta )
 	UpdateJoystick( );
 	UpdateNetwork();
 
+	renderer.Update( delta );
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
 		UpdateLobbyState();
@@ -1028,7 +1032,6 @@ void GameManager::Update( double delta )
 	AIMove();
 	UpdateGameObjects( delta );
 	RenderMainText();
-	renderer.Update( delta );
 	renderer.Render( );
 }
 void GameManager::UpdateGameObjects( double delta )

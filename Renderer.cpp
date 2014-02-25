@@ -501,7 +501,17 @@ void Renderer::Render( )
 		default:
 			break;
 	}
+	for ( const auto &p : particles )
+	{
+		if ( p.isAlive )
+		{
+			SDL_Rect r = p.rect.ToSDLRect();
+			SDL_SetTextureAlphaMod( p.texture, p.alpha );
+			SDL_RenderCopy( renderer, p.texture, nullptr, &r );
+		}
+	}
 
+	SDL_SetTextureAlphaMod( localPlayerBallTexture, 255 );
 	SDL_RenderPresent( renderer );
 }
 void Renderer::RenderForeground()
@@ -1186,6 +1196,15 @@ SDL_Rect Renderer::CalcMenuListRect()
 }
 void Renderer::Update( double delta )
 {
+	for ( auto p = particles.begin(); p != particles.end();  )
+	{
+		p->Updated( delta );
+		if ( !p->isAlive)
+			particles.erase( p );
+		else
+			++p;
+	}
+
 	if ( !localPlayerTextFade )
 		return;
 
@@ -1212,4 +1231,10 @@ void Renderer::ResetAlpha()
 void Renderer::StartFade()
 {
 	localPlayerTextFade = true;
+}
+void Renderer::GenerateParticleEffect()
+{
+	particles.clear();
+	for ( int i = 0; i < 500 ; ++i )
+		particles.emplace_back( Particle( Rect( 400, 400, 10, 10 ), localPlayerBallTexture  ) );
 }

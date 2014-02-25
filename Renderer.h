@@ -23,6 +23,7 @@
 #include "structs/menu_items/MainMenuItem.h"
 #include "structs/menu_items/PauseMenuItem.h"
 
+#include "structs/Particle.h"
 #include "structs/RenderingItem.h"
 
 #include "MenuList.h"
@@ -151,6 +152,7 @@ public:
 	void ResetAlpha();
 	void StartFade();
 
+	void GenerateParticleEffect();
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -317,4 +319,6 @@ private:
 
 	// Bonus Boxes
 	std::map< BonusType, SDL_Color > bonusTypeColors;
+
+	std::vector< Particle > particles;
 };
