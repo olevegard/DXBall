@@ -5,28 +5,26 @@
 // It creates the windows, a renderer.
 // It also creates ( or loads ) all textures including fonts
 // All rendering happens within this class.
-
 #pragma once
 
 #include <vector>
-#include <map>
-
 #include <memory>
-
 #include <string>
+#include <map>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-
 #include "enums/GameState.h"
 
-#include "structs/game_objects/GamePiece.h"
 #include "structs/game_objects/BonusBox.h"
 #include "structs/game_objects/Bullet.h"
 
 #include "structs/menu_items/MainMenuItem.h"
 #include "structs/menu_items/PauseMenuItem.h"
+
+#include "structs/RenderingItem.h"
+
 #include "MenuList.h"
 
 // Forward declarations
@@ -76,9 +74,10 @@ public:
 	void RemoveText();
 
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
-	void RenderLives( unsigned long lifeCount, const Player &player, bool force = false   );
-	void RenderPoints( unsigned long pointCount, const Player &player, bool force = false   );
-	void RenderBallCount( unsigned long ballCount, const Player &player, bool force = false  );
+	void RenderLives( unsigned long lifeCount, const Player &player );
+	void RenderPoints( unsigned long pointCount, const Player &player );
+
+	void RenderBallCount( unsigned long ballCount, const Player &player );
 	void ResetText();
 
 	// Main menu
@@ -146,6 +145,7 @@ public:
 	{
 		ml = mitem;
 	}
+
 	SDL_Rect CalcMenuListRect();
 	void Update( double delta );
 	void ResetAlpha();
@@ -178,6 +178,9 @@ private:
 	void RenderMainMenuImage();
 	void RenderMainMenuFooter();
 	void RenderMenuItem( const MenuItem &menuItem ) const;
+
+	void RenderTextItem( const RenderingItem< std::string >  &item ) const;
+	void RenderTextItem( const RenderingItem< uint64_t >  &item ) const;
 
 	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
 
@@ -264,45 +267,20 @@ private:
 	bool 		 localPlayerTextFade;
 
 	// Player name
-	SDL_Texture* localPlayerCaptionTexture;
-	SDL_Rect     localPlayerCaptionRect;
-	std::string  localPlayerCaptionValue;
+	RenderingItem< std::string > localPlayerCaption;
+	RenderingItem< std::string > remotePlayerCaption;
 
 	// lives
-	SDL_Texture*   localPlayerLivesTexture;
-	SDL_Rect       localPlayerLivesRect;
-	unsigned long  localPlayerLivesValue;
+	RenderingItem< uint64_t > localPlayerLives;
+	RenderingItem< uint64_t > remotePlayerLives;
 
 	// points
-	SDL_Texture*   localPlayerPointsTexture;
-	SDL_Rect       localPlayerPointsRect;
-	unsigned long  localPlayerPointsValue;
+	RenderingItem< uint64_t > localPlayerPoints;
+	RenderingItem< uint64_t > remotePlayerPoints;
 
 	// balls
-	SDL_Texture*   localPlayerBallsTexture;
-	SDL_Rect       localPlayerBallsRect;
-	unsigned long  localPlayerBallsValue;
-
-
-	// Player name
-	SDL_Texture* remotePlayerCaptionTexture;
-	SDL_Rect     remotePlayerCaptionRect;
-	std::string  remotePlayerCaptionValue;
-
-	// lives
-	SDL_Texture*   remotePlayerLivesTexture;
-	SDL_Rect       remotePlayerLivesRect;
-	unsigned long  remotePlayerLivesValue;
-
-	// points
-	SDL_Texture*   remotePlayerPointsTexture;
-	SDL_Rect       remotePlayerPointsRect;
-	unsigned long  remotePlayerPointsValue;
-
-	// balls
-	SDL_Texture*   remotePlayerBallsTexture;
-	SDL_Rect       remotePlayerBallsRect;
-	unsigned long  remotePlayerBallsValue;
+	RenderingItem< uint64_t > localPlayerBalls;
+	RenderingItem< uint64_t > remotePlayerBalls;
 
 	short margin;
 

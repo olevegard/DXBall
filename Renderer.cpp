@@ -21,6 +21,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
+#include <csignal>
+
 	Renderer::Renderer()
 	:	window( nullptr )
 	,	renderer( nullptr )
@@ -79,38 +81,6 @@
 	,	localPlayerTextAlpha( 1.0 )
 	,	localPlayerTextFade( false )
 
-	,	localPlayerCaptionTexture( )
-	,	localPlayerCaptionRect( )
-	,	localPlayerCaptionValue( "")
-
-	,	localPlayerLivesTexture( )
-	,	localPlayerLivesRect()
-	,	localPlayerLivesValue( 0 )
-
-	,	localPlayerPointsTexture( )
-	,	localPlayerPointsRect( )
-	,	localPlayerPointsValue( 0 )
-
-	,	localPlayerBallsTexture( )
-	,	localPlayerBallsRect( )
-	,	localPlayerBallsValue( 0 )
-
-	,	remotePlayerCaptionTexture( )
-	,	remotePlayerCaptionRect( )
-	,	remotePlayerCaptionValue( "" )
-
-	,	remotePlayerLivesTexture()
-	,	remotePlayerLivesRect()
-	,	remotePlayerLivesValue( 0 )
-
-	,	remotePlayerPointsTexture( )
-	,	remotePlayerPointsRect( )
-	,	remotePlayerPointsValue( 0 )
-
-	,	remotePlayerBallsTexture( )
-	,	remotePlayerBallsRect( )
-	,	remotePlayerBallsValue( 0 )
-
 	,	margin( 30 )
 	,	singlePlayerText     ( "Single Player" )
 	,	multiplayerPlayerText( "Multiplayer"   )
@@ -130,7 +100,6 @@
 	,	lobbyMenuListRect( { 0, 0, 0, 0 })
 {
 }
-
 Renderer::~Renderer()
 {
 	CleanUp();
@@ -166,6 +135,9 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 	if ( !LoadAssets() )
 		return false;
+
+	remotePlayerLives.texture = nullptr;
+	remotePlayerPoints.texture = nullptr;
 
 	return true;
 }
@@ -363,8 +335,8 @@ void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 }
 void Renderer::ClearBoard( )
 {
-	tileList.clear();
-	ballList.clear();
+	bulletList.erase( bulletList.begin(), bulletList.end() );
+	ballList.erase( ballList.begin(), ballList.end() );
 }
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
@@ -487,6 +459,12 @@ void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 // ============================================================================================
 void Renderer::Render( )
 {
+	if ( renderer == nullptr )
+	{
+		std::cout << "ERRO! Renderer is NULL : " << SDL_GetError() << std::endl;
+		raise( SIGABRT );
+	}
+
 	SDL_RenderClear( renderer );
 
 	switch ( gameState )
@@ -596,32 +574,19 @@ void Renderer::RenderText()
 	if ( localPlayerTextTexture )
 		SDL_RenderCopy( renderer, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
 
-	if ( localPlayerCaptionTexture )
-		SDL_RenderCopy( renderer, localPlayerCaptionTexture , nullptr, &localPlayerCaptionRect  );
-
-	if ( localPlayerLivesTexture  )
-		SDL_RenderCopy( renderer, localPlayerLivesTexture, nullptr, &localPlayerLivesRect );
-
-	if ( localPlayerPointsTexture  )
-		SDL_RenderCopy( renderer, localPlayerPointsTexture, nullptr, &localPlayerPointsRect);
-
-	if ( localPlayerBallsTexture  )
-		SDL_RenderCopy( renderer, localPlayerBallsTexture, nullptr, &localPlayerBallsRect);
+	RenderTextItem( localPlayerCaption);
+	RenderTextItem( localPlayerPoints);
+	RenderTextItem( localPlayerLives );
+	RenderTextItem( localPlayerBalls );
 
 	// Remote
 	if ( !isTwoPlayerMode )
 		return;
-	if ( remotePlayerCaptionTexture )
-		SDL_RenderCopy( renderer, remotePlayerCaptionTexture , nullptr, &remotePlayerCaptionRect );
 
-	if ( remotePlayerLivesTexture  )
-		SDL_RenderCopy( renderer, remotePlayerLivesTexture, nullptr, &remotePlayerLivesRect );
-
-	if ( remotePlayerPointsTexture  )
-		SDL_RenderCopy( renderer, remotePlayerPointsTexture, nullptr, &remotePlayerPointsRect);
-
-	if ( remotePlayerBallsTexture  )
-		SDL_RenderCopy( renderer, remotePlayerBallsTexture, nullptr, &remotePlayerBallsRect);
+	RenderTextItem( remotePlayerCaption );
+	RenderTextItem( remotePlayerLives );
+	RenderTextItem( remotePlayerPoints );
+	RenderTextItem( remotePlayerBalls );
 }
 void Renderer::RenderLobby()
 {
@@ -655,6 +620,16 @@ void Renderer::RenderMenuItem( const MenuItem &menuItem ) const
 		SDL_Rect r = menuItem.GetRect();
 		SDL_RenderCopy( renderer, menuItem.GetTexture(), nullptr, &r );
 	}
+}
+void Renderer::RenderTextItem( const RenderingItem< std::string >  &item ) const
+{
+	if ( item.texture != nullptr  )
+		SDL_RenderCopy( renderer, item.texture, nullptr, &item.rect );
+}
+void Renderer::RenderTextItem( const RenderingItem< uint64_t >  &item ) const
+{
+	if ( item.texture != nullptr  )
+		SDL_RenderCopy( renderer, item.texture, nullptr, &item.rect );
 }
 // ==============================================================================================
 // ================================= Text handling ==============================================
@@ -728,130 +703,143 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerCaptionValue != textToRender ||   localPlayerCaptionTexture == nullptr )
+		//if ( localPlayerCaptionValue != textToRender ||   localPlayerCaptionTexture == nullptr )
+		//if (
 		{
-			localPlayerCaptionValue  = textToRender;
+			localPlayerCaption.value = textToRender;
 
-			SDL_DestroyTexture( localPlayerCaptionTexture );
-			localPlayerCaptionTexture = RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), localPlayerColor, localPlayerCaptionRect, renderer );
+			SDL_DestroyTexture( localPlayerCaption.texture );
+			localPlayerCaption.texture =
+				RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), localPlayerColor, localPlayerCaption.rect , renderer );
 
-			localPlayerCaptionRect.x = 0;
-			localPlayerCaptionRect.y = 0;
+			localPlayerCaption.rect.x = 0;
+			localPlayerCaption.rect.y = 0;
 
 			// Set remaning text rects based on caption rect
-			localPlayerLivesRect.x = 40;
-			localPlayerLivesRect.y = localPlayerCaptionRect.h - 10;
+			localPlayerLives.rect.x = 40;
+			localPlayerLives.rect.y =  localPlayerCaption.rect.h - 10;
 
-			localPlayerPointsRect.x = localPlayerLivesRect.x;
-			localPlayerPointsRect.y = localPlayerLivesRect.y + localPlayerLivesRect.h ;
+			localPlayerPoints.rect.x = localPlayerLives.rect.x;
+			localPlayerPoints.rect.y = localPlayerLives.rect.y + localPlayerLives.rect.h ;
 
-			localPlayerBallsRect.x = localPlayerLivesRect.x;
-			localPlayerBallsRect.y = localPlayerPointsRect.y + localPlayerLivesRect.h ;
+			localPlayerBalls.rect.x = localPlayerLives.rect.x;
+			localPlayerBalls.rect.y = localPlayerPoints.rect.y + localPlayerLives.rect.h ;
 		}
 	} else if ( player == Player::Remote )
 	{
-		if ( remotePlayerCaptionValue != textToRender ||   remotePlayerCaptionTexture == nullptr )
+		//if ( remotePlayerCaption.value != textToRender ||   remotePlayerCaption.texture = nullptr )
 		{
-			remotePlayerCaptionValue  = textToRender;
+			remotePlayerCaption.value = textToRender;
 
-			SDL_DestroyTexture( remotePlayerCaptionTexture );
-			remotePlayerCaptionTexture = RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), remotePlayerColor, remotePlayerCaptionRect, renderer );
+			SDL_DestroyTexture( remotePlayerCaption.texture );
+			remotePlayerCaption.texture =
+				RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), remotePlayerColor, remotePlayerCaption.rect, renderer );
 
-			remotePlayerCaptionRect.x = background.w - remotePlayerCaptionRect.w;
-			remotePlayerCaptionRect.y = 0;
+			remotePlayerCaption.rect.x = background.w - remotePlayerCaption.rect.w;
+			remotePlayerCaption.rect.y = 0;
 
 			CalculateRemotePlayerTextureRects();
 		}
 	}
 }
-void Renderer::RenderLives( unsigned long lifeCount, const Player &player, bool force /* = false */ )
+void Renderer::RenderLives( unsigned long lifeCount, const Player &player )
 {
-
 	if ( player == Player::Local )
 	{
-		if ( localPlayerLivesValue != lifeCount ||   localPlayerLivesTexture == nullptr || force )
+		//if ( localPlayerLivesValue != lifeCount ||   localPlayerLivesTexture == nullptr || force )
 		{
-			localPlayerLivesValue  = lifeCount;
+			localPlayerLives.value = lifeCount;
 
-			std::stringstream ss;
+			std::stringstream ss("");
 			ss << "Lives : " << lifeCount;
 
-			SDL_DestroyTexture( localPlayerLivesTexture );
-			localPlayerLivesTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerLivesRect, renderer );
+			SDL_DestroyTexture( localPlayerLives.texture );
+			localPlayerLives.texture =
+				RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerLives.rect , renderer );
 		}
 	} else if ( player == Player::Remote )
 	{
-		if ( remotePlayerLivesValue != lifeCount ||   remotePlayerLivesTexture == nullptr || force )
+		//if ( remotePlayerLives.value remotePlayerLivesValue != lifeCount ||   remotePlayerLivesTexture == nullptr || force )
 		{
-			remotePlayerLivesValue  = lifeCount;
+			remotePlayerLives.value = lifeCount;
 
 			std::stringstream ss;
 			ss << "Lives : " << lifeCount;
 
-			SDL_DestroyTexture( remotePlayerLivesTexture );
-			remotePlayerLivesTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerLivesRect, renderer  );
+			SDL_DestroyTexture( remotePlayerLives.texture );
+			remotePlayerLives.texture
+				= RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerLives.rect, renderer  );
 		}
 	}
 }
-void Renderer::RenderPoints( unsigned long pointCount, const Player &player, bool force /* = false */   )
+void Renderer::RenderPoints( unsigned long pointCount, const Player &player )
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerPointsValue != pointCount || localPlayerPointsTexture == nullptr || force )
+		//if ( localPlayerPoints.CheckTexture() && ( localPlayerPoints.CheckValue( pointCount ) || force ) )
 		{
-			localPlayerPointsValue  = pointCount;
+			localPlayerPoints.value = pointCount;
 
-			std::stringstream ss;
+			std::stringstream ss("");
 			ss << "Points : " << pointCount;
 
-			SDL_DestroyTexture( localPlayerPointsTexture  );
-			localPlayerPointsTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerPointsRect, renderer  );
+			SDL_DestroyTexture( localPlayerPoints.texture  );
+
+			localPlayerPoints.texture =
+				RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerPoints.rect, renderer  );
 		}
-	} else if ( player == Player::Remote )
+	}
+	else if ( player == Player::Remote )
 	{
-		if ( remotePlayerPointsValue != pointCount || remotePlayerPointsTexture == nullptr || force )
+		//if ( remotePlayerPoints.CheckTexture() && ( remotePlayerPoints.CheckValue( pointCount ) || force ) )
 		{
-			remotePlayerPointsValue  = pointCount;
+			remotePlayerPoints.value  = pointCount;
 
 			std::stringstream ss;
 			ss << "Points : " << pointCount;
 
-			SDL_DestroyTexture( remotePlayerPointsTexture  );
-			remotePlayerPointsTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerPointsRect, renderer  );
+			SDL_DestroyTexture( remotePlayerPoints.texture  );
+			remotePlayerPoints.texture  =
+				RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerPoints.rect, renderer  );
 
 			CalculateRemotePlayerTextureRects();
 		}
 	}
 }
 
-void Renderer::RenderBallCount( unsigned long ballCount, const Player &player, bool force /* = false */   )
+void Renderer::RenderBallCount( unsigned long ballCount, const Player &player )
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerBallsValue != ballCount || localPlayerBallsTexture == nullptr  || force )
+		//if ( localPlayerBallsValue != ballCount || localPlayerBallsTexture == nullptr  || force )
+		if ( localPlayerBalls.value != ballCount )
 		{
-			localPlayerBallsValue = ballCount;
+			localPlayerBalls.value = ballCount;
 
 			std::stringstream ss;
 			ss << "Balls : " <<  ballCount;
 
-			SDL_DestroyTexture( localPlayerBallsTexture  );
-			localPlayerBallsTexture  = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerBallsRect, renderer  );
+			if ( localPlayerBalls.texture  != nullptr )
+				SDL_DestroyTexture( localPlayerBalls.texture );
 
-			localPlayerBallsRect.x = localPlayerLivesRect.x;
-			localPlayerBallsRect.y = localPlayerPointsRect.y + localPlayerLivesRect.h ;
+			localPlayerBalls.texture
+				= RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), localPlayerColor, localPlayerBalls.rect, renderer  );
+
+			localPlayerBalls.rect.x = localPlayerLives.rect.x;
+			localPlayerBalls.rect.y = localPlayerPoints.rect.y + localPlayerLives.rect.h ;
 		}
 	} else if ( player == Player::Remote )
 	{
-		if ( remotePlayerPointsValue != ballCount || remotePlayerBallsTexture == nullptr || force )
+		//if ( remotePlayerBallsValue != ballCount || remotePlayerBallsTexture == nullptr || force )
 		{
-			remotePlayerPointsValue = ballCount;
+			remotePlayerBalls.value =  ballCount;
 
 			std::stringstream ss;
 			ss << "Balls : " << ballCount;
 
-			SDL_DestroyTexture( remotePlayerBallsTexture );
-			remotePlayerBallsTexture = RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerBallsRect, renderer  );
+			SDL_DestroyTexture( remotePlayerBalls.texture );
+			remotePlayerBalls.texture =
+				RenderHelpers::RenderTextTexture_Solid( font, ss.str().c_str(), remotePlayerColor, remotePlayerBalls.rect, renderer  );
 
 			CalculateRemotePlayerTextureRects();
 		}
@@ -859,12 +847,12 @@ void Renderer::RenderBallCount( unsigned long ballCount, const Player &player, b
 }
 void Renderer::ResetText()
 {
-	RenderPoints( 0, Player::Local, true );
-	RenderPoints( 0, Player::Remote, true );
-	RenderLives( 0, Player::Local, true );
-	RenderLives( 0, Player::Remote, true );
-	RenderBallCount( 0, Player::Local, true );
-	RenderBallCount( 0, Player::Remote, true );
+	RenderPoints( 0, Player::Local );
+	RenderPoints( 0, Player::Remote );
+	RenderLives( 0, Player::Local );
+	RenderLives( 0, Player::Remote );
+	RenderBallCount( 0, Player::Local );
+	RenderBallCount( 0, Player::Remote );
 	ResetAlpha();
 }
 void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
@@ -1109,14 +1097,14 @@ SDL_Rect Renderer::GetLobbyBackRect() const
 void Renderer::CalculateRemotePlayerTextureRects()
 {
 	// Set remaning text rects based on caption rect
-	remotePlayerPointsRect.x = background.w - remotePlayerPointsRect.w - 20;
-	remotePlayerPointsRect.y = localPlayerPointsRect.y;// remotePlayerLivesRect.y + remotePlayerLivesRect.h  + 20;
+	remotePlayerPoints.rect.x = background.w - remotePlayerPoints.rect.w - 20;
+	remotePlayerPoints.rect.y = localPlayerPoints.rect.y;
 
-	remotePlayerLivesRect.x = remotePlayerPointsRect.x;
-	remotePlayerLivesRect.y = localPlayerLivesRect.y; //remotePlayerCaptionRect.h - 10;
+	remotePlayerLives.rect.x = remotePlayerPoints.rect.x;
+	remotePlayerLives.rect.y = localPlayerLives.rect.y;
 
-	remotePlayerBallsRect.x = remotePlayerPointsRect.x;
-	remotePlayerBallsRect.y = remotePlayerPointsRect.y + remotePlayerPointsRect.h ; //remotePlayerCaptionRect.h - 10;
+	remotePlayerBalls.rect.x = remotePlayerPoints.rect.x;
+	remotePlayerBalls.rect.y = remotePlayerPoints.rect.y + remotePlayerPoints.rect.h;
 }
 void Renderer::CleanUp()
 {
@@ -1145,9 +1133,10 @@ void Renderer::CleanUpSurfaces()
 
 	// Free text surfaces
 	SDL_DestroyTexture( localPlayerTextTexture);
-	SDL_DestroyTexture( localPlayerCaptionTexture);
-	SDL_DestroyTexture( localPlayerLivesTexture);
-	SDL_DestroyTexture( localPlayerPointsTexture);
+	SDL_DestroyTexture( localPlayerCaption.texture );
+	SDL_DestroyTexture( localPlayerLives.texture );
+	SDL_DestroyTexture( localPlayerPoints.texture );
+
 }
 void Renderer::CleanUpLists()
 {
