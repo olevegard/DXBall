@@ -136,9 +136,6 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 	if ( !LoadAssets() )
 		return false;
 
-	remotePlayerLives.texture = nullptr;
-	remotePlayerPoints.texture = nullptr;
-
 	return true;
 }
 
@@ -501,6 +498,7 @@ void Renderer::Render( )
 		default:
 			break;
 	}
+	SDL_Texture* text = nullptr;
 	for ( const auto &p : particles )
 	{
 		if ( p.isAlive )
@@ -509,9 +507,11 @@ void Renderer::Render( )
 			SDL_SetTextureAlphaMod( p.texture, p.alpha );
 			SDL_RenderCopy( renderer, p.texture, nullptr, &r );
 		}
+		text = p.texture;
 	}
+	if ( text )
+		SDL_SetTextureAlphaMod( text, 255 );
 
-	SDL_SetTextureAlphaMod( localPlayerBallTexture, 255 );
 	SDL_RenderPresent( renderer );
 }
 void Renderer::RenderForeground()
@@ -1232,9 +1232,18 @@ void Renderer::StartFade()
 {
 	localPlayerTextFade = true;
 }
-void Renderer::GenerateParticleEffect()
+void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 {
-	particles.clear();
-	for ( int i = 0; i < 500 ; ++i )
-		particles.emplace_back( Particle( Rect( 400, 400, 10, 10 ), localPlayerBallTexture  ) );
+	Rect r( 0,0,10,10 );
+	Vector2f pos = RectHelpers::CenterInRect( tile->rect, r );
+	SDL_Texture* texture = nullptr;
+	if ( tile->GetTileType() != TileType::Regular )
+		return;
+
+	texture = tileTextures[ tile->GetTileTypeAsIndex() ];
+
+	for ( int i = 0; i < 5 ; ++i )
+	{
+		particles.emplace_back( Particle( Rect( pos.x, pos.y, 10, 10 ), texture  ) );
+	}
 }

@@ -152,7 +152,7 @@ public:
 	void ResetAlpha();
 	void StartFade();
 
-	void GenerateParticleEffect();
+	void GenerateParticleEffect( std::shared_ptr< Tile > tile );
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );

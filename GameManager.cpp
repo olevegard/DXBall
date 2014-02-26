@@ -260,6 +260,7 @@ void GameManager::AddTile( const Vector2f &pos, TileType tileType, int32_t tileI
 }
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
+	renderer.GenerateParticleEffect( tile );
 	renderer.RemoveTile( tile );
 	physicsManager.RemoveTile( tile );
 }
@@ -940,7 +941,6 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 				UpdateGameList();
 				break;
 			case SDLK_y:
-				renderer.GenerateParticleEffect();
 				break;
 			default:
 				break;
