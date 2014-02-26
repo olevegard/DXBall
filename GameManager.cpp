@@ -1395,7 +1395,7 @@ void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, c
 	else
 	{
 		remotePlayerInfo.points += pointIncrease;
-		renderer.RenderPoints   ( localPlayerInfo.points, ballOwner );
+		renderer.RenderPoints( remotePlayerInfo.points, ballOwner );
 	}
 }
 void GameManager::ReducePlayerLifes( Player player )
