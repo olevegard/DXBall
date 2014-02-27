@@ -1247,6 +1247,6 @@ void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 	else
 		color = tileColors[ tile->GetTileTypeAsIndex()  ];
 
-	for ( int i = 0; i < 5 ; ++i )
+	for ( int i = 0; i < 50 ; ++i )
 		particles.push_back( Particle( Rect( pos.x, pos.y, 10, 10 ), color  ) );
 }

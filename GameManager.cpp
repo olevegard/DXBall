@@ -362,6 +362,8 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 {
 	Player owner = bullet->GetOwner();
 
+	renderer.GenerateParticleEffect( tile );
+
 	if ( !IsSuperBullet( owner ) )
 	{
 		tile->Hit();
@@ -369,8 +371,6 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 	}
 	else
 		tile->Kill();
-
-	renderer.GenerateParticleEffect( tile );
 
 	bool alive = tile->IsAlive();
 
@@ -578,12 +578,12 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 {
 	std::shared_ptr< Tile > tile = physicsManager.GetTileWithID( message.GetObjectID() );
 
+	renderer.GenerateParticleEffect( tile );
+
 	if ( message.GetTileKilled() || remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
 		tile->Hit();
-
-	renderer.GenerateParticleEffect( tile );
 
 	IncrementPoints( tile->GetTileType(), !tile->IsAlive(), Player::Remote );
 
@@ -1155,12 +1155,13 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 	if ( ball->GetOwner() == Player::Local )
 		messageSender.SendBallDataMessage( ball, windowSize.h );
 
+	renderer.GenerateParticleEffect( tile );
+
 	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
 		tile->Hit();
 
-	renderer.GenerateParticleEffect( tile );
 
 	UpdateTileHit( ball, tile );
 }
