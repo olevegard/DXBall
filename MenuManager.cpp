@@ -352,7 +352,7 @@ bool MenuManager::WasGameStarted() const
 }
 bool MenuManager::WasGameQuited() const
 {
-	return ( currentGameState != GameState::Paused && prevGameState == GameState::InGame );
+	return ( currentGameState != GameState::GameOver  && currentGameState != GameState::Paused && prevGameState == GameState::InGame );
 }
 bool MenuManager::IsTwoPlayerMode() const
 {
