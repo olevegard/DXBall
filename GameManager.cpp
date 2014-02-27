@@ -260,7 +260,6 @@ void GameManager::AddTile( const Vector2f &pos, TileType tileType, int32_t tileI
 }
 void GameManager::RemoveTile( std::shared_ptr< Tile > tile )
 {
-	renderer.GenerateParticleEffect( tile );
 	renderer.RemoveTile( tile );
 	physicsManager.RemoveTile( tile );
 }
@@ -369,6 +368,8 @@ void GameManager::HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet
 	}
 	else
 		tile->Kill();
+
+	renderer.GenerateParticleEffect( tile );
 
 	bool alive = tile->IsAlive();
 
@@ -580,6 +581,8 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 		tile->Kill();
 	else
 		tile->Hit();
+
+	renderer.GenerateParticleEffect( tile );
 
 	IncrementPoints( tile->GetTileType(), !tile->IsAlive(), Player::Remote );
 
@@ -1155,6 +1158,8 @@ void GameManager::RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_p
 		tile->Kill();
 	else
 		tile->Hit();
+
+	renderer.GenerateParticleEffect( tile );
 
 	UpdateTileHit( ball, tile );
 }

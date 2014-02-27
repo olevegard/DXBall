@@ -170,7 +170,13 @@ bool Renderer::CreateRenderer()
 
 	SDL_RenderSetLogicalSize( renderer, background.w, background.h );
 
-	SDL_SetRenderDrawColor( renderer, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a );
+	// Sets rendering color ( background color )
+	SetDrawColor( backgroundColor);
+
+	// Set how alpha is blended, need to set this to be able use Render colors with alpha values
+	SDL_SetRenderDrawBlendMode( renderer, SDL_BLENDMODE_BLEND );
+
+	// Render an empty frame
 	SDL_RenderClear( renderer );
 	SDL_RenderPresent( renderer );
 
@@ -287,7 +293,7 @@ void Renderer::LoadColors()
 
 	textColor = cfgldr.GetTextColor();
 	backgroundColor = cfgldr.GetBackgroundColor();
-	SDL_SetRenderDrawColor( renderer, backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a );
+	SetDrawColor( backgroundColor);
 
 	localPlayerColor = cfgldr.GetLocalPlayerColor();
 	remotePlayerColor = cfgldr.GetRemotePlayerColor();
@@ -498,19 +504,16 @@ void Renderer::Render( )
 		default:
 			break;
 	}
-	SDL_Texture* text = nullptr;
 	for ( const auto &p : particles )
 	{
 		if ( p.isAlive )
 		{
 			SDL_Rect r = p.rect.ToSDLRect();
-			SDL_SetTextureAlphaMod( p.texture, p.alpha );
-			SDL_RenderCopy( renderer, p.texture, nullptr, &r );
+			SetDrawColor( p.color );
+			SDL_RenderFillRect( renderer, &r );
 		}
-		text = p.texture;
 	}
-	if ( text )
-		SDL_SetTextureAlphaMod( text, 255 );
+	SetDrawColor( backgroundColor);
 
 	SDL_RenderPresent( renderer );
 }
@@ -1236,14 +1239,13 @@ void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 {
 	Rect r( 0,0,10,10 );
 	Vector2f pos = RectHelpers::CenterInRect( tile->rect, r );
-	SDL_Texture* texture = nullptr;
-	if ( tile->GetTileType() != TileType::Regular )
-		return;
+	SDL_Color color{ 255, 255, 255, 255 };
 
-	texture = tileTextures[ tile->GetTileTypeAsIndex() ];
+	if ( tile->GetTileType() == TileType::Hard )
+		color = hardTileColors[ 5 - tile->GetHitsLeft()  ];
+	else
+		color = tileColors[ tile->GetTileTypeAsIndex()  ];
 
 	for ( int i = 0; i < 5 ; ++i )
-	{
-		particles.emplace_back( Particle( Rect( pos.x, pos.y, 10, 10 ), texture  ) );
-	}
+		particles.push_back( Particle( Rect( pos.x, pos.y, 10, 10 ), color  ) );
 }

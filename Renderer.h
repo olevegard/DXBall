@@ -146,6 +146,10 @@ public:
 	{
 		ml = mitem;
 	}
+	void SetDrawColor( const SDL_Color &clr )
+	{
+		SDL_SetRenderDrawColor( renderer, clr.r, clr.g, clr.b, clr.a);
+	}
 
 	SDL_Rect CalcMenuListRect();
 	void Update( double delta );
