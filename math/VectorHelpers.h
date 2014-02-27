@@ -1,6 +1,6 @@
 #pragma once
 
-#include<ostream>
+#include "Vector2f.h"
 
 namespace Math
 {
@@ -8,16 +8,5 @@ namespace Math
 	Vector2f Scale( Vector2f vec, double factor );
 	Vector2f FlipAndScale( Vector2f vec, double factor, double height  );
 
-	Vector2f Scale( Vector2f vec, double factor )
-	{
-		return Vector2f( vec.x * factor, vec.y * factor );
-	}
 
-
-	Vector2f FlipAndScale( Vector2f vec, double factor, double height )
-	{
-		Vector2f retVec = Scale( vec, factor );
-		retVec.y -= height;
-		return retVec;
-	}
 }

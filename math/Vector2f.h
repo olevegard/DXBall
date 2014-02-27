@@ -43,6 +43,13 @@ struct Vector2f{
 		x /= vec.x;
 		y /= vec.y;
 	}
+	Vector2f Scale( double factor )
+	{
+		x *= factor;
+		y *= factor;
+
+		return *this;
+	}
 };
 
 
