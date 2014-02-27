@@ -9,17 +9,17 @@
 
 struct Particle
 {
-	Particle( Rect r, SDL_Texture* text );
+	Particle( Rect r, SDL_Color  clr );
+
 
 	void Updated( double delta );
 	Particle() = delete;
 
 	Rect rect;
-	SDL_Texture* texture;
+	SDL_Color color;
 	Vector2f dir;
 	double decay;
 	int32_t speed;
-	uint8_t alpha;
 	bool isAlive;
 };
 
