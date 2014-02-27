@@ -108,7 +108,7 @@ void MessageSender::SendTileHitMessage( uint32_t tileID, bool tileKilled )
 	msg.SetObjectID( tileID );
 	msg.SetTileKilled( tileKilled );
 
-	SendMessage( msg, MessageTarget::Oponent, true);
+	SendMessage( msg, MessageTarget::Oponent);
 }
 void MessageSender::SendLastTileMessage( )
 {
@@ -216,7 +216,7 @@ void MessageSender::SendGetGameListMessage()
 }
 void MessageSender::SendMessage( const TCPMessage &message, const MessageTarget &target, bool print )
 {
-	std::stringstream ss;
+	std::stringstream ss("");
 	ss << message;
 
 	if ( target == MessageTarget::Oponent )
