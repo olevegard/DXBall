@@ -535,6 +535,7 @@ void PhysicsManager::Clear()
 {
 	bulletList.erase( bulletList.begin(), bulletList.end() );
 	ballList.erase( ballList.begin(), ballList.end() );
+	tileList.erase( tileList.begin(), tileList.end() );
 }
 void PhysicsManager::UpdateScale()
 {

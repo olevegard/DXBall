@@ -134,6 +134,7 @@ void GameManager::Restart()
 	logger.Log( __FILE__, __LINE__, "==================== RESET ====================");
 
 	boardLoader.Reset();
+	ClearBoard();
 
 	DeleteAllBonusBoxes();
 	DeleteAllBullets();
@@ -1384,6 +1385,7 @@ void GameManager::ClearBoard()
 
 	physicsManager.Clear();
 	renderer.ClearBoard();
+	tileList.erase( tileList.begin(), tileList.end() );
 }
 void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, const Player &ballOwner )
 {
