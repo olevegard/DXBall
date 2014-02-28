@@ -53,12 +53,12 @@ class GameManager
 		void RemoveDeadBonusBoxes();
 
 		std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID );
-		void ApplyBonus( std::shared_ptr< BonusBox > &ptr );
+		void ApplyBonus( const std::shared_ptr< BonusBox > &ptr );
 		void ApplyBonus_Death( const Player &player );
 
 		// Ball
 		// ===========================================
-		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
+		void UpdateTileHit( const std::shared_ptr< Ball > &ball, const std::shared_ptr< Tile > &tile );
 		void UpdateBallSpeed();
 		void IncreaseActiveBalls( const Player &player );
 		void ReduceActiveBalls( const Player &player, uint32_t ballID );
@@ -68,17 +68,17 @@ class GameManager
 		void DeleteDeadBalls();
 		std::shared_ptr<Ball> AddBall( );
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
-		void RemoveBall( std::shared_ptr< Ball > pBall );
+		void RemoveBall( const std::shared_ptr< Ball > &ball );
 
-		bool IsSuperBall( std::shared_ptr< Ball > ball );
+		bool IsSuperBall( const std::shared_ptr< Ball > &ball );
 		double GetBallSpeed( const Player &player ) const;
 		bool CanPlayerFireBall( const Player &player ) const;
 
 		// Bullets
 		// ===========================================
-		void CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet );
-		void CheckBulletOutOfBounds( std::shared_ptr< Bullet > bullet );
-		void HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
+		void CheckBulletTileIntersections( const std::shared_ptr< Bullet > &bullet );
+		void CheckBulletOutOfBounds( const std::shared_ptr< Bullet > &bullet );
+		void HandleBulletTileIntersection( const std::shared_ptr< Bullet > &bullet, const std::shared_ptr< Tile > &tile );
 
 		void DeleteDeadBullets( );
 		void DeleteAllBullets();
@@ -91,11 +91,11 @@ class GameManager
 		// Tiles
 		// ==========================================
 		void AddTile( const Vector2f &pos, TileType tileType, int32_t tileID  );
-		void RemoveTile( std::shared_ptr< Tile > pTile );
+		void RemoveTile( const std::shared_ptr< Tile > &tile );
 		void DeleteDeadTiles();
 
-		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
-		void RemoveClosestTile(std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
+		void CheckBallTileIntersection( const std::shared_ptr< Ball > &ball );
+		void RemoveClosestTile( const std::shared_ptr< Ball > &ball, const std::shared_ptr< Tile > &closestTile );
 
 		// Paddles
 		// ===========================================

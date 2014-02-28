@@ -36,7 +36,7 @@ std::shared_ptr< Tile > PhysicsManager::GetTileWithID( int32_t ID)
 
 	return nullptr;
 }
-std::shared_ptr< Tile > PhysicsManager::CreateTile( const Vector2f &pos, const TileType &tileType, int32_t tileID )
+std::shared_ptr< Tile > PhysicsManager::PhysicsManager::CreateTile( const Vector2f &pos, const TileType &tileType, int32_t tileID )
 {
 	if ( tileID == -1 )
 		tileID = ++objectCount;
@@ -53,13 +53,13 @@ std::shared_ptr< Tile > PhysicsManager::CreateTile( const Vector2f &pos, const T
 
 	return tile;
 }
-std::shared_ptr< Tile > PhysicsManager::FindClosestIntersectingTile( std::shared_ptr< Ball > ball )
+std::shared_ptr< Tile > PhysicsManager::FindClosestIntersectingTile( const std::shared_ptr< Ball > &ball )
 {
 	std::shared_ptr< Tile > closestTile;
 	double closest = std::numeric_limits< double >::max();
 	double current = closest;
 
-	for ( auto p : tileList)
+	for ( const auto &p : tileList)
 	{
 		if ( !p->IsAlive() )
 			continue;
@@ -82,7 +82,7 @@ std::shared_ptr< Tile > PhysicsManager::FindClosestIntersectingTile( std::shared
 bool PhysicsManager::KillAllTilesWithOwner( const Player &player )
 {
 	bool tilesKilled = false;
-	for ( auto p : ballList )
+	for ( const auto &p : ballList )
 	{
 		if ( p->GetOwner() == player )
 		{
@@ -101,7 +101,6 @@ int32_t PhysicsManager::CountDestroyableTiles()
 
 	return static_cast< int32_t > ( std::count_if( tileList.begin(), tileList.end(), IsTileDestroyable ) );
 }
-
 int32_t PhysicsManager::CountAllTiles()
 {
 	return static_cast< int32_t> ( tileList.size() );
@@ -144,14 +143,14 @@ std::shared_ptr< Ball >  PhysicsManager::CreateBall( const Player &owner, uint32
 }
 void PhysicsManager::RemoveBallWithID( int32_t ID, const Player &owner )
 {
-	auto ball =  GetBallWithID(  ID, owner );
+	const auto &ball =  GetBallWithID(  ID, owner );
 
 	if ( ball != nullptr )
 		ball->Kill();
 }
 std::shared_ptr< Ball > PhysicsManager::GetBallWithID( int32_t ID, const Player &owner )
 {
-	for ( auto p : ballList )
+	for ( const auto &p : ballList )
 	{
 		if ( ID == p->GetObjectID() && p->GetOwner() == owner  )
 		{
@@ -180,7 +179,7 @@ std::shared_ptr< Ball > PhysicsManager::FindHighestBall()
 {
 	double yMax = 0;
 	std::shared_ptr< Ball > highest = nullptr;;
-	for ( auto p : ballList )
+	for ( const auto &p : ballList )
 	{
 		if ( p->GetOwner() == Player::Local )
 		{
@@ -223,7 +222,7 @@ std::shared_ptr< BonusBox > PhysicsManager::CreateBonusBox( uint32_t ID, const P
 }
 std::shared_ptr< BonusBox > PhysicsManager::GetBonusBoxWithID( int32_t ID, const Player &owner )
 {
-	for ( auto p : bonusBoxList )
+	for ( const auto &p : bonusBoxList )
 	{
 		if ( ID == p->GetObjectID() && owner == p->GetOwner() )
 		{
@@ -253,7 +252,7 @@ void PhysicsManager::MoveBonusBoxes( double delta )
 
 	std::transform( bonusBoxList.begin(), bonusBoxList.end(), bonusBoxList.begin() , func );
 }
-void PhysicsManager::SetBonusBoxDirection( std::shared_ptr< BonusBox > bonusBox, Vector2f dir_ ) const
+void PhysicsManager::SetBonusBoxDirection( const std::shared_ptr< BonusBox > &bonusBox, Vector2f dir_ ) const
 {
 	Vector2f dir = dir_;
 	if ( bonusBox->GetOwner()  == Player::Local )
@@ -287,7 +286,7 @@ void PhysicsManager::RemoveBullet( const std::shared_ptr< Bullet >  &bullet )
 }
 std::shared_ptr< Bullet > PhysicsManager::GetBulletWithID( int32_t ID, const Player &owner  )
 {
-	for ( auto p : bulletList )
+	for ( const auto &p : bulletList )
 	{
 		if ( ID == p->GetObjectID() && owner == p->GetOwner() )
 		{
@@ -317,12 +316,12 @@ std::shared_ptr< Bullet >  PhysicsManager::CreateBullet( int32_t id, const Playe
 }
 void PhysicsManager::KillBulletWithID( int32_t id, const Player &owner )
 {
-	auto bullet = GetBulletWithID( id, owner );
+	const auto &bullet = GetBulletWithID( id, owner );
 
 	if ( bullet != nullptr )
 		bullet->Kill();
 }
-bool PhysicsManager::DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile )
+bool PhysicsManager::DidBulletHitTile( const std::shared_ptr< Bullet > &bullet, const std::shared_ptr< Tile > &tile )
 {
 	if ( !tile->IsAlive() )
 		return false;
@@ -332,13 +331,13 @@ bool PhysicsManager::DidBulletHitTile( std::shared_ptr< Bullet > bullet, std::sh
 
 	return true;
 }
-std::shared_ptr< Tile > PhysicsManager::CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet )
+std::shared_ptr< Tile > PhysicsManager::CheckBulletTileIntersections( const std::shared_ptr< Bullet > &bullet )
 {
 	bool bulletHitTile = false;
 	std::shared_ptr< Tile > lowestTile;
 	double lowestTileY = 0;
 
-	for ( auto tile : tileList )
+	for ( const auto &tile : tileList )
 	{
 		if ( !DidBulletHitTile( bullet, tile ) )
 			continue;
@@ -354,11 +353,11 @@ std::shared_ptr< Tile > PhysicsManager::CheckBulletTileIntersections( std::share
 
 	return lowestTile;
 }
-std::vector< std::shared_ptr< Tile > >  PhysicsManager::FindAllTilesOnBulletsPath( std::shared_ptr< Bullet > bullet )
+std::vector< std::shared_ptr< Tile > >  PhysicsManager::FindAllTilesOnBulletsPath( const std::shared_ptr< Bullet > &bullet )
 {
 	std::vector< std::shared_ptr< Tile > > tilesHitByBullet;
 
-	for ( auto tile : tileList )
+	for ( const auto &tile : tileList )
 	{
 		if ( bullet->WillHitTile( tile->rect ) )
 			tilesHitByBullet.push_back( tile );
@@ -414,7 +413,7 @@ std::vector< Rect > PhysicsManager::GenereateExplosionRects( const std::shared_p
 	{
 		newExplosion = false;
 
-		for ( auto p : explodeVec )
+		for ( const auto &p : explodeVec )
 		{
 			if ( RectHelpers::CheckTileIntersection( explodedTileRects, p->rect) )
 			{
@@ -462,7 +461,7 @@ double PhysicsManager::ResetScale( )
 	double tempScale = 1.0 / scale;
 	scale = 1.0;
 
-	for ( auto& p : tileList )
+	for ( const auto &p : tileList )
 	{
 		p->rect.x = ( p->rect.x * tempScale ) + ( ( windowSize.w - ( windowSize.w * tempScale ) ) * 0.5 );
 		p->rect.y = ( p->rect.y * tempScale ) + ( ( windowSize.h - ( windowSize.h * tempScale ) ) * 0.5 );
@@ -470,7 +469,7 @@ double PhysicsManager::ResetScale( )
 		p->SetScale( tempScale );
 	}
 
-	for ( auto& p : ballList )
+	for ( const auto &p : ballList )
 	{
 		p->SetScale( tempScale );
 	}
@@ -480,7 +479,7 @@ void PhysicsManager::ApplyScale( double scale_ )
 {
 	scale = scale_;
 
-	for ( auto& p : tileList )
+	for ( const auto &p : tileList )
 	{
 		p->rect.x = static_cast< int32_t > ( ( p->rect.x * scale ) + ( ( windowSize.w - ( windowSize.w * scale ) ) * 0.5 ) );
 		p->rect.y = static_cast< int32_t > ( ( p->rect.y * scale ) + ( ( windowSize.h - ( windowSize.h * scale ) ) * 0.5 ) );
@@ -489,7 +488,7 @@ void PhysicsManager::ApplyScale( double scale_ )
 		p->SetScale( scale );
 	}
 
-	for ( auto& p : ballList )
+	for ( const auto &p : ballList )
 	{
 		p->ResetScale();
 		p->SetScale( scale );
@@ -497,12 +496,12 @@ void PhysicsManager::ApplyScale( double scale_ )
 }
 void PhysicsManager::KillBallsAndBonusBoxes( const Player &player )
 {
-	for ( auto p : ballList )
+	for ( const auto &p : ballList )
 	{
 		if ( p->GetOwner() == player )
 			p->Kill();
 	}
-	for ( auto p : bonusBoxList )
+	for ( const auto &p : bonusBoxList )
 	{
 		if ( p->GetOwner() == player )
 			p->Kill();
@@ -526,7 +525,7 @@ void PhysicsManager::SetWindowSize( const SDL_Rect &wSize )
 {
 	windowSize = wSize;
 }
-void PhysicsManager::SetPaddles( std::shared_ptr < Paddle > localPaddle_, std::shared_ptr < Paddle > remotePaddle_ )
+void PhysicsManager::SetPaddles( const std::shared_ptr < Paddle > &localPaddle_, const std::shared_ptr < Paddle > &remotePaddle_ )
 {
 	localPaddle = localPaddle_;
 	remotePaddle = remotePaddle_;
