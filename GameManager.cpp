@@ -1023,6 +1023,7 @@ void GameManager::Update( double delta )
 {
 	UpdateJoystick( );
 	UpdateNetwork();
+	RenderMainText();
 
 	renderer.Update( delta );
 	if ( menuManager.GetGameState() != GameState::InGame )
@@ -1035,7 +1036,6 @@ void GameManager::Update( double delta )
 	IsGameOVer();
 	AIMove();
 	UpdateGameObjects( delta );
-	RenderMainText();
 	renderer.Render( );
 }
 void GameManager::UpdateGameObjects( double delta )
@@ -1295,7 +1295,7 @@ void GameManager::RenderMainText( )
 	if ( menuManager.GetGameState() == GameState::InGameWait )
 		renderer.RenderText( "InGame : Wait...", Player::Local  );
 	else
-		if ( menuManager.GetGameState() == GameState::InGame )
+	if ( menuManager.GetGameState() == GameState::InGame )
 	{
 		if ( localPlayerInfo.CanSpawnNewBall() )
 			renderer.RenderText( "Press enter to launch ball", Player::Local  );
@@ -1303,7 +1303,7 @@ void GameManager::RenderMainText( )
 			renderer.RenderText( "No more lives!", Player::Local  );
 	}
 	else
-		if ( menuManager.GetGameState() == GameState::GameOver )
+	if ( menuManager.GetGameState() == GameState::GameOver )
 	{
 		if ( menuManager.IsTwoPlayerMode() )
 		{
