@@ -23,8 +23,8 @@
 #include "structs/menu_items/MainMenuItem.h"
 #include "structs/menu_items/PauseMenuItem.h"
 
-#include "structs/Particle.h"
-#include "structs/RenderingItem.h"
+#include "structs/rendering/Particle.h"
+#include "structs/rendering/RenderingItem.h"
 
 #include "MenuList.h"
 
