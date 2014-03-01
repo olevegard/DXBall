@@ -251,7 +251,7 @@ void GameManager::ReduceActiveBalls( const Player &player, uint32_t ballID )
 }
 void GameManager::AddTile( const Vector2f &pos, TileType tileType, int32_t tileID  )
 {
-	auto tile = physicsManager.CreateTile( pos, tileType, tileID  );
+	const auto &tile = physicsManager.CreateTile( pos, tileType, tileID  );
 
 	if ( netManager.IsServer() )
 		messageSender.SendTileSpawnMessage( tile, windowSize.h );
@@ -273,7 +273,7 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 	if (!WasBonusBoxSpawned( tilesDestroyed ) )
 		return;
 
-	auto bonusBox = physicsManager.CreateBonusBox( 0, owner, dir, pos );
+	const auto &bonusBox = physicsManager.CreateBonusBox( 0, owner, dir, pos );
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
@@ -346,14 +346,14 @@ void GameManager::CheckBulletOutOfBounds( const std::shared_ptr< Bullet > &bulle
 	if ( !IsSuperBullet( bullet->GetOwner() ) )
 		return;
 
-	auto deadTiles = physicsManager.FindAllTilesOnBulletsPath( bullet );
+	const auto &deadTiles = physicsManager.FindAllTilesOnBulletsPath( bullet );
 
 	for ( const auto &tile :deadTiles )
 		tile->Kill();
 }
 void GameManager::CheckBulletTileIntersections( const std::shared_ptr< Bullet > &bullet )
 {
-	auto lowestTile = physicsManager.CheckBulletTileIntersections( bullet );
+	const auto &lowestTile = physicsManager.CheckBulletTileIntersections( bullet );
 
 	if ( lowestTile != nullptr )
 		HandleBulletTileIntersection( bullet, lowestTile );
@@ -602,7 +602,7 @@ void GameManager::RecievePaddlePosMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 {
-	auto bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, message.GetDir_YFlipped(), Vector2f() );
+	const auto &bonusBox = physicsManager.CreateBonusBox( message.GetObjectID(),  Player::Remote, message.GetDir_YFlipped(), Vector2f() );
 	bonusBox->SetBonusType( message.GetBonusType() );
 	bonusBox->SetPosition( Math::Scale( message.GetPos1(),  remoteResolutionScale ) );
 
@@ -611,13 +611,13 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 }
 void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
 {
-	auto bb = physicsManager.GetBonusBoxWithID( message.GetObjectID(), Player::Remote );
+	const auto &bb = physicsManager.GetBonusBoxWithID( message.GetObjectID(), Player::Remote );
 
 	ApplyBonus( bb );
 }
 std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, Vector2f pos )
 {
-	auto bullet = physicsManager.CreateBullet( id, owner, pos );
+	const auto &bullet = physicsManager.CreateBullet( id, owner, pos );
 
 	bulletList.push_back( bullet );
 	renderer.AddBullet( bullet );
@@ -746,7 +746,7 @@ void GameManager::DeleteAllBonusBoxes()
 }
 void GameManager::FireBullets()
 {
-	auto bullet1 = FireBullet
+	const auto &bullet1 = FireBullet
 	(
 		0,
 		Player::Local,
@@ -754,7 +754,7 @@ void GameManager::FireBullets()
 	);
 
 		Vector2f pos2 (localPaddle->rect.x+ localPaddle->rect.w - bullet1->rect.w, localPaddle->rect.y );
-	auto bullet2 = FireBullet
+	const auto &bullet2 = FireBullet
 	(
 	 	0,
 		Player::Local,
@@ -1111,7 +1111,7 @@ void GameManager::AIMove()
 	if ( !isAIControlled )
 		return;
 
-	auto highest = physicsManager.FindHighestBall();
+	const auto &highest = physicsManager.FindHighestBall();
 
 	if ( !IsTimeForAIMove( highest ) )
 		return;
@@ -1192,7 +1192,7 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 
 	int countDestroyedTiles = 0;
 
-	auto isDeadFunc = [=, &countDestroyedTiles ]( const std::shared_ptr< Tile > &curr )
+	const auto &isDeadFunc = [=, &countDestroyedTiles ]( const std::shared_ptr< Tile > &curr )
 	{
 		if ( !RectHelpers::CheckTileIntersection( rectVec, curr->rect) )
 			return;

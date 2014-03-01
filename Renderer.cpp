@@ -349,7 +349,7 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 {
-	auto p = std::find( ballList.begin(), ballList.end(), ball );
+	const auto &p = std::find( ballList.begin(), ballList.end(), ball );
 
 	if ( p == ballList.end() )
 	{
@@ -1129,12 +1129,12 @@ void Renderer::CleanUp()
 void Renderer::CleanUpSurfaces()
 {
 	// Free tile
-	for ( auto p : tileTextures )
+	for ( const auto &p : tileTextures )
 	{
 		SDL_DestroyTexture( p );
 	}
 
-	for ( auto p : hardTileTextures )
+	for ( const auto &p : hardTileTextures )
 	{
 		SDL_DestroyTexture( p );
 	}

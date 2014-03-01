@@ -25,7 +25,7 @@ void PhysicsManager::RemoveTile( const std::shared_ptr< Tile >  &tile )
 }
 std::shared_ptr< Tile > PhysicsManager::GetTileWithID( int32_t ID)
 {
-	for ( auto p : tileList )
+	for ( const auto &p : tileList )
 	{
 		if ( ID == p->GetObjectID() )
 			return p;
