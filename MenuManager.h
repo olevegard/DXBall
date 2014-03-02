@@ -45,6 +45,8 @@ public:
 
 	bool WasGameStarted() const;
 	bool WasGameQuited() const;
+	bool WasGameResumed() const;
+
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
 

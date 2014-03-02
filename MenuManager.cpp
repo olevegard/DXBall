@@ -347,12 +347,21 @@ bool MenuManager::HasLobbyStateChanged()
 }
 bool MenuManager::WasGameStarted() const
 {
-	return ( ( currentGameState == GameState::InGame || currentGameState == GameState::InGameWait )
-			&& prevGameState != GameState::Paused && prevGameState != GameState::InGameWait );
+	return
+	(
+		currentGameState == GameState::InGame &&
+		prevGameState  != GameState::Lobby &&
+		prevGameState  != GameState::Paused &&
+		prevGameState  != GameState::InGameWait
+	);
 }
 bool MenuManager::WasGameQuited() const
 {
 	return ( currentGameState != GameState::GameOver  && currentGameState != GameState::Paused && prevGameState == GameState::InGame );
+}
+bool MenuManager::WasGameResumed() const
+{
+	return ( currentGameState == GameState::InGame && prevGameState == GameState::Paused );
 }
 bool MenuManager::IsTwoPlayerMode() const
 {

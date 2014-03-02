@@ -148,10 +148,6 @@ void GameManager::Restart()
 	renderer.ResetText();
 
 	RenderMainText();
-
-	if ( !menuManager.IsTwoPlayerMode() )
-		GenerateBoard();
-
 	RendererScores();
 }
 std::shared_ptr<Ball> GameManager::AddBall( )
@@ -517,9 +513,9 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 	{
 		logger.Log( __FILE__, __LINE__, "The client has accept the connection", message.GetObjectID() );
 		netManager.Update();
-		GenerateBoard();
 	}
 
+	GenerateBoard();
 	UpdateGameList();
 
 	menuManager.SetGameState( GameState::InGame );
@@ -779,8 +775,6 @@ void GameManager::Run()
 		HandleStatusChange();
 
 		Update( timer.GetDelta( ) );
-
-		//DoFPSDelay( ticks );
 	}
 }
 void GameManager::HandleStatusChange( )
@@ -794,15 +788,10 @@ void GameManager::HandleStatusChange( )
 	if ( menuManager.GetGameState() == GameState::Quit )
 	{
 		runGame = false;
-	}
-	else if ( menuManager.GetGameState() == GameState::Lobby )
-	{
-		logger.Log( __FILE__, __LINE__, "GameState::Lobby" );
-		UpdateGameList();
-	}
-	else if ( menuManager.WasGameStarted()  )
+	} else if ( menuManager.WasGameStarted() )
 	{
 		Restart();
+		GenerateBoard();
 	}
 	else if ( menuManager.WasGameQuited() )
 	{
@@ -810,7 +799,7 @@ void GameManager::HandleStatusChange( )
 		messageSender.SendEndGameMessage( gameID, ip, port );
 		netManager.Close();
 	}
-	else if ( menuManager.GetGameState() == GameState::InGame && menuManager.GetPrevGameState() == GameState::Paused )
+	else if ( menuManager.WasGameResumed()  )
 	{
 		renderer.StartFade();
 	}
@@ -1054,6 +1043,9 @@ void GameManager::UpdateBoard()
 }
 void GameManager::UpdateLobbyState()
 {
+	if ( menuManager.GetPrevGameState() != GameState::Lobby )
+		UpdateGameList();
+
 	if ( menuManager.GetGameState() != GameState::Lobby || !menuManager.HasLobbyStateChanged() )
 		return;
 
@@ -1084,6 +1076,8 @@ void GameManager::StartNewGame()
 	netManager.SetIsServer( true );
 	netManager.Connect( ip, port );
 
+	Restart();
+
 	// This is a temporary fix, setting the port to this client to something else
 	// The code should be changed so that it's not necesseary to change port.
 	port += 100;
@@ -1099,6 +1093,7 @@ void GameManager::JoinGame()
 	netManager.SetIsServer( false );
 	netManager.Connect( gameInfo.GetIP(), static_cast< uint16_t > ( gameInfo.GetPort()  ) );
 
+	Restart();
 	messageSender.SendJoinGameMessage( gameInfo.GetGameID() );
 }
 void GameManager::UpdateGameList()
@@ -1340,6 +1335,13 @@ void GameManager::SetFPSLimit( unsigned short limit )
 }
 void GameManager::GenerateBoard()
 {
+	if ( menuManager.IsTwoPlayerMode() && !netManager.IsServer() )
+	{
+		logger.Log( __FILE__, __LINE__, " Not server! " );
+		return;
+	}
+
+	//SDL_Delay( 500 );
 	if ( !boardLoader.IsLastLevel() )
 	{
 		logger.Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
