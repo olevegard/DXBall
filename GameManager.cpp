@@ -551,6 +551,8 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 	ball->SetPosition( Math::Scale( message.GetPos1(),  remoteResolutionScale ) );
 	ball->SetDirection( message.GetDir() );
 	ball->SetRemoteScale( remoteResolutionScale );
+
+	renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
 }
 void GameManager::RecieveTileSpawnMessage( const TCPMessage &message )
 {
@@ -961,6 +963,9 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 			case SDLK_f:
 				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true );
 				break;
+			case SDLK_c:
+				std::cout << "Tile coiunt : " << tileList.size() << std::endl;
+				break;
 			default:
 				break;
 		}
@@ -1006,6 +1011,7 @@ void GameManager::Update( double delta )
 	if ( menuManager.GetGameState() != GameState::InGame )
 	{
 		UpdateLobbyState();
+
 		renderer.Render( );
 		return;
 	}
@@ -1083,6 +1089,7 @@ void GameManager::JoinGame()
 }
 void GameManager::UpdateGameList()
 {
+	std::cout << "Update Game List\n";
 	menuManager.ClearGameList();
 	messageSender.SendGetGameListMessage();
 }
