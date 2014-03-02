@@ -339,12 +339,18 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 }
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
-	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
+	bonusBoxRect = bonusBox->rect.ToSDLRect( );
 
 	// Background
 	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, rmask, gmask, bmask, amask);
 
-	uint32_t pixelValue = RenderHelpers::MapRGBA( bonus->format, localPlayerColor );
+	uint32_t pixelValue = 0;
+
+	if ( bonusBox->GetOwner() == Player::Local )
+		pixelValue = RenderHelpers::MapRGBA( bonus->format, localPlayerColor );
+	else
+		pixelValue = RenderHelpers::MapRGBA( bonus->format, remotePlayerColor );
+
 	if ( bonusBox->GetOwner() == Player::Local )
 		SDL_FillRect(
 				bonus,
