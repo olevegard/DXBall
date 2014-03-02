@@ -124,7 +124,6 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 	if ( !InitSDLSubSystems())
 		return false;
 
-	// Set up screen
 	if ( !CreateWindow( server ) )
 		return false;
 
@@ -171,7 +170,7 @@ bool Renderer::CreateRenderer()
 	SDL_RenderSetLogicalSize( renderer, background.w, background.h );
 
 	// Sets rendering color ( background color )
-	SetDrawColor( backgroundColor);
+	RenderHelpers::SetDrawColor( renderer, backgroundColor);
 
 	// Set how alpha is blended, need to set this to be able use Render colors with alpha values
 	SDL_SetRenderDrawBlendMode( renderer, SDL_BLENDMODE_BLEND );
@@ -186,7 +185,7 @@ void Renderer::Setup()
 {
 	SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-	HideMouseCursor( false );
+	RenderHelpers::HideMouseCursor( false );
 }
 bool Renderer::CreateWindow(bool server )
 {
@@ -207,19 +206,12 @@ void Renderer::SetGameState( const GameState &gs )
 {
 	gameState = gs;
 	if ( gameState == GameState::InGame )
-		HideMouseCursor( true );
+		RenderHelpers::HideMouseCursor( true );
 	else
-		HideMouseCursor( false );
+		RenderHelpers::HideMouseCursor( false );
 
 	if ( gameState == GameState::Paused )
 		RenderText("Paused", Player::Local);
-}
-void Renderer::HideMouseCursor( bool hideCursor )
-{
-	if ( hideCursor )
-		SDL_ShowCursor( SDL_DISABLE );
-	else
-		SDL_ShowCursor( SDL_ENABLE );
 }
 void Renderer::ToggleFullscreen()
 {
@@ -278,10 +270,10 @@ bool Renderer::LoadImages()
 	InitGreyAreaRect();
 
 	for ( size_t i = 0; i < tileTextures.size() ; ++i )
-		SetTileColorSurface( i, tileColors[ i ], tileTextures );
+		RenderHelpers::SetTileColorSurface( renderer, i, tileColors[ i ], tileTextures );
 
 	for ( size_t i = 0; i < hardTileTextures.size() ; ++i )
-		SetTileColorSurface( i, hardTileColors[ i ], hardTileTextures );
+		RenderHelpers::SetTileColorSurface( renderer, i,  hardTileColors[ i ], hardTileTextures );
 
 	return true;
 }
@@ -293,7 +285,7 @@ void Renderer::LoadColors()
 
 	textColor = cfgldr.GetTextColor();
 	backgroundColor = cfgldr.GetBackgroundColor();
-	SetDrawColor( backgroundColor);
+	RenderHelpers::SetDrawColor( renderer, backgroundColor);
 
 	localPlayerColor = cfgldr.GetLocalPlayerColor();
 	remotePlayerColor = cfgldr.GetRemotePlayerColor();
@@ -310,20 +302,6 @@ void Renderer::LoadColors()
 	hardTileColors[4] = cfgldr.GetTileColor( TileType::Hard, 4 );
 
 	bonusTypeColors = cfgldr.GetBonusColorMap();
-}
-SDL_Surface* Renderer::SetDisplayFormat( SDL_Surface* surface ) const
-{
-	if ( !surface )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Cannot set display format : nullptr\n";
-	}
-
-	return surface;
-}
-void Renderer::SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list  )
-{
-	SDL_Texture *text = RenderHelpers::InitSurface(  60, 20, color.r, color.g, color.b, renderer );
-	list.at( index ) = text;
 }
 // ============================================================================================
 // ============================= Add / Rmove objects ==========================================
@@ -359,23 +337,26 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 	else
 		ballList.erase( p  );
 }
-
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
 	bonusBoxRect          = bonusBox->rect.ToSDLRect( );
 
 	// Background
 	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, rmask, gmask, bmask, amask);
+
+	uint32_t pixelValue = RenderHelpers::MapRGBA( bonus->format, localPlayerColor );
 	if ( bonusBox->GetOwner() == Player::Local )
 		SDL_FillRect(
 				bonus,
 				NULL,
-				SDL_MapRGBA( bonus->format, localPlayerColor.r, localPlayerColor.g, localPlayerColor.b, localPlayerColor.a ) );
+				pixelValue
+			);
 	else
 		SDL_FillRect(
 				bonus,
 				NULL,
-				SDL_MapRGBA( bonus->format, remotePlayerColor.r, remotePlayerColor.g, remotePlayerColor.b, remotePlayerColor.a ) );
+				pixelValue
+			);
 
 
 	bonusBoxRect = bonus->clip_rect;
@@ -482,9 +463,9 @@ void Renderer::Render( )
 			RenderMainMenuHeader();
 			//RenderLobby();
 			RenderMainMenuImage();
-			RenderMenuItem( lobbyNewGameButton );
-			RenderMenuItem( lobbyUpdateButton );
-			RenderMenuItem( lobbyBackButton );
+			RenderHelpers::RenderMenuItem( renderer, lobbyNewGameButton );
+			RenderHelpers::RenderMenuItem( renderer, lobbyUpdateButton );
+			RenderHelpers::RenderMenuItem( renderer, lobbyBackButton );
 			ml->Render( renderer );
 			break;
 		case GameState::InGame:
@@ -495,9 +476,9 @@ void Renderer::Render( )
 		case GameState::Paused:
 			RenderForeground();
 			RenderText();
-			RenderMenuItem( pauseResumeButton );
-			RenderMenuItem( pauseMainMenuButton );
-			RenderMenuItem( pauseQuitButton );
+			RenderHelpers::RenderMenuItem( renderer, pauseResumeButton );
+			RenderHelpers::RenderMenuItem( renderer, pauseMainMenuButton );
+			RenderHelpers::RenderMenuItem( renderer, pauseQuitButton );
 			break;
 		case GameState::GameOver:
 			RenderText();
@@ -510,11 +491,11 @@ void Renderer::Render( )
 		if ( p.isAlive )
 		{
 			SDL_Rect r = p.rect.ToSDLRect();
-			SetDrawColor( p.color );
+			RenderHelpers::SetDrawColor( renderer, p.color );
 			SDL_RenderFillRect( renderer, &r );
 		}
 	}
-	SetDrawColor( backgroundColor);
+	RenderHelpers::SetDrawColor( renderer, backgroundColor);
 
 	SDL_RenderPresent( renderer );
 }
@@ -588,19 +569,19 @@ void Renderer::RenderText()
 	if ( localPlayerTextTexture )
 		SDL_RenderCopy( renderer, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
 
-	RenderTextItem( localPlayerCaption);
-	RenderTextItem( localPlayerPoints);
-	RenderTextItem( localPlayerLives );
-	RenderTextItem( localPlayerBalls );
+	RenderHelpers::RenderTextItem( renderer, localPlayerCaption);
+	RenderHelpers::RenderTextItem( renderer, localPlayerPoints);
+	RenderHelpers::RenderTextItem( renderer, localPlayerLives );
+	RenderHelpers::RenderTextItem( renderer, localPlayerBalls );
 
 	// Remote
 	if ( !isTwoPlayerMode )
 		return;
 
-	RenderTextItem( remotePlayerCaption );
-	RenderTextItem( remotePlayerLives );
-	RenderTextItem( remotePlayerPoints );
-	RenderTextItem( remotePlayerBalls );
+	RenderHelpers::RenderTextItem( renderer, remotePlayerCaption );
+	RenderHelpers::RenderTextItem( renderer, remotePlayerLives );
+	RenderHelpers::RenderTextItem( renderer, remotePlayerPoints );
+	RenderHelpers::RenderTextItem( renderer, remotePlayerBalls );
 }
 void Renderer::RenderLobby()
 {
@@ -622,53 +603,22 @@ void Renderer::RenderMainMenuImage()
 }
 void Renderer::RenderMainMenuFooter()
 {
-	RenderMenuItem( singlePlayerText );
-	RenderMenuItem( multiplayerPlayerText );
-	RenderMenuItem( optionsButton );
-	RenderMenuItem( quitButton );
-}
-void Renderer::RenderMenuItem( const MenuItem &menuItem ) const
-{
-	if( menuItem.GetTexture() != nullptr )
-	{
-		SDL_Rect r = menuItem.GetRect();
-		SDL_RenderCopy( renderer, menuItem.GetTexture(), nullptr, &r );
-	}
-}
-void Renderer::RenderTextItem( const RenderingItem< std::string >  &item ) const
-{
-	if ( item.texture != nullptr  )
-		SDL_RenderCopy( renderer, item.texture, nullptr, &item.rect );
-}
-void Renderer::RenderTextItem( const RenderingItem< uint64_t >  &item ) const
-{
-	if ( item.texture != nullptr  )
-		SDL_RenderCopy( renderer, item.texture, nullptr, &item.rect );
+	RenderHelpers::RenderMenuItem( renderer, singlePlayerText );
+	RenderHelpers::RenderMenuItem( renderer, multiplayerPlayerText );
+	RenderHelpers::RenderMenuItem( renderer, optionsButton );
+	RenderHelpers::RenderMenuItem( renderer, quitButton );
 }
 // ==============================================================================================
 // ================================= Text handling ==============================================
 // ==============================================================================================
-//
-TTF_Font* Renderer::LoadFont( const std::string &fontName, int fontSize ) const
-{
-	TTF_Font* tempFont = TTF_OpenFont( fontName.c_str(), fontSize );
 
-	if ( tempFont == nullptr )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to open font : " << fontName << " : " << TTF_GetError() << std::endl;
-	}
-	else
-		std::cout << "Renderer@" << __LINE__  << " Font opened : " << fontName << " : " << TTF_GetError() << std::endl;
-
-	return tempFont;
-}
 bool Renderer::LoadFontAndText()
 {
 	//tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 20 );
-	font = LoadFont( "media/fonts/sketchy.ttf", 28 );
-	mediumFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 41 );
-	bigFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 57 );
-	hugeFont = TTF_OpenFont( "media/fonts/sketchy.ttf", 100 );
+	font = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 28 );
+	mediumFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 41 );
+	bigFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 57 );
+	hugeFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 100 );
 
 	if ( bigFont == nullptr || font == nullptr ||/* tinyFont == nullptr ||*/ mediumFont == nullptr || hugeFont == nullptr )
 	{
@@ -679,7 +629,6 @@ bool Renderer::LoadFontAndText()
 
 	return true;
 }
-
 void Renderer::RenderText( const std::string &textToRender, const Player &player, bool fade   )
 {
 	if ( player == Player::Local )
@@ -1182,10 +1131,6 @@ void Renderer::PrintSDL_TTFVersion()
 			link_version->major,
 			link_version->minor,
 			link_version->patch);
-}
-void Renderer::ForceMouseFocus()
-{
-	SDL_SetWindowGrab( window, SDL_TRUE );
 }
 SDL_Rect Renderer::CalcMenuListRect()
 {

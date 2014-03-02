@@ -5,9 +5,12 @@
 #include <SDL2/SDL_image.h>
 
 #include "math/Rect.h"
+#include "../structs/rendering/RenderingItem.h"
+#include "../structs/menu_items/MainMenuItem.h"
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 class RenderHelpers
 {
@@ -43,6 +46,18 @@ class RenderHelpers
 		SDL_Renderer * renderer,
 		int style  = 0
 	);
+
+	static uint32_t MapRGBA( SDL_PixelFormat* pixelFormat, const SDL_Color &clr );
+
+	static void SetDrawColor( SDL_Renderer* renderer, const SDL_Color &clr );
+	static void RenderTextItem( SDL_Renderer* renderer,  const RenderingItem< std::string >  &item );
+
+	static void RenderTextItem( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
+	static void RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item );
+	static void SetTileColorSurface( SDL_Renderer* renderer, size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list  );
+	static void HideMouseCursor( bool hide);
+	static void ForceInputGrab( SDL_Window *window, bool grab );
+	static TTF_Font* LoadFont( const std::string &name, int size );
 
 	private:
 	static int32_t SCREEN_BPP;

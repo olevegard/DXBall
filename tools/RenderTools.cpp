@@ -142,12 +142,66 @@ SDL_Texture* RenderHelpers::RenderTextTexture_Blended(
 		SDL_FreeSurface( surface );
 
 		return texture;
-	} else
+	}
+	else
 	{
 		std::cout << "Renderer@" << __LINE__  << " Failed to create text surface..." << textFont << " " << textToRender << " \n";
 		return nullptr;
 	}
 }
+uint32_t RenderHelpers::MapRGBA( SDL_PixelFormat* pixelFormat, const SDL_Color &clr )
+	{
+		return SDL_MapRGBA( pixelFormat, clr.r, clr.g, clr.b, clr.a );
+	}
 
+	void RenderHelpers::SetDrawColor( SDL_Renderer* renderer, const SDL_Color &clr )
+	{
+		SDL_SetRenderDrawColor( renderer, clr.r, clr.g, clr.b, clr.a);
+	}
+	void RenderHelpers::RenderTextItem( SDL_Renderer* renderer,  const RenderingItem< std::string >  &item )
+	{
+		if ( item.texture != nullptr  )
+			SDL_RenderCopy( renderer, item.texture, nullptr, &item.rect );
+	}
 
+	void RenderHelpers::RenderTextItem( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item )
+	{
+		if ( item.texture != nullptr  )
+			SDL_RenderCopy( renderer, item.texture, nullptr, &item.rect );
+	}
+	void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item )
+	{
+		if( item.GetTexture() != nullptr )
+		{
+			SDL_Rect r = item.GetRect();
+			SDL_RenderCopy( renderer, item.GetTexture(), nullptr, &r );
+		}
+	}
+	void RenderHelpers::SetTileColorSurface( SDL_Renderer* renderer, size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list  )
+	{
+		SDL_Texture* text = RenderHelpers::InitSurface(  60, 20, color.r, color.g, color.b, renderer );
+		list.at( index ) = text;
+	}
+	void RenderHelpers::HideMouseCursor( bool hide)
+	{
+		if ( hide )
+			SDL_ShowCursor( SDL_DISABLE );
+		else
+			SDL_ShowCursor( SDL_ENABLE );
+	}
+	void RenderHelpers::ForceInputGrab( SDL_Window *window, bool grab )
+	{
+		if ( grab )
+			SDL_SetWindowGrab( window, SDL_TRUE );
+		else
+			SDL_SetWindowGrab( window, SDL_FALSE );
+	}
+	TTF_Font* RenderHelpers::LoadFont( const std::string &name, int size )
+	{
+		TTF_Font* font = TTF_OpenFont( name.c_str(), size );
 
+		if ( font == nullptr )
+			std::cout << "renderer@" << __LINE__  << " failed to open font : " << name << " : " << TTF_GetError() << std::endl;
+
+		return font;
+	}

@@ -77,8 +77,8 @@ public:
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
 	void RenderLives( unsigned long lifeCount, const Player &player );
 	void RenderPoints( unsigned long pointCount, const Player &player );
-
 	void RenderBallCount( unsigned long ballCount, const Player &player );
+
 	void ResetText();
 
 	// Main menu
@@ -112,11 +112,7 @@ public:
 	SDL_Rect GetLobbyUpdateRect() const;
 	SDL_Rect GetLobbyBackRect() const;
 
-	void ForceMouseFocus();
-
 	void SetGameState( const GameState &gs );
-	void HideMouseCursor( bool hideCursor );
-
 	void SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
 	{
 		isTwoPlayerMode = isTwoPlayerMode_;
@@ -145,10 +141,6 @@ public:
 	void AddMenuList( MenuList* mitem )
 	{
 		ml = mitem;
-	}
-	void SetDrawColor( const SDL_Color &clr )
-	{
-		SDL_SetRenderDrawColor( renderer, clr.r, clr.g, clr.b, clr.a);
 	}
 
 	SDL_Rect CalcMenuListRect();
@@ -183,14 +175,6 @@ private:
 	void RenderMainMenuHeader();
 	void RenderMainMenuImage();
 	void RenderMainMenuFooter();
-	void RenderMenuItem( const MenuItem &menuItem ) const;
-
-	void RenderTextItem( const RenderingItem< std::string >  &item ) const;
-	void RenderTextItem( const RenderingItem< uint64_t >  &item ) const;
-
-	SDL_Surface* SetDisplayFormat( SDL_Surface* surface ) const;
-
-	void SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list );
 
 	bool LoadAssets();
 	bool LoadImages();
