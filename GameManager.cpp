@@ -25,7 +25,6 @@
 #include "BoardLoader.h"
 #include "ConfigLoader.h"
 
-
 	GameManager::GameManager()
 	:	renderer()
 	,	timer()
@@ -54,7 +53,6 @@
 	windowSize.w = 1920 / 2;
 	windowSize.h = 1080 / 2;
 }
-
 bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &size, bool startFS )
 {
 	localPlayerInfo.name = localPlayerName_;
@@ -978,17 +976,7 @@ void GameManager::DoFPSDelay( unsigned int ticks )
 		SDL_Delay( delay );
 	}
 }
-void GameManager::CheckBallSpeedFastMode( double delta )
-{
-	if ( !gameConfig.IsFastMode() )
-		return;
 
-	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) && localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
-		IncreaseBallSpeedFastMode( Player::Local, delta );
-
-	if ( remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) && remotePlayerInfo.IsBonusActive( BonusType::FireBullets ) )
-		IncreaseBallSpeedFastMode( Player::Remote, delta );
-}
 void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta )
 {
 	if ( player == Player::Local )
@@ -1043,9 +1031,6 @@ void GameManager::UpdateBoard()
 }
 void GameManager::UpdateLobbyState()
 {
-	if ( menuManager.GetPrevGameState() != GameState::Lobby )
-		UpdateGameList();
-
 	if ( menuManager.GetGameState() != GameState::Lobby || !menuManager.HasLobbyStateChanged() )
 		return;
 
@@ -1132,15 +1117,6 @@ void GameManager::RemoveClosestTile( const std::shared_ptr< Ball > &ball, const 
 
 	UpdateTileHit( ball, tile );
 }
-
-bool GameManager::IsSuperBall( const std::shared_ptr< Ball > &ball )
-{
-	if ( ball->GetOwner() == Player::Local )
-		return localPlayerInfo.IsBonusActive( BonusType::SuperBall );
-	else
-		return remotePlayerInfo.IsBonusActive( BonusType::SuperBall );
-}
-//void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile )
 void GameManager::UpdateTileHit( const std::shared_ptr< Ball > &ball, const std::shared_ptr< Tile > &tile )
 {
 	int32_t count = 1;
@@ -1298,57 +1274,21 @@ void GameManager::RendererScores()
 		renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
 	}
 }
-void GameManager::SetFPSLimit( unsigned short limit )
-{
-	fpsLimit  = limit;
-	if ( fpsLimit > 0.0f )
-		frameDuration = 1000.0 / static_cast< double > ( fpsLimit );
-	else
-		frameDuration = 0.0;
-}
 void GameManager::GenerateBoard()
 {
-	if ( menuManager.IsTwoPlayerMode() && !netManager.IsServer() )
-	{
-		logger.Log( __FILE__, __LINE__, " Not server! " );
+	if ( !CanGenerateNewBoard() )
 		return;
-	}
-
-	//SDL_Delay( 500 );
-	if ( !boardLoader.IsLastLevel() )
-	{
-		logger.Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
-
-		menuManager.SetGameState( GameState::GameOver );
-		return;
-	}
 
 	Board b = boardLoader.GenerateBoard( windowSize );
 	std::vector<TilePosition> vec = b.GetTiles();
 
 	for ( const auto &tile : vec )
-	{
 		AddTile( tile.tilePos, tile.type, -1 );
-	}
 
 	messageSender.SendLastTileMessage();
 	logger.Log( __FILE__, __LINE__, "Loading of Board is done" );
 
 	physicsManager.UpdateScale();
-}
-bool GameManager::IsLevelDone()
-{
-	if ( physicsManager.CountAllTiles() == 0 || ( !AnyFastModeActive() && physicsManager.CountDestroyableTiles() == 0 ) )
-	{
-		ClearBoard();
-		return true;
-	}
-	return false;
-}
-void GameManager::IsGameOVer()
-{
-	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
-		menuManager.SetGameState( GameState::GameOver );
 }
 void GameManager::ClearBoard()
 {
@@ -1405,7 +1345,65 @@ void GameManager::ReducePlayerLifes( Player player )
 		renderer.RenderLives( remotePlayerInfo.lives, Player::Local );
 	}
 }
+bool GameManager::IsLevelDone()
+{
+	if ( physicsManager.CountAllTiles() == 0 || ( !AnyFastModeActive() && physicsManager.CountDestroyableTiles() == 0 ) )
+	{
+		ClearBoard();
+		return true;
+	}
+	return false;
+}
+void GameManager::IsGameOVer()
+{
+	if ( localPlayerInfo.lives == 0 && remotePlayerInfo.lives == 0 )
+		menuManager.SetGameState( GameState::GameOver );
+}
+bool GameManager::CanGenerateNewBoard()
+{
+	if ( menuManager.IsTwoPlayerMode() && !netManager.IsServer() )
+	{
+		logger.Log( __FILE__, __LINE__, " Not server! " );
+		return false;
+	}
+
+	if ( !boardLoader.IsLastLevel() )
+	{
+		logger.Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
+		menuManager.SetGameState( GameState::GameOver );
+
+		return false;
+	}
+
+	return true;
+}
+void GameManager::CheckBallSpeedFastMode( double delta )
+{
+	if ( !gameConfig.IsFastMode() )
+		return;
+
+	if ( localPlayerInfo.IsBonusActive( BonusType::SuperBall ) && localPlayerInfo.IsBonusActive( BonusType::FireBullets ) )
+		IncreaseBallSpeedFastMode( Player::Local, delta );
+
+	if ( remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) && remotePlayerInfo.IsBonusActive( BonusType::FireBullets ) )
+		IncreaseBallSpeedFastMode( Player::Remote, delta );
+}
+bool GameManager::IsSuperBall( const std::shared_ptr< Ball > &ball )
+{
+	if ( ball->GetOwner() == Player::Local )
+		return localPlayerInfo.IsBonusActive( BonusType::SuperBall );
+	else
+		return remotePlayerInfo.IsBonusActive( BonusType::SuperBall );
+}
 void GameManager::SetAIControlled( bool isAIControlled_ )
 {
 	isAIControlled = isAIControlled_;
+}
+void GameManager::SetFPSLimit( unsigned short limit )
+{
+	fpsLimit  = limit;
+	if ( fpsLimit > 0.0f )
+		frameDuration = 1000.0 / static_cast< double > ( fpsLimit );
+	else
+		frameDuration = 0.0;
 }

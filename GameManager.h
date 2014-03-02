@@ -131,6 +131,7 @@ class GameManager
 		// Board handling
 		// ===========================================
 		void GenerateBoard();
+		bool CanGenerateNewBoard();
 		void ClearBoard();
 
 		// Points / Lives
