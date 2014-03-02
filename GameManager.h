@@ -97,10 +97,6 @@ class GameManager
 		void CheckBallTileIntersection( const std::shared_ptr< Ball > &ball );
 		void RemoveClosestTile( const std::shared_ptr< Ball > &ball, const std::shared_ptr< Tile > &closestTile );
 
-		// Paddles
-		// ===========================================
-		void SetLocalPaddlePosition( int x, int y );
-
 		// Config
 		// ===========================================
 		void LoadConfig();
@@ -120,7 +116,6 @@ class GameManager
 		// AI
 		// ==========================================
 		void AIMove();
-		bool IsTimeForAIMove( std::shared_ptr< Ball > highest ) const;
 
 		void CreateMenu();
 

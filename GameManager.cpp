@@ -1106,36 +1106,9 @@ void GameManager::AIMove()
 	if ( !isAIControlled )
 		return;
 
-	const auto &highest = physicsManager.FindHighestBall();
+	physicsManager.AIMove();
 
-	if ( !IsTimeForAIMove( highest ) )
-		return;
-
-	double deadCenter = ( highest->rect.x + highest->rect.w / 2 ) -
-		( ( localPaddle->rect.w / 2.0) *
-		  RandomHelper::GenRandomNumber( -1.0, 1.0 ) );
-
-	localPaddle->rect.x = deadCenter;
 	messageSender.SendPaddlePosMessage( localPaddle->rect.x );
-}
-bool GameManager::IsTimeForAIMove( std::shared_ptr< Ball > highest ) const
-{
-	if ( !localPaddle )
-		return false;
-
-	if ( ballList.size() == 0 )
-		return false;
-
-	if ( highest == nullptr )
-		return false;
-
-	if ( highest->GetOwner() == Player::Remote )
-		return false;
-
-	if ( ( highest->rect.y + highest->rect.h ) <  localPaddle->rect.y  )
-		return false;
-
-	return true;
 }
 void GameManager::CheckBallTileIntersection( const std::shared_ptr< Ball > &ball )
 {

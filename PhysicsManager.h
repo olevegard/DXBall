@@ -76,6 +76,8 @@ public:
 	// =============================================================================================================
 	void SetPaddleData( );
 	void SetLocalPaddlePosition( int32_t x );
+	bool IsTimeForAIMove( std::shared_ptr< Ball > highest ) const;
+	void AIMove();
 
 	// Explosions
 	// =============================================================================================================

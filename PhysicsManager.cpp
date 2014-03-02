@@ -395,6 +395,42 @@ void PhysicsManager::SetLocalPaddlePosition( int32_t x )
 
 	messageSender.SendPaddlePosMessage( localPaddle->rect.x );
 }
+bool PhysicsManager::IsTimeForAIMove( std::shared_ptr< Ball > highest ) const
+{
+	if ( !localPaddle )
+	{
+		logger.Log( __FILE__, __LINE__, "Local paddle invalid!" );
+		raise( SIGABRT );
+		return false;
+	}
+
+	if ( ballList.size() == 0 )
+		return false;
+
+	if ( highest == nullptr )
+		return false;
+
+	if ( highest->GetOwner() == Player::Remote )
+		return false;
+
+	if ( ( highest->rect.y + highest->rect.h ) <  localPaddle->rect.y  )
+		return false;
+
+	return true;
+}
+void PhysicsManager::AIMove()
+{
+	const auto &highest = FindHighestBall();
+
+	if ( !IsTimeForAIMove( highest ) )
+		return;
+
+	double deadCenter = ( highest->rect.x + highest->rect.w / 2 ) -
+		( ( localPaddle->rect.w / 2.0) *
+		  RandomHelper::GenRandomNumber( -1.0, 1.0 ) );
+
+	localPaddle->rect.x = deadCenter;
+}
 // Explosions
 // =============================================================================================================
 std::vector< Rect > PhysicsManager::GenereateExplosionRects( const std::shared_ptr< Tile > &explodingTile ) const
