@@ -202,13 +202,7 @@ private:
 
 	GameState gameState;
 
-	uint32_t rmask;
-	uint32_t gmask;
-	uint32_t bmask;
-	uint32_t amask;
-
 	SDL_Rect background;
-	const int SCREEN_BPP;
 	unsigned int screenFlags;
 	bool fullscreen;
 	SDL_Color backgroundColor;
