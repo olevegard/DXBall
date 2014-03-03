@@ -339,91 +339,30 @@ void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 }
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
-	bonusBoxRect = bonusBox->rect.ToSDLRect( );
+	auto texture = CreateBonusBoxTexture( bonusBox );
 
-	// Background
-	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, rmask, gmask, bmask, amask);
-
-	uint32_t pixelValue = 0;
-
-	if ( bonusBox->GetOwner() == Player::Local )
-		pixelValue = RenderHelpers::MapRGBA( bonus->format, localPlayerColor );
-	else
-		pixelValue = RenderHelpers::MapRGBA( bonus->format, remotePlayerColor );
-
-	if ( bonusBox->GetOwner() == Player::Local )
-		SDL_FillRect(
-				bonus,
-				NULL,
-				pixelValue
-			);
-	else
-		SDL_FillRect(
-				bonus,
-				NULL,
-				pixelValue
-			);
-
-
-	bonusBoxRect = bonus->clip_rect;
-	SetBonusBoxIcon( bonusBoxRect.w, bonus, bonusBox->GetBonusType()  );
-
-	bonusBoxTexture = SDL_CreateTextureFromSurface( renderer, bonus );
-
-	SDL_FreeSurface( bonus );
-
-	bonusBox->SetTexture( bonusBoxTexture );
-
-	bonusBoxRect.x = 200;
-	bonusBoxRect.y = 100;
+	bonusBox->SetTexture( texture ) ;
 
 	bonusBoxList.push_back( bonusBox );
-
 }
-void Renderer::SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox, const BonusType &bonusType )
+SDL_Texture* Renderer::CreateBonusBoxTexture( const std::shared_ptr< BonusBox >  &bb )
 {
-	int32_t bbMargin = width / 8;
-	int32_t doubleMargin = bbMargin * 2;
+	SDL_Rect bonusBoxRect = bb->rect.ToSDLRect( );
 
-	SDL_Rect logoPosition;
-	logoPosition.x = bbMargin;
-	logoPosition.y = bbMargin;
-	logoPosition.w = width - doubleMargin;
-	logoPosition.h = width - doubleMargin;
-
-	SDL_Color logoColor = GetBonusBoxColor( bonusType );
-
-	SDL_Surface* logo = SDL_CreateRGBSurface( 0, logoPosition.w, logoPosition.h, SCREEN_BPP, rmask, gmask, bmask, amask);
-	SDL_FillRect( logo, NULL, SDL_MapRGBA( bonusBox->format, logoColor.r, logoColor.g,  logoColor.b, logoColor.a ) );
-
-	SDL_BlitSurface( logo, NULL, bonusBox, &logoPosition);
-	SDL_FreeSurface( logo );
-}
-SDL_Color Renderer::GetBonusBoxColor( const BonusType &bonusType )
-{
-	/*
-	SDL_Color logoColor = { 0, 128, 128, 255 };
-	if ( bonusType == BonusType::ExtraLife )
-	{
-		logoColor.r = 255;
-		logoColor.g = 255;
-		logoColor.b = 255;
-	}
+	SDL_Color color;
+	if ( bb->GetOwner() == Player::Local )
+		color = localPlayerColor;
 	else
-	{
-		logoColor.r = 0;
-		logoColor.g = 0;
-		logoColor.b = 0;
-	}
-	*/
+		color =  remotePlayerColor;
 
-	return bonusTypeColors[bonusType];
+	SDL_Color bonusColor = bonusTypeColors[ bb->GetBonusType() ];
+
+	return RenderHelpers::CreateBonusBoxTexture( renderer, bonusBoxRect, color, bonusColor );
 }
 void Renderer::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bonusBox )
 {
 	bonusBoxList.erase( std::find( bonusBoxList.begin(), bonusBoxList.end(), bonusBox ) );
 }
-
 void Renderer::AddBullet( const std::shared_ptr< Bullet > &bb )
 {
 	bulletList.push_back( bb );

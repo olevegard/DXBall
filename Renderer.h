@@ -59,7 +59,8 @@ public:
 
 	void AddBonusBox( const std::shared_ptr< BonusBox > &bb );
 	void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
-	void SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox, const BonusType &bonusType );
+	SDL_Texture* CreateBonusBoxTexture( const std::shared_ptr< BonusBox >  &bb );
+
 	SDL_Color GetBonusBoxColor( const BonusType &bonusType );
 
 	void AddBullet( const std::shared_ptr< Bullet > &bb );
@@ -201,19 +202,16 @@ private:
 
 	GameState gameState;
 
-	unsigned int rmask;
-	unsigned int gmask;
-	unsigned int bmask;
-	unsigned int amask;
+	uint32_t rmask;
+	uint32_t gmask;
+	uint32_t bmask;
+	uint32_t amask;
 
 	SDL_Rect background;
 	const int SCREEN_BPP;
 	unsigned int screenFlags;
 	bool fullscreen;
 	SDL_Color backgroundColor;
-
-	SDL_Texture* bonusBoxTexture;
-	SDL_Rect bonusBoxRect;
 
 	SDL_Color tileColors[4];
 	std::vector< SDL_Texture* > tileTextures;

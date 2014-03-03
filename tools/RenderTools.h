@@ -59,11 +59,15 @@ class RenderHelpers
 	static void ForceInputGrab( SDL_Window *window, bool grab );
 	static TTF_Font* LoadFont( const std::string &name, int size );
 
-	private:
-	static int32_t SCREEN_BPP;
+	static SDL_Texture*
+		CreateBonusBoxTexture( SDL_Renderer* renderer, SDL_Rect bonusBoxRect, const SDL_Color &outerColor, const SDL_Color &innerColor );
 
-	static uint32_t rmask;
-	static uint32_t gmask;
-	static uint32_t bmask;
-	static uint32_t amask;
+	private:
+	static void SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox,  const SDL_Color &innerColor );
+
+	static const int32_t SCREEN_BPP;
+	static const uint32_t R_MASK;
+	static const uint32_t G_MASK;
+	static const uint32_t B_MASK;
+	static const uint32_t A_MASK;
 };

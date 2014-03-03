@@ -3,18 +3,19 @@
 #include <iostream>
 
 
-int32_t RenderHelpers::SCREEN_BPP = 32;
+const int32_t RenderHelpers::SCREEN_BPP = 32;
+
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-uint32_t RenderHelpers::rmask = 0xff000000;
-uint32_t RenderHelpers::gmask = 0x00ff0000;
-uint32_t RenderHelpers::bmask = 0x0000ff00;
-uint32_t RenderHelpers::amask = 0x000000ff;
+	const uint32_t RenderHelpers::R_MASK = 0xff000000;
+	const uint32_t RenderHelpers::G_MASK = 0x00ff0000;
+	const uint32_t RenderHelpers::B_MASK = 0x0000ff00;
+	const uint32_t RenderHelpers::A_MASK = 0x000000ff;
 #else
-uint32_t RenderHelpers::rmask = 0x000000ff;
-uint32_t RenderHelpers::gmask = 0x0000ff00;
-uint32_t RenderHelpers::bmask = 0x00ff0000;
-uint32_t RenderHelpers::amask = 0xff000000;
+	const uint32_t RenderHelpers::R_MASK = 0x000000ff;
+	const uint32_t RenderHelpers::G_MASK = 0x0000ff00;
+	const uint32_t RenderHelpers::B_MASK = 0x00ff0000;
+	const uint32_t RenderHelpers::A_MASK = 0xff000000;
 #endif
 
 RenderHelpers::RenderHelpers()
@@ -34,7 +35,9 @@ SDL_Texture* RenderHelpers::InitSurface( const Rect &rect, unsigned char r, unsi
 }
 SDL_Texture* RenderHelpers::InitSurface( int width, int height, unsigned char r, unsigned char g, unsigned char b, SDL_Renderer* renderer )
 {
-	SDL_Surface* surface = SDL_CreateRGBSurface( 0, width, height, SCREEN_BPP, rmask, gmask, bmask, amask);
+	SDL_Surface* surface = SDL_CreateRGBSurface( 0, width, height,
+		SCREEN_BPP, R_MASK, G_MASK, B_MASK, A_MASK
+	);
 
 	FillSurface( surface, r, g, b );
 
@@ -205,3 +208,38 @@ uint32_t RenderHelpers::MapRGBA( SDL_PixelFormat* pixelFormat, const SDL_Color &
 
 		return font;
 	}
+
+SDL_Texture* RenderHelpers::CreateBonusBoxTexture( SDL_Renderer* renderer, SDL_Rect bonusBoxRect, const SDL_Color &outerColor, const SDL_Color &innerColor  )
+{
+	// Background
+	SDL_Surface* bonus = SDL_CreateRGBSurface( 0, bonusBoxRect.w, bonusBoxRect.h, SCREEN_BPP, R_MASK, G_MASK, B_MASK, A_MASK);
+
+	uint32_t pixelValue = RenderHelpers::MapRGBA( bonus->format, outerColor );
+	SDL_FillRect( bonus, NULL, pixelValue );
+
+	bonusBoxRect = bonus->clip_rect;
+	SetBonusBoxIcon( bonusBoxRect.w, bonus, innerColor );
+
+	SDL_Texture* bonusBoxTexture = SDL_CreateTextureFromSurface( renderer, bonus );
+
+	SDL_FreeSurface( bonus );
+
+	return bonusBoxTexture;
+}
+void RenderHelpers::SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox,  const SDL_Color &innerColor  )
+{
+	int32_t bbMargin = width / 8;
+	int32_t doubleMargin = bbMargin * 2;
+
+	SDL_Rect logoPosition;
+	logoPosition.x = bbMargin;
+	logoPosition.y = bbMargin;
+	logoPosition.w = width - doubleMargin;
+	logoPosition.h = width - doubleMargin;
+
+	SDL_Surface* logo = SDL_CreateRGBSurface( 0, logoPosition.w, logoPosition.h, SCREEN_BPP, R_MASK, G_MASK, B_MASK, A_MASK);
+	SDL_FillRect( logo, NULL, SDL_MapRGBA( bonusBox->format, innerColor.r, innerColor.g,  innerColor.b, innerColor.a ) );
+
+	SDL_BlitSurface( logo, NULL, bonusBox, &logoPosition);
+	SDL_FreeSurface( logo );
+}
