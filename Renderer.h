@@ -26,6 +26,8 @@
 #include "structs/rendering/Particle.h"
 #include "structs/rendering/RenderingItem.h"
 
+#include "ColorConfigLoader.h"
+
 #include "MenuList.h"
 
 // Forward declarations
@@ -59,9 +61,6 @@ public:
 
 	void AddBonusBox( const std::shared_ptr< BonusBox > &bb );
 	void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
-	SDL_Texture* CreateBonusBoxTexture( const std::shared_ptr< BonusBox >  &bb );
-
-	SDL_Color GetBonusBoxColor( const BonusType &bonusType );
 
 	void AddBullet( const std::shared_ptr< Bullet > &bb );
 	void RemoveBullet( const std::shared_ptr< Bullet >  &bb );
@@ -131,12 +130,12 @@ public:
 
 	SDL_Color GetBackgroundColor() const
 	{
-		return backgroundColor;
+		return colorConfig.backgroundColor;
 	}
 
 	SDL_Color GetTextColor() const
 	{
-		return textColor;
+		return colorConfig.textColor;
 	}
 
 	void AddMenuList( MenuList* mitem )
@@ -144,6 +143,15 @@ public:
 		ml = mitem;
 	}
 
+	SDL_Color GetTileColor( uint64_t type )
+	{
+		return colorConfig.GetTileColor( static_cast < TileType > ( type ));
+	}
+
+	SDL_Color GetHardTileColor( uint64_t index )
+	{
+		return colorConfig.GetTileColor( TileType::Hard, index );
+	}
 	SDL_Rect CalcMenuListRect();
 	void Update( double delta );
 	void ResetAlpha();
@@ -153,6 +161,9 @@ public:
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
+
+	SDL_Texture* CreateBonusBoxTexture( const std::shared_ptr< BonusBox >  &bb );
+	SDL_Color GetBonusBoxColor( const BonusType &bonusType );
 
 	void Setup();
 	bool CreateRenderer();
@@ -195,6 +206,8 @@ private:
 	void CleanUpTTF();
 	void QuitSDL();
 
+	ColorConfigLoader colorConfig;
+
 	MenuList* ml;
 
 	SDL_Window* window;
@@ -205,13 +218,6 @@ private:
 	SDL_Rect background;
 	unsigned int screenFlags;
 	bool fullscreen;
-	SDL_Color backgroundColor;
-
-	SDL_Color tileColors[4];
-	std::vector< SDL_Texture* > tileTextures;
-
-	SDL_Color hardTileColors[5];
-	std::vector< SDL_Texture* > hardTileTextures;
 
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;
@@ -222,13 +228,14 @@ private:
 	std::shared_ptr< Paddle >  remotePaddle;
 
 	bool isTwoPlayerMode;
-	SDL_Color    localPlayerColor;
 	SDL_Texture* localPlayerBallTexture;
 	SDL_Texture* localPlayerPaddle;
 
-	SDL_Color    remotePlayerColor;
 	SDL_Texture* remotePlayerBallTexture;
 	SDL_Texture* remotePlayerPaddle;
+
+	std::vector< SDL_Texture* > tileTextures;
+	std::vector< SDL_Texture* > hardTileTextures;
 
 	// Text
 	// =============================================
@@ -237,9 +244,6 @@ private:
 	TTF_Font* mediumFont;
 	TTF_Font* bigFont;
 	TTF_Font* hugeFont;
-
-	SDL_Color textColor;
-	SDL_Color greyAreaColor;
 
 	// main info text...
 	SDL_Texture* localPlayerTextTexture;

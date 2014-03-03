@@ -44,7 +44,7 @@ void ColorConfigLoader::LoadConfig()
 			std::stringstream ss(configLine);
 			std::string str;
 			ss >> str;
-			ss >> greayAreaColor;;
+			ss >> greyAreaColor;
 			continue;
 		}
 		else if (  configLine.find( "bonus_extra_life " ) != std::string::npos )
@@ -107,7 +107,7 @@ void ColorConfigLoader::PrintIndented( const std::string &colorName )
 {
 	std::cout << "\n\t" << std::setfill( '_' ) << std::setw( 23 ) << std::left << colorName;
 }
-SDL_Color ColorConfigLoader::GetTileColor( TileType type_, int32_t colorIndex)
+SDL_Color ColorConfigLoader::GetTileColor( TileType type_, uint64_t colorIndex)
 {
 	for ( const auto &p :  colorConfig )
 	{
@@ -139,7 +139,7 @@ SDL_Color ColorConfigLoader::GetTextColor() const
 
 SDL_Color ColorConfigLoader::GetGreyArea() const
 {
-	return greayAreaColor;
+	return greyAreaColor;
 }
 std::map< BonusType, SDL_Color > ColorConfigLoader::GetBonusColorMap()
 {

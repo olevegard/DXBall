@@ -16,7 +16,8 @@ class ColorConfigLoader
 	void LoadConfig();
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
 	void PrintIndented( const std::string &colorName );
-	SDL_Color GetTileColor( TileType type_, int32_t colorIndex = 0);
+
+	SDL_Color GetTileColor( TileType type_, uint64_t colorIndex = 0);
 	SDL_Color GetLocalPlayerColor() const;
 
 	SDL_Color GetRemotePlayerColor() const;
@@ -27,9 +28,7 @@ class ColorConfigLoader
 
 	SDL_Color GetGreyArea() const;
 	std::map< BonusType, SDL_Color > GetBonusColorMap();
-	private:
-	void PrintConfig();
-	std::string RemoveCharacterFromString( std::string str, char ch );
+
 
 	std::vector< TileColor > colorConfig;
 
@@ -37,8 +36,13 @@ class ColorConfigLoader
 	SDL_Color remotePlayerColor;
 	SDL_Color backgroundColor;
 	SDL_Color textColor;
-	SDL_Color greayAreaColor;
+
+	SDL_Color greyAreaColor;
 
 	std::map< BonusType, SDL_Color > bonusTypeColors;
+
+	private:
+	void PrintConfig();
+	std::string RemoveCharacterFromString( std::string str, char ch );
 };
 
