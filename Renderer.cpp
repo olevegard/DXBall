@@ -1096,6 +1096,11 @@ void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 	else
 		color = GetTileColor( tile->GetTileTypeAsIndex() );
 
-	for ( int i = 0; i < 50 ; ++i )
-		particles.push_back( Particle( Rect( pos.x, pos.y, 10, 10 ), color  ) );
+	for ( int i = 0; i < colorConfig.particleFireCount ; ++i )
+	{
+		auto p = Particle( Rect( pos.x, pos.y, 10, 10 ), color  );
+		p.SetDecay( colorConfig.particleDecayMin, colorConfig.particleDecayMax );
+		p.SetSpeed( colorConfig.particleSpeedMin, colorConfig.particleSpeedMax );
+		particles.push_back( p );
+	}
 }

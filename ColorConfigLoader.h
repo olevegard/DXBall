@@ -41,6 +41,13 @@ class ColorConfigLoader
 
 	std::map< BonusType, SDL_Color > bonusTypeColors;
 
+	int32_t particleFireCount;
+	double particleDecayMin;
+	double particleDecayMax;
+
+	double particleSpeedMin;
+	double particleSpeedMax;
+
 	private:
 	void PrintConfig();
 	std::string RemoveCharacterFromString( std::string str, char ch );

@@ -4,22 +4,30 @@ Particle::Particle( Rect r, SDL_Color  clr )
 {
 	rect = r;
 	color = clr;
+
 	dir.x = RandomHelper::GenRandomNumber( -1.0, 1.0 );
 	dir.y = RandomHelper::GenRandomNumber( -1.0, 1.0 );
-	//decay = RandomHelper::GenRandomNumber( 8.0, 12.0 );
-	decay = RandomHelper::GenRandomNumber( 1.0, 2.0 );
-	speed = static_cast< int32_t > ( RandomHelper::GenRandomNumber( 0.2, 10.0 ) * 367 );
-	//speed = static_cast< int32_t > ( RandomHelper::GenRandomNumber( 0.2, 10.0 ) * 10 );
+
+	SetDecay( 0.0, 1.0 );
+	SetSpeed( 0.0, 1.0 );
+
 	isAlive = true;
 }
-
+void Particle::SetDecay( double min, double max )
+{
+	decay = RandomHelper::GenRandomNumber( min, max );
+}
+void Particle::SetSpeed( double min, double max )
+{
+	speed =  RandomHelper::GenRandomNumber( min, max );
+}
 void Particle::Updated( double delta )
 {
 	if ( !isAlive )
 		return;
 
-	rect.x += dir.x *  speed * delta;
-	rect.y += dir.y *  speed * delta;
+	rect.x += dir.x *  speed * delta * 365;
+	rect.y += dir.y *  speed * delta * 365;
 
 	uint16_t alphaChange = color.a;
 	alphaChange -= static_cast< uint16_t > ( 255 *  decay * delta  );

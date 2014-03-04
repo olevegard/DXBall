@@ -83,8 +83,43 @@ void ColorConfigLoader::LoadConfig()
 			std::string str;
 			SDL_Color color;
 			ss >> str;
-			ss >> color;;
+			ss >> color;
 			bonusTypeColors.insert( std::make_pair( BonusType::FireBullets, color ) );
+			continue;
+		}
+		else if (  configLine.find( "prticle_fire_count " ) != std::string::npos )
+		{
+			std::stringstream ss(configLine);
+			std::string str;
+			ss >> str >> particleFireCount;
+			continue;
+		}
+		else if (  configLine.find( "particle_decay_min" ) != std::string::npos )
+		{
+			std::stringstream ss(configLine);
+			std::string str;
+			ss >> str >> particleDecayMin;
+			continue;
+		}
+		else if (  configLine.find( "particle_decay_max" ) != std::string::npos )
+		{
+			std::stringstream ss(configLine);
+			std::string str;
+			ss >> str >> particleDecayMax;
+			continue;
+		}
+		else if (  configLine.find( "particle_speed_min" ) != std::string::npos )
+		{
+			std::stringstream ss(configLine);
+			std::string str;
+			ss >> str >> particleSpeedMin;
+			continue;
+		}
+		else if (  configLine.find( "particle_speed_max" ) != std::string::npos )
+		{
+			std::stringstream ss(configLine);
+			std::string str;
+			ss >> str >> particleSpeedMax;
 			continue;
 		}
 		else if ( configLine[0] == '#' || configLine.empty() )
