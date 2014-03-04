@@ -7,127 +7,67 @@ void ColorConfigLoader::LoadConfig()
 
 	while ( getline( configFile, configLine ) )
 	{
-		if (  configLine.find( "local_player_color" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str;
-			ss >> localPlayerColor;
-			continue;
-		}
-		else if (  configLine.find( "remote_player_color" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str;
-			ss >> remotePlayerColor;
-			continue;
-		}
-		else if (  configLine.find( "background_color" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str;
-			ss >> backgroundColor;
-			continue;
-		}
-		else if (  configLine.find( "text_color" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str;
-			ss >> textColor;
-			continue;
-		}
-		else if (  configLine.find( "grey_area " ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str;
-			ss >> greyAreaColor;
-			continue;
-		}
-		else if (  configLine.find( "bonus_extra_life " ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			SDL_Color color;
-			ss >> str;
-			ss >> color;;
-			bonusTypeColors.insert( std::make_pair( BonusType::ExtraLife, color ) );
-			continue;
-		}
-		else if (  configLine.find( "bonus_death" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			SDL_Color color;
-			ss >> str;
-			ss >> color;;
-			bonusTypeColors.insert( std::make_pair( BonusType::Death, color ) );
-			continue;
-		}
-		else if (  configLine.find( "bonus_super_ball" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			SDL_Color color;
-			ss >> str;
-			ss >> color;;
-			bonusTypeColors.insert( std::make_pair( BonusType::SuperBall, color ) );
-			continue;
-		}
-		else if (  configLine.find( "bonus_fire_bullets" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			SDL_Color color;
-			ss >> str;
-			ss >> color;
-			bonusTypeColors.insert( std::make_pair( BonusType::FireBullets, color ) );
-			continue;
-		}
-		else if (  configLine.find( "prticle_fire_count " ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str >> particleFireCount;
-			continue;
-		}
-		else if (  configLine.find( "particle_decay_min" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str >> particleDecayMin;
-			continue;
-		}
-		else if (  configLine.find( "particle_decay_max" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str >> particleDecayMax;
-			continue;
-		}
-		else if (  configLine.find( "particle_speed_min" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str >> particleSpeedMin;
-			continue;
-		}
-		else if (  configLine.find( "particle_speed_max" ) != std::string::npos )
-		{
-			std::stringstream ss(configLine);
-			std::string str;
-			ss >> str >> particleSpeedMax;
-			continue;
-		}
-		else if ( configLine[0] == '#' || configLine.empty() )
-			continue;
+		ApplyConfig( configLine );
+	}
+}
+void ColorConfigLoader::ApplyConfig( std::string str )
+{
+	std::string parameterName;
+	std::stringstream line( str );
 
-		configLine = RemoveCharacterFromString( configLine, '|' );
+	line >> parameterName;
 
-		std::stringstream ss(configLine);
+	if ( parameterName == "#" || str.empty() )
+		return;
+	else if (  parameterName ==  "local_player_color" )
+		line >> localPlayerColor;
+	else if (  parameterName ==  "remote_player_color" )
+		line >> remotePlayerColor;
+	else if (  parameterName ==  "background_color" )
+		line >> backgroundColor;
+	else if (  parameterName ==  "text_color" )
+		line >> textColor;
+	else if (  parameterName ==  "grey_area" )
+		line >> greyAreaColor;
+	else if (  parameterName ==  "prticle_fire_count" )
+		line >> particleFireCount;
+	else if (  parameterName ==  "particle_decay_min" )
+		line >> particleDecayMin;
+	else if (  parameterName ==  "particle_decay_max" )
+		line >>  particleDecayMax;
+	else if (  parameterName ==  "particle_speed_min" )
+		line >> particleSpeedMin;
+	else if (  parameterName ==  "particle_speed_max" )
+		line >> particleSpeedMax;
+	else if (  parameterName ==  "bonus_extra_life" )
+	{
+		SDL_Color color;
+		line >> color;
+		bonusTypeColors.insert( std::make_pair( BonusType::ExtraLife, color ) );
+	}
+	else if (  parameterName ==  "bonus_death" )
+	{
+		SDL_Color color;
+		line >> color;
+		bonusTypeColors.insert( std::make_pair( BonusType::Death, color ) );
+	}
+	else if (  parameterName ==  "bonus_super_ball" )
+	{
+		SDL_Color color;
+		line >> color;
+		bonusTypeColors.insert( std::make_pair( BonusType::SuperBall, color ) );
+	}
+	else if (  parameterName ==  "bonus_fire_bullets" )
+	{
+		SDL_Color color;
+		line >> color;
+		bonusTypeColors.insert( std::make_pair( BonusType::FireBullets, color ) );
+	}
+	else
+	{
+		str = RemoveCharacterFromString( str, '|' );
+
+		std::stringstream ss( str );
 		TileColor tc;
 		ss >> tc;
 		colorConfig.push_back( tc );

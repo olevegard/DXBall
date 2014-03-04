@@ -14,6 +14,8 @@ class ColorConfigLoader
 {
 	public:
 	void LoadConfig();
+	void ApplyConfig( std::string str );
+
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
 	void PrintIndented( const std::string &colorName );
 
