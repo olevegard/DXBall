@@ -172,8 +172,9 @@ private:
 	bool CreateWindow( bool server );
 	void SetFlags_VideoMode();
 
-	// Render InGame
-	void RenderForeground();
+	// Rende Game Objects
+	void RenderGameObjects();
+
 	void RenderText();
 	void RenderBalls();
 	void RenderTiles();
@@ -181,7 +182,12 @@ private:
 	void RenderBullets();
 	void RenderBonusBoxes();
 
+	void RenderParticles();
+
+	// Render GameStates
+	void RenderMenu();
 	void RenderLobby();
+	void RenderPause();
 
 	// Render main menu
 	void RenderMainMenuHeader();

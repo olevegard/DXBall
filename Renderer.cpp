@@ -21,6 +21,16 @@
 
 #include <csignal>
 
+// This macro enalea falltrhough in switch-case statements
+// Two or more consecute case wihtout break triggers a warning
+// Adding FALLTHROUGH before the case makes clang ignore this
+// The warning will be triggered as normal if FALLTHROUGH is not used
+#ifdef __clang__
+#define FALLTHROUGH  [[clang::fallthrough]];
+#else
+#define FALLTHROUGH
+#endif
+
 	Renderer::Renderer()
 	:	window( nullptr )
 	,	renderer( nullptr )
@@ -342,54 +352,73 @@ void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 
 	remotePlayerPaddle = RenderHelpers::InitSurface( localPaddle->rect, colorConfig.remotePlayerColor, renderer );
 }
-
 // ============================================================================================
 // ================================= Renderering ==============================================
 // ============================================================================================
 void Renderer::Render( )
 {
-	if ( renderer == nullptr )
-	{
-		std::cout << "ERRO! Renderer is NULL : " << SDL_GetError() << std::endl;
-		raise( SIGABRT );
-	}
-
 	SDL_RenderClear( renderer );
 
 	switch ( gameState )
 	{
 		case GameState::MainMenu:
-			RenderMainMenuHeader();
-			RenderMainMenuImage();
-			RenderMainMenuFooter();
-			break;
 		case GameState::Lobby:
-			RenderMainMenuHeader();
-			//RenderLobby();
-			RenderMainMenuImage();
-			RenderHelpers::RenderMenuItem( renderer, lobbyNewGameButton );
-			RenderHelpers::RenderMenuItem( renderer, lobbyUpdateButton );
-			RenderHelpers::RenderMenuItem( renderer, lobbyBackButton );
-			ml->Render( renderer );
+			RenderMenu();
 			break;
+
 		case GameState::InGame:
+			RenderGameObjects();
+		FALLTHROUGH
 		case GameState::InGameWait:
-			RenderForeground();
 			RenderText();
 			break;
+
 		case GameState::Paused:
-			RenderForeground();
-			RenderText();
-			RenderHelpers::RenderMenuItem( renderer, pauseResumeButton );
-			RenderHelpers::RenderMenuItem( renderer, pauseMainMenuButton );
-			RenderHelpers::RenderMenuItem( renderer, pauseQuitButton );
-			break;
+			RenderPause();
+		FALLTHROUGH
 		case GameState::GameOver:
 			RenderText();
 			break;
 		default:
 			break;
 	}
+
+	SDL_RenderPresent( renderer );
+}
+void Renderer::RenderMenu()
+{
+	RenderMainMenuHeader();
+	RenderMainMenuImage();
+
+	if ( gameState == GameState::Lobby )
+	{
+		RenderHelpers::RenderMenuItem( renderer, lobbyNewGameButton );
+		RenderHelpers::RenderMenuItem( renderer, lobbyUpdateButton );
+		RenderHelpers::RenderMenuItem( renderer, lobbyBackButton );
+		ml->Render( renderer );
+	}
+	else
+		RenderMainMenuFooter();
+}
+void Renderer::RenderPause()
+{
+	RenderGameObjects();
+	RenderHelpers::RenderMenuItem( renderer, pauseResumeButton );
+	RenderHelpers::RenderMenuItem( renderer, pauseMainMenuButton );
+	RenderHelpers::RenderMenuItem( renderer, pauseQuitButton );
+}
+void Renderer::RenderGameObjects()
+{
+	RenderBalls();
+	RenderTiles();
+	RenderPaddles();
+	RenderBullets();
+	RenderBonusBoxes();
+
+	RenderParticles();
+}
+void Renderer::RenderParticles()
+{
 	for ( const auto &p : particles )
 	{
 		if ( p.isAlive )
@@ -399,18 +428,8 @@ void Renderer::Render( )
 			SDL_RenderFillRect( renderer, &r );
 		}
 	}
-	RenderHelpers::SetDrawColor( renderer, colorConfig.backgroundColor);
 
-	SDL_RenderPresent( renderer );
-}
-void Renderer::RenderForeground()
-{
-	RenderText();
-	RenderBalls();
-	RenderTiles();
-	RenderPaddles();
-	RenderBullets();
-	RenderBonusBoxes();
+	RenderHelpers::SetDrawColor( renderer, colorConfig.backgroundColor);
 }
 void Renderer::RenderBalls()
 {
@@ -486,11 +505,6 @@ void Renderer::RenderText()
 	RenderHelpers::RenderTextItem( renderer, remotePlayerLives );
 	RenderHelpers::RenderTextItem( renderer, remotePlayerPoints );
 	RenderHelpers::RenderTextItem( renderer, remotePlayerBalls );
-}
-void Renderer::RenderLobby()
-{
-	if ( greyAreaTexture )
-		SDL_RenderCopy( renderer, greyAreaTexture, nullptr, &greyAreaRect );
 }
 void Renderer::RenderMainMenuHeader()
 {
