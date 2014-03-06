@@ -71,11 +71,8 @@ Board BoardLoader::GenerateBoard( const SDL_Rect &rect )
 	b.CenterAndFlip( rect );
 	b.CalcMaxScale( rect );
 
-	++currentLevel;
-
 	return b;
 }
-
 std::string BoardLoader::FindNextExistingBoard()
 {
 	std::string level;
