@@ -997,7 +997,7 @@ void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 SDL_Color Renderer::GetTileColor( std::shared_ptr< Tile > tile  )
 {
 	if ( tile->GetTileType() == TileType::Hard )
-		return GetHardTileColor( tile->GetHitsLeft() );
+		return GetHardTileColor( 5 - tile->GetHitsLeft() );
 	else
 		return GetTileColor( tile->GetTileTypeAsIndex() );
 }
