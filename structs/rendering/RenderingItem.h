@@ -29,8 +29,12 @@ template < class Value > class RenderingItem
 		}
 		void Reset( SDL_Renderer* renderer, TTF_Font* font, const SDL_Color &color )
 		{
+			Reset( renderer, value, font, color );
+		}
+		void Reset( SDL_Renderer* renderer, const std::string &str, TTF_Font* font, const SDL_Color &color )
+		{
 			DestroyTexture();
-			texture = RenderHelpers::RenderTextTexture_Solid( font, value, color, rect, renderer );
+			texture = RenderHelpers::RenderTextTexture_Solid( font, str, color, rect, renderer );
 		}
 		void Rescale( uint32_t windowWidth, uint32_t windowHeight )
 		{

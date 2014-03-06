@@ -86,9 +86,9 @@ public:
 	void RenderText( const std::string &textToRender, const Player &player, bool fade = false);
 
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
-	void RenderBallCount( unsigned long ballCount, const Player &player );
-	void RenderPoints( unsigned long pointCount, const Player &player );
-	void RenderLives( unsigned long lifeCount, const Player &player );
+	void RenderBallCount( uint64_t ballCount , const Player &player );
+	void RenderPoints   ( uint64_t pointCount, const Player &player );
+	void RenderLives    ( uint64_t lifeCounr , const Player &player );
 
 	void RemoveText();
 	void ResetText();
