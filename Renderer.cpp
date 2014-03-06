@@ -39,11 +39,6 @@
 	,	background({ 0, 0, 1920 / 2, 1080 / 2 })
 	,	screenFlags( SDL_WINDOW_OPENGL  )
 	,	fullscreen( false )
-#if defined ( WIN32 )
-#else
-	,	tileTextures{ nullptr, nullptr, nullptr, nullptr }
-	,	hardTileTextures{ nullptr, nullptr, nullptr, nullptr, nullptr }
-#endif
 
 	,	ballList(  )
 	,	tileList(  )
@@ -57,16 +52,15 @@
 	,	remotePlayerBallTexture( nullptr )
 	,	remotePlayerPaddle( nullptr )
 
+#if defined ( WIN32 )
+#else
+	,	tileTextures{ nullptr, nullptr, nullptr, nullptr }
+	,	hardTileTextures{ nullptr, nullptr, nullptr, nullptr, nullptr }
+#endif
 	,	tinyFont()
 	,	font()
 	,	mediumFont()
 	,	bigFont()
-
-	,	localPlayerTextTexture( )
-	,	localPlayerTextRect( )
-	,	localPlayerTextValue( "" )
-	,	localPlayerTextAlpha( 1.0 )
-	,	localPlayerTextFade( false )
 
 	,	margin( 30 )
 	,	singlePlayerText     ( "Single Player" )
@@ -489,15 +483,13 @@ void Renderer::RenderBonusBoxes()
 }
 void Renderer::RenderText()
 {
-	if ( localPlayerTextTexture )
-		SDL_RenderCopy( renderer, localPlayerTextTexture, nullptr, &localPlayerTextRect  );
+	RenderHelpers::RenderTextItem( renderer, localPlayerText );
 
 	RenderHelpers::RenderTextItem( renderer, localPlayerCaption);
 	RenderHelpers::RenderTextItem( renderer, localPlayerPoints);
 	RenderHelpers::RenderTextItem( renderer, localPlayerLives );
 	RenderHelpers::RenderTextItem( renderer, localPlayerBalls );
 
-	// Remote
 	if ( !isTwoPlayerMode )
 		return;
 
@@ -549,36 +541,25 @@ bool Renderer::LoadFontAndText()
 }
 void Renderer::RenderText( const std::string &textToRender, const Player &player, bool fade   )
 {
-	if ( player == Player::Local )
+	if ( player != Player::Local )
+		return;
+
+	if ( fade )
 	{
-		if ( fade )
-		{
-			RemoveText();
-			localPlayerTextFade = true;
-		}
-
-		ResetAlpha();
-
-		if (  localPlayerTextValue != textToRender || localPlayerTextTexture == nullptr )
-		{
-			localPlayerTextValue = textToRender;
-
-			SDL_DestroyTexture( localPlayerTextTexture );
-			localPlayerTextTexture =
-				RenderHelpers::RenderTextTexture_Solid( bigFont, textToRender.c_str(), colorConfig.textColor, localPlayerTextRect, renderer );
-
-			localPlayerTextRect.x = ( background.w / 2 ) - ( localPlayerTextRect.w / 2 );
-			localPlayerTextRect.y = ( background.h / 2 ) - ( localPlayerTextRect.h / 2 );
-
-			localPlayerTextFade = fade;
-		}
-
+		localPlayerText.DestroyTexture();
+		localPlayerText.StartFade();
 	}
-}
-void Renderer::RemoveText()
-{
-	SDL_DestroyTexture( localPlayerTextTexture );
-	localPlayerTextTexture = nullptr;
+
+	localPlayerText.ReasetAlpha();
+
+	if (  localPlayerText.NeedsUpdate( textToRender  ) )
+	{
+		localPlayerText.value = textToRender;
+		localPlayerText.doFade = fade;
+
+		localPlayerText.Reset( renderer, bigFont, colorConfig.textColor );
+		localPlayerText.Rescale( background.w, background.h );
+	}
 }
 void Renderer::RenderPlayerCaption( const std::string textToRender, const Player &player  )
 {
@@ -734,7 +715,7 @@ void Renderer::ResetText()
 	RenderLives( 0, Player::Remote );
 	RenderBallCount( 0, Player::Local );
 	RenderBallCount( 0, Player::Remote );
-	ResetAlpha();
+	localPlayerText.ReasetAlpha();
 }
 void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
 {
@@ -1013,11 +994,10 @@ void Renderer::CleanUpSurfaces()
 	SDL_DestroyTexture( remotePlayerBallTexture );
 
 	// Free text surfaces
-	SDL_DestroyTexture( localPlayerTextTexture);
+	localPlayerText.DestroyTexture();
 	SDL_DestroyTexture( localPlayerCaption.texture );
 	SDL_DestroyTexture( localPlayerLives.texture );
 	SDL_DestroyTexture( localPlayerPoints.texture );
-
 }
 void Renderer::CleanUpLists()
 {
@@ -1072,43 +1052,13 @@ void Renderer::Update( double delta )
 			++p;
 	}
 
-	if ( !localPlayerTextFade )
-		return;
-
-	if ( localPlayerTextAlpha  > 0.0 )
-	{
-		localPlayerTextAlpha -= ( delta * 0.888 );
-
-		if ( localPlayerTextAlpha < 0.0 )
-		{
-			localPlayerTextAlpha = 1.0;
-			localPlayerTextFade = false;
-		} else
-		{
-			Uint8 alpha  =  static_cast< Uint8 > ( 255 * localPlayerTextAlpha );
-			SDL_SetTextureAlphaMod( localPlayerTextTexture, alpha );
-		}
-	}
-}
-void Renderer::ResetAlpha()
-{
-	localPlayerTextAlpha = 1.0;
-	SDL_SetTextureAlphaMod( localPlayerTextTexture, 255 );
-}
-void Renderer::StartFade()
-{
-	localPlayerTextFade = true;
+	localPlayerText.Update( delta );
 }
 void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 {
 	Rect r( 0,0,10,10 );
 	Vector2f pos = RectHelpers::CenterInRect( tile->rect, r );
-	SDL_Color color{ 255, 255, 255, 255 };
-
-	if ( tile->GetTileType() == TileType::Hard )
-		color = GetHardTileColor( 5 - tile->GetHitsLeft() );
-	else
-		color = GetTileColor( tile->GetTileTypeAsIndex() );
+	SDL_Color color = GetTileColor( tile );
 
 	for ( int i = 0; i < colorConfig.particleFireCount ; ++i )
 	{

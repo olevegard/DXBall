@@ -252,25 +252,21 @@ private:
 	TTF_Font* hugeFont;
 
 	// main info text...
-	SDL_Texture* localPlayerTextTexture;
-	SDL_Rect     localPlayerTextRect;
-	std::string  localPlayerTextValue;
-	double 		 localPlayerTextAlpha;
-	bool 		 localPlayerTextFade;
+	RenderingItem< std::string > localPlayerText;
 
 	// Player name
 	RenderingItem< std::string > localPlayerCaption;
 	RenderingItem< std::string > remotePlayerCaption;
 
-	// lives
+	// Lives
 	RenderingItem< uint64_t > localPlayerLives;
 	RenderingItem< uint64_t > remotePlayerLives;
 
-	// points
+	// Points
 	RenderingItem< uint64_t > localPlayerPoints;
 	RenderingItem< uint64_t > remotePlayerPoints;
 
-	// balls
+	// Balls
 	RenderingItem< uint64_t > localPlayerBalls;
 	RenderingItem< uint64_t > remotePlayerBalls;
 

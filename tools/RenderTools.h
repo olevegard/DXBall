@@ -5,13 +5,14 @@
 #include <SDL2/SDL_image.h>
 
 #include "math/Rect.h"
-#include "../structs/rendering/RenderingItem.h"
 #include "../structs/menu_items/MainMenuItem.h"
 
 #include <string>
 #include <vector>
 #include <iostream>
 
+
+template < class Value > class RenderingItem;
 class RenderHelpers
 {
 	public:

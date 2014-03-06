@@ -1,6 +1,7 @@
 #include "RenderTools.h"
 
 #include <iostream>
+#include "../structs/rendering/RenderingItem.h"
 
 
 const int32_t RenderHelpers::SCREEN_BPP = 32;
