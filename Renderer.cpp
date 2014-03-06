@@ -200,15 +200,14 @@ void Renderer::ToggleFullscreen()
 }
 bool Renderer::SetFullscreen( bool fullscreenOn )
 {
-	std::cout << "Renderer@" << __LINE__  << " Settting fullscreen...\n";
 	fullscreen = fullscreenOn;
 
 	if ( SDL_SetWindowFullscreen( window, (fullscreen ) ? SDL_WINDOW_FULLSCREEN : 0 ) )
 	{
 		std::cout << "Renderer@" << __LINE__  << " Failed to set fullscreen mode to " << std::boolalpha << fullscreen << std::endl;
+		std::cout << "Renderer@" << __LINE__  << " Error : " << SDL_GetError() << std::endl;
 		return false;
 	}
-	std::cout << "Renderer@" << __LINE__  << " Error : " << SDL_GetError() << std::endl;
 	return true;
 }
 // ============================================================================================
@@ -287,18 +286,9 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
 	ballList.push_back( ball );
 }
-
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
 {
-	const auto &p = std::find( ballList.begin(), ballList.end(), ball );
-
-	if ( p == ballList.end() )
-	{
-		std::cout << "Renderer.cpp@" << __LINE__ << " Ball not found" << std::endl;
-		std::cin.ignore();
-	}
-	else
-		ballList.erase( p  );
+	ballList.erase( std::find( ballList.begin(), ballList.end(), ball ) );
 }
 void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 {
@@ -524,13 +514,12 @@ void Renderer::RenderMainMenuFooter()
 
 bool Renderer::LoadFontAndText()
 {
-	//tinyFont = TTF_OpenFont( "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansMono.ttf", 20 );
 	font = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 28 );
 	mediumFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 41 );
 	bigFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 57 );
 	hugeFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 100 );
 
-	if ( bigFont == nullptr || font == nullptr ||/* tinyFont == nullptr ||*/ mediumFont == nullptr || hugeFont == nullptr )
+	if ( bigFont == nullptr || font == nullptr || mediumFont == nullptr || hugeFont == nullptr )
 	{
 		std::cout << "Loading failed" << std::endl;
 		std::cin.ignore();
@@ -849,7 +838,6 @@ void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::
 {
 	pauseResumeButton = AddMenuButtonHelper( pauseResumeButton, resumeString, { 0, 0, 0, 0 }  );
 	pauseResumeButton.SetRectXY( margin / 2, background.h - pauseResumeButton.GetRectH() );
-	std::cout << "Adding button : " << pauseResumeButton.GetRectX() << std::endl;
 
 	pauseMainMenuButton = AddMenuButtonHelper( pauseMainMenuButton, mainMenuString, pauseResumeButton.GetRect()  );
 
@@ -867,7 +855,6 @@ void Renderer::CenterPauseButtons( )
 	pauseMainMenuButton.SetRectX( pauseResumeButton.GetEndX() + margin );
 	pauseQuitButton.SetRectX( pauseMainMenuButton.GetEndX() + margin );
 }
-
 void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemType &mit  )
 {
 	switch ( mit )
@@ -884,18 +871,15 @@ void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemT
 		case PauseMenuItemType::Unknown:
 			break;
 	}
-
 }
 SDL_Rect Renderer::GetPauseResumeRect() const
 {
 	return pauseResumeButton.GetRect();
 }
-
 SDL_Rect Renderer::GetPauseMainMenuRect() const
 {
 	return pauseMainMenuButton.GetRect();
 }
-
 SDL_Rect Renderer::GetPauseQuitRect() const
 {
 	return pauseQuitButton.GetRect();
@@ -918,7 +902,6 @@ void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::strin
 void Renderer::CenterLobbyButtons( )
 {
 	int32_t width = 20 + lobbyBackButton.GetRectW() + lobbyNewGameButton.GetRectW() + lobbyUpdateButton.GetRectW();
-	//int32_t width = 20 + lobbyBackButton.GetEndX() - lobbyNewGameButton.GetRectX();
 	int32_t newX = lobbyMenuListRect.x + static_cast< int32_t > ( ( lobbyMenuListRect.w * 0.5 ) - ( width * 0.5 ) );
 
 	lobbyNewGameButton.SetRectX( newX );
@@ -976,16 +959,11 @@ void Renderer::CleanUp()
 }
 void Renderer::CleanUpSurfaces()
 {
-	// Free tile
 	for ( const auto &p : tileTextures )
-	{
 		SDL_DestroyTexture( p );
-	}
 
 	for ( const auto &p : hardTileTextures )
-	{
 		SDL_DestroyTexture( p );
-	}
 
 	// Free ball/paddle
 	SDL_DestroyTexture( localPlayerPaddle       );
@@ -1038,7 +1016,6 @@ SDL_Rect Renderer::CalcMenuListRect()
 	lobbyMenuListRect.x = static_cast< int32_t > ( ( background.w * 0.5   ) - ( lobbyMenuListRect.w * 0.5 ) );
 	lobbyMenuListRect.y = static_cast< int32_t > ( ( greyAreaRect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyAreaRect.y;
 
-	std::cout << "AddLobbyMenuButtons.w set to : " << lobbyMenuListRect.w << std::endl;
 	return lobbyMenuListRect;
 }
 void Renderer::Update( double delta )
@@ -1067,4 +1044,43 @@ void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 		p.SetSpeed( colorConfig.particleSpeedMin, colorConfig.particleSpeedMax );
 		particles.push_back( p );
 	}
+}
+SDL_Color Renderer::GetTileColor( std::shared_ptr< Tile > tile  )
+{
+	if ( tile->GetTileType() == TileType::Hard )
+		return GetHardTileColor( tile->GetHitsLeft() );
+	else
+		return GetTileColor( tile->GetTileTypeAsIndex() );
+}
+void Renderer::SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
+{
+	isTwoPlayerMode = isTwoPlayerMode_;
+}
+SDL_Renderer* Renderer::GetRenderer() const
+{
+	return renderer;
+}
+TTF_Font* Renderer::GetFont() const
+{
+	return font;
+}
+SDL_Color Renderer::GetBackgroundColor() const
+{
+	return colorConfig.backgroundColor;
+}
+SDL_Color Renderer::GetTextColor() const
+{
+	return colorConfig.textColor;
+}
+void Renderer::AddMenuList( MenuList* mitem )
+{
+	ml = mitem;
+}
+SDL_Color Renderer::GetTileColor( uint64_t type )
+{
+	return colorConfig.GetTileColor( static_cast < TileType > ( type ));
+}
+SDL_Color Renderer::GetHardTileColor( uint64_t index )
+{
+	return colorConfig.GetTileColor( TileType::Hard, index );
 }

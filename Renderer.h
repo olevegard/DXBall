@@ -69,19 +69,33 @@ public:
 	void SetRemotePaddle( std::shared_ptr< Paddle >  &paddle );
 
 	void Render( );
+	void Update( double delta );
+
+	void SetGameState( const GameState &gs );
+	void SetIsTwoPlayerMode( bool isTwoPlayerMode_ );
+
+	void GenerateParticleEffect( std::shared_ptr< Tile > tile );
 
 	// Ingame text
+	void ResetAlpha();
+	void StartFade()
+	{
+		localPlayerText.StartFade();
+	}
+
 	void RenderText( const std::string &textToRender, const Player &player, bool fade = false);
-	void RemoveText();
 
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
-	void RenderLives( unsigned long lifeCount, const Player &player );
-	void RenderPoints( unsigned long pointCount, const Player &player );
 	void RenderBallCount( unsigned long ballCount, const Player &player );
+	void RenderPoints( unsigned long pointCount, const Player &player );
+	void RenderLives( unsigned long lifeCount, const Player &player );
 
+	void RemoveText();
 	void ResetText();
 
+
 	// Main menu
+	// ========================================================================
 	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
 	MenuItem AddMenuButtonHelper( MenuItem mainmenuItem, std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
@@ -112,52 +126,17 @@ public:
 	SDL_Rect GetLobbyUpdateRect() const;
 	SDL_Rect GetLobbyBackRect() const;
 
-	void SetGameState( const GameState &gs );
-	void SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
-	{
-		isTwoPlayerMode = isTwoPlayerMode_;
-	}
+	void AddMenuList( MenuList* mitem );
 
-	SDL_Renderer* GetRenderer() const
-	{
-		return renderer;
-	}
+	SDL_Renderer* GetRenderer() const;
+	TTF_Font* GetFont() const;
+	SDL_Color GetBackgroundColor() const;
+	SDL_Color GetTextColor() const;
+	SDL_Color GetTileColor( std::shared_ptr< Tile > tile  );
+	SDL_Color GetTileColor( uint64_t type );
+	SDL_Color GetHardTileColor( uint64_t index );
 
-	TTF_Font* GetFont() const
-	{
-		return font;
-	}
-
-	SDL_Color GetBackgroundColor() const
-	{
-		return colorConfig.backgroundColor;
-	}
-
-	SDL_Color GetTextColor() const
-	{
-		return colorConfig.textColor;
-	}
-
-	void AddMenuList( MenuList* mitem )
-	{
-		ml = mitem;
-	}
-
-	SDL_Color GetTileColor( uint64_t type )
-	{
-		return colorConfig.GetTileColor( static_cast < TileType > ( type ));
-	}
-
-	SDL_Color GetHardTileColor( uint64_t index )
-	{
-		return colorConfig.GetTileColor( TileType::Hard, index );
-	}
 	SDL_Rect CalcMenuListRect();
-	void Update( double delta );
-	void ResetAlpha();
-	void StartFade();
-
-	void GenerateParticleEffect( std::shared_ptr< Tile > tile );
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
