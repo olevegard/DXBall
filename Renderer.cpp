@@ -405,12 +405,7 @@ void Renderer::RenderParticles()
 {
 	for ( const auto &p : particles )
 	{
-		if ( p.isAlive )
-		{
-			SDL_Rect r = p.rect.ToSDLRect();
-			RenderHelpers::SetDrawColor( renderer, p.color );
-			SDL_RenderFillRect( renderer, &r );
-		}
+		RenderHelpers::RenderParticle( renderer, p );
 	}
 
 	RenderHelpers::SetDrawColor( renderer, colorConfig.backgroundColor);
