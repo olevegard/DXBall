@@ -174,8 +174,9 @@ private:
 	void RenderMainMenuFooter();
 
 	bool LoadAssets();
-	bool LoadImages();
 	void LoadColors();
+	bool InitializeTextures();
+	void InitializeMainMenuTextures();
 
 	void PrintSDL_TTFVersion();
 
@@ -260,14 +261,9 @@ private:
 	MenuItem	optionsButton;
 	MenuItem	quitButton;
 
-	SDL_Texture*   mainMenuCaptionTexture;
-	SDL_Rect       mainMenuCaptionRect;
-
-	SDL_Texture*   mainMenuSubCaptionTexture;
-	SDL_Rect       mainMenuSubCaptionRect;
-
-	SDL_Texture*   greyAreaTexture;
-	SDL_Rect       greyAreaRect;
+	RenderingItem< std::string > mainMenuCaption;
+	RenderingItem< std::string > mainMenuSubCaption;
+	RenderingItem< std::string > greyArea;
 
 	// Pause menu mode
 	// =============================================

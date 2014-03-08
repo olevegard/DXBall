@@ -68,9 +68,6 @@
 	,	optionsButton        ( "Options"       )
 	,	quitButton           ( "Quit"          )
 
-	,	greyAreaTexture( nullptr )
-	,	greyAreaRect( )
-
 	,	pauseResumeButton( "Resume" )
 	,	pauseMainMenuButton( "Main Menu" )
 	,	pauseQuitButton( "Quit" )
@@ -220,33 +217,17 @@ bool Renderer::LoadAssets()
 
 	LoadColors();
 
-	if( !LoadImages() )
+	if( !InitializeTextures() )
 		return false;
 
 	return true;
 }
-bool Renderer::LoadImages()
+bool Renderer::InitializeTextures()
 {
-	localPlayerBallTexture  = RenderHelpers::InitSurface( background.w, background.h, colorConfig.localPlayerColor , renderer );
-	remotePlayerBallTexture = RenderHelpers::InitSurface( background.w, background.h, colorConfig.remotePlayerColor, renderer );
+	localPlayerBallTexture  = RenderHelpers::InitSurface( 20, 20, colorConfig.localPlayerColor , renderer );
+	remotePlayerBallTexture = RenderHelpers::InitSurface( 20, 20, colorConfig.remotePlayerColor, renderer );
 
-	// Menu mode
-	mainMenuBackground = RenderHelpers::InitSurface( background.w, background.h, 0, 0, 0, renderer );
-
-	mainMenuCaptionTexture = RenderHelpers::RenderTextTexture_Blended( hugeFont, "DX Ball", colorConfig.textColor, mainMenuCaptionRect, renderer );
-	mainMenuCaptionRect.x = ( background.w / 2 ) - ( mainMenuCaptionRect.w / 2 );
-	mainMenuCaptionRect.y = 0;
-
-	mainMenuSubCaptionTexture = RenderHelpers::RenderTextTexture_Blended(
-			mediumFont,
-			"A quite simple clone made by a weird guy",
-			colorConfig.textColor,
-			mainMenuSubCaptionRect,
-			renderer
-		);
-	mainMenuSubCaptionRect.x = ( background.w / 2 ) - ( mainMenuSubCaptionRect.w / 2 );
-	mainMenuSubCaptionRect.y = mainMenuCaptionRect.y  + mainMenuCaptionRect.h;//+ margin;
-
+	InitializeMainMenuTextures();
 	InitGreyAreaRect();
 
 	for ( uint64_t i = 0; i < tileTextures.size() ; ++i )
@@ -256,6 +237,20 @@ bool Renderer::LoadImages()
 		RenderHelpers::SetTileColorSurface( renderer, i,  GetHardTileColor( i ) , hardTileTextures );
 
 	return true;
+}
+void Renderer::InitializeMainMenuTextures()
+{
+	mainMenuBackground = RenderHelpers::InitSurface( background.w, background.h, 0, 0, 0, renderer );
+
+	mainMenuCaption.Reset( renderer, "DX Ball",  hugeFont, colorConfig.textColor );
+
+	mainMenuCaption.rect.x = ( background.w / 2 ) - ( mainMenuCaption.rect.w / 2 );
+	mainMenuCaption.rect.y = 0;
+
+	mainMenuSubCaption.Reset( renderer, "A quite simple clone made by a weird guy", mediumFont, colorConfig.textColor );
+
+	mainMenuSubCaption.rect.x = ( background.w / 2 ) - ( mainMenuSubCaption.rect.w / 2 );
+	mainMenuSubCaption.rect.y = mainMenuCaption.rect.y  + mainMenuCaption.rect.h;
 }
 void Renderer::LoadColors()
 {
@@ -485,16 +480,12 @@ void Renderer::RenderText()
 }
 void Renderer::RenderMainMenuHeader()
 {
-	if( mainMenuCaptionTexture )
-		SDL_RenderCopy( renderer, mainMenuCaptionTexture   , nullptr, &mainMenuCaptionRect );
-
-	if( mainMenuSubCaptionTexture )
-		SDL_RenderCopy( renderer, mainMenuSubCaptionTexture, nullptr, &mainMenuSubCaptionRect );
+	RenderHelpers::RenderTextItem( renderer, mainMenuCaption  );
+	RenderHelpers::RenderTextItem( renderer, mainMenuSubCaption  );
 }
 void Renderer::RenderMainMenuImage()
 {
-	if ( greyAreaTexture )
-		SDL_RenderCopy( renderer, greyAreaTexture, nullptr, &greyAreaRect );
+	RenderHelpers::RenderTextItem( renderer, greyArea  );
 }
 void Renderer::RenderMainMenuFooter()
 {
@@ -665,7 +656,7 @@ void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainM
 	{
 		case MainMenuItemType::SinglePlayer:
 			singlePlayerText = AddMenuButtonHelper( singlePlayerText, menuItemString, { 0, 0, 0, 0 }  );
-			singlePlayerText.SetRectXY( margin / 2,background.h - ( ( background.h - greyAreaRect.h ) / 2)  + ( singlePlayerText.GetRectH( )) );
+			singlePlayerText.SetRectXY( margin / 2,background.h - ( ( background.h - greyArea.rect.h ) / 2)  + ( singlePlayerText.GetRectH( )) );
 			break;
 		case MainMenuItemType::MultiPlayer:
 			multiplayerPlayerText = AddMenuButtonHelper( multiplayerPlayerText, menuItemString, singlePlayerText.GetRect() );
@@ -769,14 +760,16 @@ void Renderer::CenterMainMenuButtons( )
 }
 void Renderer::InitGreyAreaRect( )
 {
-	greyAreaRect.w = background.w;
-	int heightCutoff = mainMenuSubCaptionRect.y + mainMenuSubCaptionRect.h;
+	// The distance from the top of grey area to top of window
+	int heightCutoff = mainMenuSubCaption.rect.y + mainMenuSubCaption.rect.h;
 
-	greyAreaRect.h = background.h - heightCutoff * 2;
-	greyAreaRect.x = 0;
-	greyAreaRect.y = ( background.h - greyAreaRect.h ) / 2;
+	greyArea.rect.x = 0;
+	greyArea.rect.y = heightCutoff;
 
-	greyAreaTexture = RenderHelpers::InitSurface( background.w, background.h, colorConfig.greyAreaColor, renderer );
+	greyArea.rect.w = background.w;
+	greyArea.rect.h = background.h - heightCutoff * 2;
+
+	greyArea.Init( renderer, colorConfig.greyAreaColor );
 }
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
@@ -954,11 +947,11 @@ void Renderer::PrintSDL_TTFVersion()
 }
 SDL_Rect Renderer::CalcMenuListRect()
 {
-	lobbyMenuListRect.w = static_cast< int32_t > ( greyAreaRect.w * 0.6 );
-	lobbyMenuListRect.h = static_cast< int32_t > ( greyAreaRect.h * 0.9 );
+	lobbyMenuListRect.w = static_cast< int32_t > ( greyArea.rect.w * 0.6 );
+	lobbyMenuListRect.h = static_cast< int32_t > ( greyArea.rect.h * 0.9 );
 
 	lobbyMenuListRect.x = static_cast< int32_t > ( ( background.w * 0.5   ) - ( lobbyMenuListRect.w * 0.5 ) );
-	lobbyMenuListRect.y = static_cast< int32_t > ( ( greyAreaRect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyAreaRect.y;
+	lobbyMenuListRect.y = static_cast< int32_t > ( ( greyArea.rect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyArea.rect.y;
 
 	return lobbyMenuListRect;
 }
