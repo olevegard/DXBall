@@ -366,18 +366,28 @@ void Renderer::Render( )
 }
 void Renderer::RenderMenu()
 {
-	RenderMainMenuHeader();
-	RenderMainMenuImage();
+	RenderHelpers::RenderTextItem( renderer, mainMenuCaption  );
+	RenderHelpers::RenderTextItem( renderer, mainMenuSubCaption  );
+	RenderHelpers::RenderTextItem( renderer, greyArea  );
 
 	if ( gameState == GameState::Lobby )
-	{
-		RenderHelpers::RenderMenuItem( renderer, lobbyNewGameButton );
-		RenderHelpers::RenderMenuItem( renderer, lobbyUpdateButton );
-		RenderHelpers::RenderMenuItem( renderer, lobbyBackButton );
-		ml->Render( renderer );
-	}
+		RenderLobbyFooter();
 	else
 		RenderMainMenuFooter();
+}
+void Renderer::RenderLobbyFooter()
+{
+	RenderHelpers::RenderMenuItem( renderer, lobbyNewGameButton );
+	RenderHelpers::RenderMenuItem( renderer, lobbyUpdateButton );
+	RenderHelpers::RenderMenuItem( renderer, lobbyBackButton );
+	gameList->Render( renderer );
+}
+void Renderer::RenderMainMenuFooter()
+{
+	RenderHelpers::RenderMenuItem( renderer, singlePlayerText );
+	RenderHelpers::RenderMenuItem( renderer, multiplayerPlayerText );
+	RenderHelpers::RenderMenuItem( renderer, optionsButton );
+	RenderHelpers::RenderMenuItem( renderer, quitButton );
 }
 void Renderer::RenderPause()
 {
@@ -478,22 +488,7 @@ void Renderer::RenderText()
 	RenderHelpers::RenderTextItem( renderer, remotePlayerPoints );
 	RenderHelpers::RenderTextItem( renderer, remotePlayerBalls );
 }
-void Renderer::RenderMainMenuHeader()
-{
-	RenderHelpers::RenderTextItem( renderer, mainMenuCaption  );
-	RenderHelpers::RenderTextItem( renderer, mainMenuSubCaption  );
-}
-void Renderer::RenderMainMenuImage()
-{
-	RenderHelpers::RenderTextItem( renderer, greyArea  );
-}
-void Renderer::RenderMainMenuFooter()
-{
-	RenderHelpers::RenderMenuItem( renderer, singlePlayerText );
-	RenderHelpers::RenderMenuItem( renderer, multiplayerPlayerText );
-	RenderHelpers::RenderMenuItem( renderer, optionsButton );
-	RenderHelpers::RenderMenuItem( renderer, quitButton );
-}
+
 // ==============================================================================================
 // ================================= Text handling ==============================================
 // ==============================================================================================

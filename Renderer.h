@@ -163,15 +163,12 @@ private:
 
 	void RenderParticles();
 
-	// Render GameStates
-	void RenderMenu();
-	void RenderLobby();
-	void RenderPause();
-
 	// Render main menu
-	void RenderMainMenuHeader();
-	void RenderMainMenuImage();
+	void RenderMenu();
+	void RenderLobbyFooter();
 	void RenderMainMenuFooter();
+
+	void RenderPause();
 
 	bool LoadAssets();
 	void LoadColors();
