@@ -36,6 +36,10 @@ template < class Value > class RenderingItem
 			DestroyTexture();
 			texture = RenderHelpers::RenderTextTexture_Solid( font, str, color, rect, renderer );
 		}
+		void Init( SDL_Renderer* renderer, const SDL_Color &clr )
+		{
+			texture = RenderHelpers::InitSurface( rect.w, rect.h, clr, renderer );
+		}
 		void Rescale( uint32_t windowWidth, uint32_t windowHeight )
 		{
 			rect.x = ( windowWidth  / 2 ) - ( rect.w / 2 );
