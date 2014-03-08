@@ -191,7 +191,7 @@ private:
 
 	ColorConfigLoader colorConfig;
 
-	MenuList* ml;
+	MenuList* gameList;
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -200,7 +200,9 @@ private:
 
 	SDL_Rect background;
 	unsigned int screenFlags;
-	bool fullscreen;
+
+	bool isFullscreen;
+	bool isTwoPlayerMode;
 
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;
@@ -210,7 +212,6 @@ private:
 	std::shared_ptr< Paddle >  localPaddle;
 	std::shared_ptr< Paddle >  remotePaddle;
 
-	bool isTwoPlayerMode;
 	SDL_Texture* localPlayerBallTexture;
 	SDL_Texture* localPlayerPaddle;
 

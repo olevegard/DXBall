@@ -38,14 +38,15 @@
 
 	,	background({ 0, 0, 1920 / 2, 1080 / 2 })
 	,	screenFlags( SDL_WINDOW_OPENGL  )
-	,	fullscreen( false )
+
+	,	isFullscreen( false )
+	,	isTwoPlayerMode( false )
 
 	,	ballList(  )
 	,	tileList(  )
 	,	localPaddle( nullptr )
 	,	remotePaddle( nullptr )
 
-	,	isTwoPlayerMode( false )
 	,	localPlayerBallTexture( nullptr )
 	,	localPlayerPaddle( nullptr )
 
@@ -91,10 +92,10 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 	hardTileTextures.resize( 5 );
 #endif
 
-	fullscreen = startFS;
+	isFullscreen= startFS;
 	background = rect;
 
-	if ( fullscreen )
+	if ( isFullscreen )
 		screenFlags = SDL_WINDOW_FULLSCREEN;
 	else
 		screenFlags = SDL_WINDOW_OPENGL;
@@ -193,15 +194,15 @@ void Renderer::SetGameState( const GameState &gs )
 }
 void Renderer::ToggleFullscreen()
 {
-	SetFullscreen( !fullscreen );
+	SetFullscreen( !isFullscreen );
 }
 bool Renderer::SetFullscreen( bool fullscreenOn )
 {
-	fullscreen = fullscreenOn;
+	isFullscreen = fullscreenOn;
 
-	if ( SDL_SetWindowFullscreen( window, (fullscreen ) ? SDL_WINDOW_FULLSCREEN : 0 ) )
+	if ( SDL_SetWindowFullscreen( window, (isFullscreen ) ? SDL_WINDOW_FULLSCREEN : 0 ) )
 	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to set fullscreen mode to " << std::boolalpha << fullscreen << std::endl;
+		std::cout << "Renderer@" << __LINE__  << " Failed to set isFullscreen mode to " << std::boolalpha << isFullscreen << std::endl;
 		std::cout << "Renderer@" << __LINE__  << " Error : " << SDL_GetError() << std::endl;
 		return false;
 	}
@@ -1006,7 +1007,7 @@ SDL_Color Renderer::GetTextColor() const
 }
 void Renderer::AddMenuList( MenuList* mitem )
 {
-	ml = mitem;
+	gameList = mitem;
 }
 SDL_Color Renderer::GetTileColor( uint64_t type )
 {
