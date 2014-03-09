@@ -6,7 +6,6 @@
 #include "math/RectHelpers.h"
 #include "math/Math.h"
 
-
 #include "structs/game_objects/Ball.h"
 #include "structs/game_objects/Tile.h"
 #include "structs/game_objects/Paddle.h"
@@ -304,7 +303,6 @@ std::shared_ptr< Bullet > PhysicsManager::GetBulletWithID( int32_t ID, const Pla
 
 	return nullptr;
 }
-
 std::shared_ptr< Bullet >  PhysicsManager::CreateBullet( int32_t id, const Player &owner, Vector2f pos )
 {
 	if ( owner == Player::Local )
@@ -548,8 +546,6 @@ void PhysicsManager::KillBallsAndBonusBoxes( const Player &player )
 			p->Kill();
 	}
 }
-
-
 void PhysicsManager::SetScale( double scale_ )
 {
 	scale = scale_;
@@ -605,6 +601,7 @@ void PhysicsManager::UpdateScale()
 		if ( p->rect.x > right )
 			right = p->rect.x;
 	}
+
 	right += width;
 	bottom += height;
 	Rect boardSize;

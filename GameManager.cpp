@@ -447,10 +447,10 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 	switch ( message.GetType() )
 	{
 		case MessageType::GameSettings:
-			RecieveGameSettingsMessage( message );
+			remoteResolutionScale = windowSize.w / message.GetSize().x;
 			break;
 		case MessageType::GameStateChanged:
-			RecieveGameStateChangedMessage( message );
+			menuManager.SetGameState( message.GetGameState() );
 			break;
 		case MessageType::PaddlePosition:
 			RecievePaddlePosMessage( message );
@@ -474,7 +474,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveBonusBoxPickupMessage( message );
 			break;
 		case MessageType::PlayerName:
-			RecievePlayerNameMessage( message );
+			renderer.RenderPlayerCaption( message.GetPlayerName(), Player::Remote );
 			break;
 		case MessageType::NewGame:
 			RecieveNewGameMessage( message );
@@ -492,7 +492,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveBulletKillMessage( message );
 			break;
 		case MessageType::TileSpawned:
-			RecieveTileSpawnMessage( message );
+			AddTile(  message.GetPos1(), message.GetTileType(), message.GetObjectID()  );
 			break;
 		case MessageType::LastTileSent:
 			logger.Log( __FILE__, __LINE__, "================================================================================");
@@ -531,18 +531,6 @@ void GameManager::RecieveEndGameMessage( const TCPMessage &message )
 	UpdateGameList();
 	menuManager.ClearGameList();
 }
-void GameManager::RecievePlayerNameMessage( const TCPMessage &message )
-{
-	renderer.RenderPlayerCaption( message.GetPlayerName(), Player::Remote );
-}
-void GameManager::RecieveGameSettingsMessage( const TCPMessage &message)
-{
-	remoteResolutionScale = windowSize.w / message.GetSize().x;
-}
-void GameManager::RecieveGameStateChangedMessage( const TCPMessage &message)
-{
-	menuManager.SetGameState( message.GetGameState() );
-}
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
 	std::shared_ptr< Ball > ball = AddBall( Player::Remote, message.GetObjectID() );
@@ -552,10 +540,6 @@ void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 	ball->SetRemoteScale( remoteResolutionScale );
 
 	renderer.RenderBallCount( remotePlayerInfo.activeBalls, Player::Remote );
-}
-void GameManager::RecieveTileSpawnMessage( const TCPMessage &message )
-{
-	AddTile(  message.GetPos1(), message.GetTileType(), message.GetObjectID()  );
 }
 void GameManager::RecieveBallDataMessage( const TCPMessage &message )
 {
@@ -1088,7 +1072,6 @@ void GameManager::JoinGame()
 }
 void GameManager::UpdateGameList()
 {
-	std::cout << "Update Game List\n";
 	menuManager.ClearGameList();
 	messageSender.SendGetGameListMessage();
 }
