@@ -31,6 +31,13 @@ MenuManager::MenuManager()
 	,	lobbyStateChanged( false  )
 {
 }
+void MenuManager::Init( Renderer &renderer )
+{
+	SDL_Rect menuListRect = renderer.CalcMenuListRect();
+	lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
+	lobbyGameList->Init( "Available Games : ",menuListRect , renderer  );
+	renderer.AddMenuList( lobbyGameList.get() );
+}
 void MenuManager::AddMenuElememts( Renderer &renderer )
 {
 	renderer.AddMainMenuButtons( "Single Player", "Multiplayer", "Options", "Quit" );

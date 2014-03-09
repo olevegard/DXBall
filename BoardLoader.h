@@ -2,8 +2,6 @@
 
 #include "structs/board/Board.h"
 
-#include <string>
-
 struct SDL_Rect;
 struct TilePosition;
 struct BoardLoader
@@ -26,7 +24,7 @@ struct BoardLoader
 	bool DoesFileExist( const std::string &fileName ) const;
 	std::string FindNextExistingBoard();
 
-		size_t currentLevel;
-		std::vector< std::string > levelTextFiles;
-		std::vector< Board > levels;
+	size_t currentLevel;
+	std::vector< std::string > levelTextFiles;
+	std::vector< Board > levels;
 };

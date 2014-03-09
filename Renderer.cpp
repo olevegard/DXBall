@@ -2,12 +2,16 @@
 
 #include "structs/game_objects/Ball.h"
 #include "structs/game_objects/Tile.h"
+#include "structs/game_objects/Bullet.h"
 #include "structs/game_objects/Paddle.h"
+#include "structs/game_objects/BonusBox.h"
 
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 #include "enums/LobbyMenuItem.h"
 #include "enums/BonusType.h"
+
+#include "math/RectHelpers.h"
 
 #include "tools/RenderTools.h"
 
@@ -116,7 +120,6 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 	return true;
 }
-
 // ============================================================================================
 // ===================================== Setup ================================================
 // ============================================================================================
@@ -489,11 +492,9 @@ void Renderer::RenderText()
 	RenderHelpers::RenderTextItem( renderer, remotePlayerPoints );
 	RenderHelpers::RenderTextItem( renderer, remotePlayerBalls );
 }
-
 // ==============================================================================================
 // ================================= Text handling ==============================================
 // ==============================================================================================
-
 bool Renderer::LoadFontAndText()
 {
 	font = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 28 );
@@ -978,6 +979,9 @@ void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 		particles.push_back( p );
 	}
 }
+// ==============================================================================================
+// =================================== Getters  ================================================
+// ==============================================================================================
 SDL_Color Renderer::GetTileColor( std::shared_ptr< Tile > tile  )
 {
 	if ( tile->GetTileType() == TileType::Hard )

@@ -3,17 +3,25 @@
 #include <memory>
 #include "NetManager.h"
 #include "Logger.h"
-
-#include "structs/net/TCPMessage.h"
-#include "structs/game_objects/Ball.h"
-#include "structs/game_objects/Tile.h"
-#include "structs/game_objects/Bullet.h"
-#include "structs/game_objects/Paddle.h"
-#include "structs/game_objects/BonusBox.h"
+/*
 
 #include "enums/MessageTarget.h"
 #include "enums/GameState.h"
+*/
 
+
+struct GamePiece;
+struct BonusBox;
+struct Bullet;
+struct Paddle;
+struct Ball;
+struct Tile;
+struct Vector2f;
+struct Rect;
+class TCPMessage;
+enum class MessageTarget : int;
+enum class GameState : int;
+enum class TileType : int;
 class MessageSender
 {
 public:

@@ -1,17 +1,11 @@
 #pragma once
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-
-#include <iostream>
 #include <vector>
 
 #include "structs/menu_items/MenuItem.h"
 #include "GameInfo.h"
 
 #include "math/Rect.h"
-#include "math/RectHelpers.h"
-
 class Renderer;
 struct MenuList
 {

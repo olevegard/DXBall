@@ -1,7 +1,6 @@
 #pragma once
 
 #include "structs/net/TCPConnection.h"
-#include <iostream>
 
 class NetManager
 {

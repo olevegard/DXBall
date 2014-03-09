@@ -5,8 +5,8 @@
 #else
 #include <time.h>
 #endif
+
 #include <cstdint>
-#include <iostream>
 
 Timer::Timer()
 	:	start(0)

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "Vector2f.h"
+#include "Rect.h"
 
 namespace RectHelpers
 {

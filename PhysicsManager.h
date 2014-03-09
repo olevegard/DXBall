@@ -1,16 +1,15 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 
 #include "MessageSender.h"
-
-#include "structs/game_objects/Ball.h"
-#include "structs/game_objects/Tile.h"
-#include "structs/game_objects/Bullet.h"
-#include "structs/game_objects/Paddle.h"
-#include "structs/game_objects/BonusBox.h"
-
+struct GamePiece;
+struct Bullet;
+struct Paddle;
+struct Ball;
+struct Tile;
+enum class Player : int;
+enum class BonusType : int;
 class PhysicsManager
 {
 public:

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Renderer.h"
 #include "MenuList.h"
 #include "GameInfo.h"
 
@@ -50,13 +49,8 @@ public:
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
 
-		void Init( Renderer &renderer )
-	{
-		SDL_Rect menuListRect = renderer.CalcMenuListRect();
-		lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
-		lobbyGameList->Init( "Available Games : ",menuListRect , renderer  );
-		renderer.AddMenuList( lobbyGameList.get() );
-	}
+	void Init( Renderer &renderer );
+
 	void AddGameToList( Renderer &renderer, GameInfo gameInfo )
 	{
 		lobbyGameList->AddItem( gameInfo, renderer );

@@ -1,19 +1,13 @@
 #pragma once
 
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <iomanip>
+#include <string>
+
 #include <vector>
-#include <algorithm>
 #include <map>
 
 #include "enums/TileType.h"
-#include "enums/BonusType.h"
 
 #include <SDL2/SDL.h>
-
-#include "tools/SDLColorHelper.h"
 
 class ConfigLoader
 {

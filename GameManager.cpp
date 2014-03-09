@@ -1,10 +1,12 @@
 #include "GameManager.h"
 
-#include "structs/board/Board.h"
 #include "structs/game_objects/Ball.h"
 #include "structs/game_objects/Tile.h"
 #include "structs/game_objects/Paddle.h"
 #include "structs/game_objects/Bullet.h"
+#include "structs/game_objects/BonusBox.h"
+
+#include "structs/board/Board.h"
 #include "structs/net/TCPMessage.h"
 
 #include "math/Math.h"
@@ -15,12 +17,9 @@
 #include "enums/LobbyMenuItem.h"
 #include "enums/MessageTarget.h"
 
-#include <limits>
 #include <vector>
-#include <iostream>
-#include <algorithm>
 #include <sstream>
-#include <cmath>
+#include <algorithm>
 
 #include "BoardLoader.h"
 #include "ConfigLoader.h"

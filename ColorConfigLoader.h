@@ -1,9 +1,5 @@
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <vector>
-#include <algorithm>
 #include <map>
+#include <vector>
 
 #include "enums/TileType.h"
 #include "enums/BonusType.h"

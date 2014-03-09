@@ -1,5 +1,14 @@
 #include "ConfigLoader.h"
 
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
+
+#include <algorithm>
+
+#include "tools/SDLColorHelper.h"
+
 void ConfigLoader::LoadConfig()
 {
 	std::ifstream configFile( "config/Config.txt" );

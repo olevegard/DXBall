@@ -1,5 +1,10 @@
 #include "ColorConfigLoader.h"
 
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+
 void ColorConfigLoader::LoadConfig()
 {
 	std::ifstream configFile( "config/ColorCfg.txt" );

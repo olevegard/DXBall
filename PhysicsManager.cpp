@@ -1,12 +1,17 @@
 #include "PhysicsManager.h"
 
 #include <algorithm>
+#include <csignal>
 
 #include "math/RectHelpers.h"
 #include "math/Math.h"
 
-#include <csignal>
 
+#include "structs/game_objects/Ball.h"
+#include "structs/game_objects/Tile.h"
+#include "structs/game_objects/Paddle.h"
+#include "structs/game_objects/Bullet.h"
+#include "structs/game_objects/BonusBox.h"
 
 PhysicsManager::PhysicsManager( MessageSender &msgSender, Logger &logger_ )
 	:	messageSender( msgSender )

@@ -12,9 +12,6 @@
 
 #include "structs/PlayerInfo.h"
 
-#include <vector>
-
-
 enum class DirectionX{ Left, Middle, Right };
 
 // Forward declarations

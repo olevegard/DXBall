@@ -1,5 +1,15 @@
 #include "MessageSender.h"
 
+#include "structs/net/TCPMessage.h"
+
+#include "enums//MessageType.h"
+#include "enums//MessageTarget.h"
+
+#include "structs/game_objects/Ball.h"
+#include "structs/game_objects/Bullet.h"
+#include "structs/game_objects/BonusBox.h"
+#include "structs/game_objects/Tile.h"
+
 MessageSender::MessageSender( NetManager &netMan )
 :	netManager( netMan )
 {

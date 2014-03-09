@@ -7,18 +7,9 @@
 // All rendering happens within this class.
 #pragma once
 
-#include <vector>
 #include <memory>
-#include <string>
-#include <map>
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 
 #include "enums/GameState.h"
-
-#include "structs/game_objects/BonusBox.h"
-#include "structs/game_objects/Bullet.h"
 
 #include "structs/menu_items/MainMenuItem.h"
 #include "structs/menu_items/PauseMenuItem.h"
@@ -27,12 +18,12 @@
 #include "structs/rendering/RenderingItem.h"
 
 #include "ColorConfigLoader.h"
-
 #include "MenuList.h"
 
 // Forward declarations
 struct Ball;
 struct Tile;
+struct Bullet;
 struct Paddle;
 struct BonusBox;
 enum class Player : int;
