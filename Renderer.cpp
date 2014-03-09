@@ -25,7 +25,7 @@
 
 #include <csignal>
 
-// This macro enalea falltrhough in switch-case statements
+// This macro enables falltrhough in switch-case statements
 // Two or more consecute case wihtout break triggers a warning
 // Adding FALLTHROUGH before the case makes clang ignore this
 // The warning will be triggered as normal if FALLTHROUGH is not used
@@ -73,13 +73,14 @@
 	,	optionsButton        ( "Options"       )
 	,	quitButton           ( "Quit"          )
 
-	,	pauseResumeButton( "Resume" )
+	,	pauseResumeButton  ( "Resume"    )
 	,	pauseMainMenuButton( "Main Menu" )
-	,	pauseQuitButton( "Quit" )
+	,	pauseQuitButton    ( "Quit"      )
 
 	,	lobbyNewGameButton( "New Game" )
-	,	lobbyUpdateButton( "Update" )
-	,	lobbyBackButton( "Back" )
+	,	lobbyUpdateButton ( "Update"   )
+	,	lobbyBackButton   ( "Back"     )
+
 	,	lobbyMenuListRect( { 0, 0, 0, 0 })
 {
 }
@@ -413,9 +414,7 @@ void Renderer::RenderGameObjects()
 void Renderer::RenderParticles()
 {
 	for ( const auto &p : particles )
-	{
 		RenderHelpers::RenderParticle( renderer, p );
-	}
 
 	RenderHelpers::SetDrawColor( renderer, colorConfig.backgroundColor);
 }
@@ -470,7 +469,7 @@ void Renderer::RenderBonusBoxes()
 {
 	for ( std::shared_ptr< BonusBox > gp : bonusBoxList)
 	{
-		SDL_Rect boxRect = gp->rect.ToSDLRect();//bonusBox.ToSDLRect();//bonusBoxRect.ToSDLRect();
+		SDL_Rect boxRect = gp->rect.ToSDLRect();
 		SDL_Texture* texture = gp->GetTexture();
 		SDL_RenderCopy( renderer, texture, nullptr, &boxRect );
 	}
@@ -522,7 +521,7 @@ void Renderer::RenderText( const std::string &textToRender, const Player &player
 		localPlayerText.StartFade();
 	}
 
-	localPlayerText.ReasetAlpha();
+	localPlayerText.ResetAlpha();
 
 	if (  localPlayerText.NeedsUpdate( textToRender  ) )
 	{
@@ -636,7 +635,7 @@ void Renderer::ResetText()
 	RenderLives( 0, Player::Remote );
 	RenderBallCount( 0, Player::Local );
 	RenderBallCount( 0, Player::Remote );
-	localPlayerText.ReasetAlpha();
+	localPlayerText.ResetAlpha();
 }
 void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
 {
@@ -728,22 +727,6 @@ void Renderer::RemoveMainMenuItemsUnderlines( )
 	SetMainMenuItemUnderline( false, MainMenuItemType::Options );
 	SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
 }
-SDL_Rect Renderer::GetSinglePlayerRect() const
-{
-	return singlePlayerText.GetRect();
-}
-SDL_Rect Renderer::GetMultiplayerPlayerRect() const
-{
-	return multiplayerPlayerText.GetRect();
-}
-SDL_Rect Renderer::GetOptionsPlayerRect() const
-{
-	return optionsButton.GetRect();
-}
-SDL_Rect Renderer::GetQuitPlayerRect() const
-{
-	return quitButton.GetRect();
-}
 void Renderer::CenterMainMenuButtons( )
 {
 	int totoalWidth = quitButton.GetEndX() - singlePlayerText.GetRectX();
@@ -806,18 +789,6 @@ void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemT
 			break;
 	}
 }
-SDL_Rect Renderer::GetPauseResumeRect() const
-{
-	return pauseResumeButton.GetRect();
-}
-SDL_Rect Renderer::GetPauseMainMenuRect() const
-{
-	return pauseMainMenuButton.GetRect();
-}
-SDL_Rect Renderer::GetPauseQuitRect() const
-{
-	return pauseQuitButton.GetRect();
-}
 void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::string &update, const std::string &back )
 {
 	int32_t xPos =
@@ -861,18 +832,6 @@ void Renderer::SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mi
 			break;
 	}
 }
-SDL_Rect Renderer::GetLobbyNewGameRect() const
-{
-	return lobbyNewGameButton.GetRect();
-}
-SDL_Rect Renderer::GetLobbyUpdateRect() const
-{
-	return lobbyUpdateButton.GetRect();
-}
-SDL_Rect Renderer::GetLobbyBackRect() const
-{
-	return lobbyBackButton.GetRect();
-}
 void Renderer::CalculateRemotePlayerTextureRects()
 {
 	// Set remaning text rects based on caption rect
@@ -885,6 +844,47 @@ void Renderer::CalculateRemotePlayerTextureRects()
 	remotePlayerBalls.rect.x = remotePlayerPoints.rect.x;
 	remotePlayerBalls.rect.y = remotePlayerPoints.rect.y + remotePlayerPoints.rect.h;
 }
+
+SDL_Rect Renderer::CalcMenuListRect()
+{
+	lobbyMenuListRect.w = static_cast< int32_t > ( greyArea.rect.w * 0.6 );
+	lobbyMenuListRect.h = static_cast< int32_t > ( greyArea.rect.h * 0.9 );
+
+	lobbyMenuListRect.x = static_cast< int32_t > ( ( background.w * 0.5   ) - ( lobbyMenuListRect.w * 0.5 ) );
+	lobbyMenuListRect.y = static_cast< int32_t > ( ( greyArea.rect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyArea.rect.y;
+
+	return lobbyMenuListRect;
+}
+void Renderer::Update( double delta )
+{
+	for ( auto p = particles.begin(); p != particles.end();  )
+	{
+		p->Updated( delta );
+		if ( !p->isAlive)
+			particles.erase( p );
+		else
+			++p;
+	}
+
+	localPlayerText.Update( delta );
+}
+void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
+{
+	Rect r( 0,0,10,10 );
+	Vector2f pos = RectHelpers::CenterInRect( tile->rect, r );
+	SDL_Color color = GetTileColor( tile );
+
+	for ( int i = 0; i < colorConfig.particleFireCount ; ++i )
+	{
+		auto p = Particle( Rect( pos.x, pos.y, 10, 10 ), color  );
+		p.SetDecay( colorConfig.particleDecayMin, colorConfig.particleDecayMax );
+		p.SetSpeed( colorConfig.particleSpeedMin, colorConfig.particleSpeedMax );
+		particles.push_back( p );
+	}
+}
+// ==============================================================================================
+// =================================== Clean Up  ================================================
+// ==============================================================================================
 void Renderer::CleanUp()
 {
 	CleanUpSurfaces();
@@ -942,56 +942,23 @@ void Renderer::PrintSDL_TTFVersion()
 			link_version->minor,
 			link_version->patch);
 }
-SDL_Rect Renderer::CalcMenuListRect()
-{
-	lobbyMenuListRect.w = static_cast< int32_t > ( greyArea.rect.w * 0.6 );
-	lobbyMenuListRect.h = static_cast< int32_t > ( greyArea.rect.h * 0.9 );
-
-	lobbyMenuListRect.x = static_cast< int32_t > ( ( background.w * 0.5   ) - ( lobbyMenuListRect.w * 0.5 ) );
-	lobbyMenuListRect.y = static_cast< int32_t > ( ( greyArea.rect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyArea.rect.y;
-
-	return lobbyMenuListRect;
-}
-void Renderer::Update( double delta )
-{
-	for ( auto p = particles.begin(); p != particles.end();  )
-	{
-		p->Updated( delta );
-		if ( !p->isAlive)
-			particles.erase( p );
-		else
-			++p;
-	}
-
-	localPlayerText.Update( delta );
-}
-void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
-{
-	Rect r( 0,0,10,10 );
-	Vector2f pos = RectHelpers::CenterInRect( tile->rect, r );
-	SDL_Color color = GetTileColor( tile );
-
-	for ( int i = 0; i < colorConfig.particleFireCount ; ++i )
-	{
-		auto p = Particle( Rect( pos.x, pos.y, 10, 10 ), color  );
-		p.SetDecay( colorConfig.particleDecayMin, colorConfig.particleDecayMax );
-		p.SetSpeed( colorConfig.particleSpeedMin, colorConfig.particleSpeedMax );
-		particles.push_back( p );
-	}
-}
 // ==============================================================================================
 // =================================== Getters  ================================================
 // ==============================================================================================
-SDL_Color Renderer::GetTileColor( std::shared_ptr< Tile > tile  )
+void Renderer::AddMenuList( MenuList* mitem )
+{
+	gameList = mitem;
+}
+void Renderer::SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
+{
+	isTwoPlayerMode = isTwoPlayerMode_;
+}
+SDL_Color Renderer::GetTileColor( std::shared_ptr< Tile > tile  ) const
 {
 	if ( tile->GetTileType() == TileType::Hard )
 		return GetHardTileColor( 5 - tile->GetHitsLeft() );
 	else
 		return GetTileColor( tile->GetTileTypeAsIndex() );
-}
-void Renderer::SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
-{
-	isTwoPlayerMode = isTwoPlayerMode_;
 }
 SDL_Renderer* Renderer::GetRenderer() const
 {
@@ -1009,15 +976,51 @@ SDL_Color Renderer::GetTextColor() const
 {
 	return colorConfig.textColor;
 }
-void Renderer::AddMenuList( MenuList* mitem )
-{
-	gameList = mitem;
-}
-SDL_Color Renderer::GetTileColor( uint64_t type )
+SDL_Color Renderer::GetTileColor( uint64_t type ) const
 {
 	return colorConfig.GetTileColor( static_cast < TileType > ( type ));
 }
-SDL_Color Renderer::GetHardTileColor( uint64_t index )
+SDL_Color Renderer::GetHardTileColor( uint64_t index ) const
 {
 	return colorConfig.GetTileColor( TileType::Hard, index );
+}
+SDL_Rect Renderer::GetLobbyNewGameRect() const
+{
+	return lobbyNewGameButton.GetRect();
+}
+SDL_Rect Renderer::GetLobbyUpdateRect() const
+{
+	return lobbyUpdateButton.GetRect();
+}
+SDL_Rect Renderer::GetLobbyBackRect() const
+{
+	return lobbyBackButton.GetRect();
+}
+SDL_Rect Renderer::GetPauseResumeRect() const
+{
+	return pauseResumeButton.GetRect();
+}
+SDL_Rect Renderer::GetPauseMainMenuRect() const
+{
+	return pauseMainMenuButton.GetRect();
+}
+SDL_Rect Renderer::GetPauseQuitRect() const
+{
+	return pauseQuitButton.GetRect();
+}
+SDL_Rect Renderer::GetSinglePlayerRect() const
+{
+	return singlePlayerText.GetRect();
+}
+SDL_Rect Renderer::GetMultiplayerPlayerRect() const
+{
+	return multiplayerPlayerText.GetRect();
+}
+SDL_Rect Renderer::GetOptionsPlayerRect() const
+{
+	return optionsButton.GetRect();
+}
+SDL_Rect Renderer::GetQuitPlayerRect() const
+{
+	return quitButton.GetRect();
 }

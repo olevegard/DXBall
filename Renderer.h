@@ -123,9 +123,9 @@ public:
 	TTF_Font* GetFont() const;
 	SDL_Color GetBackgroundColor() const;
 	SDL_Color GetTextColor() const;
-	SDL_Color GetTileColor( std::shared_ptr< Tile > tile  );
-	SDL_Color GetTileColor( uint64_t type );
-	SDL_Color GetHardTileColor( uint64_t index );
+	SDL_Color GetTileColor( std::shared_ptr< Tile > tile  ) const;
+	SDL_Color GetTileColor( uint64_t type ) const;
+	SDL_Color GetHardTileColor( uint64_t index ) const;
 
 	SDL_Rect CalcMenuListRect();
 private:

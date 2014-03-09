@@ -61,7 +61,7 @@ template < class Value > class RenderingItem
 				SDL_SetTextureAlphaMod( texture, alpha );
 			}
 		}
-		void ReasetAlpha()
+		void ResetAlpha()
 		{
 			alpha = 255;
 			SDL_SetTextureAlphaMod( texture, alpha );

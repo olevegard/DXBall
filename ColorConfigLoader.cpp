@@ -87,7 +87,7 @@ void ColorConfigLoader::PrintIndented( const std::string &colorName )
 {
 	std::cout << "\n\t" << std::setfill( '_' ) << std::setw( 23 ) << std::left << colorName;
 }
-SDL_Color ColorConfigLoader::GetTileColor( TileType type_, uint64_t colorIndex)
+SDL_Color ColorConfigLoader::GetTileColor( TileType type_, uint64_t colorIndex) const
 {
 	for ( const auto &p :  colorConfig )
 	{

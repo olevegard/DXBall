@@ -15,7 +15,7 @@ class ColorConfigLoader
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
 	void PrintIndented( const std::string &colorName );
 
-	SDL_Color GetTileColor( TileType type_, uint64_t colorIndex = 0);
+	SDL_Color GetTileColor( TileType type_, uint64_t colorIndex = 0) const;
 	SDL_Color GetLocalPlayerColor() const;
 
 	SDL_Color GetRemotePlayerColor() const;
