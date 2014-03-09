@@ -7,6 +7,7 @@
 
 #include "enums/TextureType.h"
 
+struct SDL_Texture;
 struct GamePiece
 {
 	GamePiece();
@@ -78,6 +79,9 @@ struct GamePiece
 	{
 		return Vector2f( dir.x, dir.y * -1.0 );
 	}
+	void SetTexture( SDL_Texture* generatedTexture );
+	SDL_Texture* GetTexture( ) const;
+
 	protected:
 	Vector2f dir;
 	private:
@@ -88,4 +92,5 @@ struct GamePiece
 	bool isAlive;
 	double scale;
 	double speed;
+	SDL_Texture* texture;
 };

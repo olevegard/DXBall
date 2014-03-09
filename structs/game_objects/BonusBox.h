@@ -11,11 +11,6 @@ struct BonusBox : GamePiece
 {
 	BonusBox( int32_t objectID );
 
-	//std::string GetName() const;
-
-	void SetTexture( SDL_Texture* generatedTexture );
-	SDL_Texture* GetTexture( ) const;
-
 	void SetOwner( const Player &hitBy );
 	Player GetOwner() const;
 
@@ -34,5 +29,4 @@ struct BonusBox : GamePiece
 		Player owner;
 		BonusType bonusType;
 		Vector2f direction;
-		SDL_Texture* texture;
 };

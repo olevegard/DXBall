@@ -11,17 +11,6 @@ BonusBox::BonusBox( int32_t objectID_ )
 	SetSpeed( 0.15 );
 }
 
-//std::string BonusBox::GetName() const { return effectName; }
-
-void BonusBox::SetTexture( SDL_Texture* generatedTexture )
-{
-	texture = generatedTexture;
-}
-SDL_Texture* BonusBox::GetTexture( ) const
-{
-	return texture;
-}
-
 void BonusBox::SetOwner( const Player &hitBy )
 {
 	owner = hitBy;

@@ -6,11 +6,13 @@
 
 #include "math/Rect.h"
 #include "../structs/menu_items/MainMenuItem.h"
+#include "../structs/game_objects/GamePiece.h"
 
 #include <string>
 #include <vector>
 #include <iostream>
 
+#include <memory>
 
 template < class Value > class RenderingItem;
 struct Particle;
@@ -61,6 +63,11 @@ class RenderHelpers
 	static void RenderTextItem( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
 	static void RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item );
 	static void RenderParticle( SDL_Renderer* renderer, const Particle& particle );
+	static void RenderGamePiexe( SDL_Renderer* renderer, const std::shared_ptr< GamePiece > &gamePiece )
+	{
+		SDL_Rect pieceRect = gamePiece->rect.ToSDLRect();
+		SDL_RenderCopy( renderer, gamePiece->GetTexture(), nullptr, &pieceRect );
+	}
 
 	static void SetTileColorSurface( SDL_Renderer* renderer, size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list  );
 	static void HideMouseCursor( bool hide);

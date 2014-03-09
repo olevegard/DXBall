@@ -1,5 +1,7 @@
 #include "GamePiece.h"
 
+#include <SDL2/SDL.h>
+
 GamePiece::GamePiece()
 	:	rect( )
 	,	oldRect( )
@@ -10,3 +12,11 @@ GamePiece::GamePiece()
 	{
 
 	}
+void GamePiece::SetTexture( SDL_Texture* generatedTexture )
+{
+	texture = generatedTexture;
+}
+SDL_Texture* GamePiece::GetTexture( ) const
+{
+	return texture;
+}

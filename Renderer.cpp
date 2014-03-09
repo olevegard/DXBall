@@ -270,6 +270,15 @@ void Renderer::LoadColors()
 // ============================================================================================
 void Renderer::AddTile( const std::shared_ptr< Tile > &tile )
 {
+	SDL_Texture* tileTexture = nullptr;
+
+	if ( tile->GetTileType() == TileType::Hard )
+		tileTexture = hardTileTextures[ 5 - tile->GetHitsLeft()];
+	else
+		tileTexture = tileTextures[ tile->GetTileTypeAsIndex() ];
+
+	tile->SetTexture( tileTexture );
+
 	tileList.push_back( tile );
 }
 void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
@@ -284,6 +293,11 @@ void Renderer::ClearBoard( )
 }
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 {
+	if ( ball->GetOwner() == Player::Local )
+		ball->SetTexture( localPlayerBallTexture );
+	else
+		ball->SetTexture( remotePlayerBallTexture );
+
 	ballList.push_back( ball );
 }
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
@@ -316,9 +330,14 @@ void Renderer::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bonusBox )
 {
 	bonusBoxList.erase( std::find( bonusBoxList.begin(), bonusBoxList.end(), bonusBox ) );
 }
-void Renderer::AddBullet( const std::shared_ptr< Bullet > &bb )
+void Renderer::AddBullet( const std::shared_ptr< Bullet > &bullet )
 {
-	bulletList.push_back( bb );
+	if ( bullet->GetOwner() == Player::Local )
+		bullet->SetTexture( localPlayerBallTexture );
+	else
+		bullet->SetTexture( remotePlayerBallTexture );
+
+	bulletList.push_back( bullet );
 }
 void Renderer::RemoveBullet( const std::shared_ptr< Bullet >  &bullet )
 {
@@ -329,12 +348,14 @@ void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 	localPaddle = paddle;
 
 	localPlayerPaddle = RenderHelpers::InitSurface( localPaddle->rect, colorConfig.localPlayerColor, renderer );
+	localPaddle->SetTexture( localPlayerPaddle  );
 }
 void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 {
 	remotePaddle = paddle;
 
 	remotePlayerPaddle = RenderHelpers::InitSurface( localPaddle->rect, colorConfig.remotePlayerColor, renderer );
+	remotePaddle->SetTexture( remotePlayerPaddle );
 }
 // ============================================================================================
 // ================================= Renderering ==============================================
@@ -420,59 +441,31 @@ void Renderer::RenderParticles()
 }
 void Renderer::RenderBalls()
 {
-	for ( std::shared_ptr< Ball > gp : ballList )
-	{
-		SDL_Rect r = gp->rect.ToSDLRect( );
-		if ( gp->GetOwner() == Player::Local )
-			SDL_RenderCopy( renderer, localPlayerBallTexture, nullptr, &r );
-		else if ( gp->GetOwner() == Player::Remote )
-			SDL_RenderCopy( renderer, remotePlayerBallTexture, nullptr, &r );
-	}
+	for ( std::shared_ptr< Ball > ball : ballList )
+		RenderHelpers::RenderGamePiexe( renderer, ball );
 }
 void Renderer::RenderTiles()
 {
-	for ( std::shared_ptr< Tile > gp : tileList)
-	{
-		SDL_Rect r = gp->rect.ToSDLRect();
-		if ( gp->GetTileType() == TileType::Hard )
-			SDL_RenderCopy( renderer, hardTileTextures[ 5 - gp->GetHitsLeft()], nullptr, &r );
-		else
-			SDL_RenderCopy( renderer, tileTextures[ gp->GetTileTypeAsIndex() ], nullptr, &r );
-	}
+	for ( std::shared_ptr< Tile > tile : tileList)
+		RenderHelpers::RenderGamePiexe( renderer, tile );
 }
 void Renderer::RenderPaddles()
 {
 	if ( localPaddle )
-	{
-		SDL_Rect localPaddleRect = localPaddle->rect.ToSDLRect();
-		SDL_RenderCopy( renderer, localPlayerPaddle, nullptr, &localPaddleRect  );
-	}
+		RenderHelpers::RenderGamePiexe( renderer, localPaddle );
 
 	if ( isTwoPlayerMode && remotePaddle )
-	{
-		SDL_Rect remotePaddleRect = remotePaddle->rect.ToSDLRect();
-		SDL_RenderCopy( renderer, remotePlayerPaddle, nullptr, &remotePaddleRect  );
-	}
+		RenderHelpers::RenderGamePiexe( renderer, remotePaddle );
 }
 void Renderer::RenderBullets()
 {
-	for ( std::shared_ptr< Bullet > gp : bulletList)
-	{
-		SDL_Rect r = gp->rect.ToSDLRect( );
-		if ( gp->GetOwner() == Player::Local )
-			SDL_RenderCopy( renderer, localPlayerBallTexture, nullptr, &r );
-		else if ( gp->GetOwner() == Player::Remote )
-			SDL_RenderCopy( renderer, remotePlayerBallTexture, nullptr, &r );
-	}
+	for ( std::shared_ptr< Bullet > bullet : bulletList)
+		RenderHelpers::RenderGamePiexe( renderer, bullet );
 }
 void Renderer::RenderBonusBoxes()
 {
-	for ( std::shared_ptr< BonusBox > gp : bonusBoxList)
-	{
-		SDL_Rect boxRect = gp->rect.ToSDLRect();
-		SDL_Texture* texture = gp->GetTexture();
-		SDL_RenderCopy( renderer, texture, nullptr, &boxRect );
-	}
+	for ( std::shared_ptr< BonusBox > bb : bonusBoxList)
+		RenderHelpers::RenderGamePiexe( renderer, bb );
 }
 void Renderer::RenderText()
 {
