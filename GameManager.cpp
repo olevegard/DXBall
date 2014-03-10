@@ -472,7 +472,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveBonusBoxSpawnedMessage( message );
 			break;
 		case MessageType::BonusPickup:
-			RecieveBonusBoxPickupMessage( message );
+			ApplyBonus( physicsManager.GetBonusBoxWithID( message.GetObjectID(), Player::Remote ));
 			break;
 		case MessageType::PlayerName:
 			renderer.RenderPlayerCaption( message.GetPlayerName(), Player::Remote );
@@ -484,7 +484,7 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			RecieveJoinGameMessage( message );
 			break;
 		case MessageType::EndGame:
-			RecieveEndGameMessage( message );
+			UpdateGameList();
 			break;
 		case MessageType::BulletFire:
 			RecieveBulletFireMessage( message );
@@ -525,12 +525,6 @@ void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 	info.Set( message.GetIPAdress(), message.GetPort() );
 	info.SetGameID( message.GetObjectID() );
 	menuManager.AddGameToList( renderer, info );
-}
-void GameManager::RecieveEndGameMessage( const TCPMessage &message )
-{
-	logger.Log( __FILE__, __LINE__, "Game ended", message.GetObjectID() );
-	UpdateGameList();
-	menuManager.ClearGameList();
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
@@ -588,12 +582,6 @@ void GameManager::RecieveBonusBoxSpawnedMessage( const TCPMessage &message )
 
 	bonusBoxList.push_back( bonusBox );
 	renderer.AddBonusBox( bonusBox );
-}
-void GameManager::RecieveBonusBoxPickupMessage( const TCPMessage &message )
-{
-	const auto &bb = physicsManager.GetBonusBoxWithID( message.GetObjectID(), Player::Remote );
-
-	ApplyBonus( bb );
 }
 std::shared_ptr< Bullet >  GameManager::FireBullet( int32_t id, const Player &owner, Vector2f pos )
 {
