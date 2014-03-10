@@ -406,7 +406,7 @@ void Renderer::RenderLobbyFooter()
 	RenderHelpers::RenderMenuItem( renderer, lobbyNewGameButton );
 	RenderHelpers::RenderMenuItem( renderer, lobbyUpdateButton );
 	RenderHelpers::RenderMenuItem( renderer, lobbyBackButton );
-	gameList->Render( renderer );
+	RenderHelpers::RenderMenuList( renderer, *gameList );
 }
 void Renderer::RenderMainMenuFooter()
 {

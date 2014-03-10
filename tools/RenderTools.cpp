@@ -4,9 +4,12 @@
 #include "../structs/rendering/RenderingItem.h"
 #include "../structs/rendering/Particle.h"
 
+#include "../structs/menu_items/MainMenuItem.h"
+#include "../structs/game_objects/GamePiece.h"
+
+#include "../MenuList.h"
 
 const int32_t RenderHelpers::SCREEN_BPP = 32;
-
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	const uint32_t RenderHelpers::R_MASK = 0xff000000;
@@ -148,6 +151,17 @@ void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item
 	{
 		SDL_Rect r = item.GetRect();
 		SDL_RenderCopy( renderer, item.GetTexture(), nullptr, &r );
+	}
+}
+void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList )
+{
+	RenderTextItem( renderer, menuList.mainArea );
+	RenderTextItem( renderer, menuList.caption );
+
+	for ( const auto p : menuList.gameList )
+	{
+		SDL_Rect r = p.GetRect();
+		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, &r  );
 	}
 }
 void RenderHelpers::RenderParticle( SDL_Renderer* renderer, const Particle& particle )

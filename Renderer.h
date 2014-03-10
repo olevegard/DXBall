@@ -220,7 +220,7 @@ private:
 	TTF_Font* bigFont;
 	TTF_Font* hugeFont;
 
-	// main info text...
+	// Main info text...
 	RenderingItem< std::string > localPlayerText;
 
 	// Player name

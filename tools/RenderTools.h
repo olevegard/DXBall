@@ -5,8 +5,6 @@
 #include <SDL2/SDL_image.h>
 
 #include "math/Rect.h"
-#include "../structs/menu_items/MainMenuItem.h"
-#include "../structs/game_objects/GamePiece.h"
 
 #include <string>
 #include <vector>
@@ -15,7 +13,11 @@
 #include <memory>
 
 template < class Value > class RenderingItem;
+struct MenuList;
+struct MenuItem;
 struct Particle;
+struct GamePiece;
+struct MainMenuItem;
 class RenderHelpers
 {
 	public:
@@ -58,6 +60,7 @@ class RenderHelpers
 	static void RenderTextItem( SDL_Renderer* renderer,  const RenderingItem< std::string >  &item );
 	static void RenderTextItem( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
 	static void RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item );
+	static void RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList );
 	static void RenderParticle( SDL_Renderer* renderer, const Particle& particle );
 	static void RenderGamePiece( SDL_Renderer* renderer, const std::shared_ptr< GamePiece > &gamePiece );
 

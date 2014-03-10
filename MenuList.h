@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "structs/menu_items/MenuItem.h"
+#include "structs/rendering/RenderingItem.h"
+
 #include "GameInfo.h"
 
 #include "math/Rect.h"
@@ -15,8 +17,6 @@ struct MenuList
 
 	void AddItem( GameInfo gameInfo, Renderer &renderer_ );
 
-	void Render( SDL_Renderer* renderer ) const;
-
 	int32_t FindIntersectedItem( int32_t x, int32_t y ) const;
 	GameInfo GetGameInfoForIndex( int32_t index ) const
 	{
@@ -27,25 +27,22 @@ struct MenuList
 
 	void ClearList()
 	{
-		height = captionRect.y + captionRect.h + 10;
+		height = caption.rect.y + caption.rect.h + 10;
 		gameList.clear();
 		hostInfoList.clear();
 	}
 
 	SDL_Rect GetMainRect()
 	{
-		return mainRect;
+		return mainArea.rect;
 	}
 
-	private:
-	SDL_Texture* mainTexture;
-	SDL_Rect mainRect;
+	RenderingItem< uint64_t > mainArea;
+	RenderingItem< uint64_t > caption;
 
-	std::string caption;
-	SDL_Texture* captionTexture;
-	SDL_Rect captionRect;
-
-	int32_t height;
 	std::vector< MenuItem > gameList;
+
+	private:
+	int32_t height;
 	std::vector< GameInfo > hostInfoList;
 };
