@@ -63,7 +63,7 @@ class GameManager
 		void IncreaseBallSpeedFastMode( const Player &player, double delta );
 
 		void DeleteDeadBalls();
-		std::shared_ptr<Ball> AddBall( );
+		void AddBall( );
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
 		void RemoveBall( const std::shared_ptr< Ball > &ball );
 

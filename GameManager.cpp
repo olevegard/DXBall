@@ -147,9 +147,10 @@ void GameManager::Restart()
 	RenderMainText();
 	RendererScores();
 }
-std::shared_ptr<Ball> GameManager::AddBall( )
+void GameManager::AddBall( )
 {
-	return AddBall( Player::Local, 0 );
+	if ( localPlayerInfo.activeBalls == 0 )
+		AddBall( Player::Local, 0 );
 }
 std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
@@ -725,6 +726,9 @@ void GameManager::DeleteAllBonusBoxes()
 }
 void GameManager::FireBullets()
 {
+	if (  !localPlayerInfo.CanFireBullet() )
+		return;
+
 	const auto &bullet1 = FireBullet
 	(
 		0,
@@ -815,11 +819,8 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{
-			if ( localPlayerInfo.activeBalls == 0 )
-				AddBall( );
-
-			if ( localPlayerInfo.IsBonusActive( BonusType::FireBullets )  && localPlayerInfo.CanFireBullet() )
-				FireBullets();
+			AddBall( );
+			FireBullets();
 		}
 	}
 	else if ( menuManager.IsInAMenu() )
