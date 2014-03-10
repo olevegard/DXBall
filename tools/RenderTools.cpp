@@ -56,37 +56,7 @@ void RenderHelpers::FillSurface( SDL_Surface* source, const SDL_Color &color )
 {
 	FillSurface( source, color.r, color.g, color.b );
 }
-SDL_Texture* RenderHelpers::LoadImage( const std::string &filename, SDL_Renderer* renderer )
-{
-	// Temporary stoare for the iamge that's loaded
-	SDL_Surface* loadedImage = nullptr;
 
-	// Load the image
-	loadedImage = IMG_Load( filename.c_str() );
-
-
-	SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, loadedImage );
-
-	// Free the old image
-	SDL_FreeSurface( loadedImage );
-
-	// If the image loaded
-	if ( texture == nullptr )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Failed to load " << filename << std::endl;
-	}
-
-	return texture;
-}
-SDL_Surface* RenderHelpers::SetDisplayFormat( SDL_Surface* surface )
-{
-	if ( !surface )
-	{
-		std::cout << "Renderer@" << __LINE__  << " Cannot set display format : nullptr\n";
-	}
-
-	return surface;
-}
 void RenderHelpers::SetTileColorSurface( size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list, SDL_Renderer *renderer  )
 {
 	SDL_Texture *text = InitSurface(  60, 20, color.r, color.g, color.b, renderer );
@@ -189,6 +159,11 @@ void RenderHelpers::RenderParticle( SDL_Renderer* renderer, const Particle& part
 		SDL_RenderFillRect( renderer, &r );
 	}
 }
+void RenderHelpers::RenderGamePiece( SDL_Renderer* renderer, const std::shared_ptr< GamePiece > &gamePiece )
+{
+	SDL_Rect pieceRect = gamePiece->rect.ToSDLRect();
+	SDL_RenderCopy( renderer, gamePiece->GetTexture(), nullptr, &pieceRect );
+}
 void RenderHelpers::SetTileColorSurface( SDL_Renderer* renderer, size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list  )
 {
 	SDL_Texture* text = RenderHelpers::InitSurface(  60, 20, color.r, color.g, color.b, renderer );
@@ -255,4 +230,27 @@ void RenderHelpers::SetBonusBoxIcon( int32_t width, SDL_Surface* bonusBox,  cons
 
 	SDL_BlitSurface( logo, NULL, bonusBox, &logoPosition);
 	SDL_FreeSurface( logo );
+}
+SDL_Texture* RenderHelpers::LoadImage( const std::string &filename, SDL_Renderer* renderer )
+{
+	SDL_Surface* loadedImage = IMG_Load( filename.c_str() );
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface( renderer, loadedImage );
+
+	SDL_FreeSurface( loadedImage );
+
+	// If the image loaded
+	if ( texture == nullptr )
+		std::cout << "Renderer@" << __LINE__  << " Failed to load " << filename << std::endl;
+
+	return texture;
+}
+SDL_Surface* RenderHelpers::SetDisplayFormat( SDL_Surface* surface )
+{
+	if ( !surface )
+	{
+		std::cout << "Renderer@" << __LINE__  << " Cannot set display format : nullptr\n";
+	}
+
+	return surface;
 }

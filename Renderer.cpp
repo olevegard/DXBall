@@ -442,30 +442,30 @@ void Renderer::RenderParticles()
 void Renderer::RenderBalls()
 {
 	for ( std::shared_ptr< Ball > ball : ballList )
-		RenderHelpers::RenderGamePiexe( renderer, ball );
+		RenderHelpers::RenderGamePiece( renderer, ball );
 }
 void Renderer::RenderTiles()
 {
 	for ( std::shared_ptr< Tile > tile : tileList)
-		RenderHelpers::RenderGamePiexe( renderer, tile );
+		RenderHelpers::RenderGamePiece( renderer, tile );
 }
 void Renderer::RenderPaddles()
 {
 	if ( localPaddle )
-		RenderHelpers::RenderGamePiexe( renderer, localPaddle );
+		RenderHelpers::RenderGamePiece( renderer, localPaddle );
 
 	if ( isTwoPlayerMode && remotePaddle )
-		RenderHelpers::RenderGamePiexe( renderer, remotePaddle );
+		RenderHelpers::RenderGamePiece( renderer, remotePaddle );
 }
 void Renderer::RenderBullets()
 {
 	for ( std::shared_ptr< Bullet > bullet : bulletList)
-		RenderHelpers::RenderGamePiexe( renderer, bullet );
+		RenderHelpers::RenderGamePiece( renderer, bullet );
 }
 void Renderer::RenderBonusBoxes()
 {
 	for ( std::shared_ptr< BonusBox > bb : bonusBoxList)
-		RenderHelpers::RenderGamePiexe( renderer, bb );
+		RenderHelpers::RenderGamePiece( renderer, bb );
 }
 void Renderer::RenderText()
 {
