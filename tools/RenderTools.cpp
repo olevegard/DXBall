@@ -155,10 +155,11 @@ void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item
 }
 void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList )
 {
-	RenderTextItem( renderer, menuList.mainArea );
-	RenderTextItem( renderer, menuList.caption );
+	RenderTextItem( renderer, menuList.GetMainArea() );
+	RenderTextItem( renderer, menuList.GetCaption() );
 
-	for ( const auto p : menuList.gameList )
+	const auto &gameList = menuList.GetGameList();
+	for ( const auto &p : gameList )
 	{
 		SDL_Rect r = p.GetRect();
 		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, &r  );

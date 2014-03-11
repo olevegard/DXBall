@@ -17,32 +17,23 @@ struct MenuList
 
 	void AddItem( GameInfo gameInfo, Renderer &renderer_ );
 
+	void ClearList();
+
 	int32_t FindIntersectedItem( int32_t x, int32_t y ) const;
-	GameInfo GetGameInfoForIndex( int32_t index ) const
-	{
-		return hostInfoList[index];
-	}
+	GameInfo GetGameInfoForIndex( int32_t index ) const;
 
 	SDL_Rect GetRect() const;
+	//SDL_Rect GetMainRect();
+	const std::vector< MenuItem >& GetGameList() const;
+	const RenderingItem< uint64_t > & GetMainArea() const;
+	const RenderingItem< uint64_t > & GetCaption() const;
 
-	void ClearList()
-	{
-		height = caption.rect.y + caption.rect.h + 10;
-		gameList.clear();
-		hostInfoList.clear();
-	}
+	private:
 
-	SDL_Rect GetMainRect()
-	{
-		return mainArea.rect;
-	}
+	int32_t height;
+	std::vector< GameInfo > hostInfoList;
+	std::vector< MenuItem > gameList;
 
 	RenderingItem< uint64_t > mainArea;
 	RenderingItem< uint64_t > caption;
-
-	std::vector< MenuItem > gameList;
-
-	private:
-	int32_t height;
-	std::vector< GameInfo > hostInfoList;
 };

@@ -54,6 +54,12 @@ void MenuList::AddItem( GameInfo gameInfo, Renderer &renderer_ )
 	gameList.emplace_back( item );
 	hostInfoList.emplace_back( gameInfo );
 }
+void MenuList::ClearList()
+{
+	height = caption.rect.y + caption.rect.h + 10;
+	gameList.clear();
+	hostInfoList.clear();
+}
 int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y ) const
 {
 	int32_t index = -1;
@@ -67,7 +73,23 @@ int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y ) const
 
 	return -1;
 }
+GameInfo MenuList::GetGameInfoForIndex( int32_t index ) const
+{
+	return hostInfoList[index];
+}
 SDL_Rect MenuList::GetRect() const
 {
 	return mainArea.rect;
+}
+const std::vector< MenuItem >& MenuList::GetGameList() const
+{
+	return gameList;
+}
+const RenderingItem< uint64_t > & MenuList::GetMainArea() const
+{
+	return mainArea;
+}
+const RenderingItem< uint64_t > & MenuList::GetCaption() const
+{
+	return caption;
 }
