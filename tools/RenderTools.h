@@ -59,7 +59,7 @@ class RenderHelpers
 
 	static void RenderTextItem( SDL_Renderer* renderer,  const RenderingItem< std::string >  &item );
 	static void RenderTextItem( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
-	static void RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item );
+	static void RenderMenuItem( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item );
 	static void RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList );
 	static void RenderParticle( SDL_Renderer* renderer, const Particle& particle );
 	static void RenderGamePiece( SDL_Renderer* renderer, const std::shared_ptr< GamePiece > &gamePiece );

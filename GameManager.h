@@ -114,7 +114,12 @@ class GameManager
 		// ==========================================
 		void AIMove();
 
+		// Menu
+		// ==========================================
 		void CreateMenu();
+		void CreateMainMenu();
+		void CreatePauseMenu();
+		void CreateLobbyMenu();
 
 		// New Game / Join Game / Update
 		// ==========================================

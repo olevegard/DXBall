@@ -14,19 +14,6 @@ MenuManager::MenuManager()
 	,	hasGameStateChanged( false )
 	,	isTwoPlayerMode( false )
 
-	,	singlePlayer( "Single Player" )
-	,	multiPlayer ( "Multiplayer"   )
-	,	options     ( "Options"       )
-	,	quit        ( "Quit"          )
-
-	,	pauseResumeButton  ( "Resume"    )
-	,	pauseMainMenuButton( "Main Menu" )
-	,	pauseQuitButton    ( "Quit"      )
-
-	,	lobbyNewGameButton( "New Game" )
-	,	lobbyUpdateButton ( "Update"   )
-	,	lobbyBackButton   ( "Back"     )
-
 	,	seletedGameID( -1 )
 	,	lobbyStateChanged( false  )
 {
@@ -37,32 +24,6 @@ void MenuManager::Init( Renderer &renderer )
 	lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
 	lobbyGameList->Init( "Available Games : ",menuListRect , renderer  );
 	renderer.AddMenuList( lobbyGameList.get() );
-}
-void MenuManager::AddMenuElememts( Renderer &renderer )
-{
-	renderer.AddMainMenuButtons( "Single Player", "Multiplayer", "Options", "Quit" );
-
-	singlePlayer.SetRect( renderer.GetSinglePlayerRect() );
-	multiPlayer.SetRect( renderer.GetMultiplayerPlayerRect() );
-	options.SetRect( renderer.GetOptionsPlayerRect() );
-	quit.SetRect( renderer.GetQuitPlayerRect() );
-}
-
-void MenuManager::AddPauseMenuElememts( Renderer &renderer )
-{
-	renderer.AddPauseMenuButtons( pauseResumeButton.GetName(), pauseMainMenuButton.GetName(), pauseQuitButton.GetName() );
-
-	pauseResumeButton.SetRect( renderer.GetPauseResumeRect() );
-	pauseMainMenuButton.SetRect( renderer.GetPauseMainMenuRect() );
-	pauseQuitButton.SetRect( renderer.GetPauseQuitRect() );
-}
-void MenuManager::AddLobbyMenuElememts( Renderer &renderer )
-{
-	renderer.AddLobbyMenuButtons( lobbyNewGameButton.GetName(), lobbyUpdateButton.GetName(), lobbyBackButton.GetName() );
-
-	lobbyNewGameButton.SetRect( renderer.GetLobbyNewGameRect() );
-	lobbyUpdateButton.SetRect( renderer.GetLobbyUpdateRect() );
-	lobbyBackButton.SetRect( renderer.GetLobbyBackRect() );
 }
 void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer ) const
 {
@@ -228,42 +189,42 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 }
 MainMenuItemType MenuManager::CheckIntersections( int x, int y ) const
 {
-	if ( RectHelpers::CheckMouseIntersection( x, y, singlePlayer.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, singlePlayerButton->GetRect() ) )
 		return MainMenuItemType::SinglePlayer;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, multiPlayer.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, multiPlayerButton->GetRect() ) )
 		return MainMenuItemType::MultiPlayer;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, options.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, optionsButton->GetRect() ) )
 		return MainMenuItemType::Options;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, quit.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, quitButton->GetRect() ) )
 		return MainMenuItemType::Quit;
 
 	return MainMenuItemType::Unknown;
 }
 PauseMenuItemType MenuManager::CheckIntersections_Pause( int x, int y ) const
 {
-	if ( RectHelpers::CheckMouseIntersection( x, y, pauseResumeButton.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, pauseResumeButton->GetRect() ) )
 		return PauseMenuItemType::Resume;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, pauseMainMenuButton.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, pauseMainMenuButton->GetRect() ) )
 		return PauseMenuItemType::MainMenu;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, pauseQuitButton.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, pauseQuitButton->GetRect() ) )
 		return PauseMenuItemType::Quit;
 
 	return PauseMenuItemType::Unknown;
 }
 LobbyMenuItem MenuManager::CheckIntersections_Lobby( int x, int y ) const
 {
-	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyNewGameButton.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyNewGameButton->GetRect() ) )
 		return LobbyMenuItem::NewGame;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyUpdateButton.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyUpdateButton->GetRect() ) )
 		return LobbyMenuItem::Update;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyBackButton.GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyBackButton->GetRect() ) )
 		return LobbyMenuItem::Back;
 
 	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyGameList->GetRect() ) )
@@ -283,7 +244,6 @@ GameState MenuManager::GetPrevGameState() const
 {
 	return prevGameState;
 }
-
 void MenuManager::SetGameState( const GameState &gs )
 {
 	if ( !IsGameStateChangeValid( gs ) )
@@ -380,4 +340,64 @@ bool MenuManager::IsInAMenu() const
 			|| currentGameState == GameState::Paused
 			|| currentGameState == GameState::Lobby
 		   );
+}
+void MenuManager::SetMainMenuItem( const MainMenuItemType &type, const std::shared_ptr< MenuItem >& button )
+{
+	switch ( type )
+	{
+		case MainMenuItemType::SinglePlayer:
+			singlePlayerButton = button;
+			break;
+		case MainMenuItemType::MultiPlayer:
+			multiPlayerButton = button;
+			break;
+		case MainMenuItemType::Options:
+			optionsButton = button;
+			break;
+		case MainMenuItemType::Quit:
+			quitButton = button;
+			break;
+		case MainMenuItemType::Unknown:
+			singlePlayerButton = button;
+			break;
+	}
+}
+void MenuManager::SetLobbyMenuItem( const LobbyMenuItem &type, const std::shared_ptr< MenuItem >  &button )
+{
+	switch ( type )
+	{
+		case LobbyMenuItem::NewGame:
+			lobbyNewGameButton = button;
+			break;
+		case LobbyMenuItem::Update:
+			lobbyUpdateButton = button;
+			break;
+		case LobbyMenuItem::Back:
+			lobbyBackButton = button;
+			break;
+		case LobbyMenuItem::GameList:
+			quitButton = button;
+			break;
+		case LobbyMenuItem::Unknown:
+			singlePlayerButton = button;
+			break;
+	}
+}
+void MenuManager::SetPauseMenuItem( const PauseMenuItemType &type, const std::shared_ptr< MenuItem >  &button )
+{
+	switch ( type )
+	{
+		case PauseMenuItemType::Resume:
+			pauseResumeButton = button;
+			break;
+		case PauseMenuItemType::MainMenu:
+			pauseMainMenuButton = button;
+			break;
+		case PauseMenuItemType::Quit:
+			pauseQuitButton = button;
+			break;
+		case PauseMenuItemType::Unknown:
+			pauseQuitButton = button;
+			break;
+	}
 }

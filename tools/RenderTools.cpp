@@ -145,12 +145,12 @@ void RenderHelpers::RenderTextItem( SDL_Renderer* renderer, const RenderingItem<
 	if ( item.texture != nullptr  )
 		SDL_RenderCopy( renderer, item.texture, nullptr, &item.rect );
 }
-void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const MenuItem &item )
+void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item )
 {
-	if( item.GetTexture() != nullptr )
+	if( item->GetTexture() != nullptr )
 	{
-		SDL_Rect r = item.GetRect();
-		SDL_RenderCopy( renderer, item.GetTexture(), nullptr, &r );
+		SDL_Rect r = item->GetRect();
+		SDL_RenderCopy( renderer, item->GetTexture(), nullptr, &r );
 	}
 }
 void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList )

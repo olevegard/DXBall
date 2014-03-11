@@ -17,11 +17,6 @@ class MenuManager
 public:
 	MenuManager();
 
-	//GameState currentState;
-	void AddMenuElememts( Renderer &renderer );
-	void AddPauseMenuElememts( Renderer &renderer );
-	void AddLobbyMenuElememts( Renderer &renderer );
-
 	void CheckItemMouseOver( int x, int y, Renderer &renderer ) const;
 	void CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) const;
 	void CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer ) const;
@@ -54,7 +49,6 @@ public:
 	void AddGameToList( Renderer &renderer, GameInfo gameInfo )
 	{
 		lobbyGameList->AddItem( gameInfo, renderer );
-		//lobbyGameList->AddItem( "ads",  renderer );
 	}
 	void ClearGameList()
 	{
@@ -72,6 +66,11 @@ public:
 	{
 		return lobbyGameList->GetGameInfoForIndex( seletedGameID);;
 	}
+
+	void SetMainMenuItem( const MainMenuItemType &type, const std::shared_ptr< MenuItem >& button );
+	void SetLobbyMenuItem( const LobbyMenuItem &type, const std::shared_ptr< MenuItem >  &button );
+	void SetPauseMenuItem( const PauseMenuItemType &type, const std::shared_ptr< MenuItem >  &button );
+
 private:
 	MainMenuItemType CheckIntersections( int x, int y ) const;
 	PauseMenuItemType CheckIntersections_Pause( int x, int y ) const;
@@ -85,20 +84,21 @@ private:
 	bool isTwoPlayerMode;
 
 	// Main menu
-	MenuItem singlePlayer;
-	MenuItem multiPlayer;
-	MenuItem options;
-	MenuItem quit;
+	std::shared_ptr< MenuItem > singlePlayerButton;
+	std::shared_ptr< MenuItem > multiPlayerButton;
+	std::shared_ptr< MenuItem > optionsButton;
+	std::shared_ptr< MenuItem > quitButton;
 
 	// Pause
-	MenuItem pauseResumeButton;
-	MenuItem pauseMainMenuButton;
-	MenuItem pauseQuitButton;
+	std::shared_ptr< MenuItem > pauseResumeButton;
+	std::shared_ptr< MenuItem > pauseMainMenuButton;
+	std::shared_ptr< MenuItem > pauseQuitButton;
 
 	// Lobby
-	MenuItem lobbyNewGameButton;
-	MenuItem lobbyUpdateButton;
-	MenuItem lobbyBackButton;
+	std::shared_ptr< MenuItem > lobbyNewGameButton;
+	std::shared_ptr< MenuItem > lobbyUpdateButton;
+	std::shared_ptr< MenuItem > lobbyBackButton;
+
 	std::shared_ptr <MenuList > lobbyGameList;
 	int32_t seletedGameID;
 	LobbyMenuItem lobbyState;

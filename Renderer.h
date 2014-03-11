@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "enums/GameState.h"
+#include "enums/LobbyMenuItem.h"
 
 #include "structs/menu_items/MainMenuItem.h"
 #include "structs/menu_items/PauseMenuItem.h"
@@ -89,17 +90,14 @@ public:
 	// ========================================================================
 	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
-	MenuItem AddMenuButtonHelper( MenuItem mainmenuItem, std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
+	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
+
 
 	void SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemType &mit  );
-	MenuItem SetUnderlineHelper( MenuItem menuItem, bool setUnderline );
+	void SetUnderlineHelper( std::shared_ptr< MenuItem > menuItem, bool setUnderline );
 	void RemoveMainMenuItemsUnderlines( );
 	void CenterMainMenuButtons( );
 	void InitGreyAreaRect( );
-	SDL_Rect GetSinglePlayerRect() const;
-	SDL_Rect GetMultiplayerPlayerRect() const;
-	SDL_Rect GetOptionsPlayerRect() const;
-	SDL_Rect GetQuitPlayerRect() const;
 
 	// Pause menu
 	void AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString );
@@ -128,6 +126,10 @@ public:
 	SDL_Color GetHardTileColor( uint64_t index ) const;
 
 	SDL_Rect CalcMenuListRect();
+
+	const std::shared_ptr< MenuItem > &GetMainMenuItem( const MainMenuItemType &type ) const;
+	const std::shared_ptr< MenuItem > &GetLobbyMenuItem( const LobbyMenuItem &type ) const;
+	const std::shared_ptr< MenuItem > &GetPauseMenuItem( const PauseMenuItemType &type ) const;
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -241,30 +243,32 @@ private:
 
 	short margin;
 
-	// Main menu mode
-	// =============================================
 	SDL_Texture*   mainMenuBackground;
 
-	MenuItem	singlePlayerText;
-	MenuItem	multiplayerPlayerText;
-	MenuItem	optionsButton;
-	MenuItem	quitButton;
-
+	// Menu / Options / Lobby
+	// =============================================
 	RenderingItem< std::string > mainMenuCaption;
 	RenderingItem< std::string > mainMenuSubCaption;
 	RenderingItem< std::string > greyArea;
 
+	// Main menu mode
+	// =============================================
+	std::shared_ptr< MenuItem > singlePlayerButton;
+	std::shared_ptr< MenuItem > multiPlayerButton;
+	std::shared_ptr< MenuItem > optionsButton;
+	std::shared_ptr< MenuItem > quitButton;
+
 	// Pause menu mode
 	// =============================================
-	MenuItem 	pauseResumeButton;
-	MenuItem 	pauseMainMenuButton;
-	MenuItem 	pauseQuitButton;
+	std::shared_ptr< MenuItem > pauseResumeButton;
+	std::shared_ptr< MenuItem > pauseMainMenuButton;
+	std::shared_ptr< MenuItem > pauseQuitButton;
 
-	// Multiplayer menu item
+	// MultiplayerButton menu item
 	// =============================================
-	MenuItem 	lobbyNewGameButton;
-	MenuItem 	lobbyUpdateButton;
-	MenuItem 	lobbyBackButton;
+	std::shared_ptr< MenuItem > lobbyNewGameButton;
+	std::shared_ptr< MenuItem > lobbyUpdateButton;
+	std::shared_ptr< MenuItem > lobbyBackButton;
 	SDL_Rect	lobbyMenuListRect;
 
 	// Bonus Boxes

@@ -68,18 +68,6 @@
 	,	bigFont()
 
 	,	margin( 30 )
-	,	singlePlayerText     ( "Single Player" )
-	,	multiplayerPlayerText( "Multiplayer"   )
-	,	optionsButton        ( "Options"       )
-	,	quitButton           ( "Quit"          )
-
-	,	pauseResumeButton  ( "Resume"    )
-	,	pauseMainMenuButton( "Main Menu" )
-	,	pauseQuitButton    ( "Quit"      )
-
-	,	lobbyNewGameButton( "New Game" )
-	,	lobbyUpdateButton ( "Update"   )
-	,	lobbyBackButton   ( "Back"     )
 
 	,	lobbyMenuListRect( { 0, 0, 0, 0 })
 {
@@ -410,10 +398,10 @@ void Renderer::RenderLobbyFooter()
 }
 void Renderer::RenderMainMenuFooter()
 {
-	RenderHelpers::RenderMenuItem( renderer, singlePlayerText );
-	RenderHelpers::RenderMenuItem( renderer, multiplayerPlayerText );
-	RenderHelpers::RenderMenuItem( renderer, optionsButton );
-	RenderHelpers::RenderMenuItem( renderer, quitButton );
+	RenderHelpers::RenderMenuItem( renderer, singlePlayerButton);
+	RenderHelpers::RenderMenuItem( renderer, multiPlayerButton);
+	RenderHelpers::RenderMenuItem( renderer, optionsButton);
+	RenderHelpers::RenderMenuItem( renderer, quitButton);
 }
 void Renderer::RenderPause()
 {
@@ -644,31 +632,36 @@ void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainM
 	switch ( mit )
 	{
 		case MainMenuItemType::SinglePlayer:
-			singlePlayerText = AddMenuButtonHelper( singlePlayerText, menuItemString, { 0, 0, 0, 0 }  );
-			singlePlayerText.SetRectXY( margin / 2,background.h - ( ( background.h - greyArea.rect.h ) / 2)  + ( singlePlayerText.GetRectH( )) );
+			singlePlayerButton = AddMenuButtonHelper( menuItemString, { 0, 0, 0, 0 }  );
+			singlePlayerButton->SetRectXY(
+				margin / 2,
+				background.h - ( ( background.h - greyArea.rect.h ) / 2)  + ( singlePlayerButton->GetRectH( ))
+			);
 			break;
 		case MainMenuItemType::MultiPlayer:
-			multiplayerPlayerText = AddMenuButtonHelper( multiplayerPlayerText, menuItemString, singlePlayerText.GetRect() );
+			multiPlayerButton = AddMenuButtonHelper( menuItemString, singlePlayerButton->GetRect() );
 			break;
 		case MainMenuItemType::Options:
-			optionsButton = AddMenuButtonHelper( optionsButton, menuItemString, multiplayerPlayerText.GetRect());
+			optionsButton = AddMenuButtonHelper( menuItemString, multiPlayerButton->GetRect());
 			break;
 		case MainMenuItemType::Quit:
-			quitButton = AddMenuButtonHelper( quitButton, menuItemString, optionsButton.GetRect());
+			quitButton = AddMenuButtonHelper( menuItemString, optionsButton->GetRect());
 			break;
 		case MainMenuItemType::Unknown:
 			break;
 	}
 }
-MenuItem Renderer::AddMenuButtonHelper( MenuItem menuItem, std::string menuItemString, const SDL_Rect &singlePlayerRect )
+std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &singlePlayerRect )
 {
 	SDL_Rect r;
-	menuItem.SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItemString, colorConfig.textColor, r, renderer ) );
+	std::shared_ptr< MenuItem > menuItem = std::make_shared< MenuItem >( menuItemString );
+
+	menuItem->SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItemString, colorConfig.textColor, r, renderer ) );
 	r.x = singlePlayerRect.x + singlePlayerRect.w + margin;
 	r.y = singlePlayerRect.y;
 
-	menuItem.SetRect( r );
-	menuItem.SetName( menuItemString );
+	menuItem->SetRect( r );
+	menuItem->SetName( menuItemString );
 
 	return menuItem;
 }
@@ -677,25 +670,25 @@ void Renderer::SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemTy
 	switch ( mit )
 	{
 		case MainMenuItemType::SinglePlayer:
-			singlePlayerText = SetUnderlineHelper( singlePlayerText, setUnderline );
+			SetUnderlineHelper( singlePlayerButton, setUnderline );
 			break;
 		case MainMenuItemType::MultiPlayer:
-			multiplayerPlayerText = SetUnderlineHelper( multiplayerPlayerText, setUnderline );
+			SetUnderlineHelper( multiPlayerButton, setUnderline );
 			break;
 		case MainMenuItemType::Options:
-			optionsButton = SetUnderlineHelper( optionsButton, setUnderline );
+			SetUnderlineHelper( optionsButton, setUnderline );
 			break;
 		case MainMenuItemType::Quit:
-			quitButton = SetUnderlineHelper( quitButton, setUnderline );
+			SetUnderlineHelper( quitButton, setUnderline );
 			break;
 		case MainMenuItemType::Unknown:
 			break;
 	}
 }
-MenuItem Renderer::SetUnderlineHelper( MenuItem menuItem, bool setUnderline )
+void Renderer::SetUnderlineHelper( std::shared_ptr< MenuItem > menuItem, bool setUnderline )
 {
-	if ( menuItem.HasValidTexture() && ( setUnderline == menuItem.IsSelected() ) )
-		return menuItem;
+	if ( menuItem && menuItem->HasValidTexture() && ( setUnderline == menuItem->IsSelected() ) )
+		return;
 
 	SDL_Color clr = colorConfig.textColor;
 	int style = 0;
@@ -706,12 +699,10 @@ MenuItem Renderer::SetUnderlineHelper( MenuItem menuItem, bool setUnderline )
 		style = TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC;
 	}
 
-	SDL_Rect r = menuItem.GetRect();
-	menuItem.SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItem.GetName(), clr, r, renderer, style ) );
-	menuItem.SetRect( r );
-	menuItem.SetSelcted( setUnderline );
-
-	return menuItem;
+	SDL_Rect r = menuItem->GetRect();
+	menuItem->SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItem->GetName(), clr, r, renderer, style ) );
+	menuItem->SetRect( r );
+	menuItem->SetSelcted( setUnderline );
 }
 void Renderer::RemoveMainMenuItemsUnderlines( )
 {
@@ -722,14 +713,17 @@ void Renderer::RemoveMainMenuItemsUnderlines( )
 }
 void Renderer::CenterMainMenuButtons( )
 {
-	int totoalWidth = quitButton.GetEndX() - singlePlayerText.GetRectX();
+	if ( singlePlayerButton == nullptr )
+		return;
+
+	int totoalWidth = quitButton->GetEndX() - singlePlayerButton->GetRectX();
 	int freeSpace = background.w - totoalWidth;
 	int startingPoint = freeSpace / 2;
 
-	singlePlayerText.SetRectX( startingPoint );
-	multiplayerPlayerText.SetRectX( singlePlayerText.GetEndX() + margin );
-	optionsButton.SetRectX( multiplayerPlayerText.GetEndX() + margin );
-	quitButton.SetRectX( optionsButton.GetEndX() + margin );
+	singlePlayerButton->SetRectX( startingPoint );
+	multiPlayerButton->SetRectX( singlePlayerButton->GetEndX() + margin );
+	optionsButton->SetRectX( multiPlayerButton->GetEndX() + margin );
+	quitButton->SetRectX( optionsButton->GetEndX() + margin );
 }
 void Renderer::InitGreyAreaRect( )
 {
@@ -746,37 +740,37 @@ void Renderer::InitGreyAreaRect( )
 }
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
-	pauseResumeButton = AddMenuButtonHelper( pauseResumeButton, resumeString, { 0, 0, 0, 0 }  );
-	pauseResumeButton.SetRectXY( margin / 2, background.h - pauseResumeButton.GetRectH() );
+	pauseResumeButton = AddMenuButtonHelper( resumeString, { 0, 0, 0, 0 }  );
+	pauseResumeButton->SetRectXY( margin / 2, background.h - pauseResumeButton->GetRectH() );
 
-	pauseMainMenuButton = AddMenuButtonHelper( pauseMainMenuButton, mainMenuString, pauseResumeButton.GetRect()  );
+	pauseMainMenuButton = AddMenuButtonHelper( mainMenuString, pauseResumeButton->GetRect()  );
 
-	pauseQuitButton = AddMenuButtonHelper( pauseQuitButton, quitString, pauseMainMenuButton.GetRect()  );
+	pauseQuitButton = AddMenuButtonHelper( quitString, pauseMainMenuButton->GetRect()  );
 
 	CenterPauseButtons();
 }
 void Renderer::CenterPauseButtons( )
 {
-	int totoalWidth = pauseQuitButton.GetEndX() - pauseResumeButton.GetRectX();
-	int freeSpace = background.w - totoalWidth;
+	int totalWidth = pauseQuitButton->GetEndX() - pauseResumeButton->GetRectX();
+	int freeSpace = background.w - totalWidth;
 	int startingPoint = freeSpace / 2;
 
-	pauseResumeButton.SetRectX( startingPoint );
-	pauseMainMenuButton.SetRectX( pauseResumeButton.GetEndX() + margin );
-	pauseQuitButton.SetRectX( pauseMainMenuButton.GetEndX() + margin );
+	pauseResumeButton->SetRectX( startingPoint );
+	pauseMainMenuButton->SetRectX( pauseResumeButton->GetEndX() + margin );
+	pauseQuitButton->SetRectX( pauseMainMenuButton->GetEndX() + margin );
 }
 void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemType &mit  )
 {
 	switch ( mit )
 	{
 		case PauseMenuItemType::Resume:
-			pauseResumeButton = SetUnderlineHelper( pauseResumeButton, setUnderline );
+			SetUnderlineHelper( pauseResumeButton, setUnderline );
 			break;
 		case PauseMenuItemType::MainMenu:
-			pauseMainMenuButton = SetUnderlineHelper( pauseMainMenuButton, setUnderline );
+			SetUnderlineHelper( pauseMainMenuButton, setUnderline );
 			break;
 		case PauseMenuItemType::Quit:
-			pauseQuitButton = SetUnderlineHelper( pauseQuitButton, setUnderline );
+			SetUnderlineHelper( pauseQuitButton, setUnderline );
 			break;
 		case PauseMenuItemType::Unknown:
 			break;
@@ -784,42 +778,40 @@ void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemT
 }
 void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::string &update, const std::string &back )
 {
-	int32_t xPos =
-		static_cast< int32_t > ( ( background.w * 0.5 ) -
-		( ( lobbyNewGameButton.GetRectW()  +  lobbyUpdateButton.GetRectW() + lobbyBackButton.GetRectW() )  * 0.5 ) );
-	int32_t yPos = singlePlayerText.GetRectY();
+	int32_t xPos = 0;
+	int32_t yPos = singlePlayerButton->GetRectY();
 
-	lobbyNewGameButton = AddMenuButtonHelper( lobbyNewGameButton, newGame, { xPos, yPos, 0, 0 } );
-	xPos = lobbyNewGameButton.GetEndX()  + 20;
-	lobbyUpdateButton = AddMenuButtonHelper( lobbyUpdateButton, update, { xPos, yPos, 0, 0 } );
-	xPos = lobbyUpdateButton.GetEndX() +  20;
-	lobbyBackButton = AddMenuButtonHelper( lobbyBackButton, back, { xPos, yPos, 0, 0 } );
+	lobbyNewGameButton = AddMenuButtonHelper( newGame, { xPos, yPos, 0, 0 } );
+	xPos = lobbyNewGameButton->GetEndX()  + 20;
+	lobbyUpdateButton = AddMenuButtonHelper( update, { xPos, yPos, 0, 0 } );
+	xPos = lobbyUpdateButton->GetEndX() +  20;
+	lobbyBackButton = AddMenuButtonHelper( back, { xPos, yPos, 0, 0 } );
 
 	CenterLobbyButtons();
 }
 void Renderer::CenterLobbyButtons( )
 {
-	int32_t width = 20 + lobbyBackButton.GetRectW() + lobbyNewGameButton.GetRectW() + lobbyUpdateButton.GetRectW();
+	int32_t width = 20 + lobbyBackButton->GetRectW() + lobbyNewGameButton->GetRectW() + lobbyUpdateButton->GetRectW();
 	int32_t newX = lobbyMenuListRect.x + static_cast< int32_t > ( ( lobbyMenuListRect.w * 0.5 ) - ( width * 0.5 ) );
 
-	lobbyNewGameButton.SetRectX( newX );
-	newX = lobbyNewGameButton.GetEndX() + 20;
-	lobbyUpdateButton.SetRectX( newX );
-	newX = lobbyUpdateButton.GetEndX() + 20;
-	lobbyBackButton.SetRectX( newX );
+	lobbyNewGameButton->SetRectX( newX );
+	newX = lobbyNewGameButton->GetEndX() + 20;
+	lobbyUpdateButton->SetRectX( newX );
+	newX = lobbyUpdateButton->GetEndX() + 20;
+	lobbyBackButton->SetRectX( newX );
 }
 void Renderer::SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mit  )
 {
 	switch ( mit )
 	{
 		case LobbyMenuItem::NewGame:
-			lobbyNewGameButton = SetUnderlineHelper( lobbyNewGameButton, setUnderline );
+			SetUnderlineHelper( lobbyNewGameButton, setUnderline );
 			break;
 		case LobbyMenuItem::Update:
-			lobbyUpdateButton = SetUnderlineHelper( lobbyUpdateButton, setUnderline );
+			SetUnderlineHelper( lobbyUpdateButton, setUnderline );
 			break;
 		case LobbyMenuItem::Back:
-			lobbyBackButton = SetUnderlineHelper( lobbyBackButton, setUnderline );
+			SetUnderlineHelper( lobbyBackButton, setUnderline );
 			break;
 		default:
 			break;
@@ -979,41 +971,71 @@ SDL_Color Renderer::GetHardTileColor( uint64_t index ) const
 }
 SDL_Rect Renderer::GetLobbyNewGameRect() const
 {
-	return lobbyNewGameButton.GetRect();
+	return lobbyNewGameButton->GetRect();
 }
 SDL_Rect Renderer::GetLobbyUpdateRect() const
 {
-	return lobbyUpdateButton.GetRect();
+	return lobbyUpdateButton->GetRect();
 }
 SDL_Rect Renderer::GetLobbyBackRect() const
 {
-	return lobbyBackButton.GetRect();
+	return lobbyBackButton->GetRect();
 }
 SDL_Rect Renderer::GetPauseResumeRect() const
 {
-	return pauseResumeButton.GetRect();
+	return pauseResumeButton->GetRect();
 }
 SDL_Rect Renderer::GetPauseMainMenuRect() const
 {
-	return pauseMainMenuButton.GetRect();
+	return pauseMainMenuButton->GetRect();
 }
 SDL_Rect Renderer::GetPauseQuitRect() const
 {
-	return pauseQuitButton.GetRect();
+	return pauseQuitButton->GetRect();
 }
-SDL_Rect Renderer::GetSinglePlayerRect() const
+const std::shared_ptr< MenuItem > &Renderer::GetMainMenuItem( const MainMenuItemType &type ) const
 {
-	return singlePlayerText.GetRect();
+	switch ( type )
+	{
+		case MainMenuItemType::SinglePlayer:
+			return singlePlayerButton;
+		case MainMenuItemType::MultiPlayer:
+			return multiPlayerButton;
+		case MainMenuItemType::Options:
+			return optionsButton;
+		case MainMenuItemType::Quit:
+			return quitButton;
+		case MainMenuItemType::Unknown:
+			return singlePlayerButton;
+	}
 }
-SDL_Rect Renderer::GetMultiplayerPlayerRect() const
+const std::shared_ptr< MenuItem > &Renderer::GetLobbyMenuItem( const LobbyMenuItem &type ) const
 {
-	return multiplayerPlayerText.GetRect();
+	switch ( type )
+	{
+		case LobbyMenuItem::NewGame:
+			return lobbyNewGameButton;
+		case LobbyMenuItem::Update:
+			return lobbyUpdateButton;
+		case LobbyMenuItem::Back:
+			return lobbyBackButton;
+		case LobbyMenuItem::GameList:
+			return quitButton;
+		case LobbyMenuItem::Unknown:
+			return singlePlayerButton;
+	}
 }
-SDL_Rect Renderer::GetOptionsPlayerRect() const
+const std::shared_ptr< MenuItem > &Renderer::GetPauseMenuItem( const PauseMenuItemType &type ) const
 {
-	return optionsButton.GetRect();
-}
-SDL_Rect Renderer::GetQuitPlayerRect() const
-{
-	return quitButton.GetRect();
+	switch ( type )
+	{
+		case PauseMenuItemType::Resume:
+			return pauseResumeButton;
+		case PauseMenuItemType::MainMenu:
+			return pauseMainMenuButton;
+		case PauseMenuItemType::Quit:
+			return pauseQuitButton;
+		case PauseMenuItemType::Unknown:
+			return pauseQuitButton;
+	}
 }

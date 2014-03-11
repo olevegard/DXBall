@@ -66,9 +66,9 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
  	physicsManager.SetWindowSize( windowSize );
 
+	InitMenu();
 	InitRenderer();
 	InitPaddles();
-	InitMenu();
 	InitJoystick();
 
 	logger.Init( localPlayerName_ );
@@ -122,9 +122,34 @@ void GameManager::LoadConfig()
 }
 void GameManager::CreateMenu()
 {
-	menuManager.AddMenuElememts( renderer );
-	menuManager.AddPauseMenuElememts( renderer );
-	menuManager.AddLobbyMenuElememts( renderer );
+	CreateMainMenu();
+	CreatePauseMenu();
+	CreateLobbyMenu();
+}
+void GameManager::CreatePauseMenu()
+{
+	renderer.AddPauseMenuButtons( "Resume", "MainMenu", "Quit" );
+
+	menuManager.SetPauseMenuItem( PauseMenuItemType::Resume, renderer.GetPauseMenuItem( PauseMenuItemType::Resume ) );
+	menuManager.SetPauseMenuItem( PauseMenuItemType::MainMenu, renderer.GetPauseMenuItem( PauseMenuItemType::MainMenu ) );
+	menuManager.SetPauseMenuItem( PauseMenuItemType::Quit, renderer.GetPauseMenuItem( PauseMenuItemType::Quit ) );
+}
+void GameManager::CreateLobbyMenu()
+{
+	renderer.AddLobbyMenuButtons( "New Game", "Update", "Back" );
+
+	menuManager.SetLobbyMenuItem( LobbyMenuItem::NewGame, renderer.GetLobbyMenuItem( LobbyMenuItem::NewGame ) );
+	menuManager.SetLobbyMenuItem( LobbyMenuItem::Update, renderer.GetLobbyMenuItem( LobbyMenuItem::Update ) );
+	menuManager.SetLobbyMenuItem( LobbyMenuItem::Back, renderer.GetLobbyMenuItem( LobbyMenuItem::Back ) );
+}
+void GameManager::CreateMainMenu()
+{
+	renderer.AddMainMenuButtons( "Single Player", "Multiplayer", "Options", "Quit" );
+
+	menuManager.SetMainMenuItem( MainMenuItemType::SinglePlayer,  renderer.GetMainMenuItem( MainMenuItemType::SinglePlayer ) );
+	menuManager.SetMainMenuItem( MainMenuItemType::Options     ,  renderer.GetMainMenuItem( MainMenuItemType::Options) );
+	menuManager.SetMainMenuItem( MainMenuItemType::MultiPlayer ,  renderer.GetMainMenuItem( MainMenuItemType::MultiPlayer) );
+	menuManager.SetMainMenuItem( MainMenuItemType::Quit        ,  renderer.GetMainMenuItem( MainMenuItemType::Quit ) );
 }
 void GameManager::Restart()
 {
@@ -911,7 +936,6 @@ void GameManager::HandleMenuKeys( const SDL_Event &event )
 				break;
 		}
 	}
-
 }
 void GameManager::HandleGameKeys( const SDL_Event &event )
 {
