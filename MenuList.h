@@ -13,7 +13,8 @@ struct MenuList
 {
 	MenuList( );
 
-	void Init( std::string name, SDL_Rect mainRect_, Renderer &renderer_ );
+	void Init( SDL_Renderer* renderer, SDL_Rect mainRect_, const SDL_Color &backgroundColor  );
+	void InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor );
 
 	void AddItem( GameInfo gameInfo, Renderer &renderer_ );
 

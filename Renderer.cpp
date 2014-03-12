@@ -829,7 +829,6 @@ void Renderer::CalculateRemotePlayerTextureRects()
 	remotePlayerBalls.rect.x = remotePlayerPoints.rect.x;
 	remotePlayerBalls.rect.y = remotePlayerPoints.rect.y + remotePlayerPoints.rect.h;
 }
-
 SDL_Rect Renderer::CalcMenuListRect()
 {
 	lobbyMenuListRect.w = static_cast< int32_t > ( greyArea.rect.w * 0.6 );
@@ -839,6 +838,14 @@ SDL_Rect Renderer::CalcMenuListRect()
 	lobbyMenuListRect.y = static_cast< int32_t > ( ( greyArea.rect.h * 0.5 ) - ( lobbyMenuListRect.h * 0.5 ) ) + greyArea.rect.y;
 
 	return lobbyMenuListRect;
+}
+void Renderer::InitGameList()
+{
+	CalcMenuListRect();
+
+	gameList = std::make_shared< MenuList >();
+	gameList->Init( renderer, lobbyMenuListRect, colorConfig.GetBackgroundColor() );
+	gameList->InitTexture( renderer, "Available Games : ", mediumFont, colorConfig.GetTextColor() );
 }
 void Renderer::Update( double delta )
 {
@@ -930,10 +937,7 @@ void Renderer::PrintSDL_TTFVersion()
 // ==============================================================================================
 // =================================== Getters  ================================================
 // ==============================================================================================
-void Renderer::AddMenuList( MenuList* mitem )
-{
-	gameList = mitem;
-}
+
 void Renderer::SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
 {
 	isTwoPlayerMode = isTwoPlayerMode_;

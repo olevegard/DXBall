@@ -115,7 +115,11 @@ public:
 	SDL_Rect GetLobbyUpdateRect() const;
 	SDL_Rect GetLobbyBackRect() const;
 
-	void AddMenuList( MenuList* mitem );
+	const std::shared_ptr< MenuList >  &GetGameList()
+	{
+		return gameList;
+	}
+	void InitGameList();
 
 	SDL_Renderer* GetRenderer() const;
 	TTF_Font* GetFont() const;
@@ -184,7 +188,6 @@ private:
 
 	ColorConfigLoader colorConfig;
 
-	MenuList* gameList;
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -269,6 +272,7 @@ private:
 	std::shared_ptr< MenuItem > lobbyNewGameButton;
 	std::shared_ptr< MenuItem > lobbyUpdateButton;
 	std::shared_ptr< MenuItem > lobbyBackButton;
+	std::shared_ptr< MenuList>  gameList;
 	SDL_Rect	lobbyMenuListRect;
 
 	// Bonus Boxes

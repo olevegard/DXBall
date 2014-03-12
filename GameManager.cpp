@@ -79,9 +79,10 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 }
 void GameManager::InitMenu()
 {
-	menuManager.Init( renderer );
+
 	menuManager.SetGameState( GameState::MainMenu );
 	CreateMenu();
+
 }
 void GameManager::InitRenderer()
 {
@@ -122,6 +123,9 @@ void GameManager::LoadConfig()
 }
 void GameManager::CreateMenu()
 {
+	renderer.InitGameList();
+	menuManager.SetGameList( renderer.GetGameList() );
+
 	CreateMainMenu();
 	CreatePauseMenu();
 	CreateLobbyMenu();

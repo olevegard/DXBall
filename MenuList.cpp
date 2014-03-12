@@ -9,22 +9,24 @@ MenuList::MenuList( )
 {
 	height = 0;
 }
-void MenuList::Init( std::string text, SDL_Rect mainRect_, Renderer &renderer_  )
+void MenuList::Init( SDL_Renderer* renderer, SDL_Rect mainRect_, const SDL_Color &backgroundColor  )
 {
 	mainArea.rect = mainRect_;
 	Rect r;
 	r.FromSDLRect( mainArea.rect );
 
-	mainArea.texture = RenderHelpers::InitSurface( r, renderer_.GetBackgroundColor(), renderer_.GetRenderer() );
+	mainArea.texture = RenderHelpers::InitSurface( r, backgroundColor, renderer );
 	SDL_SetTextureAlphaMod( mainArea.texture, 173 );
-
+}
+void MenuList::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor )
+{
 	caption.texture = RenderHelpers::RenderTextTexture_Solid
 	(
-		renderer_.GetFont(),
+		font,
 		text,
-		renderer_.GetTextColor(),
+		textColor,
 		caption.rect,
-		renderer_.GetRenderer()
+		renderer
 	);
 
 	caption.rect.x = mainArea.rect.x + static_cast< int32_t > ( ( mainArea.rect.w * 0.5 ) - ( caption.rect.w * 0.5 ) );

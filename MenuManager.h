@@ -11,7 +11,6 @@
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 
-class Renderer;
 class MenuManager
 {
 public:
@@ -44,8 +43,6 @@ public:
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
 
-	void Init( Renderer &renderer );
-
 	void AddGameToList( Renderer &renderer, GameInfo gameInfo )
 	{
 		lobbyGameList->AddItem( gameInfo, renderer );
@@ -70,7 +67,10 @@ public:
 	void SetMainMenuItem( const MainMenuItemType &type, const std::shared_ptr< MenuItem >& button );
 	void SetLobbyMenuItem( const LobbyMenuItem &type, const std::shared_ptr< MenuItem >  &button );
 	void SetPauseMenuItem( const PauseMenuItemType &type, const std::shared_ptr< MenuItem >  &button );
-
+	void SetGameList( const std::shared_ptr< MenuList >  gameList_ )
+	{
+		lobbyGameList = gameList_;
+	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y ) const;
 	PauseMenuItemType CheckIntersections_Pause( int x, int y ) const;

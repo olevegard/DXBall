@@ -2,8 +2,8 @@
 #include <memory>
 
 #include "MenuManager.h"
-#include "Renderer.h"
 #include "MenuList.h"
+#include "Renderer.h"
 
 #include "math/RectHelpers.h"
 
@@ -17,13 +17,6 @@ MenuManager::MenuManager()
 	,	seletedGameID( -1 )
 	,	lobbyStateChanged( false  )
 {
-}
-void MenuManager::Init( Renderer &renderer )
-{
-	SDL_Rect menuListRect = renderer.CalcMenuListRect();
-	lobbyGameList = std::make_shared< MenuList >();//( "Available games :" , { 0, 0, 0, 0 } );
-	lobbyGameList->Init( "Available Games : ",menuListRect , renderer  );
-	renderer.AddMenuList( lobbyGameList.get() );
 }
 void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer ) const
 {
