@@ -115,11 +115,10 @@ public:
 	SDL_Rect GetLobbyUpdateRect() const;
 	SDL_Rect GetLobbyBackRect() const;
 
-	const std::shared_ptr< MenuList >  &GetGameList()
-	{
-		return gameList;
-	}
 	void InitGameList();
+	const std::shared_ptr< MenuList >  &GetGameList();
+	void AddGameToList( GameInfo gameInfo );
+	void ClearGameList();
 
 	SDL_Renderer* GetRenderer() const;
 	TTF_Font* GetFont() const;

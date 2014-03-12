@@ -477,6 +477,7 @@ void Renderer::RenderText()
 // ==============================================================================================
 bool Renderer::LoadFontAndText()
 {
+	tinyFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 20 );
 	font = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 28 );
 	mediumFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 41 );
 	bigFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 57 );
@@ -845,7 +846,19 @@ void Renderer::InitGameList()
 
 	gameList = std::make_shared< MenuList >();
 	gameList->Init( renderer, lobbyMenuListRect, colorConfig.GetBackgroundColor() );
-	gameList->InitTexture( renderer, "Available Games : ", mediumFont, colorConfig.GetTextColor() );
+	gameList->InitTexture( renderer, "Available Games : ", font, colorConfig.GetTextColor() );
+}
+const std::shared_ptr< MenuList >  &Renderer::GetGameList()
+{
+	return gameList;
+}
+void Renderer::AddGameToList( GameInfo gameInfo )
+{
+	gameList->AddItem( gameInfo, renderer, tinyFont, colorConfig.GetTextColor()  );
+}
+void Renderer::ClearGameList()
+{
+	gameList->ClearList();
 }
 void Renderer::Update( double delta )
 {

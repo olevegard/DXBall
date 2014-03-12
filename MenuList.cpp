@@ -1,5 +1,4 @@
 #include "MenuList.h"
-#include "Renderer.h"
 
 #include "tools/RenderTools.h"
 #include "math/RectHelpers.h"
@@ -33,26 +32,33 @@ void MenuList::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF
 	caption.rect.y = mainArea.rect.y;
 	height = caption.rect.y + caption.rect.h + 10;
 }
-void MenuList::AddItem( GameInfo gameInfo, Renderer &renderer_ )
+void MenuList::AddItem( GameInfo gameInfo, SDL_Renderer* renderer, TTF_Font* font, const SDL_Color &color )
 {
 	std::string gameLine = gameInfo.GetAsSrting();
-	MenuItem item( gameLine );
 
 	SDL_Rect r;
 	r.x = mainArea.rect.x + 10;
 	r.y = height;
+
 	SDL_Texture* text = RenderHelpers::RenderTextTexture_Solid
 	(
-		 renderer_.GetFont(),
-		 gameLine,
-		 renderer_.GetTextColor(),
-		 r,
-		 renderer_.GetRenderer()
+	 	font,
+		gameLine,
+		color,
+		r,
+		renderer
 	);
 
-	height += r.h;
-	item.SetTexture( text );
-	item.SetRect( r );
+	AddItem( gameInfo, gameLine, text, r );
+}
+void MenuList::AddItem( GameInfo gameInfo, const std::string &gameLine,  SDL_Texture* texture, const SDL_Rect &rect )
+{
+	MenuItem item( gameLine  );
+
+	height += rect.h;
+
+	item.SetTexture( texture );
+	item.SetRect( rect );
 	gameList.emplace_back( item );
 	hostInfoList.emplace_back( gameInfo );
 }

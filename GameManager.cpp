@@ -553,7 +553,7 @@ void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 	GameInfo info;
 	info.Set( message.GetIPAdress(), message.GetPort() );
 	info.SetGameID( message.GetObjectID() );
-	menuManager.AddGameToList( renderer, info );
+	renderer.AddGameToList( info );
 }
 void GameManager::RecieveBallSpawnMessage( const TCPMessage &message )
 {
@@ -1089,7 +1089,7 @@ void GameManager::JoinGame()
 }
 void GameManager::UpdateGameList()
 {
-	menuManager.ClearGameList();
+	renderer.ClearGameList();
 	messageSender.SendGetGameListMessage();
 }
 void GameManager::AIMove()
