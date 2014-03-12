@@ -14,7 +14,7 @@ struct BoardLoader
 
 	Board GenerateBoard( const SDL_Rect &rect );
 
-	bool IsLastLevel() const;
+	bool IsLastLevel();
 
 	void Reset( )
 	{
@@ -22,7 +22,6 @@ struct BoardLoader
 	}
 	private:
 	bool DoesFileExist( const std::string &fileName ) const;
-	std::string FindNextExistingBoard();
 
 	size_t currentLevel;
 	std::vector< std::string > levelTextFiles;

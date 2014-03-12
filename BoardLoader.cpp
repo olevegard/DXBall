@@ -20,7 +20,6 @@ BoardLoader::BoardLoader()
 {
 	BuildLevelList();
 }
-
 void BoardLoader::BuildLevelList()
 {
 	std::string line;
@@ -28,15 +27,16 @@ void BoardLoader::BuildLevelList()
 
 	while ( getline( boardFile, line ) )
 	{
-		if ( line[0] == '#' || line.empty() )
+		if ( line[0] == '#' || line.empty() || !DoesFileExist( "boards/" + line ))
 			continue;
+
+		std::cout << "Added file : " << line << std::endl;
 
 		levelTextFiles.push_back( line );
 	}
 }
 Board BoardLoader::LoadLevel( const std::string &textFile )
 {
-	std::cout << "Loading level : " << textFile << std::endl;
 	Board board;
 	TilePosition pos;
 	std::string line;
@@ -59,13 +59,14 @@ Board BoardLoader::LoadLevel( const std::string &textFile )
 
 	return board;
 }
-bool BoardLoader::IsLastLevel() const
+bool BoardLoader::IsLastLevel()
 {
-	return ! ( currentLevel >= levelTextFiles.size() );
+	return currentLevel == levelTextFiles.size();
 }
 Board BoardLoader::GenerateBoard( const SDL_Rect &rect )
 {
-	Board b = LoadLevel( FindNextExistingBoard() );
+	std::string level = "boards/" + levelTextFiles[ currentLevel++ ];
+	Board b = LoadLevel( level );
 	levels.push_back( b );
 
 	b.CenterAndFlip( rect );
@@ -73,25 +74,17 @@ Board BoardLoader::GenerateBoard( const SDL_Rect &rect )
 
 	return b;
 }
-std::string BoardLoader::FindNextExistingBoard()
-{
-	std::string level;
-	do
-	{
-		level = "boards/" + levelTextFiles[ currentLevel ];
-		++currentLevel;
-	}
-	while( !DoesFileExist( level ) && currentLevel < levelTextFiles.size()  );
-
-	return level;
-}
 bool BoardLoader::DoesFileExist( const std::string &fileName ) const
 {
 	std::ifstream file( fileName );
 
 	bool exists = file.good();
+
 	if ( !exists )
 		std::cout << "BoardLoader@" << __LINE__ << " : " << fileName << " doesn't exist\n";
+	else
+		std::cout << "BoardLoader@" << __LINE__ << " : " << fileName << " exists\n";
+
 	file.close();
 
 	return exists;

@@ -1373,7 +1373,7 @@ bool GameManager::CanGenerateNewBoard()
 		return false;
 	}
 
-	if ( !boardLoader.IsLastLevel() )
+	if ( boardLoader.IsLastLevel() )
 	{
 		logger.Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
 		menuManager.SetGameState( GameState::GameOver );
