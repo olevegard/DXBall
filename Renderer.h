@@ -46,6 +46,7 @@ public:
 
 	void AddTile( const std::shared_ptr< Tile > &tile );
 	void RemoveTile( const std::shared_ptr< Tile >  &tile );
+	void UpdateTileHit( const std::shared_ptr< Tile >  &tile ) const;
 	void ClearBoard( );
 
 	void AddBall( const std::shared_ptr< Ball > &ball );
@@ -85,13 +86,11 @@ public:
 	void RemoveText();
 	void ResetText();
 
-
 	// Main menu
 	// ========================================================================
 	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
 	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
-
 
 	void SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemType &mit  );
 	void SetUnderlineHelper( std::shared_ptr< MenuItem > menuItem, bool setUnderline );

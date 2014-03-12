@@ -273,6 +273,14 @@ void Renderer::RemoveTile( const std::shared_ptr< Tile >  &tile )
 {
 	tileList.erase( std::find( tileList.begin(), tileList.end(), tile) );
 }
+void Renderer::UpdateTileHit( const std::shared_ptr< Tile >  &tile ) const
+{
+	if ( tile->GetTileType() != TileType::Hard )
+		return;
+
+	SDL_Texture* texture = hardTileTextures[ 5 - tile->GetHitsLeft()];
+	tile->SetTexture( texture );
+}
 void Renderer::ClearBoard( )
 {
 	bulletList.erase( bulletList.begin(), bulletList.end() );

@@ -404,6 +404,7 @@ void GameManager::HandleBulletTileIntersection( const std::shared_ptr< Bullet > 
 	{
 		IncrementPoints( tile->GetTileType(), !alive, owner );
 		messageSender.SendTileHitMessage( tile->GetObjectID() );
+		renderer.UpdateTileHit( tile );
 	}
 
 	DeleteDeadTiles();
@@ -586,7 +587,10 @@ void GameManager::RecieveTileHitMessage( const TCPMessage &message )
 	if ( message.GetTileKilled() || remotePlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		tile->Kill();
 	else
+	{
 		tile->Hit();
+		renderer.UpdateTileHit( tile );
+	}
 
 	IncrementPoints( tile->GetTileType(), !tile->IsAlive(), Player::Remote );
 
@@ -1131,6 +1135,7 @@ void GameManager::UpdateTileHit( const std::shared_ptr< Ball > &ball, const std:
 	else
 	{
 		messageSender.SendTileHitMessage( tile->GetObjectID() );
+		renderer.UpdateTileHit( tile );
 		IncrementPoints( tile->GetTileType(), !tile->IsAlive(), ball->GetOwner() );
 	}
 
