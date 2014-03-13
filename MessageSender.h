@@ -2,23 +2,17 @@
 
 #include <memory>
 #include "NetManager.h"
-#include "Logger.h"
-/*
-
-#include "enums/MessageTarget.h"
-#include "enums/GameState.h"
-*/
-
 
 struct GamePiece;
+struct Vector2f;
 struct BonusBox;
 struct Bullet;
 struct Paddle;
 struct Ball;
 struct Tile;
-struct Vector2f;
 struct Rect;
 class TCPMessage;
+class Logger;
 enum class MessageTarget : int;
 enum class GameState : int;
 enum class TileType : int;
@@ -44,7 +38,7 @@ public:
 	void SendTileHitMessage( uint32_t tileID, bool tileKilled = false );
 	void SendLastTileMessage( );
 
-	void SendNewGameMessage( const std::string &ip, uint16_t port );
+	void SendNewGameMessage( const std::string &ip, uint16_t port, const std::string &name );
 	void SendJoinGameMessage( int32_t gameID );
 	void SendEndGameMessage( int32_t gameID, const std::string &ip, uint16_t port );
 	void SendGetGameListMessage();
@@ -54,5 +48,5 @@ private:
 	Vector2f FlipPosition( Rect originalPos, double height );
 
 	NetManager &netManager;
-	Logger logger;
+	Logger *logger;
 };

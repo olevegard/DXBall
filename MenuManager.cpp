@@ -4,6 +4,7 @@
 #include "MenuManager.h"
 #include "MenuList.h"
 #include "Renderer.h"
+#include "Logger.h"
 
 #include "math/RectHelpers.h"
 
@@ -17,6 +18,7 @@ MenuManager::MenuManager()
 	,	seletedGameID( -1 )
 	,	lobbyStateChanged( false  )
 {
+	logger = Logger::Instance();
 }
 void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer ) const
 {
@@ -176,7 +178,6 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 		lobbyStateChanged = true;
 		return true;
 	}
-	std::cout << "ID : " << seletedGameID << "\n";
 
 	return false;
 }
@@ -242,10 +243,11 @@ void MenuManager::SetGameState( const GameState &gs )
 	if ( !IsGameStateChangeValid( gs ) )
 		return;
 
-	std::cout << "MenuManager.cpp@" << __LINE__ << " Changing game state from : "
-		<< static_cast< int32_t > ( currentGameState  ) << " to "
-		<< static_cast< int32_t > ( gs )
-		<< std::endl;
+	std::stringstream ss("");
+	ss << "from " << static_cast< int32_t > ( currentGameState  )
+	<< " to " << static_cast< int32_t > ( gs );
+
+	logger->Log( __FILE__, __LINE__, "Changing game state : ", ss.str() );
 
 	hasGameStateChanged = true;
 	prevGameState = currentGameState;
@@ -253,15 +255,9 @@ void MenuManager::SetGameState( const GameState &gs )
 }
 bool MenuManager::IsGameStateChangeValid( const GameState &gs) const
 {
-	if ( gs == GameState::Paused && currentGameState == GameState::MainMenu )
-	{
-		std::cout << "MenuManager.cpp@" << __LINE__ << " : GameState Invalid\n";
-		return false;
-	}
-
 	if ( gs == currentGameState )
 	{
-		std::cout << "MenuManager.cpp@" << __LINE__ << " : GameState Same as before\n";
+		logger->Log( __FILE__, __LINE__, "GameState same as before!");
 		return false;
 	}
 

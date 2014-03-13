@@ -21,6 +21,7 @@
 #include <sstream>
 #include <algorithm>
 
+#include "Logger.h"
 #include "BoardLoader.h"
 #include "ConfigLoader.h"
 
@@ -28,7 +29,7 @@
 	:	renderer()
 	,	timer()
 	,	messageSender( netManager )
-	,	physicsManager( messageSender, logger )
+	,	physicsManager( messageSender )
 
 	,	runGame( true )
 
@@ -71,7 +72,8 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	InitPaddles();
 	InitJoystick();
 
-	logger.Init( localPlayerName_ );
+	logger = Logger::Instance();
+	logger->Init( localPlayerName_ );
 
 	LoadConfig();
 
@@ -79,10 +81,8 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 }
 void GameManager::InitMenu()
 {
-
 	menuManager.SetGameState( GameState::MainMenu );
 	CreateMenu();
-
 }
 void GameManager::InitRenderer()
 {
@@ -105,12 +105,11 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
 	ip = ip_;
 	port = port_;
-	logger.Log( __FILE__, __LINE__, "IP", ip );
-	logger.Log( __FILE__, __LINE__, "Port", port );
+	logger->Log( __FILE__, __LINE__, "IP", ip );
+	logger->Log( __FILE__, __LINE__, "Port", port );
 	netManager.Init( false  );
-
-	GameInfo gameInfo;
-	gameInfo.Set( ip, port );
+	//GameInfo gameInfo;
+	//gameInfo.Set( ip, port,  );
 }
 void GameManager::LoadConfig()
 {
@@ -157,7 +156,7 @@ void GameManager::CreateMainMenu()
 }
 void GameManager::Restart()
 {
-	logger.Log( __FILE__, __LINE__, "==================== RESET ====================");
+	logger->Log( __FILE__, __LINE__, "==================== RESET ====================");
 
 	boardLoader.Reset();
 	ClearBoard();
@@ -526,11 +525,11 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			AddTile(  message.GetPos1(), message.GetTileType(), message.GetObjectID()  );
 			break;
 		case MessageType::LastTileSent:
-			logger.Log( __FILE__, __LINE__, "================================================================================");
+			logger->Log( __FILE__, __LINE__, "================================================================================");
 			physicsManager.UpdateScale();
 			break;
 		default:
-			logger.Log( __FILE__, __LINE__, "UpdateNetwork unknown message received", message );
+			logger->Log( __FILE__, __LINE__, "UpdateNetwork unknown message received", message );
 			std::cin.ignore();
 			break;
 	}
@@ -539,7 +538,7 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 {
 	if ( !netManager.IsConnected() )
 	{
-		logger.Log( __FILE__, __LINE__, "The client has accept the connection", message.GetObjectID() );
+		logger->Log( __FILE__, __LINE__, "The client has accept the connection", message.GetObjectID() );
 		netManager.Update();
 	}
 
@@ -552,7 +551,7 @@ void GameManager::RecieveJoinGameMessage( const TCPMessage &message  )
 void GameManager::RecieveNewGameMessage( const TCPMessage &message )
 {
 	GameInfo info;
-	info.Set( message.GetIPAdress(), message.GetPort() );
+	info.Set( message.GetIPAdress(), message.GetPort(), message.GetPlayerName()  );
 	info.SetGameID( message.GetObjectID() );
 	renderer.AddGameToList( info );
 }
@@ -638,7 +637,7 @@ void GameManager::RecieveBulletKillMessage( const TCPMessage &message )
 }
 void GameManager::PrintRecv( const TCPMessage &msg, int32_t line  )
 {
-	logger.Log( __FILE__, line, msg.Print() );
+	logger->Log( __FILE__, line, msg.Print() );
 }
 void GameManager::DeleteDeadBalls()
 {
@@ -803,7 +802,7 @@ void GameManager::HandleStatusChange( )
 	}
 	else if ( menuManager.WasGameQuited() )
 	{
-		logger.Log( __FILE__, __LINE__, "Game was quited" );
+		logger->Log( __FILE__, __LINE__, "Game was quited" );
 		messageSender.SendEndGameMessage( gameID, ip, port );
 		netManager.Close();
 	}
@@ -867,7 +866,7 @@ void GameManager::InitJoystick()
 	{
 		stick = SDL_JoystickOpen( 0 );
 		if ( stick == nullptr )
-			logger.Log( __FILE__, __LINE__, "Could noet grab joystick" );
+			logger->Log( __FILE__, __LINE__, "Could noet grab joystick" );
 	}
 }
 void GameManager::HandleJoystickEvent( const SDL_JoyButtonEvent &event )
@@ -968,7 +967,6 @@ void GameManager::HandleGameKeys( const SDL_Event &event )
 				localPlayerInfo.SetBonusActive( BonusType::FireBullets, true );
 				break;
 			case SDLK_c:
-				std::cout << "Tile coiunt : " << tileList.size() << std::endl;
 				break;
 			default:
 				break;
@@ -1059,14 +1057,14 @@ void GameManager::UpdateLobbyState()
 			JoinGame();
 			break;
 		case LobbyMenuItem::Unknown:
-			logger.Log( __FILE__, __LINE__, "Unkown new game state" );
+			logger->Log( __FILE__, __LINE__, "Unkown new game state" );
 			break;
 	}
 }
 void GameManager::StartNewGame()
 {
-	logger.Log( __FILE__, __LINE__, "New game" );
-	messageSender.SendNewGameMessage( ip, port );
+	logger->Log( __FILE__, __LINE__, "New game" );
+	messageSender.SendNewGameMessage( ip, port, localPlayerInfo.name );
 	menuManager.SetGameState( GameState::InGameWait );
 	netManager.SetIsServer( true );
 	netManager.Connect( ip, port );
@@ -1297,13 +1295,13 @@ void GameManager::GenerateBoard()
 		AddTile( tile.tilePos, tile.type, -1 );
 
 	messageSender.SendLastTileMessage();
-	logger.Log( __FILE__, __LINE__, "Loading of Board is done" );
+	logger->Log( __FILE__, __LINE__, "Loading of Board is done" );
 
 	physicsManager.UpdateScale();
 }
 void GameManager::ClearBoard()
 {
-	logger.Log( __FILE__, __LINE__, "==================== Clear Board ====================");
+	logger->Log( __FILE__, __LINE__, "==================== Clear Board ====================");
 	ballList.clear();
 
 	DeleteAllBullets();
@@ -1374,13 +1372,13 @@ bool GameManager::CanGenerateNewBoard()
 {
 	if ( menuManager.IsTwoPlayerMode() && !netManager.IsServer() )
 	{
-		logger.Log( __FILE__, __LINE__, " Not server! " );
+		logger->Log( __FILE__, __LINE__, " Not server! " );
 		return false;
 	}
 
 	if ( boardLoader.IsLastLevel() )
 	{
-		logger.Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
+		logger->Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
 		menuManager.SetGameState( GameState::GameOver );
 
 		return false;

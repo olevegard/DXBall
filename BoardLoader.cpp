@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
+#include "Logger.h"
 
 #include <SDL2/SDL.h>
 
@@ -18,6 +18,7 @@ BoardLoader::BoardLoader()
 	,	levelTextFiles( 0 )
 	,	levels(  )
 {
+	logger = Logger::Instance();
 	BuildLevelList();
 }
 void BoardLoader::BuildLevelList()
@@ -30,7 +31,7 @@ void BoardLoader::BuildLevelList()
 		if ( line[0] == '#' || line.empty() || !DoesFileExist( "boards/" + line ))
 			continue;
 
-		std::cout << "Added file : " << line << std::endl;
+		logger->Log( __FILE__, __LINE__, "Added file : ", line );
 
 		levelTextFiles.push_back( line );
 	}
@@ -81,9 +82,7 @@ bool BoardLoader::DoesFileExist( const std::string &fileName ) const
 	bool exists = file.good();
 
 	if ( !exists )
-		std::cout << "BoardLoader@" << __LINE__ << " : " << fileName << " doesn't exist\n";
-	else
-		std::cout << "BoardLoader@" << __LINE__ << " : " << fileName << " exists\n";
+		logger->Log( __FILE__, __LINE__, "File not found : ", fileName );
 
 	file.close();
 

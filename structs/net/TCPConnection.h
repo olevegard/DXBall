@@ -4,6 +4,7 @@
 
 #include <SDL2/SDL_net.h>
 
+class Logger;
 class TCPConnection
 {
 public:
@@ -42,4 +43,6 @@ private:
 	TCPsocket tcpSocket;
 	TCPsocket serverSocket;
 	SDLNet_SocketSet socketSet;
+
+	Logger *logger;
 };

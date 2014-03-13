@@ -5,7 +5,7 @@ Server::Server()
 
 	,	lastHeight( 0 )
 #if defined (WIN32)
-	
+
 #else
 	,	screenRect( { 0, 0, 500, 800 } )
 #endif
@@ -288,7 +288,7 @@ void Server::UpdateNetwork( int connectionNo )
 		{
 			AddGameLine( msg.GetIPAdress(), msg.GetPort() );
 			GameInfo game;
-			game.Set( msg.GetIPAdress(), msg.GetPort() );
+			game.Set( msg.GetIPAdress(), msg.GetPort(), msg.GetPlayerName() );
 			game.SetGameID( gameCount );
 
 			std::cout << "Server.cpp@" << __LINE__ << " Adding game with ID : " << gameCount << std::endl;
@@ -355,6 +355,7 @@ void Server::SendGameList( int32_t connectionNo )
 		msg.SetMessageType( MessageType::NewGame );
 		msg.SetIPAdress( p.GetIP() );
 		msg.SetPort( static_cast< uint16_t > ( p.GetPort() ) );
+		msg.SetPlayerName( p.GetPlayerName() );
 		msg.SetObjectID( p.GetGameID() );
 		std::stringstream ss;
 		ss << msg;

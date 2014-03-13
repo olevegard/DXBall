@@ -11,6 +11,8 @@
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 
+class Logger;
+class Renderer;
 class MenuManager
 {
 public:
@@ -43,14 +45,7 @@ public:
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
 
-	void AddGameToList( Renderer &renderer, GameInfo gameInfo )
-	{
-		lobbyGameList->AddItem( gameInfo, renderer );
-	}
-	void ClearGameList()
-	{
-		lobbyGameList->ClearList();
-	}
+
 	int32_t GetSelectedGame() const
 	{
 		return seletedGameID;
@@ -103,4 +98,6 @@ private:
 	int32_t seletedGameID;
 	LobbyMenuItem lobbyState;
 	bool lobbyStateChanged;
+
+	Logger* logger;
 };

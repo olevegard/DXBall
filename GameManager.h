@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Timer.h"
-#include "Logger.h"
 #include "Renderer.h"
 #include "NetManager.h"
 #include "BoardLoader.h"
@@ -16,6 +15,7 @@ enum class DirectionX{ Left, Middle, Right };
 
 // Forward declarations
 class TCPMessage;
+class Logger;
 enum class TileType : int;
 enum class Player : int;
 enum class MessageTarget : int;
@@ -217,9 +217,9 @@ class GameManager
 		MenuManager menuManager;
 		ConfigLoader gameConfig;
 		NetManager netManager;
-		Logger logger;
 		MessageSender messageSender;
 		PhysicsManager physicsManager;
+		Logger* logger;
 
 		bool runGame;
 

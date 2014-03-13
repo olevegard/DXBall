@@ -10,10 +10,12 @@
 #include "structs/game_objects/BonusBox.h"
 #include "structs/game_objects/Tile.h"
 
+#include "Logger.h"
+
 MessageSender::MessageSender( NetManager &netMan )
 :	netManager( netMan )
 {
-	logger.Init( "log_ms.txt" );
+	logger = Logger::Instance();
 }
 void MessageSender::SendBulletKilledMessage( uint32_t bulletID )
 {
@@ -163,7 +165,6 @@ void MessageSender::SendGameSettingsMessage( const Vector2f &size, double scale 
 {
 	if ( !netManager.IsServer()  )
 	{
-		std::cout << "MEessageSEnder@" << __LINE__ << " failed to send : GameSettings" << std::endl;
 		return;
 	}
 
@@ -189,12 +190,13 @@ void MessageSender::SendGameStateChangedMessage( const GameState &gameState )
 	SendMessage( msg, MessageTarget::Oponent );
 }
 
-void MessageSender::SendNewGameMessage( const std::string &ip, uint16_t port )
+void MessageSender::SendNewGameMessage( const std::string &ip, uint16_t port, const std::string &name  )
 {
 	TCPMessage msg;
 	msg.SetMessageType( MessageType::NewGame );
 	msg.SetIPAdress( ip  );
 	msg.SetPort( port );
+	msg.SetPlayerName( name );
 
 	SendMessage( msg, MessageTarget::Server );
 }
@@ -239,8 +241,7 @@ void MessageSender::SendMessage( const TCPMessage &message, const MessageTarget 
 }
 void MessageSender::PrintSend( const TCPMessage &msg )
 {
-	std::cout << "Message sent : " << msg.Print() << std::endl;;
-	//logger.Log( __FILE__, __LINE__, msg.Print() );
+	logger->Log( __FILE__, __LINE__, "Message sent ", msg.Print() );
 }
 Vector2f MessageSender::FlipPosition( Rect originalPos, double height )
 {

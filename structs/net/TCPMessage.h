@@ -215,16 +215,28 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 				return is;
 			}
 		case EndGame:
-		case NewGame:
 			{
 				std::string ip;
-
 				uint16_t port;
 
 				is >> ip  >> port;
 
 				msg.SetIPAdress( ip );
 				msg.SetPort( port );
+
+				return is;
+			}
+		case NewGame:
+			{
+				std::string ip;
+				uint16_t port;
+				std::string player;
+
+				is >> ip  >> port >> player;
+
+				msg.SetIPAdress( ip );
+				msg.SetPort( port );
+				msg.SetPlayerName( player );
 
 				return is;
 			}
@@ -311,10 +323,15 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 				<< message.GetGameStateAsInt() << " ";
 			break;
 		case EndGame:
-		case NewGame:
 			os
 				<< message.GetIPAdress() << " "
 				<< message.GetPort() << " ";
+			break;
+		case NewGame:
+			os
+				<< message.GetIPAdress() << " "
+				<< message.GetPort() << " "
+				<< message.GetPlayerName() << " ";
 			break;
 		case PlayerName:
 			os

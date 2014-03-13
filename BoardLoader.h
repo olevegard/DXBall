@@ -2,6 +2,7 @@
 
 #include "structs/board/Board.h"
 
+class Logger;
 struct SDL_Rect;
 struct TilePosition;
 struct BoardLoader
@@ -26,4 +27,6 @@ struct BoardLoader
 	size_t currentLevel;
 	std::vector< std::string > levelTextFiles;
 	std::vector< Board > levels;
+
+	Logger *logger;
 };

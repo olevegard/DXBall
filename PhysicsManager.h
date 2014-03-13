@@ -1,20 +1,30 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
-#include "MessageSender.h"
+#include "math/Vector2f.h"
+#include "math/Rect.h"
+#include "enums/TileType.h"
+
+#include <SDL2/SDL.h>
+
 struct GamePiece;
+struct BonusBox;
 struct Bullet;
 struct Paddle;
 struct Ball;
 struct Tile;
 enum class Player : int;
 enum class BonusType : int;
+class Logger;
+class MessageSender;
+
 class PhysicsManager
 {
 public:
 
-	PhysicsManager( MessageSender &msgSender, Logger &logger_ );
+	PhysicsManager( MessageSender &msgSender );
 
 	// Tiles
 	// =============================================================================================================
@@ -106,7 +116,7 @@ private:
 	std::shared_ptr < Paddle > remotePaddle;
 
 	MessageSender 	&messageSender;
-	Logger			&logger;
+	Logger			*logger;
 
 	SDL_Rect windowSize;
 	double scale;

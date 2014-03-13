@@ -16,6 +16,12 @@ class Logger
 	{
 
 	}
+	static Logger* Instance()
+	{
+		static Logger instance;
+		return &instance;
+
+	}
 	void Log( const std::string &fileName, int32_t line, const std::string &msg )
 	{
 		if ( !logCout && !logFile )
@@ -38,7 +44,7 @@ class Logger
 			return;
 
 		std::stringstream ss;
-		ss  << msg << " : " << object;
+		ss  << msg << " : \'" << object << "\'";
 
 		Log( fileName, line, ss.str() );
 	}
