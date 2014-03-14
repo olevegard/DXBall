@@ -20,7 +20,7 @@ MenuManager::MenuManager()
 {
 	logger = Logger::Instance();
 }
-void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer ) const
+void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer )
 {
 	if ( currentGameState == GameState::Paused )
 	{
@@ -35,7 +35,7 @@ void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer ) const
 		CheckItemMouseOver_Lobby( x, y, renderer );
 	}
 }
-void MenuManager::CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer ) const
+void MenuManager::CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer )
 {
 	MainMenuItemType mouseOver = CheckIntersections( x, y );
 
@@ -71,7 +71,7 @@ void MenuManager::CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer 
 	}
 
 }
-void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) const
+void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer )
 {
 	PauseMenuItemType mouseOver = CheckIntersections_Pause( x, y );
 
@@ -98,7 +98,7 @@ void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) c
 	}
 }
 
-void MenuManager::CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer ) const
+void MenuManager::CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer )
 {
 	LobbyMenuItem mouseOver = CheckIntersections_Lobby( x, y );
 
@@ -181,44 +181,44 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 
 	return false;
 }
-MainMenuItemType MenuManager::CheckIntersections( int x, int y ) const
+MainMenuItemType MenuManager::CheckIntersections( int x, int y )
 {
-	if ( RectHelpers::CheckMouseIntersection( x, y, singlePlayerButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, mainMenuItems[MainMenuItemType::SinglePlayer]->GetRect() ) )
 		return MainMenuItemType::SinglePlayer;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, multiPlayerButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, mainMenuItems[MainMenuItemType::MultiPlayer]->GetRect() ) )
 		return MainMenuItemType::MultiPlayer;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, optionsButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, mainMenuItems[MainMenuItemType::Options]->GetRect() ) )
 		return MainMenuItemType::Options;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, quitButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, mainMenuItems[MainMenuItemType::Quit]->GetRect() ) )
 		return MainMenuItemType::Quit;
 
 	return MainMenuItemType::Unknown;
 }
-PauseMenuItemType MenuManager::CheckIntersections_Pause( int x, int y ) const
+PauseMenuItemType MenuManager::CheckIntersections_Pause( int x, int y )
 {
-	if ( RectHelpers::CheckMouseIntersection( x, y, pauseResumeButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, pauseMenuItems[PauseMenuItemType::Resume]->GetRect() ) )
 		return PauseMenuItemType::Resume;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, pauseMainMenuButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, pauseMenuItems[PauseMenuItemType::MainMenu]->GetRect() ) )
 		return PauseMenuItemType::MainMenu;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, pauseQuitButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, pauseMenuItems[PauseMenuItemType::Quit]->GetRect() ) )
 		return PauseMenuItemType::Quit;
 
 	return PauseMenuItemType::Unknown;
 }
-LobbyMenuItem MenuManager::CheckIntersections_Lobby( int x, int y ) const
+LobbyMenuItem MenuManager::CheckIntersections_Lobby( int x, int y )
 {
-	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyNewGameButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyMenuItems[LobbyMenuItem::NewGame]->GetRect() ) )
 		return LobbyMenuItem::NewGame;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyUpdateButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyMenuItems[LobbyMenuItem::Update]->GetRect() ) )
 		return LobbyMenuItem::Update;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyBackButton->GetRect() ) )
+	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyMenuItems[LobbyMenuItem::Back]->GetRect() ) )
 		return LobbyMenuItem::Back;
 
 	if ( RectHelpers::CheckMouseIntersection( x, y, lobbyGameList->GetRect() ) )
@@ -332,61 +332,13 @@ bool MenuManager::IsInAMenu() const
 }
 void MenuManager::SetMainMenuItem( const MainMenuItemType &type, const std::shared_ptr< MenuItem >& button )
 {
-	switch ( type )
-	{
-		case MainMenuItemType::SinglePlayer:
-			singlePlayerButton = button;
-			break;
-		case MainMenuItemType::MultiPlayer:
-			multiPlayerButton = button;
-			break;
-		case MainMenuItemType::Options:
-			optionsButton = button;
-			break;
-		case MainMenuItemType::Quit:
-			quitButton = button;
-			break;
-		case MainMenuItemType::Unknown:
-			singlePlayerButton = button;
-			break;
-	}
+	mainMenuItems[type] = button;
 }
 void MenuManager::SetLobbyMenuItem( const LobbyMenuItem &type, const std::shared_ptr< MenuItem >  &button )
 {
-	switch ( type )
-	{
-		case LobbyMenuItem::NewGame:
-			lobbyNewGameButton = button;
-			break;
-		case LobbyMenuItem::Update:
-			lobbyUpdateButton = button;
-			break;
-		case LobbyMenuItem::Back:
-			lobbyBackButton = button;
-			break;
-		case LobbyMenuItem::GameList:
-			quitButton = button;
-			break;
-		case LobbyMenuItem::Unknown:
-			singlePlayerButton = button;
-			break;
-	}
+	lobbyMenuItems[type] = button;
 }
 void MenuManager::SetPauseMenuItem( const PauseMenuItemType &type, const std::shared_ptr< MenuItem >  &button )
 {
-	switch ( type )
-	{
-		case PauseMenuItemType::Resume:
-			pauseResumeButton = button;
-			break;
-		case PauseMenuItemType::MainMenu:
-			pauseMainMenuButton = button;
-			break;
-		case PauseMenuItemType::Quit:
-			pauseQuitButton = button;
-			break;
-		case PauseMenuItemType::Unknown:
-			pauseQuitButton = button;
-			break;
-	}
+	pauseMenuItems[type] = button;
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include "MenuList.h"
 #include "GameInfo.h"
 
@@ -18,10 +20,10 @@ class MenuManager
 public:
 	MenuManager();
 
-	void CheckItemMouseOver( int x, int y, Renderer &renderer ) const;
-	void CheckItemMouseOver_Pause( int x, int y, Renderer &renderer ) const;
-	void CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer ) const;
-	void CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer ) const;
+	void CheckItemMouseOver( int x, int y, Renderer &renderer );
+	void CheckItemMouseOver_Pause( int x, int y, Renderer &renderer );
+	void CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer );
+	void CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer );
 
 	bool CheckItemMouseClick( int x, int y);
 	//bool CheckItemMouseClick_Pause( int x, int y);
@@ -67,9 +69,9 @@ public:
 		lobbyGameList = gameList_;
 	}
 private:
-	MainMenuItemType CheckIntersections( int x, int y ) const;
-	PauseMenuItemType CheckIntersections_Pause( int x, int y ) const;
-	LobbyMenuItem CheckIntersections_Lobby( int x, int y ) const;
+	MainMenuItemType CheckIntersections( int x, int y );
+	PauseMenuItemType CheckIntersections_Pause( int x, int y );
+	LobbyMenuItem CheckIntersections_Lobby( int x, int y );
 
 	void RemoevAllUnderscores( Renderer &renderer  );
 
@@ -79,22 +81,15 @@ private:
 	bool isTwoPlayerMode;
 
 	// Main menu
-	std::shared_ptr< MenuItem > singlePlayerButton;
-	std::shared_ptr< MenuItem > multiPlayerButton;
-	std::shared_ptr< MenuItem > optionsButton;
-	std::shared_ptr< MenuItem > quitButton;
+	std::map< MainMenuItemType, std::shared_ptr< MenuItem > > mainMenuItems;
 
 	// Pause
-	std::shared_ptr< MenuItem > pauseResumeButton;
-	std::shared_ptr< MenuItem > pauseMainMenuButton;
-	std::shared_ptr< MenuItem > pauseQuitButton;
+	std::map< PauseMenuItemType, std::shared_ptr< MenuItem > > pauseMenuItems;
 
 	// Lobby
-	std::shared_ptr< MenuItem > lobbyNewGameButton;
-	std::shared_ptr< MenuItem > lobbyUpdateButton;
-	std::shared_ptr< MenuItem > lobbyBackButton;
-
+	std::map< LobbyMenuItem, std::shared_ptr< MenuItem > > lobbyMenuItems;
 	std::shared_ptr <MenuList > lobbyGameList;
+
 	int32_t seletedGameID;
 	LobbyMenuItem lobbyState;
 	bool lobbyStateChanged;
