@@ -105,11 +105,8 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 {
 	ip = ip_;
 	port = port_;
-	logger->Log( __FILE__, __LINE__, "IP", ip );
-	logger->Log( __FILE__, __LINE__, "Port", port );
+
 	netManager.Init( false  );
-	//GameInfo gameInfo;
-	//gameInfo.Set( ip, port,  );
 }
 void GameManager::LoadConfig()
 {
@@ -198,7 +195,6 @@ std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 	{
 		ball = physicsManager.CreateBall( owner, ballID, GetBallSpeed( owner ) );
 	}
-
 
 	ballList.push_back( ball );
 	renderer.AddBall( ball );
@@ -851,7 +847,7 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 		}
 		else
 		{
-			menuManager.CheckItemMouseOver( buttonEvent.x, buttonEvent.y, renderer );
+			menuManager.CheckItemMouseOver( buttonEvent.x, buttonEvent.y);
 		}
 	}
 }

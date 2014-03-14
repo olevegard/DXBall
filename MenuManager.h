@@ -14,19 +14,17 @@
 #include "enums/PauseMenuItemType.h"
 
 class Logger;
-class Renderer;
 class MenuManager
 {
 public:
 	MenuManager();
 
-	void CheckItemMouseOver( int x, int y, Renderer &renderer );
-	void CheckItemMouseOver_Pause( int x, int y, Renderer &renderer );
-	void CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer );
-	void CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer );
+	void CheckItemMouseOver( int x, int y );
+	void CheckItemMouseOver_Pause( int x, int y );
+	void CheckItemMouseOver_MainMenu( int x, int y );
+	void CheckItemMouseOver_Lobby( int x, int y );
 
 	bool CheckItemMouseClick( int x, int y);
-	//bool CheckItemMouseClick_Pause( int x, int y);
 
 	GameState GetGameState() const;
 	void SetGameState( const GameState &gs );
@@ -73,7 +71,7 @@ private:
 	PauseMenuItemType CheckIntersections_Pause( int x, int y );
 	LobbyMenuItem CheckIntersections_Lobby( int x, int y );
 
-	void RemoevAllUnderscores( Renderer &renderer  );
+	void RemoevAllUnderscores( );
 
 	GameState currentGameState;
 	GameState prevGameState;

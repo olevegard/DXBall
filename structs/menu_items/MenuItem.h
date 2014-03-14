@@ -10,6 +10,7 @@ struct MenuItem
 		,	itemRect( {0,0,0,0} )
 		,	texture( nullptr )
 		,	isSelected( false )
+		,	hasChanged( true )
 	{
 	}
 
@@ -36,7 +37,6 @@ struct MenuItem
 	{
 		return itemRect.x;
 	}
-
 	int GetRectY( ) const
 	{
 		return itemRect.y;
@@ -53,7 +53,6 @@ struct MenuItem
 	{
 		return itemRect.x + itemRect.w;
 	}
-
 	SDL_Rect GetRect() const
 	{
 		return itemRect;
@@ -62,7 +61,6 @@ struct MenuItem
 	{
 		return &itemRect;
 	}
-
 	void SetTexture( SDL_Texture* text )
 	{
 		SDL_DestroyTexture( texture );
@@ -78,14 +76,25 @@ struct MenuItem
 	}
 	void SetSelcted( bool selected )
 	{
+		if ( isSelected != selected )
+			hasChanged = true;
+
 		isSelected = selected;
 	}
-
 	bool HasValidTexture() const
 	{
 		return texture != nullptr;
 	}
-
+	bool HasUnderlineChanged()
+	{
+		if ( hasChanged )
+		{
+			hasChanged = false;
+			return true;
+		}
+		else
+			return false;
+	}
 	void SetName( std::string str )
 	{
 		itemName = str;
@@ -99,6 +108,6 @@ struct MenuItem
 	SDL_Rect itemRect;
 	SDL_Texture* texture;
 	bool isSelected;
-
+	bool hasChanged;
 };
 

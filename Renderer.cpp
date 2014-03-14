@@ -627,6 +627,10 @@ void Renderer::ResetText()
 	RenderBallCount( 0, Player::Remote );
 	localPlayerText.ResetAlpha();
 }
+void Renderer::StartFade()
+{
+	localPlayerText.StartFade();
+}
 void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString )
 {
 	AddMainMenuButton( singlePlayerString, MainMenuItemType::SinglePlayer );
@@ -674,35 +678,15 @@ std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemS
 
 	return menuItem;
 }
-void Renderer::SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemType &mit  )
+void Renderer::SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem )
 {
-	switch ( mit )
-	{
-		case MainMenuItemType::SinglePlayer:
-			SetUnderlineHelper( singlePlayerButton, setUnderline );
-			break;
-		case MainMenuItemType::MultiPlayer:
-			SetUnderlineHelper( multiPlayerButton, setUnderline );
-			break;
-		case MainMenuItemType::Options:
-			SetUnderlineHelper( optionsButton, setUnderline );
-			break;
-		case MainMenuItemType::Quit:
-			SetUnderlineHelper( quitButton, setUnderline );
-			break;
-		case MainMenuItemType::Unknown:
-			break;
-	}
-}
-void Renderer::SetUnderlineHelper( std::shared_ptr< MenuItem > menuItem, bool setUnderline )
-{
-	if ( menuItem && menuItem->HasValidTexture() && ( setUnderline == menuItem->IsSelected() ) )
+	if ( !menuItem || !menuItem->HasValidTexture() || !menuItem->HasUnderlineChanged()  )
 		return;
 
 	SDL_Color clr = colorConfig.textColor;
 	int style = 0;
 
-	if ( setUnderline )
+	if ( menuItem->IsSelected()  )
 	{
 		clr = SDL_Color{ 0, 200, 200, 255};
 		style = TTF_STYLE_UNDERLINE | TTF_STYLE_ITALIC;
@@ -711,14 +695,6 @@ void Renderer::SetUnderlineHelper( std::shared_ptr< MenuItem > menuItem, bool se
 	SDL_Rect r = menuItem->GetRect();
 	menuItem->SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItem->GetName(), clr, r, renderer, style ) );
 	menuItem->SetRect( r );
-	menuItem->SetSelcted( setUnderline );
-}
-void Renderer::RemoveMainMenuItemsUnderlines( )
-{
-	SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
-	SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
-	SetMainMenuItemUnderline( false, MainMenuItemType::Options );
-	SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
 }
 void Renderer::CenterMainMenuButtons( )
 {
@@ -768,23 +744,6 @@ void Renderer::CenterPauseButtons( )
 	pauseMainMenuButton->SetRectX( pauseResumeButton->GetEndX() + margin );
 	pauseQuitButton->SetRectX( pauseMainMenuButton->GetEndX() + margin );
 }
-void Renderer::SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemType &mit  )
-{
-	switch ( mit )
-	{
-		case PauseMenuItemType::Resume:
-			SetUnderlineHelper( pauseResumeButton, setUnderline );
-			break;
-		case PauseMenuItemType::MainMenu:
-			SetUnderlineHelper( pauseMainMenuButton, setUnderline );
-			break;
-		case PauseMenuItemType::Quit:
-			SetUnderlineHelper( pauseQuitButton, setUnderline );
-			break;
-		case PauseMenuItemType::Unknown:
-			break;
-	}
-}
 void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::string &update, const std::string &back )
 {
 	int32_t xPos = 0;
@@ -808,23 +767,6 @@ void Renderer::CenterLobbyButtons( )
 	lobbyUpdateButton->SetRectX( newX );
 	newX = lobbyUpdateButton->GetEndX() + 20;
 	lobbyBackButton->SetRectX( newX );
-}
-void Renderer::SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mit  )
-{
-	switch ( mit )
-	{
-		case LobbyMenuItem::NewGame:
-			SetUnderlineHelper( lobbyNewGameButton, setUnderline );
-			break;
-		case LobbyMenuItem::Update:
-			SetUnderlineHelper( lobbyUpdateButton, setUnderline );
-			break;
-		case LobbyMenuItem::Back:
-			SetUnderlineHelper( lobbyBackButton, setUnderline );
-			break;
-		default:
-			break;
-	}
 }
 void Renderer::CalculateRemotePlayerTextureRects()
 {
@@ -880,6 +822,25 @@ void Renderer::Update( double delta )
 	}
 
 	localPlayerText.Update( delta );
+
+	// Main menu mode
+	// =============================================
+	SetUnderlineHelper( singlePlayerButton  );
+	SetUnderlineHelper( multiPlayerButton  );
+	SetUnderlineHelper( optionsButton  );
+	SetUnderlineHelper( quitButton  );
+
+	// Pause menu mode
+	// =============================================
+	SetUnderlineHelper( pauseResumeButton );
+	SetUnderlineHelper( pauseMainMenuButton );
+	SetUnderlineHelper( pauseQuitButton );
+
+	// MultiplayerButton menu item
+	// =============================================
+	SetUnderlineHelper( lobbyNewGameButton );
+	SetUnderlineHelper( lobbyUpdateButton );
+	SetUnderlineHelper( lobbyBackButton );
 }
 void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 {
@@ -958,7 +919,6 @@ void Renderer::PrintSDL_TTFVersion()
 // ==============================================================================================
 // =================================== Getters  ================================================
 // ==============================================================================================
-
 void Renderer::SetIsTwoPlayerMode( bool isTwoPlayerMode_ )
 {
 	isTwoPlayerMode = isTwoPlayerMode_;
@@ -970,53 +930,14 @@ SDL_Color Renderer::GetTileColor( std::shared_ptr< Tile > tile  ) const
 	else
 		return GetTileColor( tile->GetTileTypeAsIndex() );
 }
-SDL_Renderer* Renderer::GetRenderer() const
-{
-	return renderer;
-}
-TTF_Font* Renderer::GetFont() const
-{
-	return font;
-}
-SDL_Color Renderer::GetBackgroundColor() const
-{
-	return colorConfig.backgroundColor;
-}
-SDL_Color Renderer::GetTextColor() const
-{
-	return colorConfig.textColor;
-}
 SDL_Color Renderer::GetTileColor( uint64_t type ) const
 {
 	return colorConfig.GetTileColor( static_cast < TileType > ( type ));
 }
+
 SDL_Color Renderer::GetHardTileColor( uint64_t index ) const
 {
 	return colorConfig.GetTileColor( TileType::Hard, index );
-}
-SDL_Rect Renderer::GetLobbyNewGameRect() const
-{
-	return lobbyNewGameButton->GetRect();
-}
-SDL_Rect Renderer::GetLobbyUpdateRect() const
-{
-	return lobbyUpdateButton->GetRect();
-}
-SDL_Rect Renderer::GetLobbyBackRect() const
-{
-	return lobbyBackButton->GetRect();
-}
-SDL_Rect Renderer::GetPauseResumeRect() const
-{
-	return pauseResumeButton->GetRect();
-}
-SDL_Rect Renderer::GetPauseMainMenuRect() const
-{
-	return pauseMainMenuButton->GetRect();
-}
-SDL_Rect Renderer::GetPauseQuitRect() const
-{
-	return pauseQuitButton->GetRect();
 }
 const std::shared_ptr< MenuItem > &Renderer::GetMainMenuItem( const MainMenuItemType &type ) const
 {

@@ -70,12 +70,6 @@ public:
 	void GenerateParticleEffect( std::shared_ptr< Tile > tile );
 
 	// Ingame text
-	void ResetAlpha();
-	void StartFade()
-	{
-		localPlayerText.StartFade();
-	}
-
 	void RenderText( const std::string &textToRender, const Player &player, bool fade = false);
 
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
@@ -83,55 +77,47 @@ public:
 	void RenderPoints   ( uint64_t pointCount, const Player &player );
 	void RenderLives    ( uint64_t lifeCounr , const Player &player );
 
-	void RemoveText();
 	void ResetText();
+	void StartFade();
+
+
+	// Menu Items
+	// ========================================================================
 
 	// Main menu
-	// ========================================================================
-	void AddMainMenuButtons( const std::string &singlePlayerString, const std::string &multiplayerString, const std::string &optionsString, const std::string &quitString );
-	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
-	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
-
-	void SetMainMenuItemUnderline( bool setUnderline, const MainMenuItemType &mit  );
-	void SetUnderlineHelper( std::shared_ptr< MenuItem > menuItem, bool setUnderline );
-	void RemoveMainMenuItemsUnderlines( );
-	void CenterMainMenuButtons( );
-	void InitGreyAreaRect( );
+	void AddMainMenuButtons(
+			const std::string &singlePlayerString,
+			const std::string &multiplayerString,
+			const std::string &optionsString,
+			const std::string &quitString
+		);
+	const std::shared_ptr< MenuItem > &GetMainMenuItem( const MainMenuItemType &type ) const;
 
 	// Pause menu
-	void AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString );
-	void CenterPauseButtons( );
-	void SetMainMenuItemUnderline( bool setUnderline, const PauseMenuItemType &mit  );
-	SDL_Rect GetPauseResumeRect() const;
-	SDL_Rect GetPauseMainMenuRect() const;
-	SDL_Rect GetPauseQuitRect() const;
+	void AddPauseMenuButtons(
+			const std::string &resumeString,
+			const std::string &mainMenuString,
+			const std::string &quitString
+		);
+	const std::shared_ptr< MenuItem > &GetPauseMenuItem( const PauseMenuItemType &type ) const;
 
 	// Lobby Menu
-	void AddLobbyMenuButtons( const std::string &newGame, const std::string &updaete, const std::string &back );
-	void CenterLobbyButtons( );
-	void SetLobbyItemUnderline( bool setUnderline, const LobbyMenuItem &mit  );
-	SDL_Rect GetLobbyNewGameRect() const;
-	SDL_Rect GetLobbyUpdateRect() const;
-	SDL_Rect GetLobbyBackRect() const;
+	void AddLobbyMenuButtons(
+			const std::string &newGame,
+			const std::string &updaete,
+			const std::string &back
+		);
+	const std::shared_ptr< MenuItem > &GetLobbyMenuItem( const LobbyMenuItem &type ) const;
 
+	// GameList
 	void InitGameList();
 	const std::shared_ptr< MenuList >  &GetGameList();
 	void AddGameToList( GameInfo gameInfo );
 	void ClearGameList();
 
-	SDL_Renderer* GetRenderer() const;
-	TTF_Font* GetFont() const;
-	SDL_Color GetBackgroundColor() const;
-	SDL_Color GetTextColor() const;
 	SDL_Color GetTileColor( std::shared_ptr< Tile > tile  ) const;
 	SDL_Color GetTileColor( uint64_t type ) const;
 	SDL_Color GetHardTileColor( uint64_t index ) const;
-
-	SDL_Rect CalcMenuListRect();
-
-	const std::shared_ptr< MenuItem > &GetMainMenuItem( const MainMenuItemType &type ) const;
-	const std::shared_ptr< MenuItem > &GetLobbyMenuItem( const LobbyMenuItem &type ) const;
-	const std::shared_ptr< MenuItem > &GetPauseMenuItem( const PauseMenuItemType &type ) const;
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -146,7 +132,10 @@ private:
 	bool CreateWindow( bool server );
 	void SetFlags_VideoMode();
 
-	// Rende Game Objects
+	// Rendering
+	// ========================================================================
+
+	// Game objects
 	void RenderGameObjects();
 
 	void RenderText();
@@ -171,12 +160,19 @@ private:
 	void InitializeMainMenuTextures();
 
 	void PrintSDL_TTFVersion();
-
 	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
-
 	bool LoadFontAndText();
 
 	void CalculateRemotePlayerTextureRects();
+
+	SDL_Rect CalcMenuListRect();
+	void CenterLobbyButtons( );
+	void CenterPauseButtons( );
+	void CenterMainMenuButtons( );
+	void SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem );
+	void InitGreyAreaRect( );
+	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
+	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
 
 	void CleanUp();
 	void CleanUpSurfaces();
@@ -185,7 +181,6 @@ private:
 	void QuitSDL();
 
 	ColorConfigLoader colorConfig;
-
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;

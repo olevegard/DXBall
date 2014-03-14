@@ -3,7 +3,6 @@
 
 #include "MenuManager.h"
 #include "MenuList.h"
-#include "Renderer.h"
 #include "Logger.h"
 
 #include "math/RectHelpers.h"
@@ -20,111 +19,44 @@ MenuManager::MenuManager()
 {
 	logger = Logger::Instance();
 }
-void MenuManager::CheckItemMouseOver( int x, int y, Renderer &renderer )
+void MenuManager::CheckItemMouseOver( int x, int y )
 {
 	if ( currentGameState == GameState::Paused )
-	{
-		CheckItemMouseOver_Pause( x, y, renderer );
-	}
+		CheckItemMouseOver_Pause( x, y );
 	else if ( currentGameState == GameState::MainMenu )
-	{
-		CheckItemMouseOver_MainMenu( x, y, renderer );
-	}
+		CheckItemMouseOver_MainMenu( x, y );
 	else if ( currentGameState == GameState::Lobby )
-	{
-		CheckItemMouseOver_Lobby( x, y, renderer );
-	}
+		CheckItemMouseOver_Lobby( x, y );
 }
-void MenuManager::CheckItemMouseOver_MainMenu( int x, int y, Renderer &renderer )
+void MenuManager::CheckItemMouseOver_MainMenu( int x, int y )
 {
+	for ( const auto &item : mainMenuItems )
+		item.second->SetSelcted( false );
+
 	MainMenuItemType mouseOver = CheckIntersections( x, y );
 
-	renderer.SetMainMenuItemUnderline( true, mouseOver );
-	switch ( mouseOver )
-	{
-		case MainMenuItemType::SinglePlayer:
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
-			break;
-		case MainMenuItemType::MultiPlayer:
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
-			break;
-		case MainMenuItemType::Options:
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
-			break;
-		case MainMenuItemType::Quit:
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
-			break;
-		case MainMenuItemType::Unknown:
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::SinglePlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::MultiPlayer );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Options );
-			renderer.SetMainMenuItemUnderline( false, MainMenuItemType::Quit );
-			break;
-	}
-
+	if ( mouseOver != MainMenuItemType::Unknown )
+		mainMenuItems[ mouseOver ]->SetSelcted( true );
 }
-void MenuManager::CheckItemMouseOver_Pause( int x, int y, Renderer &renderer )
+void MenuManager::CheckItemMouseOver_Pause( int x, int y )
 {
+	for ( const auto &item : pauseMenuItems )
+		item.second->SetSelcted( false );
+
 	PauseMenuItemType mouseOver = CheckIntersections_Pause( x, y );
 
-	renderer.SetMainMenuItemUnderline( true, mouseOver );
-	switch ( mouseOver )
-	{
-		case PauseMenuItemType::Resume:
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::MainMenu );
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Quit );
-			break;
-		case PauseMenuItemType::MainMenu:
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Resume);
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Quit );
-			break;
-		case PauseMenuItemType::Quit :
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Resume);
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::MainMenu );
-			break;
-		case PauseMenuItemType::Unknown:
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Resume);
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::MainMenu );
-			renderer.SetMainMenuItemUnderline( false, PauseMenuItemType::Quit );
-			break;
-	}
+	if ( mouseOver != PauseMenuItemType::Unknown )
+		pauseMenuItems[ mouseOver ]->SetSelcted( true );
 }
-
-void MenuManager::CheckItemMouseOver_Lobby( int x, int y, Renderer &renderer )
+void MenuManager::CheckItemMouseOver_Lobby( int x, int y )
 {
+	for ( const auto &item : lobbyMenuItems )
+		item.second->SetSelcted( false );
+
 	LobbyMenuItem mouseOver = CheckIntersections_Lobby( x, y );
 
-	renderer.SetLobbyItemUnderline( true, mouseOver );
-	switch ( mouseOver )
-	{
-		case LobbyMenuItem::NewGame:
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Back );
-			break;
-		case LobbyMenuItem::Update:
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Back );
-			break;
-		case LobbyMenuItem::Back:
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
-			break;
-		case LobbyMenuItem::GameList:
-			break;
-		case LobbyMenuItem::Unknown:
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::NewGame );
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Update );
-			renderer.SetLobbyItemUnderline( false, LobbyMenuItem::Back );
-			break;
-	}
+	if ( mouseOver != LobbyMenuItem::Unknown && mouseOver != LobbyMenuItem::GameList )
+		lobbyMenuItems[mouseOver]->SetSelcted( true );
 }
 bool MenuManager::CheckItemMouseClick( int x, int y)
 {
@@ -226,9 +158,9 @@ LobbyMenuItem MenuManager::CheckIntersections_Lobby( int x, int y )
 
 	return LobbyMenuItem::Unknown;
 }
-void MenuManager::RemoevAllUnderscores( Renderer &renderer )
+void MenuManager::RemoevAllUnderscores( )
 {
-	renderer.RemoveMainMenuItemsUnderlines();
+	//renderer.RemoveMainMenuItemsUnderlines();
 }
 GameState MenuManager::GetGameState() const
 {
