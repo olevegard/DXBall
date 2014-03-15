@@ -1,11 +1,9 @@
 #pragma once
 
 #include <map>
+#include <memory>
 
-#include "MenuList.h"
 #include "GameInfo.h"
-
-#include "structs/menu_items/MenuItem.h"
 
 #include "enums/GameState.h"
 #include "enums/LobbyState.h"
@@ -14,6 +12,8 @@
 #include "enums/PauseMenuItemType.h"
 
 class Logger;
+struct MenuList;
+struct MenuItem;
 class MenuManager
 {
 public:
@@ -45,19 +45,9 @@ public:
 	bool IsTwoPlayerMode() const;
 	bool IsInAMenu() const;
 
-
-	int32_t GetSelectedGame() const
-	{
-		return seletedGameID;
-	}
-	bool IsAnItemSelected() const
-	{
-		return ( seletedGameID >= 0 );
-	}
-	GameInfo GetSelectedGameInfo() const
-	{
-		return lobbyGameList->GetGameInfoForIndex( seletedGameID);;
-	}
+	int32_t GetSelectedGame() const;
+	bool IsAnItemSelected() const;
+	GameInfo GetSelectedGameInfo() const;
 
 	void SetMainMenuItem( const MainMenuItemType &type, const std::shared_ptr< MenuItem >& button );
 	void SetLobbyMenuItem( const LobbyMenuItem &type, const std::shared_ptr< MenuItem >  &button );

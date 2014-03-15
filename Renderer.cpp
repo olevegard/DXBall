@@ -6,10 +6,15 @@
 #include "structs/game_objects/Paddle.h"
 #include "structs/game_objects/BonusBox.h"
 
+#include "structs/menu_items/MenuList.h"
+
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 #include "enums/LobbyMenuItem.h"
 #include "enums/BonusType.h"
+
+#include "structs/menu_items/MainMenuItem.h"
+#include "structs/menu_items/PauseMenuItem.h"
 
 #include "math/RectHelpers.h"
 

@@ -7,7 +7,7 @@
 #include "../structs/menu_items/MainMenuItem.h"
 #include "../structs/game_objects/GamePiece.h"
 
-#include "../MenuList.h"
+#include "../structs/menu_items/MenuList.h"
 
 const int32_t RenderHelpers::SCREEN_BPP = 32;
 

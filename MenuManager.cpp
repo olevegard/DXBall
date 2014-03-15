@@ -1,11 +1,14 @@
+#include "MenuManager.h"
+
 #include <string>
 #include <memory>
 
-#include "MenuManager.h"
-#include "MenuList.h"
+#include "structs/menu_items/MenuList.h"
+#include "structs/menu_items/MenuItem.h"
+#include "math/RectHelpers.h"
+
 #include "Logger.h"
 
-#include "math/RectHelpers.h"
 
 MenuManager::MenuManager()
 	:	currentGameState( GameState::MainMenu )
@@ -273,4 +276,16 @@ void MenuManager::SetLobbyMenuItem( const LobbyMenuItem &type, const std::shared
 void MenuManager::SetPauseMenuItem( const PauseMenuItemType &type, const std::shared_ptr< MenuItem >  &button )
 {
 	pauseMenuItems[type] = button;
+}
+int32_t MenuManager::GetSelectedGame() const
+{
+	return seletedGameID;
+}
+bool MenuManager::IsAnItemSelected() const
+{
+	return ( seletedGameID >= 0 );
+}
+GameInfo MenuManager::GetSelectedGameInfo() const
+{
+	return lobbyGameList->GetGameInfoForIndex( seletedGameID);;
 }

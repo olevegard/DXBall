@@ -11,15 +11,13 @@
 
 #include "enums/GameState.h"
 #include "enums/LobbyMenuItem.h"
-
-#include "structs/menu_items/MainMenuItem.h"
-#include "structs/menu_items/PauseMenuItem.h"
+#include "enums/PauseMenuItemType.h"
 
 #include "structs/rendering/Particle.h"
 #include "structs/rendering/RenderingItem.h"
 
 #include "ColorConfigLoader.h"
-#include "MenuList.h"
+#include "GameInfo.h"
 
 // Forward declarations
 struct Ball;
@@ -27,6 +25,9 @@ struct Tile;
 struct Bullet;
 struct Paddle;
 struct BonusBox;
+struct MenuList;
+struct MainMenuItem;;
+struct PauseMenuItem;
 enum class Player : int;
 enum class BonusType : int;
 enum class MenuItemType : int;
