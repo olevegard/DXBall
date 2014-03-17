@@ -368,6 +368,7 @@ void Renderer::Render( )
 	switch ( gameState )
 	{
 		case GameState::MainMenu:
+		case GameState::Options:
 		case GameState::Lobby:
 			RenderMenu();
 			break;
@@ -399,8 +400,12 @@ void Renderer::RenderMenu()
 
 	if ( gameState == GameState::Lobby )
 		RenderLobbyFooter();
+	else if ( gameState == GameState::Options )
+		RenderHelpers::RenderOptionsItem( renderer, ballSpeedSetter );
 	else
 		RenderMainMenuFooter();
+
+	RenderHelpers::SetDrawColor( renderer, colorConfig.backgroundColor  );
 }
 void Renderer::RenderLobbyFooter()
 {
@@ -490,7 +495,7 @@ void Renderer::RenderText()
 // ==============================================================================================
 bool Renderer::LoadFontAndText()
 {
-	tinyFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 20 );
+	tinyFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 22 );
 	font = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 28 );
 	mediumFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 41 );
 	bigFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 57 );
@@ -683,6 +688,30 @@ std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemS
 
 	return menuItem;
 }
+std::shared_ptr< OptionsItem > Renderer::AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font_ )
+{
+	SDL_Rect captionRect = rect;
+	auto optionsItem = std::make_shared< OptionsItem >( caption );
+
+	// Caption
+	SDL_Texture* text = RenderHelpers::RenderTextTexture_Blended( font_, caption, colorConfig.textColor, captionRect, renderer );
+	captionRect.x += margin * 2;
+	captionRect.y = greyArea.rect.y + margin * 2;
+
+	optionsItem->SetTexture( text );
+	optionsItem->SetRect( captionRect );
+
+	// Value
+	SDL_Rect valueRect;
+	SDL_Texture* valueTexture = RenderHelpers::RenderTextTexture_Blended( font_, value, colorConfig.textColor, valueRect, renderer );
+	valueRect.x = captionRect.x + captionRect.w + ( margin / 2);
+	valueRect.y = captionRect.y;
+
+	optionsItem->SetValueRect( valueRect );
+	optionsItem->SetValueTexture( valueTexture );
+
+	return optionsItem;
+}
 void Renderer::SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem )
 {
 	if ( !menuItem || !menuItem->HasValidTexture() || !menuItem->HasUnderlineChanged()  )
@@ -730,6 +759,8 @@ void Renderer::InitGreyAreaRect( )
 	greyArea.rect.h = background.h - heightCutoff * 2;
 
 	greyArea.Init( renderer, colorConfig.greyAreaColor );
+
+	ballSpeedSetter = AddOptionsButtonHelper( "Ball Speed", "666", {0,0,0,0}, tinyFont );
 }
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {

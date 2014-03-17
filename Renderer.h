@@ -16,6 +16,8 @@
 #include "structs/rendering/Particle.h"
 #include "structs/rendering/RenderingItem.h"
 
+#include "structs/menu_items/OptionsItem.h"
+
 #include "ColorConfigLoader.h"
 #include "GameInfo.h"
 
@@ -173,7 +175,8 @@ private:
 	void SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem );
 	void InitGreyAreaRect( );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
-	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &singlePlayerRect, TTF_Font* font );
+	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &rect, TTF_Font* font );
+	std::shared_ptr< OptionsItem > AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font );
 
 	void CleanUp();
 	void CleanUpSurfaces();
@@ -241,6 +244,8 @@ private:
 	short margin;
 
 	SDL_Texture*   mainMenuBackground;
+
+	std::shared_ptr< OptionsItem > ballSpeedSetter;
 
 	// Menu / Options / Lobby
 	// =============================================
