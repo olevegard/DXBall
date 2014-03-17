@@ -150,10 +150,7 @@ void RenderHelpers::RenderTextItem( SDL_Renderer* renderer, const RenderingItem<
 void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item )
 {
 	if( item->GetTexture() != nullptr )
-	{
-		SDL_Rect r = item->GetRect();
-		SDL_RenderCopy( renderer, item->GetTexture(), nullptr, &r );
-	}
+		SDL_RenderCopy( renderer, item->GetTexture(), nullptr, item->GetRectPtr() );
 }
 void RenderHelpers::RenderOptionsItem( SDL_Renderer* renderer, const std::shared_ptr< OptionsItem > &item )
 {

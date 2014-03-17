@@ -57,7 +57,7 @@ struct MenuItem
 	{
 		return itemRect;
 	}
-	SDL_Rect* GetRectPtr()
+	const SDL_Rect* GetRectPtr() const
 	{
 		return &itemRect;
 	}
