@@ -5,6 +5,8 @@
 #include "../structs/rendering/Particle.h"
 
 #include "../structs/menu_items/MainMenuItem.h"
+#include "../structs/menu_items/OptionsItem.h"
+
 #include "../structs/game_objects/GamePiece.h"
 
 #include "../structs/menu_items/MenuList.h"
@@ -152,6 +154,51 @@ void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const std::shared_pt
 		SDL_Rect r = item->GetRect();
 		SDL_RenderCopy( renderer, item->GetTexture(), nullptr, &r );
 	}
+}
+void RenderHelpers::RenderOptionsItem( SDL_Renderer* renderer, const std::shared_ptr< OptionsItem > &item )
+{
+	RenderMenuItem( renderer, item );
+
+	if( item->GetValueTexture() != nullptr )
+		SDL_RenderCopy( renderer, item->GetValueTexture(), nullptr, item->GetValueRectPtr() );
+
+	RenderPlussMinus( renderer, item->GetValueRect() );
+}
+void RenderHelpers::RenderMinus( SDL_Renderer* renderer, SDL_Rect square )
+{
+	SDL_Rect minus = square;
+	minus .h /= 3;
+	minus .y += ( square.h / 2 ) - ( minus .h / 2 );
+
+	SDL_SetRenderDrawColor( renderer, 255,0,0,255 );
+	SDL_RenderFillRect( renderer, &minus );
+}
+void RenderHelpers::RenderPluss( SDL_Renderer* renderer, SDL_Rect square )
+{
+	SDL_Rect horizontalLine = square;
+	horizontalLine .w /= 3;
+	horizontalLine .x += ( square.w / 2 ) - ( horizontalLine .w / 2 );
+
+	SDL_Rect verticalLine = square;
+	verticalLine.h /= 3;
+	verticalLine.y += ( square.h / 2 ) - ( verticalLine.h / 2 );
+
+	SDL_SetRenderDrawColor( renderer, 0,255,0,255 );
+	SDL_RenderFillRect( renderer, &horizontalLine );
+	SDL_RenderFillRect( renderer, &verticalLine );
+}
+void RenderHelpers::RenderPlussMinus ( SDL_Renderer* renderer, SDL_Rect origin )
+{
+	SDL_Rect square = origin;
+	square.w = 15;
+	square.h = square.w;
+
+	square.x += ( origin.w /2 ) - ( square.w / 2 );
+	square.y -= square.h - 5;
+
+	RenderPluss( renderer, square );
+	square.y = origin.y + origin.h - 5;
+	RenderMinus( renderer, square );
 }
 void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList )
 {

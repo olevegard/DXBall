@@ -15,6 +15,7 @@
 template < class Value > class RenderingItem;
 struct MenuList;
 struct MenuItem;
+struct OptionsItem;
 struct Particle;
 struct GamePiece;
 struct MainMenuItem;
@@ -57,12 +58,17 @@ class RenderHelpers
 	static uint32_t MapRGBA( SDL_PixelFormat* pixelFormat, const SDL_Color &clr );
 	static void SetDrawColor( SDL_Renderer* renderer, const SDL_Color &clr );
 
-	static void RenderTextItem( SDL_Renderer* renderer,  const RenderingItem< std::string >  &item );
-	static void RenderTextItem( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
-	static void RenderMenuItem( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item );
-	static void RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList );
-	static void RenderParticle( SDL_Renderer* renderer, const Particle& particle );
-	static void RenderGamePiece( SDL_Renderer* renderer, const std::shared_ptr< GamePiece > &gamePiece );
+	static void RenderTextItem   ( SDL_Renderer* renderer, const RenderingItem< std::string >  &item );
+	static void RenderTextItem   ( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
+	static void RenderMenuItem   ( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item );
+	static void RenderOptionsItem( SDL_Renderer* renderer, const std::shared_ptr< OptionsItem > &item );
+	static void RenderMenuList   ( SDL_Renderer* renderer, const MenuList &menuList );
+	static void RenderParticle   ( SDL_Renderer* renderer, const Particle& particle );
+	static void RenderGamePiece  ( SDL_Renderer* renderer, const std::shared_ptr< GamePiece > &gamePiece );
+
+	static void RenderPlussMinus ( SDL_Renderer* renderer, SDL_Rect origin );
+	static void RenderMinus      ( SDL_Renderer* renderer, SDL_Rect square );
+	static void RenderPluss      ( SDL_Renderer* renderer, SDL_Rect square );
 
 	static void SetTileColorSurface( SDL_Renderer* renderer, size_t index, const SDL_Color &color, std::vector< SDL_Texture* > &list  );
 	static void HideMouseCursor( bool hide);

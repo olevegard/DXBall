@@ -30,7 +30,7 @@ struct OptionsItem : public MenuItem
 	{
 		return valueRect;
 	}
-	const SDL_Rect* GetValueRectP( ) const
+	const SDL_Rect* GetValueRectPtr( ) const
 	{
 		return &valueRect;
 	}
