@@ -650,31 +650,31 @@ void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainM
 	switch ( mit )
 	{
 		case MainMenuItemType::SinglePlayer:
-			singlePlayerButton = AddMenuButtonHelper( menuItemString, { 0, 0, 0, 0 }  );
+			singlePlayerButton = AddMenuButtonHelper( menuItemString, { 0, 0, 0, 0 }, mediumFont  );
 			singlePlayerButton->SetRectXY(
 				margin / 2,
 				background.h - ( ( background.h - greyArea.rect.h ) / 2)  + ( singlePlayerButton->GetRectH( ))
 			);
 			break;
 		case MainMenuItemType::MultiPlayer:
-			multiPlayerButton = AddMenuButtonHelper( menuItemString, singlePlayerButton->GetRect() );
+			multiPlayerButton = AddMenuButtonHelper( menuItemString, singlePlayerButton->GetRect(), mediumFont );
 			break;
 		case MainMenuItemType::Options:
-			optionsButton = AddMenuButtonHelper( menuItemString, multiPlayerButton->GetRect());
+			optionsButton = AddMenuButtonHelper( menuItemString, multiPlayerButton->GetRect(), mediumFont );
 			break;
 		case MainMenuItemType::Quit:
-			quitButton = AddMenuButtonHelper( menuItemString, optionsButton->GetRect());
+			quitButton = AddMenuButtonHelper( menuItemString, optionsButton->GetRect(), mediumFont );
 			break;
 		case MainMenuItemType::Unknown:
 			break;
 	}
 }
-std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &singlePlayerRect )
+std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &singlePlayerRect, TTF_Font* textFont )
 {
 	SDL_Rect r;
 	std::shared_ptr< MenuItem > menuItem = std::make_shared< MenuItem >( menuItemString );
 
-	menuItem->SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItemString, colorConfig.textColor, r, renderer ) );
+	menuItem->SetTexture( RenderHelpers::RenderTextTexture_Blended( textFont, menuItemString, colorConfig.textColor, r, renderer ) );
 	r.x = singlePlayerRect.x + singlePlayerRect.w + margin;
 	r.y = singlePlayerRect.y;
 
@@ -714,6 +714,9 @@ void Renderer::CenterMainMenuButtons( )
 	multiPlayerButton->SetRectX( singlePlayerButton->GetEndX() + margin );
 	optionsButton->SetRectX( multiPlayerButton->GetEndX() + margin );
 	quitButton->SetRectX( optionsButton->GetEndX() + margin );
+
+	ballSpeedText = AddMenuButtonHelper( "Ball Speed", { 0,0,0,0}, tinyFont );
+	//ballSpeedText->SetRectXY( margin, background.h / 2);
 }
 void Renderer::InitGreyAreaRect( )
 {
@@ -730,12 +733,12 @@ void Renderer::InitGreyAreaRect( )
 }
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
-	pauseResumeButton = AddMenuButtonHelper( resumeString, { 0, 0, 0, 0 }  );
+	pauseResumeButton = AddMenuButtonHelper( resumeString, { 0, 0, 0, 0 } , mediumFont );
 	pauseResumeButton->SetRectXY( margin / 2, background.h - pauseResumeButton->GetRectH() );
 
-	pauseMainMenuButton = AddMenuButtonHelper( mainMenuString, pauseResumeButton->GetRect()  );
+	pauseMainMenuButton = AddMenuButtonHelper( mainMenuString, pauseResumeButton->GetRect(), mediumFont  );
 
-	pauseQuitButton = AddMenuButtonHelper( quitString, pauseMainMenuButton->GetRect()  );
+	pauseQuitButton = AddMenuButtonHelper( quitString, pauseMainMenuButton->GetRect(), mediumFont  );
 
 	CenterPauseButtons();
 }
@@ -754,11 +757,11 @@ void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::strin
 	int32_t xPos = 0;
 	int32_t yPos = singlePlayerButton->GetRectY();
 
-	lobbyNewGameButton = AddMenuButtonHelper( newGame, { xPos, yPos, 0, 0 } );
+	lobbyNewGameButton = AddMenuButtonHelper( newGame, { xPos, yPos, 0, 0 }, mediumFont );
 	xPos = lobbyNewGameButton->GetEndX()  + 20;
-	lobbyUpdateButton = AddMenuButtonHelper( update, { xPos, yPos, 0, 0 } );
+	lobbyUpdateButton = AddMenuButtonHelper( update, { xPos, yPos, 0, 0 }, mediumFont );
 	xPos = lobbyUpdateButton->GetEndX() +  20;
-	lobbyBackButton = AddMenuButtonHelper( back, { xPos, yPos, 0, 0 } );
+	lobbyBackButton = AddMenuButtonHelper( back, { xPos, yPos, 0, 0 }, mediumFont );
 
 	CenterLobbyButtons();
 }

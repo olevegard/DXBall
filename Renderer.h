@@ -173,7 +173,7 @@ private:
 	void SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem );
 	void InitGreyAreaRect( );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
-	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemStringconst, const SDL_Rect &singlePlayerRect  );
+	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &singlePlayerRect, TTF_Font* font );
 
 	void CleanUp();
 	void CleanUpSurfaces();
