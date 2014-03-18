@@ -401,7 +401,10 @@ void Renderer::RenderMenu()
 	if ( gameState == GameState::Lobby )
 		RenderLobbyFooter();
 	else if ( gameState == GameState::Options )
+	{
 		RenderHelpers::RenderOptionsItem( renderer, ballSpeedSetter );
+		RenderHelpers::RenderMenuItem( renderer, backToMenuButton);
+	}
 	else
 		RenderMainMenuFooter();
 
@@ -649,6 +652,7 @@ void Renderer::AddMainMenuButtons( const std::string &singlePlayerString, const 
 	AddMainMenuButton( quitString, MainMenuItemType::Quit );
 
 	CenterMainMenuButtons( );
+	CenterOptionsButtons( );
 }
 void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainMenuItemType &mit )
 {
@@ -695,8 +699,8 @@ std::shared_ptr< OptionsItem > Renderer::AddOptionsButtonHelper( std::string cap
 
 	// Caption
 	SDL_Texture* text = RenderHelpers::RenderTextTexture_Blended( font_, caption, colorConfig.textColor, captionRect, renderer );
-	captionRect.x += margin * 2;
-	captionRect.y = greyArea.rect.y + margin * 2;
+	captionRect.x += margin;
+	captionRect.y = greyArea.rect.y + margin;
 
 	optionsItem->SetTexture( text );
 	optionsItem->SetRect( captionRect );
@@ -744,8 +748,15 @@ void Renderer::CenterMainMenuButtons( )
 	optionsButton->SetRectX( multiPlayerButton->GetEndX() + margin );
 	quitButton->SetRectX( optionsButton->GetEndX() + margin );
 
-	ballSpeedText = AddMenuButtonHelper( "Ball Speed", { 0,0,0,0}, tinyFont );
-	//ballSpeedText->SetRectXY( margin, background.h / 2);
+}
+void Renderer::CenterOptionsButtons( )
+{
+	ballSpeedSetter = AddOptionsButtonHelper( "Ball Speed", "666", {0,0,0,0}, tinyFont );
+
+	backToMenuButton = AddMenuButtonHelper( "Main Menu", {0,0,0,0}, mediumFont );
+	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetRectW() / 2 );
+	int32_t yPos = singlePlayerButton->GetRectY();
+	backToMenuButton->SetRectXY( xPos, yPos );
 }
 void Renderer::InitGreyAreaRect( )
 {
@@ -759,8 +770,6 @@ void Renderer::InitGreyAreaRect( )
 	greyArea.rect.h = background.h - heightCutoff * 2;
 
 	greyArea.Init( renderer, colorConfig.greyAreaColor );
-
-	ballSpeedSetter = AddOptionsButtonHelper( "Ball Speed", "666", {0,0,0,0}, tinyFont );
 }
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
@@ -861,6 +870,8 @@ void Renderer::Update( double delta )
 	}
 
 	localPlayerText.Update( delta );
+
+	SetUnderlineHelper( backToMenuButton );
 
 	// Main menu mode
 	// =============================================

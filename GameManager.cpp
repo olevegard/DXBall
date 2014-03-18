@@ -125,6 +125,8 @@ void GameManager::CreateMenu()
 	CreateMainMenu();
 	CreatePauseMenu();
 	CreateLobbyMenu();
+
+	menuManager.SetOptionsMenuItem( renderer.GetOptionsBackButton() );
 }
 void GameManager::CreatePauseMenu()
 {

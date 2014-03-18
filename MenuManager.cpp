@@ -15,10 +15,10 @@ MenuManager::MenuManager()
 	,	prevGameState( GameState::Quit )
 
 	,	hasGameStateChanged( false )
+	,	hasLobbyStateChanged( false  )
 	,	isTwoPlayerMode( false )
 
 	,	seletedGameID( -1 )
-	,	lobbyStateChanged( false  )
 {
 	logger = Logger::Instance();
 }
@@ -30,6 +30,8 @@ void MenuManager::CheckItemMouseOver( int x, int y )
 		CheckItemMouseOver_MainMenu( x, y );
 	else if ( currentGameState == GameState::Lobby )
 		CheckItemMouseOver_Lobby( x, y );
+	else
+		CheckItemMouseOver_Options( x, y );
 }
 void MenuManager::CheckItemMouseOver_MainMenu( int x, int y )
 {
@@ -61,7 +63,14 @@ void MenuManager::CheckItemMouseOver_Lobby( int x, int y )
 	if ( mouseOver != LobbyMenuItem::Unknown && mouseOver != LobbyMenuItem::GameList )
 		lobbyMenuItems[mouseOver]->SetSelcted( true );
 }
-bool MenuManager::CheckItemMouseClick( int x, int y)
+void MenuManager::CheckItemMouseOver_Options( int x, int y )
+{
+	if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
+		backToMenuButton->SetSelcted( true );
+	else
+		backToMenuButton->SetSelcted( false );
+}
+void MenuManager::CheckItemMouseClick( int x, int y)
 {
 	if ( currentGameState == GameState::Paused )
 	{
@@ -77,7 +86,7 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 				SetGameState( GameState::Quit );
 				break;
 			case PauseMenuItemType::Unknown:
-				return false;
+				break;
 		}
 	}
 	else if ( currentGameState == GameState::MainMenu )
@@ -93,12 +102,13 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 				SetGameState( GameState::Lobby );
 				break;
 			case MainMenuItemType::Options:
+				SetGameState( GameState::Options );
 				break;
 			case MainMenuItemType::Quit:
 				SetGameState( GameState::Quit );
 				break;
 			case MainMenuItemType::Unknown:
-				return false;
+				break;
 		}
 	}
 	else if ( currentGameState == GameState::Lobby )
@@ -110,11 +120,13 @@ bool MenuManager::CheckItemMouseClick( int x, int y)
 		else
 			seletedGameID = -1;
 
-		lobbyStateChanged = true;
-		return true;
+		hasLobbyStateChanged = true;
 	}
-
-	return false;
+	else
+	{
+		if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
+			SetGameState( GameState::MainMenu );
+	}
 }
 MainMenuItemType MenuManager::CheckIntersections( int x, int y )
 {
@@ -160,10 +172,6 @@ LobbyMenuItem MenuManager::CheckIntersections_Lobby( int x, int y )
 		return LobbyMenuItem::GameList;
 
 	return LobbyMenuItem::Unknown;
-}
-void MenuManager::RemoevAllUnderscores( )
-{
-	//renderer.RemoveMainMenuItemsUnderlines();
 }
 GameState MenuManager::GetGameState() const
 {
@@ -232,8 +240,8 @@ LobbyMenuItem MenuManager::GetLobbyState()
 }
 bool MenuManager::HasLobbyStateChanged()
 {
-	bool state = lobbyStateChanged;
-	lobbyStateChanged = false;
+	bool state = hasLobbyStateChanged;
+	hasLobbyStateChanged = false;
 	return state;
 }
 bool MenuManager::WasGameStarted() const
@@ -263,7 +271,8 @@ bool MenuManager::IsInAMenu() const
 	return ( currentGameState == GameState::MainMenu
 			|| currentGameState == GameState::Paused
 			|| currentGameState == GameState::Lobby
-		   );
+			|| currentGameState == GameState::Options
+	 );
 }
 void MenuManager::SetMainMenuItem( const MainMenuItemType &type, const std::shared_ptr< MenuItem >& button )
 {

@@ -121,6 +121,11 @@ public:
 	SDL_Color GetTileColor( std::shared_ptr< Tile > tile  ) const;
 	SDL_Color GetTileColor( uint64_t type ) const;
 	SDL_Color GetHardTileColor( uint64_t index ) const;
+
+	std::shared_ptr< MenuItem > GetOptionsBackButton()
+	{
+		return backToMenuButton;
+	}
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );
@@ -172,6 +177,8 @@ private:
 	void CenterLobbyButtons( );
 	void CenterPauseButtons( );
 	void CenterMainMenuButtons( );
+	void CenterOptionsButtons( );
+
 	void SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem );
 	void InitGreyAreaRect( );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
@@ -245,7 +252,6 @@ private:
 
 	SDL_Texture*   mainMenuBackground;
 
-	std::shared_ptr< OptionsItem > ballSpeedSetter;
 
 	// Menu / Options / Lobby
 	// =============================================
@@ -255,10 +261,16 @@ private:
 
 	// Main menu mode
 	// =============================================
+	std::map< MainMenuItemType, std::shared_ptr< MenuItem > > mainMenuItems;
 	std::shared_ptr< MenuItem > singlePlayerButton;
 	std::shared_ptr< MenuItem > multiPlayerButton;
 	std::shared_ptr< MenuItem > optionsButton;
 	std::shared_ptr< MenuItem > quitButton;
+
+	// Options Mode
+	// =============================================
+	std::shared_ptr< OptionsItem > ballSpeedSetter;
+	std::shared_ptr< MenuItem > backToMenuButton;
 
 	// Pause menu mode
 	// =============================================

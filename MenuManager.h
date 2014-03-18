@@ -23,8 +23,9 @@ public:
 	void CheckItemMouseOver_Pause( int x, int y );
 	void CheckItemMouseOver_MainMenu( int x, int y );
 	void CheckItemMouseOver_Lobby( int x, int y );
+	void CheckItemMouseOver_Options( int x, int y );
 
-	bool CheckItemMouseClick( int x, int y);
+	void CheckItemMouseClick( int x, int y);
 
 	GameState GetGameState() const;
 	void SetGameState( const GameState &gs );
@@ -56,16 +57,19 @@ public:
 	{
 		lobbyGameList = gameList_;
 	}
+	void SetOptionsMenuItem( const std::shared_ptr< MenuItem >  &button )
+	{
+		backToMenuButton = button;
+	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y );
 	PauseMenuItemType CheckIntersections_Pause( int x, int y );
 	LobbyMenuItem CheckIntersections_Lobby( int x, int y );
 
-	void RemoevAllUnderscores( );
-
 	GameState currentGameState;
 	GameState prevGameState;
 	bool hasGameStateChanged;
+	bool hasLobbyStateChanged;
 	bool isTwoPlayerMode;
 
 	// Main menu
@@ -78,9 +82,12 @@ private:
 	std::map< LobbyMenuItem, std::shared_ptr< MenuItem > > lobbyMenuItems;
 	std::shared_ptr <MenuList > lobbyGameList;
 
+	// Options
+	//std::shared_ptr< OptionsItem > ballSpeedSetter;
+	std::shared_ptr< MenuItem > backToMenuButton;
+
 	int32_t seletedGameID;
 	LobbyMenuItem lobbyState;
-	bool lobbyStateChanged;
 
 	Logger* logger;
 };
