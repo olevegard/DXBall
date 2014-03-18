@@ -126,6 +126,11 @@ public:
 	{
 		return backToMenuButton;
 	}
+
+	std::shared_ptr< ConfigItem > GetBallSpeed()
+	{
+		return ballSpeedSetter;
+	}
 private:
 	Renderer( const Renderer &renderer );
 	Renderer& operator=( const Renderer &renderer );

@@ -126,6 +126,12 @@ void MenuManager::CheckItemMouseClick( int x, int y)
 	{
 		if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
 			SetGameState( GameState::MainMenu );
+
+		if ( RectHelpers::CheckMouseIntersection( x, y, ballSpeedSetter->GetPlussRect() ) )
+			std::cout << "Plussssss\n";
+
+		if ( RectHelpers::CheckMouseIntersection( x, y, ballSpeedSetter->GetMinusRect() ) )
+			std::cout << "Minusssss\n";
 	}
 }
 MainMenuItemType MenuManager::CheckIntersections( int x, int y )

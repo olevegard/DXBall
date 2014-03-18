@@ -21,6 +21,7 @@ struct ConfigItem : public MenuItem
 	void SetValueRect( SDL_Rect r )
 	{
 		valueRect = r;
+		GeneratePlussMinus();
 	}
 	SDL_Texture* GetValueTexture( ) const
 	{
@@ -34,9 +35,38 @@ struct ConfigItem : public MenuItem
 	{
 		return &valueRect;
 	}
+	const SDL_Rect* GetPlussRectPtr( ) const
+	{
+		return &plussRect;
+	}
+	const SDL_Rect* GetMinusRectPtr( ) const
+	{
+		return &minusRect;
+	}
+	SDL_Rect GetPlussRect( ) const
+	{
+		return plussRect;
+	}
+	SDL_Rect GetMinusRect( ) const
+	{
+		return minusRect;
+	}
+	void GeneratePlussMinus()
+	{
+		SDL_Rect square = valueRect;
+
+		square.x += ( valueRect.w /2 ) - ( square.w / 2 );
+		square.y -= square.h - 5;
+
+		plussRect = square;
+
+		minusRect = square;
+		minusRect.y = valueRect.y + valueRect.h - 5;
+	}
 	private:
 		SDL_Texture* valueTexture;
 		SDL_Rect valueRect;
-		//int32_t optionsValue;
+		SDL_Rect plussRect;
+		SDL_Rect minusRect;
 };
 

@@ -11,6 +11,9 @@
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 
+#include "structs/menu_items/ConfigChange.h"
+#include "structs/menu_items/ConfigItem.h"
+
 class Logger;
 struct MenuList;
 struct MenuItem;
@@ -61,6 +64,10 @@ public:
 	{
 		backToMenuButton = button;
 	}
+	void SetBallSpeed( const std::shared_ptr< ConfigItem >  &button )
+	{
+		ballSpeedSetter = button;
+	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y );
 	PauseMenuItemType CheckIntersections_Pause( int x, int y );
@@ -83,7 +90,8 @@ private:
 	std::shared_ptr <MenuList > lobbyGameList;
 
 	// Options
-	//std::shared_ptr< OptionsItem > ballSpeedSetter;
+	std::shared_ptr< ConfigItem > ballSpeedSetter;
+	//std::map< ConfigItem, std::shared_ptr< ConfigItem > > configItems;
 	std::shared_ptr< MenuItem > backToMenuButton;
 
 	int32_t seletedGameID;
