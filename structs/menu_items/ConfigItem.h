@@ -5,14 +5,14 @@
 
 #include "MenuItem.h"
 
-struct OptionsItem : public MenuItem
+struct ConfigItem : public MenuItem
 {
-	OptionsItem( std::string name)
+	ConfigItem ( std::string name)
 		:	MenuItem( name )
 	{
 	}
 
-	OptionsItem() = delete;
+	ConfigItem() = delete;
 
 	void SetValueTexture( SDL_Texture* texture )
 	{

@@ -16,7 +16,7 @@
 #include "structs/rendering/Particle.h"
 #include "structs/rendering/RenderingItem.h"
 
-#include "structs/menu_items/OptionsItem.h"
+#include "structs/menu_items/ConfigItem.h"
 
 #include "ColorConfigLoader.h"
 #include "GameInfo.h"
@@ -183,7 +183,7 @@ private:
 	void InitGreyAreaRect( );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
 	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &rect, TTF_Font* font );
-	std::shared_ptr< OptionsItem > AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font );
+	std::shared_ptr< ConfigItem > AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font );
 
 	void CleanUp();
 	void CleanUpSurfaces();
@@ -269,7 +269,7 @@ private:
 
 	// Options Mode
 	// =============================================
-	std::shared_ptr< OptionsItem > ballSpeedSetter;
+	std::shared_ptr< ConfigItem> ballSpeedSetter;
 	std::shared_ptr< MenuItem > backToMenuButton;
 
 	// Pause menu mode

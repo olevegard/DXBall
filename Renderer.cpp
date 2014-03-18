@@ -692,10 +692,10 @@ std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemS
 
 	return menuItem;
 }
-std::shared_ptr< OptionsItem > Renderer::AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font_ )
+std::shared_ptr< ConfigItem > Renderer::AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font_ )
 {
 	SDL_Rect captionRect = rect;
-	auto optionsItem = std::make_shared< OptionsItem >( caption );
+	auto optionsItem = std::make_shared< ConfigItem >( caption );
 
 	// Caption
 	SDL_Texture* text = RenderHelpers::RenderTextTexture_Blended( font_, caption, colorConfig.textColor, captionRect, renderer );

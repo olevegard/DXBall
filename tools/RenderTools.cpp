@@ -5,7 +5,7 @@
 #include "../structs/rendering/Particle.h"
 
 #include "../structs/menu_items/MainMenuItem.h"
-#include "../structs/menu_items/OptionsItem.h"
+#include "../structs/menu_items/ConfigItem.h"
 
 #include "../structs/game_objects/GamePiece.h"
 
@@ -152,14 +152,15 @@ void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const std::shared_pt
 	if( item->GetTexture() != nullptr )
 		SDL_RenderCopy( renderer, item->GetTexture(), nullptr, item->GetRectPtr() );
 }
-void RenderHelpers::RenderOptionsItem( SDL_Renderer* renderer, const std::shared_ptr< OptionsItem > &item )
+void RenderHelpers::RenderOptionsItem( SDL_Renderer* renderer, const std::shared_ptr< ConfigItem > &item )
 {
 	RenderMenuItem( renderer, item );
 
 	if( item->GetValueTexture() != nullptr )
 		SDL_RenderCopy( renderer, item->GetValueTexture(), nullptr, item->GetValueRectPtr() );
 
-	RenderPlussMinus( renderer, item->GetValueRect() );
+	RenderPluss( renderer, item->GetPlussRect() );
+	RenderMinus( renderer, item->GetMinusRect() );
 }
 void RenderHelpers::RenderMinus( SDL_Renderer* renderer, SDL_Rect square )
 {
