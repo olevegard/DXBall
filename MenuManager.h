@@ -2,6 +2,7 @@
 
 #include <map>
 #include <memory>
+#include <iostream>
 
 #include "GameInfo.h"
 
@@ -14,19 +15,23 @@
 #include "structs/menu_items/ConfigChange.h"
 #include "structs/menu_items/ConfigItem.h"
 
+#include "ConfigLoader.h"
+
 class Logger;
 struct MenuList;
 struct MenuItem;
 class MenuManager
 {
 public:
-	MenuManager();
+	MenuManager( ConfigLoader &configLoader_ );
 
 	void CheckItemMouseOver( int x, int y );
 	void CheckItemMouseOver_Pause( int x, int y );
 	void CheckItemMouseOver_MainMenu( int x, int y );
 	void CheckItemMouseOver_Lobby( int x, int y );
 	void CheckItemMouseOver_Options( int x, int y );
+
+	PlussMin CheckConfigItemsClick( int32_t x, int32_t y, const std::shared_ptr< ConfigItem > &item );
 
 	void CheckItemMouseClick( int x, int y);
 
@@ -67,6 +72,8 @@ public:
 	void SetBallSpeed( const std::shared_ptr< ConfigItem >  &button )
 	{
 		ballSpeedSetter = button;
+		ballSpeedSetter->SetValue( static_cast< uint32_t > (configLoader.GetBallSpeed() ) );
+		std::cout << "Setting value : " << configLoader.GetBallSpeed() << std::endl;
 	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y );
@@ -98,4 +105,5 @@ private:
 	LobbyMenuItem lobbyState;
 
 	Logger* logger;
+	ConfigLoader &configLoader;
 };

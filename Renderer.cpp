@@ -734,6 +734,20 @@ void Renderer::SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem )
 	menuItem->SetTexture( RenderHelpers::RenderTextTexture_Blended( mediumFont, menuItem->GetName(), clr, r, renderer, style ) );
 	menuItem->SetRect( r );
 }
+void Renderer::UpdateConfigValue( const std::shared_ptr< ConfigItem > &item )
+{
+	if ( !item->HasChanged() )
+		return;
+
+	SDL_Rect r = item->GetValueRect();
+	std::stringstream ss("");
+	ss << item->GetValue();
+	item->SetValueTexture
+	(
+		RenderHelpers::RenderTextTexture_Blended( tinyFont, ss.str(), colorConfig.GetTextColor(), r, renderer, 0 )
+	);
+	item->SetValueRect( r );
+}
 void Renderer::CenterMainMenuButtons( )
 {
 	if ( singlePlayerButton == nullptr )
@@ -869,6 +883,7 @@ void Renderer::Update( double delta )
 			++p;
 	}
 
+	UpdateConfigValue( ballSpeedSetter );
 	localPlayerText.Update( delta );
 
 	SetUnderlineHelper( backToMenuButton );

@@ -54,6 +54,8 @@ struct ConfigItem : public MenuItem
 	void GeneratePlussMinus()
 	{
 		SDL_Rect square = valueRect;
+		square.w = 15;
+		square.h = square.w;
 
 		square.x += ( valueRect.w /2 ) - ( square.w / 2 );
 		square.y -= square.h - 5;
@@ -63,7 +65,27 @@ struct ConfigItem : public MenuItem
 		minusRect = square;
 		minusRect.y = valueRect.y + valueRect.h - 5;
 	}
+	void SetValue( uint32_t value_ )
+	{
+		if ( value == value_ )
+			return;
+
+		value = value_;
+		hasChanged = true;
+	}
+	uint32_t GetValue()
+	{
+		hasChanged = false;
+		return value;
+	}
+	bool HasChanged()
+	{
+		return hasChanged;
+	}
+
 	private:
+	bool hasChanged;
+	uint32_t value;
 		SDL_Texture* valueTexture;
 		SDL_Rect valueRect;
 		SDL_Rect plussRect;

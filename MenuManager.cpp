@@ -10,7 +10,8 @@
 #include "Logger.h"
 
 
-MenuManager::MenuManager()
+
+MenuManager::MenuManager( ConfigLoader &configLoader_ )
 	:	currentGameState( GameState::MainMenu )
 	,	prevGameState( GameState::Quit )
 
@@ -19,6 +20,7 @@ MenuManager::MenuManager()
 	,	isTwoPlayerMode( false )
 
 	,	seletedGameID( -1 )
+	,	configLoader( configLoader_ )
 {
 	logger = Logger::Instance();
 }
@@ -75,6 +77,16 @@ void MenuManager::CheckItemMouseOver_Options( int x, int y )
 		backToMenuButton->SetSelcted( true );
 	else
 		backToMenuButton->SetSelcted( false );
+}
+PlussMin MenuManager::CheckConfigItemsClick( int32_t x, int32_t y, const std::shared_ptr< ConfigItem > &item )
+{
+	if ( RectHelpers::CheckMouseIntersection( x, y, item->GetPlussRect() ) )
+		return PlussMin::Pluss;
+
+	if ( RectHelpers::CheckMouseIntersection( x, y, item->GetMinusRect() ) )
+		return PlussMin::Minus;
+
+	return PlussMin::Equal;
 }
 void MenuManager::CheckItemMouseClick( int x, int y)
 {
@@ -133,11 +145,17 @@ void MenuManager::CheckItemMouseClick( int x, int y)
 		if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
 			SetGameState( GameState::MainMenu );
 
-		if ( RectHelpers::CheckMouseIntersection( x, y, ballSpeedSetter->GetPlussRect() ) )
-			std::cout << "Plussssss\n";
+			auto plussMin = CheckConfigItemsClick( x, y,  ballSpeedSetter );
 
-		if ( RectHelpers::CheckMouseIntersection( x, y, ballSpeedSetter->GetMinusRect() ) )
-			std::cout << "Minusssss\n";
+			if ( plussMin != PlussMin::Equal )
+			{
+				if ( plussMin  == PlussMin::Pluss )
+					configLoader.ballSpeed += 10;
+				else if ( plussMin  == PlussMin::Minus )
+					configLoader.ballSpeed -= 10;
+
+				ballSpeedSetter->SetValue( static_cast< uint32_t > ( configLoader.ballSpeed ) );
+			}
 	}
 }
 MainMenuItemType MenuManager::CheckIntersections( int x, int y )

@@ -28,6 +28,7 @@
 	GameManager::GameManager()
 	:	renderer()
 	,	timer()
+	,	menuManager( gameConfig )
 	,	messageSender( netManager )
 	,	physicsManager( messageSender )
 
@@ -67,6 +68,9 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
  	physicsManager.SetWindowSize( windowSize );
 
+	gameConfig.LoadConfig();
+	LoadConfig();
+
 	InitMenu();
 	InitRenderer();
 	InitPaddles();
@@ -75,7 +79,6 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 	logger = Logger::Instance();
 	logger->Init( localPlayerName_ );
 
-	LoadConfig();
 
 	return true;
 }
@@ -110,7 +113,6 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 }
 void GameManager::LoadConfig()
 {
-	gameConfig.LoadConfig();
 	physicsManager.SetBulletSpeed( gameConfig.GetBulletSpeed() );
 	physicsManager.SetBonusBoxSpeed( gameConfig.GetBonusBoxSpeed() );
 

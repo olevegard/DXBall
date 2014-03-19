@@ -185,6 +185,7 @@ private:
 	void CenterOptionsButtons( );
 
 	void SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem );
+	void UpdateConfigValue ( const std::shared_ptr< ConfigItem > &item );
 	void InitGreyAreaRect( );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
 	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &rect, TTF_Font* font );
