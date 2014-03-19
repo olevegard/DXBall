@@ -5,9 +5,14 @@
 #include <csignal>
 #include <iostream>
 
-bool TCPConnection::Init( const std::string &host, unsigned short port, bool server )
+TCPConnection::TCPConnection()
+	:	isConnected( false )
+	,   bufferSize( 80000 )
 {
 	logger = Logger::Instance();
+}
+bool TCPConnection::Init( const std::string &host, unsigned short port, bool server )
+{
 	isConnected = false;
 
 	isServer = server;

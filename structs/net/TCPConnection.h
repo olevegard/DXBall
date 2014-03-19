@@ -8,12 +8,8 @@ class Logger;
 class TCPConnection
 {
 public:
-	TCPConnection()
-		:	isConnected( false )
-		,   bufferSize( 80000 )
-	{
+	TCPConnection();
 
-	}
 	bool Init( const std::string &host, unsigned short port, bool server );
 	bool ResolveHost();
 	bool OpenConnectionToHost( );
