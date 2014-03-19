@@ -35,33 +35,39 @@ void MenuManager::CheckItemMouseOver( int x, int y )
 }
 void MenuManager::CheckItemMouseOver_MainMenu( int x, int y )
 {
-	for ( const auto &item : mainMenuItems )
-		item.second->SetSelcted( false );
-
 	MainMenuItemType mouseOver = CheckIntersections( x, y );
 
-	if ( mouseOver != MainMenuItemType::Unknown )
-		mainMenuItems[ mouseOver ]->SetSelcted( true );
+	for ( const auto &item : mainMenuItems )
+	{
+		if ( item.first ==  mouseOver )
+			item.second->SetSelcted( true );
+		else
+			item.second->SetSelcted( false );
+	}
 }
 void MenuManager::CheckItemMouseOver_Pause( int x, int y )
 {
-	for ( const auto &item : pauseMenuItems )
-		item.second->SetSelcted( false );
-
 	PauseMenuItemType mouseOver = CheckIntersections_Pause( x, y );
 
-	if ( mouseOver != PauseMenuItemType::Unknown )
-		pauseMenuItems[ mouseOver ]->SetSelcted( true );
+	for ( const auto &item : pauseMenuItems )
+	{
+		if ( item.first ==  mouseOver )
+			item.second->SetSelcted( true );
+		else
+			item.second->SetSelcted( false );
+	}
 }
 void MenuManager::CheckItemMouseOver_Lobby( int x, int y )
 {
-	for ( const auto &item : lobbyMenuItems )
-		item.second->SetSelcted( false );
-
 	LobbyMenuItem mouseOver = CheckIntersections_Lobby( x, y );
 
-	if ( mouseOver != LobbyMenuItem::Unknown && mouseOver != LobbyMenuItem::GameList )
-		lobbyMenuItems[mouseOver]->SetSelcted( true );
+	for ( const auto &item : lobbyMenuItems )
+	{
+		if ( item.first ==  mouseOver )
+			item.second->SetSelcted( true );
+		else
+			item.second->SetSelcted( false );
+	}
 }
 void MenuManager::CheckItemMouseOver_Options( int x, int y )
 {
