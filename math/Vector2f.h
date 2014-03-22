@@ -17,13 +17,13 @@ struct Vector2f{
 		,   y( 0.0f )
 	{}
 
-	Vector2f( const Vector2f& vec)
+	/*Vector2f( const Vector2f& vec)
 		:   x( vec.x )
 		,   y( vec.y )
 	{
 		x = vec.x;
 		y = vec.y;
-	}
+	}*/
 
 	double x;
 	double y;

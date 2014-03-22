@@ -6,13 +6,14 @@
 
 #include "GameInfo.h"
 
+#include "enums/PlussMin.h"
 #include "enums/GameState.h"
 #include "enums/LobbyState.h"
 #include "enums/LobbyMenuItem.h"
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 
-#include "structs/menu_items/ConfigChange.h"
+//#include "structs/menu_items/ConfigChange.h"
 #include "structs/menu_items/ConfigItem.h"
 
 #include "ConfigLoader.h"

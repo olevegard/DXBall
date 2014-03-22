@@ -56,13 +56,14 @@ class ConfigLoader
 	{
 		return pointsHit;
 	}
+
+	double ballSpeed;
 	private:
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
 	void PrintIndented( const std::string &colorName );
 	void PrintConfig();
 	std::string RemoveCharacterFromString( std::string str, char ch );
 
-	double ballSpeed;
 	double ballSpeedFastMode;
 	double bulletSpeed;
 	double bonusBoxSpeed;

@@ -10,6 +10,7 @@ SOURCES += ../structs/net/TCPConnection.cpp
 SOURCES += ../structs/net/TCPMessage.cpp
 SOURCES += ../structs/board/TilePosition.cpp
 SOURCES += ../structs/board/Board.cpp
+SOURCES += ../structs/menu_items/MenuList.cpp
 SOURCES += ../tools/RenderTools.cpp
 SOURCES += ../math/Vector2f.cpp
 SOURCES += ../math/VectorHelpers.cpp
@@ -23,7 +24,7 @@ SOURCES += ../MenuManager.cpp
 SOURCES += ../NetManager.cpp
 SOURCES += ../ColorConfigLoader.cpp
 SOURCES += ../ConfigLoader.cpp
-SOURCES += ../MenuList.cpp
+#SOURCES += ../MenuList.cpp
 SOURCES += ../MessageSender.cpp
 
 DIST =
