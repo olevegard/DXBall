@@ -23,64 +23,32 @@ void ConfigLoader::LoadConfig()
 		std::string str;
 		ss >> str;
 
-		if (  configLine.find( "ball_speed_normal" ) != std::string::npos )
-		{
-			ss >> ballSpeed;;
-			continue;
-		}
-		if (  configLine.find( "ball_speed_fastmode" ) != std::string::npos )
-		{
-			ss >> ballSpeedFastMode;;
-			continue;
-		}
-		if (  configLine.find( "bullet_speed" ) != std::string::npos )
-		{
-			ss >> bulletSpeed;;
-			continue;
-		}
-		else if (  configLine.find( "bonus_box_speed" ) != std::string::npos )
-		{
-			ss >> bonusBoxSpeed;;
-			continue;
-		}
-		else if (  configLine.find( "is_fast_mode" ) != std::string::npos )
+		if (  configLine.find( "is_fast_mode" ) != std::string::npos )
 		{
 			std::string fastMode;
 			ss >> fastMode;
 			isFastMode = ( fastMode.find( "true" ) != std::string::npos );
-			continue;
 		}
+		else if (  configLine.find( "ball_speed_normal" ) != std::string::npos )
+			ss >> configValues[ ConfigValue::BallSpeed ];
+		else if (  configLine.find( "ball_speed_fastmode" ) != std::string::npos )
+			ss >> configValues[ ConfigValue::BallSpeed_FM ];
+		else if (  configLine.find( "bullet_speed" ) != std::string::npos )
+			ss >> configValues[ ConfigValue::BulletSpeed ];
+		else if (  configLine.find( "bonus_box_speed" ) != std::string::npos )
+			ss >> configValues[ ConfigValue::BonusBoxSpeed ];
 		else if (  configLine.find( "bonus_box_chance" ) != std::string::npos )
-		{
-			ss >> bonusBoxChance;
-			continue;
-		}
+			ss >> configValues[ ConfigValue::BonusBoxChance ];
 		else if (  configLine.find( "points_regular" ) != std::string::npos )
-		{
-			ss >>points[TileType::Regular];
-			continue;
-		}
+			ss >> points[TileType::Regular];
 		else if (  configLine.find( "points_hard" ) != std::string::npos )
-		{
-			ss >>points[TileType::Hard];
-			continue;
-		}
+			ss >> points[TileType::Hard];
 		else if (  configLine.find( "points_explosive" ) != std::string::npos )
-		{
-			ss >>points[TileType::Explosive];
-			continue;
-		}
+			ss >> points[TileType::Explosive];
 		else if (  configLine.find( "points_unbreakable" ) != std::string::npos )
-		{
-			ss >>points[TileType::Unbreakable];
-			continue;
-		}
+			ss >> points[TileType::Unbreakable];
 		else if (  configLine.find( "points_hit" ) != std::string::npos )
-		{
-			ss >> pointsHit;
-			continue;
-		}
-
+			ss >> configValues[ ConfigValue::PointsHit ];
 	}
 
 	PrintConfig();

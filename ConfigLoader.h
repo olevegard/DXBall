@@ -6,6 +6,8 @@
 #include <map>
 
 #include "enums/TileType.h"
+#include "enums/PlussMin.h"
+#include "enums/ConfigValue.h"
 
 #include <SDL2/SDL.h>
 
@@ -13,38 +15,16 @@ class ConfigLoader
 {
 	public:
 	ConfigLoader()
-		:	ballSpeed( 0.2 )
-		,	bonusBoxSpeed( 0.2 )
 	{
 
 	}
 	void LoadConfig();
 
-	double GetBallSpeed() const
-	{
-		return ballSpeed;
-	}
-	double GetBallSpeedFastMode() const
-	{
-		return ballSpeedFastMode;
-	}
-	double GetBulletSpeed() const
-	{
-		return bulletSpeed;
-	}
-	double GetBonusBoxSpeed() const
-	{
-		return bonusBoxSpeed;
-	}
 	bool IsFastMode() const
 	{
 		return isFastMode;
 	}
-	int32_t GetBonusBoxChance() const
-	{
-		return bonusBoxChance;
-	}
-	int32_t GetTilePoints( const TileType &tt )
+	double GetTilePoints( const TileType &tt )
 	{
 		return points[tt];
 	}
@@ -52,27 +32,32 @@ class ConfigLoader
 	{
 		return points;
 	}
-	int32_t GetPointsHit()
+	void ApplyChange( ConfigValue config, double value, PlussMin plussMin )
 	{
-		return pointsHit;
+		if ( plussMin == PlussMin::Pluss )
+			configValues[config] += value;
+		else if ( plussMin == PlussMin::Minus )
+			configValues[config] -= value;
+	}
+	double Get( ConfigValue config ) const
+	{
+		return configValues.at( config );
+	}
+	void Set( double value, ConfigValue config )
+	{
+		configValues[config] = value;
 	}
 
-	double ballSpeed;
 	private:
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
 	void PrintIndented( const std::string &colorName );
 	void PrintConfig();
 	std::string RemoveCharacterFromString( std::string str, char ch );
 
-	double ballSpeedFastMode;
-	double bulletSpeed;
-	double bonusBoxSpeed;
+	std::map< ConfigValue, double > configValues;
+	std::map< TileType, int32_t > points;
 
 	bool isFastMode;
 
-	int32_t bonusBoxChance;
-
-	std::map< TileType, int32_t > points;
-	int32_t pointsHit;
 };
 

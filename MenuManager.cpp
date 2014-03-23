@@ -19,7 +19,7 @@ MenuManager::MenuManager( ConfigLoader &configLoader_ )
 	,	hasLobbyStateChanged( false  )
 	,	isTwoPlayerMode( false )
 
-	,	seletedGameID( -1 )
+	,	selectedGameID( -1 )
 	,	configLoader( configLoader_ )
 {
 	logger = Logger::Instance();
@@ -134,9 +134,9 @@ void MenuManager::CheckItemMouseClick( int x, int y)
 		lobbyState = CheckIntersections_Lobby( x, y);
 
 		if ( lobbyState == LobbyMenuItem::GameList )
-			seletedGameID = lobbyGameList->FindIntersectedItem( x, y );
+			selectedGameID= lobbyGameList->FindIntersectedItem( x, y );
 		else
-			seletedGameID = -1;
+			selectedGameID= -1;
 
 		hasLobbyStateChanged = true;
 	}
@@ -145,16 +145,12 @@ void MenuManager::CheckItemMouseClick( int x, int y)
 		if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
 			SetGameState( GameState::MainMenu );
 
-			auto plussMin = CheckConfigItemsClick( x, y,  ballSpeedSetter );
+			auto plussMin = CheckConfigItemsClick( x, y,  configItems[ ConfigValue::BallSpeed ]);
 
 			if ( plussMin != PlussMin::Equal )
 			{
-				if ( plussMin  == PlussMin::Pluss )
-					configLoader.ballSpeed += 10;
-				else if ( plussMin  == PlussMin::Minus )
-					configLoader.ballSpeed -= 10;
-
-				ballSpeedSetter->SetValue( static_cast< uint32_t > ( configLoader.ballSpeed ) );
+                configLoader.ApplyChange( ConfigValue::BallSpeed, 10, plussMin );
+                configItems[ ConfigValue::BallSpeed ]->SetValue( static_cast< uint32_t > ( configLoader.Get( ConfigValue::BallSpeed ) ) );
 			}
 	}
 }
@@ -318,13 +314,13 @@ void MenuManager::SetPauseMenuItem( const PauseMenuItemType &type, const std::sh
 }
 int32_t MenuManager::GetSelectedGame() const
 {
-	return seletedGameID;
+	return selectedGameID;
 }
 bool MenuManager::IsAnItemSelected() const
 {
-	return ( seletedGameID >= 0 );
+	return ( selectedGameID >= 0 );
 }
 GameInfo MenuManager::GetSelectedGameInfo() const
 {
-	return lobbyGameList->GetGameInfoForIndex( seletedGameID);;
+	return lobbyGameList->GetGameInfoForIndex( selectedGameID );
 }
