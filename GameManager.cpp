@@ -13,6 +13,7 @@
 #include "math/RectHelpers.h"
 #include "math/VectorHelpers.h"
 
+#include "enums/ConfigValue.h"
 #include "enums/MessageType.h"
 #include "enums/LobbyMenuItem.h"
 #include "enums/MessageTarget.h"
@@ -113,11 +114,11 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 }
 void GameManager::LoadConfig()
 {
-	physicsManager.SetBulletSpeed( gameConfig.GetBulletSpeed() );
-	physicsManager.SetBonusBoxSpeed( gameConfig.GetBonusBoxSpeed() );
+	physicsManager.SetBulletSpeed( gameConfig.Get( ConfigValue::BulletSpeed ) );
+	physicsManager.SetBonusBoxSpeed( gameConfig.Get( ConfigValue::BonusBoxSpeed ) );
 
-	localPlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
-	remotePlayerInfo.ballSpeed = gameConfig.GetBallSpeed();
+	localPlayerInfo.ballSpeed = gameConfig.Get( ConfigValue::BallSpeed );
+	remotePlayerInfo.ballSpeed = gameConfig.Get( ConfigValue::BallSpeed );
 }
 void GameManager::CreateMenu()
 {
@@ -158,7 +159,7 @@ void GameManager::CreateMainMenu()
 }
 void GameManager::Restart()
 {
-	logger->Log( __FILE__, __LINE__, "==================== RESET ====================");
+	logger->Log( __FILE__, __LINE__, "======================= RESET =======================");
 
 	boardLoader.Reset();
 	ClearBoard();
@@ -305,7 +306,7 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 }
 bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
 {
-	int randMax = gameConfig.GetBonusBoxChance();
+	double randMax = gameConfig.Get( ConfigValue::BonusBoxChance );
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfBonus = 1.0 / tilesDestroyed;
@@ -989,7 +990,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerInfo.ballSpeed < gameConfig.GetBallSpeedFastMode())
+		if ( localPlayerInfo.ballSpeed < gameConfig.Get( ConfigValue::BallSpeed_FM ) )
 		{
 			localPlayerInfo.ballSpeed += delta * 1000;
 			UpdateBallSpeed();
@@ -997,7 +998,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 	}
 	else
 	{
-		if ( remotePlayerInfo.ballSpeed < gameConfig.GetBallSpeedFastMode() )
+		if ( remotePlayerInfo.ballSpeed < gameConfig.Get( ConfigValue::BallSpeed_FM ) )
 		{
 			remotePlayerInfo.ballSpeed += delta * 0.0005;
 			UpdateBallSpeed();
@@ -1316,7 +1317,7 @@ void GameManager::ClearBoard()
 }
 void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, const Player &ballOwner )
 {
-	int32_t pointIncrease = gameConfig.GetPointsHit();
+	double pointIncrease = gameConfig.Get( ConfigValue::PointsHit );
 
 	if ( isDestroyed )
 		pointIncrease += gameConfig.GetTilePoints( tileType );
@@ -1379,7 +1380,7 @@ bool GameManager::CanGenerateNewBoard()
 
 	if ( boardLoader.IsLastLevel() )
 	{
-		logger->Log( __FILE__, __LINE__, " ========= No more levels! ==========" );
+		logger->Log( __FILE__, __LINE__, "================== No more levels ===================" );
 		menuManager.SetGameState( GameState::GameOver );
 
 		return false;

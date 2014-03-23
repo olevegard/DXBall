@@ -21,4 +21,13 @@ class RandomHelper
 
 		return rdist(rgen);
 	}
+
+	static double GenRandomNumber( double max )
+	{
+		static std::random_device rseed;
+		std::mt19937 rgen(rseed());
+		std::uniform_real_distribution<double> rdist( 1, max );
+
+		return rdist(rgen);
+	}
 };
