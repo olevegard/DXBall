@@ -7,7 +7,7 @@
 
 #include "enums/TileType.h"
 #include "enums/PlussMin.h"
-#include "enums/ConfigValue.h"
+#include "enums/ConfigValueType.h"
 
 #include <SDL2/SDL.h>
 
@@ -32,18 +32,18 @@ class ConfigLoader
 	{
 		return points;
 	}
-	void ApplyChange( ConfigValue config, double value, PlussMin plussMin )
+	void ApplyChange( ConfigValueType config, double value, PlussMin plussMin )
 	{
 		if ( plussMin == PlussMin::Pluss )
 			configValues[config] += value;
 		else if ( plussMin == PlussMin::Minus )
 			configValues[config] -= value;
 	}
-	double Get( ConfigValue config ) const
+	double Get( ConfigValueType config ) const
 	{
 		return configValues.at( config );
 	}
-	void Set( double value, ConfigValue config )
+	void Set( double value, ConfigValueType config )
 	{
 		configValues[config] = value;
 	}
@@ -54,7 +54,7 @@ class ConfigLoader
 	void PrintConfig();
 	std::string RemoveCharacterFromString( std::string str, char ch );
 
-	std::map< ConfigValue, double > configValues;
+	std::map< ConfigValueType, double > configValues;
 	std::map< TileType, int32_t > points;
 
 	bool isFastMode;

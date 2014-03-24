@@ -13,10 +13,10 @@
 #include "math/RectHelpers.h"
 #include "math/VectorHelpers.h"
 
-#include "enums/ConfigValue.h"
 #include "enums/MessageType.h"
 #include "enums/LobbyMenuItem.h"
 #include "enums/MessageTarget.h"
+#include "enums/ConfigValueType.h"
 
 #include <vector>
 #include <sstream>
@@ -49,6 +49,7 @@
 	,	frameDuration( 1000.0 / 60.0 )
 
 	,	stick( nullptr )
+
 {
 	windowSize.x = 0;
 	windowSize.y = 0;
@@ -114,11 +115,11 @@ void GameManager::InitNetManager( std::string ip_, uint16_t port_ )
 }
 void GameManager::LoadConfig()
 {
-	physicsManager.SetBulletSpeed( gameConfig.Get( ConfigValue::BulletSpeed ) );
-	physicsManager.SetBonusBoxSpeed( gameConfig.Get( ConfigValue::BonusBoxSpeed ) );
+	physicsManager.SetBulletSpeed( gameConfig.Get( ConfigValueType::BulletSpeed ) );
+	physicsManager.SetBonusBoxSpeed( gameConfig.Get( ConfigValueType::BonusBoxSpeed ) );
 
-	localPlayerInfo.ballSpeed = gameConfig.Get( ConfigValue::BallSpeed );
-	remotePlayerInfo.ballSpeed = gameConfig.Get( ConfigValue::BallSpeed );
+	localPlayerInfo.ballSpeed = gameConfig.Get( ConfigValueType::BallSpeed );
+	remotePlayerInfo.ballSpeed = gameConfig.Get( ConfigValueType::BallSpeed );
 }
 void GameManager::CreateMenu()
 {
@@ -306,7 +307,7 @@ void GameManager::AddBonusBox( const Player &owner, Vector2f dir,  const Vector2
 }
 bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
 {
-	double randMax = gameConfig.Get( ConfigValue::BonusBoxChance );
+	double randMax = gameConfig.Get( ConfigValueType::BonusBoxChance );
 	if ( tilesDestroyed != 1 )
 	{
 		double probabilityOfBonus = 1.0 / tilesDestroyed;
@@ -990,7 +991,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 {
 	if ( player == Player::Local )
 	{
-		if ( localPlayerInfo.ballSpeed < gameConfig.Get( ConfigValue::BallSpeed_FM ) )
+		if ( localPlayerInfo.ballSpeed < gameConfig.Get( ConfigValueType::BallSpeed_FM ) )
 		{
 			localPlayerInfo.ballSpeed += delta * 1000;
 			UpdateBallSpeed();
@@ -998,7 +999,7 @@ void GameManager::IncreaseBallSpeedFastMode( const Player &player, double delta 
 	}
 	else
 	{
-		if ( remotePlayerInfo.ballSpeed < gameConfig.Get( ConfigValue::BallSpeed_FM ) )
+		if ( remotePlayerInfo.ballSpeed < gameConfig.Get( ConfigValueType::BallSpeed_FM ) )
 		{
 			remotePlayerInfo.ballSpeed += delta * 0.0005;
 			UpdateBallSpeed();
@@ -1317,7 +1318,7 @@ void GameManager::ClearBoard()
 }
 void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, const Player &ballOwner )
 {
-	double pointIncrease = gameConfig.Get( ConfigValue::PointsHit );
+	double pointIncrease = gameConfig.Get( ConfigValueType::PointsHit );
 
 	if ( isDestroyed )
 		pointIncrease += gameConfig.GetTilePoints( tileType );

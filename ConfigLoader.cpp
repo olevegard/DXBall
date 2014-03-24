@@ -30,15 +30,15 @@ void ConfigLoader::LoadConfig()
 			isFastMode = ( fastMode.find( "true" ) != std::string::npos );
 		}
 		else if (  configLine.find( "ball_speed_normal" ) != std::string::npos )
-			ss >> configValues[ ConfigValue::BallSpeed ];
+			ss >> configValues[ ConfigValueType::BallSpeed ];
 		else if (  configLine.find( "ball_speed_fastmode" ) != std::string::npos )
-			ss >> configValues[ ConfigValue::BallSpeed_FM ];
+			ss >> configValues[ ConfigValueType::BallSpeed_FM ];
 		else if (  configLine.find( "bullet_speed" ) != std::string::npos )
-			ss >> configValues[ ConfigValue::BulletSpeed ];
+			ss >> configValues[ ConfigValueType::BulletSpeed ];
 		else if (  configLine.find( "bonus_box_speed" ) != std::string::npos )
-			ss >> configValues[ ConfigValue::BonusBoxSpeed ];
+			ss >> configValues[ ConfigValueType::BonusBoxSpeed ];
 		else if (  configLine.find( "bonus_box_chance" ) != std::string::npos )
-			ss >> configValues[ ConfigValue::BonusBoxChance ];
+			ss >> configValues[ ConfigValueType::BonusBoxChance ];
 		else if (  configLine.find( "points_regular" ) != std::string::npos )
 			ss >> points[TileType::Regular];
 		else if (  configLine.find( "points_hard" ) != std::string::npos )
@@ -48,7 +48,7 @@ void ConfigLoader::LoadConfig()
 		else if (  configLine.find( "points_unbreakable" ) != std::string::npos )
 			ss >> points[TileType::Unbreakable];
 		else if (  configLine.find( "points_hit" ) != std::string::npos )
-			ss >> configValues[ ConfigValue::PointsHit ];
+			ss >> configValues[ ConfigValueType::PointsHit ];
 	}
 
 	PrintConfig();

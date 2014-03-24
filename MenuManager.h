@@ -7,10 +7,10 @@
 #include "GameInfo.h"
 
 #include "enums/PlussMin.h"
-#include "enums/ConfigValue.h"
 #include "enums/GameState.h"
 #include "enums/LobbyState.h"
 #include "enums/LobbyMenuItem.h"
+#include "enums/ConfigValueType.h"
 #include "enums/MainMenuItemType.h"
 #include "enums/PauseMenuItemType.h"
 
@@ -73,8 +73,8 @@ public:
 	}
 	void SetBallSpeed( const std::shared_ptr< ConfigItem >  &button )
 	{
-		configItems[ ConfigValue::BallSpeed ]  = button;
-		configItems[ ConfigValue::BallSpeed ]->SetValue( static_cast< uint32_t > (configLoader.Get( ConfigValue::BallSpeed) ) );
+		configItems[ ConfigValueType::BallSpeed ]  = button;
+		configItems[ ConfigValueType::BallSpeed ]->SetValue( static_cast< uint32_t > (configLoader.Get( ConfigValueType::BallSpeed) ) );
 	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y );
@@ -98,7 +98,7 @@ private:
 	std::shared_ptr <MenuList > lobbyGameList;
 
 	// Options
-	std::map< ConfigValue, std::shared_ptr< ConfigItem > > configItems;
+	std::map< ConfigValueType, std::shared_ptr< ConfigItem > > configItems;
 	std::shared_ptr< MenuItem > backToMenuButton;
 
 	int32_t selectedGameID;

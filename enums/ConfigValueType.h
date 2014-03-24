@@ -1,6 +1,6 @@
 #pragma once
 
-enum class ConfigValue
+enum class ConfigValueType
 {
 	BallSpeed,
 	BallSpeed_FM,

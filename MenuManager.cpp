@@ -9,8 +9,6 @@
 
 #include "Logger.h"
 
-
-
 MenuManager::MenuManager( ConfigLoader &configLoader_ )
 	:	currentGameState( GameState::MainMenu )
 	,	prevGameState( GameState::Quit )
@@ -145,12 +143,12 @@ void MenuManager::CheckItemMouseClick( int x, int y)
 		if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
 			SetGameState( GameState::MainMenu );
 
-			auto plussMin = CheckConfigItemsClick( x, y,  configItems[ ConfigValue::BallSpeed ]);
+			auto plussMin = CheckConfigItemsClick( x, y,  configItems[ ConfigValueType::BallSpeed ]);
 
 			if ( plussMin != PlussMin::Equal )
 			{
-                configLoader.ApplyChange( ConfigValue::BallSpeed, 10, plussMin );
-                configItems[ ConfigValue::BallSpeed ]->SetValue( static_cast< uint32_t > ( configLoader.Get( ConfigValue::BallSpeed ) ) );
+                configLoader.ApplyChange( ConfigValueType::BallSpeed, 10, plussMin );
+                configItems[ ConfigValueType::BallSpeed ]->SetValue( static_cast< uint32_t > ( configLoader.Get( ConfigValueType::BallSpeed ) ) );
 			}
 	}
 }
