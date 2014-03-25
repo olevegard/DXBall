@@ -34,7 +34,7 @@ void ColorConfigLoader::ApplyConfig( std::string str )
 		line >> textColor;
 	else if (  parameterName ==  "grey_area" )
 		line >> greyAreaColor;
-	else if (  parameterName ==  "prticle_fire_count" )
+	else if (  parameterName ==  "particle_fire_count" )
 		line >> particleFireCount;
 	else if (  parameterName ==  "particle_decay_min" )
 		line >> particleDecayMin;

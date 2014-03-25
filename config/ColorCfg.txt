@@ -1,25 +1,58 @@
+# System colors
+# ============================================================================
+
+# Background color in menus
 background_color 0 0 0 255
+
+# Color of all text
+# Except top right and top left text, this text will be using local/remote player color ( see below )
 text_color 140 0 140 255
+
+# Player Colors
+# These colors are used for Paddles, BonusBox edges and text indicating scores and names
 local_player_color 0 140 0 255
 remote_player_color 140 0 0 255
-grey_area 255 0 0 255
 
-bonus_extra_life 255 255 255 255
+# The midde line in Main Menu / Game Lobby and Game Options
+grey_area 0 0 0 255
+
+# Bonus Box colors
+# ============================================================================
+
+# Inner color of BonusBoxes
+# The outer color will be local/remote player color ( see above )
 bonus_death 0 0 0 255
 bonus_super_ball 0 0 255 255
 bonus_fire_bullets 255 0 255 255
+bonus_extra_life 255 255 255 255
 
 # Tile colors
 # ============================================================================
+
 # Regular tiles
 0 255 0 0 128
-
-# Hard tiles
-2 255 255 255 255  | 196 196 196 255 |  128 128 128 255 | 64 64 64 255 | 32 32 32 255
 
 # Explosive
 1 0 0 255 255
 
+# Hard tiles
+2 255 255 255 255  | 196 196 196 255 |  128 128 128 255 | 64 64 64 255 | 32 32 32 255
+
 # Unbreakable
 3 0 255 0 255
 
+# Particle effects
+# ============================================================================
+
+# Exact number of particles spawned per tile hit
+particle_fire_count 16
+
+# Particle decay
+# Higher value menas the particle fades quicker
+# The actual decay value will be a random number between min and max
+particle_decay_min 0.1
+particle_decay_max 0.2
+
+# Particle speed
+particle_speed_min 1.0
+particle_speed_max 2.0

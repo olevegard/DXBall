@@ -194,8 +194,8 @@ if make; then
 			echo -e "\tCommand : " $RunString
 			echo "=============================== DX Balll ==============================="
 
-			gnome-terminal -e "$RunStringClient"&   # Run without blocking
-			gnome-terminal -e "$RunStringServer"&   # Run without blocking
+			#gnome-terminal -e "$RunStringClient"&   # Run without blocking
+			#gnome-terminal -e "$RunStringServer"&   # Run without blocking
 
 			# Run in a new terminal window with :
 				# font      = default
