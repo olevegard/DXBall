@@ -11,6 +11,7 @@
 
 #include "enums/GameState.h"
 #include "enums/LobbyMenuItem.h"
+#include "enums/ConfigValueType.h"
 #include "enums/PauseMenuItemType.h"
 
 #include "structs/rendering/Particle.h"
@@ -127,9 +128,9 @@ public:
 		return backToMenuButton;
 	}
 
-	std::shared_ptr< ConfigItem > GetBallSpeed()
+	const std::shared_ptr< ConfigItem > &GetOptionsItem( ConfigValueType type)
 	{
-		return ballSpeedSetter;
+		return configItems[type];
 	}
 private:
 	Renderer( const Renderer &renderer );
@@ -275,7 +276,7 @@ private:
 
 	// Options Mode
 	// =============================================
-	std::shared_ptr< ConfigItem> ballSpeedSetter;
+	std::map< ConfigValueType, std::shared_ptr< ConfigItem > > configItems;
 	std::shared_ptr< MenuItem > backToMenuButton;
 
 	// Pause menu mode

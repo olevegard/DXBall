@@ -71,10 +71,10 @@ public:
 	{
 		backToMenuButton = button;
 	}
-	void SetBallSpeed( const std::shared_ptr< ConfigItem >  &button )
+	void SetOptionsItem( ConfigValueType type, const std::shared_ptr< ConfigItem >  &button )
 	{
-		configItems[ ConfigValueType::BallSpeed ]  = button;
-		configItems[ ConfigValueType::BallSpeed ]->SetValue( static_cast< uint32_t > (configLoader.Get( ConfigValueType::BallSpeed) ) );
+		configItems[ type ] = button;
+		configItems[ type ]->SetValue( static_cast< uint32_t > (configLoader.Get( type ) ) );
 	}
 private:
 	MainMenuItemType CheckIntersections( int x, int y );
