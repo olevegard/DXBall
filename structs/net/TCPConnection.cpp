@@ -252,7 +252,10 @@ std::string TCPConnection::ReadMessages()
 }
 bool TCPConnection::CheckForActivity() const
 {
-	int countReady = SDLNet_CheckSockets( socketSet, 0 );
+    if ( !isConnected )
+        return false;
+
+    int countReady = SDLNet_CheckSockets( socketSet, 0 );
 
 	if ( countReady < 0 )
 	{
