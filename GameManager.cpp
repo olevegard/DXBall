@@ -131,7 +131,8 @@ void GameManager::CreateMenu()
 	CreateLobbyMenu();
 
 	menuManager.SetOptionsMenuItem( renderer.GetOptionsBackButton() );
-	menuManager.SetOptionsItem( ConfigValueType::BallSpeed, renderer.GetOptionsItem( ConfigValueType::BallSpeed  ) );
+	menuManager.SetConfigItem( ConfigValueType::BallSpeed, renderer.GetConfigItem( ConfigValueType::BallSpeed  ) );
+	menuManager.SetConfigItem( ConfigValueType::BulletSpeed, renderer.GetConfigItem( ConfigValueType::BulletSpeed  ) );
 }
 void GameManager::CreatePauseMenu()
 {

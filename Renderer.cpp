@@ -403,6 +403,7 @@ void Renderer::RenderMenu()
 	else if ( gameState == GameState::Options )
 	{
 		RenderHelpers::RenderOptionsItem( renderer, configItems[ ConfigValueType::BallSpeed ] );
+		RenderHelpers::RenderOptionsItem( renderer, configItems[ ConfigValueType::BulletSpeed ] );
 		RenderHelpers::RenderMenuItem( renderer, backToMenuButton);
 	}
 	else
@@ -765,7 +766,12 @@ void Renderer::CenterMainMenuButtons( )
 }
 void Renderer::CenterOptionsButtons( )
 {
-	configItems[ ConfigValueType::BallSpeed ]= AddOptionsButtonHelper( "Ball Speed", "666", {0,0,0,0}, tinyFont );
+	configItems[ ConfigValueType::BallSpeed ] = AddOptionsButtonHelper( "Ball Speed", "666", {0,0,0,0}, tinyFont );
+	configItems[ ConfigValueType::BulletSpeed ]= AddOptionsButtonHelper( "Bullet Speed", "666", {0,0,0,0}, tinyFont );
+
+    SDL_Rect r = configItems[ ConfigValueType::BulletSpeed ]->GetRect();
+    int32_t moveDown = r.h + 20;
+    configItems[ ConfigValueType::BulletSpeed ]->MoveDown( moveDown );
 
 	backToMenuButton = AddMenuButtonHelper( "Main Menu", {0,0,0,0}, mediumFont );
 	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetRectW() / 2 );
@@ -884,6 +890,7 @@ void Renderer::Update( double delta )
 	}
 
 	UpdateConfigValue( configItems[ ConfigValueType::BallSpeed ]);
+	UpdateConfigValue( configItems[ ConfigValueType::BulletSpeed ]);
 	localPlayerText.Update( delta );
 
 	SetUnderlineHelper( backToMenuButton );

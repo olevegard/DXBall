@@ -128,7 +128,7 @@ public:
 		return backToMenuButton;
 	}
 
-	const std::shared_ptr< ConfigItem > &GetOptionsItem( ConfigValueType type)
+	const std::shared_ptr< ConfigItem > &GetConfigItem( ConfigValueType type)
 	{
 		return configItems[type];
 	}

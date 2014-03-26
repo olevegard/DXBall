@@ -71,7 +71,7 @@ public:
 	{
 		backToMenuButton = button;
 	}
-	void SetOptionsItem( ConfigValueType type, const std::shared_ptr< ConfigItem >  &button )
+	void SetConfigItem( ConfigValueType type, const std::shared_ptr< ConfigItem >  &button )
 	{
 		configItems[ type ] = button;
 		configItems[ type ]->SetValue( static_cast< uint32_t > (configLoader.Get( type ) ) );
