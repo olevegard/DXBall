@@ -6,6 +6,7 @@
 struct MenuItem
 {
 	MenuItem( std::string name);
+	MenuItem( const MenuItem &item );
 	MenuItem() = delete;
 
 	virtual ~MenuItem();

@@ -10,7 +10,13 @@ MenuItem::MenuItem( std::string name)
     ,	hasChanged( true )
 {
 }
+MenuItem::MenuItem( const MenuItem &item )
+    :   itemName( item.GetName() )
+    ,   itemRect( item.GetRect() )
+    ,   texture( item.GetTexture() )
+{
 
+}
 MenuItem::~MenuItem()
 {
 }
