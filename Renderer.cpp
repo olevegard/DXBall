@@ -402,9 +402,9 @@ void Renderer::RenderMenu()
 		RenderLobbyFooter();
 	else if ( gameState == GameState::Options )
 	{
-		RenderHelpers::RenderOptionsItem( renderer, configItems[ ConfigValueType::BallSpeed ] );
-		RenderHelpers::RenderOptionsItem( renderer, configItems[ ConfigValueType::BulletSpeed ] );
 		RenderHelpers::RenderMenuItem( renderer, backToMenuButton);
+		for ( const auto &p : configItems )
+			RenderHelpers::RenderOptionsItem( renderer, configItems[ p.first ] );
 	}
 	else
 		RenderMainMenuFooter();
@@ -889,8 +889,9 @@ void Renderer::Update( double delta )
 			++p;
 	}
 
-	UpdateConfigValue( configItems[ ConfigValueType::BallSpeed ]);
-	UpdateConfigValue( configItems[ ConfigValueType::BulletSpeed ]);
+	for ( const auto &p : configItems )
+		UpdateConfigValue( configItems[ p.first ]);
+
 	localPlayerText.Update( delta );
 
 	SetUnderlineHelper( backToMenuButton );
