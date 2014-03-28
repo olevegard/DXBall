@@ -140,25 +140,38 @@ void MenuManager::CheckItemMouseClick( int x, int y)
 	}
 	else
 	{
-		if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
-            SetGameState( GameState::MainMenu );
+		CheckOptionsIntersections( x, y );
+	}
+}
+void MenuManager::CheckOptionsIntersections( int32_t x, int32_t y )
+{
+	if ( RectHelpers::CheckMouseIntersection( x, y, backToMenuButton->GetRect() ) )
+	{
+		SetGameState( GameState::MainMenu );
+		return;
+	}
 
-        auto plussMin = CheckConfigItemsClick( x, y,  configItems[ ConfigValueType::BallSpeed ]);
+	CheckMenuItemIntersections( x, y );
+}
+void MenuManager::CheckMenuItemIntersections( int32_t x, int32_t y )
+{
+	auto plussMin = PlussMin::Equal;
+	auto type     = ConfigValueType::BallSpeed;
 
-        if ( plussMin != PlussMin::Equal )
-        {
-            configLoader.ApplyChange( ConfigValueType::BallSpeed, 10, plussMin );
-            configItems[ ConfigValueType::BallSpeed ]->SetValue( static_cast< uint32_t > ( configLoader.Get( ConfigValueType::BallSpeed ) ) );
-        }
-
-        plussMin = CheckConfigItemsClick( x, y,  configItems[ ConfigValueType::BulletSpeed ]);
-
-        if ( plussMin != PlussMin::Equal )
-        {
-            configLoader.ApplyChange( ConfigValueType::BulletSpeed, 10, plussMin );
-            configItems[ ConfigValueType::BulletSpeed]->SetValue( static_cast< uint32_t > ( configLoader.Get( ConfigValueType::BulletSpeed) ) );
-        }
-    }
+	for ( const auto &item : configItems )
+	{
+		plussMin = CheckConfigItemsClick( x, y,  configItems[ item.first  ]);
+		if ( plussMin != PlussMin::Equal)
+		{
+			type = item.first;
+			break;
+		}
+	}
+	if ( plussMin != PlussMin::Equal )
+	{
+		configLoader.ApplyChange( type, 10, plussMin );
+		configItems[ type ]->SetValue( static_cast< uint32_t > ( configLoader.Get( type) ) );
+	}
 }
 MainMenuItemType MenuManager::CheckIntersections( int x, int y )
 {

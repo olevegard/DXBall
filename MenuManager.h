@@ -33,8 +33,6 @@ public:
 	void CheckItemMouseOver_Lobby( int x, int y );
 	void CheckItemMouseOver_Options( int x, int y );
 
-	PlussMin CheckConfigItemsClick( int32_t x, int32_t y, const std::shared_ptr< ConfigItem > &item );
-
 	void CheckItemMouseClick( int x, int y);
 
 	GameState GetGameState() const;
@@ -80,6 +78,10 @@ private:
 	MainMenuItemType CheckIntersections( int x, int y );
 	PauseMenuItemType CheckIntersections_Pause( int x, int y );
 	LobbyMenuItem CheckIntersections_Lobby( int x, int y );
+
+	PlussMin CheckConfigItemsClick( int32_t x, int32_t y, const std::shared_ptr< ConfigItem > &item );
+	void CheckOptionsIntersections( int32_t x, int32_t y );
+	void CheckMenuItemIntersections( int32_t x, int32_t y );
 
 	GameState currentGameState;
 	GameState prevGameState;
