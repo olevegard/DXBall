@@ -1,5 +1,12 @@
+# ================================================================================
+# Color configuration
+# ================================================================================
+# This config file makes it possible to set just about any colors in the game
+# Please make sure the name is spelled correctly and leave spaces between values
+# Lines starting with '#' are ingnored
+
 # System colors
-# ============================================================================
+# ================================================================================
 
 # Background color in menus
 background_color 0 0 0 255
@@ -17,7 +24,7 @@ remote_player_color 140 0 0 255
 grey_area 0 0 0 255
 
 # Bonus Box colors
-# ============================================================================
+# ================================================================================
 
 # Inner color of BonusBoxes
 # The outer color will be local/remote player color ( see above )
@@ -27,7 +34,7 @@ bonus_fire_bullets 255 0 255 255
 bonus_extra_life 255 255 255 255
 
 # Tile colors
-# ============================================================================
+# ================================================================================
 
 # Regular tiles
 0 255 0 0 128
@@ -42,17 +49,17 @@ bonus_extra_life 255 255 255 255
 3 0 255 0 255
 
 # Particle effects
-# ============================================================================
+# ================================================================================
 
 # Exact number of particles spawned per tile hit
-particle_fire_count 16
+particle_fire_count 32
 
 # Particle decay
 # Higher value menas the particle fades quicker
 # The actual decay value will be a random number between min and max
-particle_decay_min 0.1
-particle_decay_max 0.2
+particle_decay_min 2.1
+particle_decay_max 10.2
 
 # Particle speed
-particle_speed_min 1.0
-particle_speed_max 2.0
+particle_speed_min 5.0
+particle_speed_max 10.0

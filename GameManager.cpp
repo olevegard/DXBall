@@ -68,7 +68,7 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
 	RenderMainText();
 
- 	physicsManager.SetWindowSize( windowSize );
+	physicsManager.SetWindowSize( windowSize );
 
 	gameConfig.LoadConfig();
 	LoadConfig();
@@ -80,7 +80,6 @@ bool GameManager::Init( const std::string &localPlayerName_,  const SDL_Rect &si
 
 	logger = Logger::Instance();
 	logger->Init( localPlayerName_ );
-
 
 	return true;
 }
@@ -1156,6 +1155,7 @@ int GameManager::HandleExplosions( const std::shared_ptr< Tile > &explodingTile,
 
 		IncrementPoints( curr->GetTileType(), true, ballOwner );
 		messageSender.SendTileHitMessage( curr->GetObjectID(), true );
+		renderer.GenerateParticleEffect( curr );
 		++countDestroyedTiles;
 		curr->Kill();
 	};
