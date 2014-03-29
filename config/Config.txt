@@ -1,7 +1,7 @@
 ball_speed_normal 50.2
 ball_speed_fastmode 0.3
 bullet_speed 100.0
-bonus_box_speed 0.6
+bonus_box_speed 20.0
 
 bonus_box_chance 100
 

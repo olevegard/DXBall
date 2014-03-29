@@ -766,12 +766,15 @@ void Renderer::CenterMainMenuButtons( )
 }
 void Renderer::CenterOptionsButtons( )
 {
-	configItems[ ConfigValueType::BallSpeed ] = AddOptionsButtonHelper( "Ball Speed", "666", {0,0,0,0}, tinyFont );
-	configItems[ ConfigValueType::BulletSpeed ]= AddOptionsButtonHelper( "Bullet Speed", "666", {0,0,0,0}, tinyFont );
+	configItems[ ConfigValueType::BallSpeed     ]= AddOptionsButtonHelper( "Ball Speed", "0", {0,0,0,0}, tinyFont );
+	configItems[ ConfigValueType::BulletSpeed   ]= AddOptionsButtonHelper( "Bullet Speed", "0", {0,0,0,0}, tinyFont );
+	configItems[ ConfigValueType::BonusBoxSpeed ]= AddOptionsButtonHelper( "Bonus Box Speed", "0", {0,0,0,0}, tinyFont );
 
-    SDL_Rect r = configItems[ ConfigValueType::BulletSpeed ]->GetRect();
-    int32_t moveDown = r.h + 20;
-    configItems[ ConfigValueType::BulletSpeed ]->MoveDown( moveDown );
+	SDL_Rect r = configItems[ ConfigValueType::BulletSpeed ]->GetRect();
+	int32_t moveDown = r.h + 20;
+	configItems[ ConfigValueType::BulletSpeed ]->MoveDown( moveDown );
+	moveDown *= 2;
+	configItems[ ConfigValueType::BonusBoxSpeed ]->MoveDown( moveDown );
 
 	backToMenuButton = AddMenuButtonHelper( "Main Menu", {0,0,0,0}, mediumFont );
 	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetRectW() / 2 );
