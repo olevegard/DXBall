@@ -76,6 +76,7 @@
 
 	,	lobbyMenuListRect( { 0, 0, 0, 0 })
 {
+	particles.resize( 10000 );
 }
 Renderer::~Renderer()
 {

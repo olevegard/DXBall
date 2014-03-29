@@ -1,5 +1,10 @@
 #include "Particle.h"
 
+Particle::Particle()
+	:	Particle( {0,0,0,0}, { 0, 0, 0, 0 } )
+{
+	isAlive = false;
+}
 Particle::Particle( Rect r, SDL_Color  clr )
 {
 	rect = r;
