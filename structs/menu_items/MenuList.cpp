@@ -16,6 +16,26 @@ void MenuList::Init( SDL_Renderer* renderer, SDL_Rect mainRect_, const SDL_Color
 
 	mainArea.texture = RenderHelpers::InitSurface( r, backgroundColor, renderer );
 	SDL_SetTextureAlphaMod( mainArea.texture, 173 );
+
+	InitScrollBar();
+}
+void MenuList::InitScrollBar()
+{
+	scrollBar.x = mainArea.rect.x + mainArea.rect.w -20;
+	scrollBar.y = mainArea.rect.y + 10;
+	scrollBar.w = 10;
+	scrollBar.h = mainArea.rect.h - 20;
+
+	topArrow.x = scrollBar.x;
+	topArrow.y = scrollBar.y;
+	topArrow.w = scrollBar.w;
+	topArrow.h = 10;
+
+	bottomArrow.x = scrollBar.x;
+	bottomArrow.y = scrollBar.y + scrollBar.h - 10;
+	bottomArrow.w = scrollBar.w;
+	bottomArrow.h = 10;
+
 }
 void MenuList::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor )
 {
@@ -100,4 +120,16 @@ const RenderingItem< uint64_t > & MenuList::GetMainArea() const
 const RenderingItem< uint64_t > & MenuList::GetCaption() const
 {
 	return caption;
+}
+SDL_Rect MenuList::GetScrollBar() const
+{
+	return scrollBar;
+}
+SDL_Rect MenuList::GetTopArrow() const
+{
+	return topArrow;
+}
+SDL_Rect MenuList::GetBottomArrow() const
+{
+	return bottomArrow;
 }

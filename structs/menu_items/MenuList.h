@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+//#include <SDL2/SDL.h>
 
 #include "structs/menu_items/MenuItem.h"
 #include "structs/rendering/RenderingItem.h"
@@ -15,6 +16,7 @@ struct MenuList
 
 	void Init( SDL_Renderer* renderer, SDL_Rect mainRect_, const SDL_Color &backgroundColor  );
 	void InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor );
+	void InitScrollBar();
 
 	void AddItem( GameInfo gameInfo, SDL_Renderer* renderer, TTF_Font* font, const SDL_Color &color );
 	void ClearList();
@@ -28,7 +30,14 @@ struct MenuList
 	const RenderingItem< uint64_t > & GetMainArea() const;
 	const RenderingItem< uint64_t > & GetCaption() const;
 
+	SDL_Rect GetScrollBar() const;
+	SDL_Rect GetTopArrow() const;
+	SDL_Rect GetBottomArrow() const;
+
 	private:
+	SDL_Rect scrollBar;
+	SDL_Rect topArrow;
+	SDL_Rect bottomArrow;
 	void AddItem( GameInfo info, const std::string &gameLine,  SDL_Texture* texture, const SDL_Rect &rect );
 
 	int32_t height;
@@ -37,4 +46,5 @@ struct MenuList
 
 	RenderingItem< uint64_t > mainArea;
 	RenderingItem< uint64_t > caption;
+
 };

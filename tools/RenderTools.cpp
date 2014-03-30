@@ -209,6 +209,19 @@ void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menu
 		SDL_Rect r = p.GetRect();
 		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, &r  );
 	}
+
+	SDL_SetRenderDrawColor( renderer, 0,0,255,255 );
+	SDL_Rect r = menuList.GetScrollBar();
+	SDL_RenderFillRect( renderer, &r );
+
+	SDL_SetRenderDrawColor( renderer, 0,255,0,255 );
+	r = menuList.GetTopArrow();
+	SDL_RenderFillRect( renderer, &r );
+
+	SDL_SetRenderDrawColor( renderer, 255,0,0,255 );
+
+	r = menuList.GetBottomArrow();
+	SDL_RenderFillRect( renderer, &r);
 }
 void RenderHelpers::RenderParticle( SDL_Renderer* renderer, const Particle& particle )
 {
