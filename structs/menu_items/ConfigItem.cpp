@@ -82,8 +82,6 @@ bool ConfigItem::HasChanged()
 
 void ConfigItem::MoveDown( int32_t amount )
 {
-    std::cout << "Moving down : " << amount << std::endl;
-    //rect.y += amount;
     valueRect.y += amount;
     plussRect.y += amount;
     minusRect.y += amount;

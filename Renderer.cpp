@@ -718,6 +718,20 @@ std::shared_ptr< ConfigItem > Renderer::AddOptionsButtonHelper( std::string capt
 
 	return optionsItem;
 }
+void Renderer::PositionConfigItems()
+{
+	int32_t moveDown = 0;
+	int32_t vDistace = 0;
+	for ( const auto &p : configItems )
+	{
+		if ( vDistace == 0 )
+			vDistace = p.second->GetRect().h + 20;
+		else
+			p.second->MoveDown( moveDown );
+
+		moveDown += vDistace;
+	}
+}
 void Renderer::SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem )
 {
 	if ( !menuItem || !menuItem->HasValidTexture() || !menuItem->HasUnderlineChanged()  )
@@ -771,11 +785,7 @@ void Renderer::CenterOptionsButtons( )
 	configItems[ ConfigValueType::BulletSpeed   ]= AddOptionsButtonHelper( "Bullet Speed", "0", {0,0,0,0}, tinyFont );
 	configItems[ ConfigValueType::BonusBoxSpeed ]= AddOptionsButtonHelper( "Bonus Box Speed", "0", {0,0,0,0}, tinyFont );
 
-	SDL_Rect r = configItems[ ConfigValueType::BulletSpeed ]->GetRect();
-	int32_t moveDown = r.h + 20;
-	configItems[ ConfigValueType::BulletSpeed ]->MoveDown( moveDown );
-	moveDown *= 2;
-	configItems[ ConfigValueType::BonusBoxSpeed ]->MoveDown( moveDown );
+	PositionConfigItems();
 
 	backToMenuButton = AddMenuButtonHelper( "Main Menu", {0,0,0,0}, mediumFont );
 	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetRectW() / 2 );

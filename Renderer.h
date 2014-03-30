@@ -191,6 +191,7 @@ private:
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
 	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &rect, TTF_Font* font );
 	std::shared_ptr< ConfigItem > AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font );
+	void PositionConfigItems();
 
 	void CleanUp();
 	void CleanUpSurfaces();
