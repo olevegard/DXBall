@@ -39,8 +39,11 @@ void MenuItem::SetRectY( int y )
 }
 void MenuItem::MoveDown( int32_t y )
 {
-    std::cout << "Move down...\n";
     itemRect.y += y;
+}
+void MenuItem::MoveUp( int32_t y )
+{
+    itemRect.y -= y;
 }
 int MenuItem::GetRectX( ) const
 {

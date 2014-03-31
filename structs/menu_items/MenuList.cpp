@@ -88,7 +88,7 @@ void MenuList::ClearList()
 	gameList.clear();
 	hostInfoList.clear();
 }
-int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y ) const
+int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y )
 {
 	int32_t index = -1;
 	for ( const auto &p : gameList )
@@ -99,7 +99,26 @@ int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y ) const
 			return index;
 	}
 
+	CheckScrollBarIntersection( x, y );
+
 	return -1;
+}
+void MenuList::CheckScrollBarIntersection( int32_t x, int32_t y )
+{
+	if ( RectHelpers::CheckMouseIntersection( x, y, bottomArrow ) )
+		ScrollDown();
+	else if ( RectHelpers::CheckMouseIntersection( x, y, topArrow ) )
+		ScrollUp();
+}
+void MenuList::ScrollDown( )
+{
+	for ( auto &item : gameList )
+		item.MoveUp( 10 );
+}
+void MenuList::ScrollUp( )
+{
+	for ( auto &item : gameList )
+		item.MoveDown( 10 );
 }
 GameInfo MenuList::GetGameInfoForIndex( int32_t index ) const
 {

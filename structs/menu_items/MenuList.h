@@ -21,7 +21,7 @@ struct MenuList
 	void AddItem( GameInfo gameInfo, SDL_Renderer* renderer, TTF_Font* font, const SDL_Color &color );
 	void ClearList();
 
-	int32_t FindIntersectedItem( int32_t x, int32_t y ) const;
+	int32_t FindIntersectedItem( int32_t x, int32_t y );
 	GameInfo GetGameInfoForIndex( int32_t index ) const;
 
 	SDL_Rect GetRect() const;
@@ -34,11 +34,16 @@ struct MenuList
 	SDL_Rect GetTopArrow() const;
 	SDL_Rect GetBottomArrow() const;
 
+	void CheckScrollBarIntersection( int32_t x, int32_t y );
+	void ScrollDown( );
+	void ScrollUp( );
 	private:
+
+	void AddItem( GameInfo info, const std::string &gameLine,  SDL_Texture* texture, const SDL_Rect &rect );
+
 	SDL_Rect scrollBar;
 	SDL_Rect topArrow;
 	SDL_Rect bottomArrow;
-	void AddItem( GameInfo info, const std::string &gameLine,  SDL_Texture* texture, const SDL_Rect &rect );
 
 	int32_t height;
 	std::vector< GameInfo > hostInfoList;

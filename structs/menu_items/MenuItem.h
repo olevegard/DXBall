@@ -16,7 +16,8 @@ struct MenuItem
 	void SetRectX( int x );
 	void SetRectY( int y );
 
-    virtual void MoveDown( int32_t y );
+	virtual void MoveDown( int32_t y );
+	virtual void MoveUp( int32_t y );
 
 	int GetRectX( ) const;
 
