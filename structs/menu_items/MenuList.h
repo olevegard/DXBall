@@ -17,6 +17,7 @@ struct MenuList
 	void Init( SDL_Renderer* renderer, SDL_Rect mainRect_, const SDL_Color &backgroundColor  );
 	void InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor );
 	void InitScrollBar();
+	void InitClipRect();
 
 	void AddItem( GameInfo gameInfo, SDL_Renderer* renderer, TTF_Font* font, const SDL_Color &color );
 	void ClearList();
@@ -33,6 +34,7 @@ struct MenuList
 	SDL_Rect GetScrollBar() const;
 	SDL_Rect GetTopArrow() const;
 	SDL_Rect GetBottomArrow() const;
+	const SDL_Rect* GetListClipRect() const;
 
 	void CheckScrollBarIntersection( int32_t x, int32_t y );
 	void ScrollDown( );
@@ -44,6 +46,7 @@ struct MenuList
 	SDL_Rect scrollBar;
 	SDL_Rect topArrow;
 	SDL_Rect bottomArrow;
+	SDL_Rect listClipRect;
 
 	int32_t height;
 	std::vector< GameInfo > hostInfoList;
@@ -51,5 +54,4 @@ struct MenuList
 
 	RenderingItem< uint64_t > mainArea;
 	RenderingItem< uint64_t > caption;
-
 };

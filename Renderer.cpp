@@ -417,7 +417,7 @@ void Renderer::RenderLobbyFooter()
 	RenderHelpers::RenderMenuItem( renderer, lobbyNewGameButton );
 	RenderHelpers::RenderMenuItem( renderer, lobbyUpdateButton );
 	RenderHelpers::RenderMenuItem( renderer, lobbyBackButton );
-	RenderHelpers::RenderMenuList( renderer, *gameList );
+	RenderHelpers::RenderMenuList( renderer, *gameList, background );
 }
 void Renderer::RenderMainMenuFooter()
 {

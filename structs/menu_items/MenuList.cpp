@@ -37,6 +37,14 @@ void MenuList::InitScrollBar()
 	bottomArrow.h = 10;
 
 }
+void MenuList::InitClipRect()
+{
+	listClipRect.x = mainArea.rect.x;
+	listClipRect.y = caption.rect.y + caption.rect.h;
+
+	listClipRect.w = mainArea.rect.w;
+	listClipRect.h = ( mainArea.rect.y + mainArea.rect.h ) - listClipRect.y;
+}
 void MenuList::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor )
 {
 	caption.texture = RenderHelpers::RenderTextTexture_Solid
@@ -51,6 +59,8 @@ void MenuList::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF
 	caption.rect.x = mainArea.rect.x + static_cast< int32_t > ( ( mainArea.rect.w * 0.5 ) - ( caption.rect.w * 0.5 ) );
 	caption.rect.y = mainArea.rect.y;
 	height = caption.rect.y + caption.rect.h + 10;
+
+	InitClipRect();
 }
 void MenuList::AddItem( GameInfo gameInfo, SDL_Renderer* renderer, TTF_Font* font, const SDL_Color &color )
 {
@@ -151,4 +161,8 @@ SDL_Rect MenuList::GetTopArrow() const
 SDL_Rect MenuList::GetBottomArrow() const
 {
 	return bottomArrow;
+}
+const SDL_Rect* MenuList::GetListClipRect() const
+{
+	return &listClipRect;
 }

@@ -198,18 +198,16 @@ void RenderHelpers::RenderPlussMinus ( SDL_Renderer* renderer, SDL_Rect origin )
 	square.y = origin.y + origin.h - 5;
 	RenderMinus( renderer, square );
 }
-void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList )
+void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize )
 {
 	RenderTextItem( renderer, menuList.GetMainArea() );
 	RenderTextItem( renderer, menuList.GetCaption() );
 
-	const auto &gameList = menuList.GetGameList();
-	for ( const auto &p : gameList )
-	{
-		SDL_Rect r = p.GetRect();
-		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, &r  );
-	}
-
+	RenderScrollBar( renderer, menuList ); 
+	RenderMenuListItems( renderer, menuList, screenSize ); 
+}
+void RenderHelpers::RenderScrollBar  ( SDL_Renderer* renderer, const MenuList &menuList )
+{
 	SDL_SetRenderDrawColor( renderer, 0,0,255,255 );
 	SDL_Rect r = menuList.GetScrollBar();
 	SDL_RenderFillRect( renderer, &r );
@@ -219,9 +217,21 @@ void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menu
 	SDL_RenderFillRect( renderer, &r );
 
 	SDL_SetRenderDrawColor( renderer, 255,0,0,255 );
-
 	r = menuList.GetBottomArrow();
 	SDL_RenderFillRect( renderer, &r);
+
+}
+void RenderHelpers::RenderMenuListItems( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize )
+{
+	SDL_RenderSetClipRect( renderer, menuList.GetListClipRect()  );
+
+	const auto &gameList = menuList.GetGameList();
+	for ( const auto &p : gameList )
+	{
+		SDL_Rect r = p.GetRect();
+		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, &r  );
+	}
+	SDL_RenderSetClipRect( renderer, &screenSize );
 }
 void RenderHelpers::RenderParticle( SDL_Renderer* renderer, const Particle& particle )
 {

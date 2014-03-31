@@ -58,11 +58,14 @@ class RenderHelpers
 	static uint32_t MapRGBA( SDL_PixelFormat* pixelFormat, const SDL_Color &clr );
 	static void SetDrawColor( SDL_Renderer* renderer, const SDL_Color &clr );
 
-	static void RenderTextItem   ( SDL_Renderer* renderer, const RenderingItem< std::string >  &item );
-	static void RenderTextItem   ( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
-	static void RenderMenuItem   ( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item );
-	static void RenderOptionsItem( SDL_Renderer* renderer, const std::shared_ptr< ConfigItem > &item );
-	static void RenderMenuList   ( SDL_Renderer* renderer, const MenuList &menuList );
+	static void RenderTextItem     ( SDL_Renderer* renderer, const RenderingItem< std::string >  &item );
+	static void RenderTextItem     ( SDL_Renderer* renderer, const RenderingItem< uint64_t >  &item );
+	static void RenderMenuItem     ( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item );
+	static void RenderOptionsItem  ( SDL_Renderer* renderer, const std::shared_ptr< ConfigItem > &item );
+	static void RenderMenuList     ( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize );
+	static void RenderScrollBar    ( SDL_Renderer* renderer, const MenuList &menuList );
+	static void RenderMenuListItems( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize );
+
 	static void RenderParticle   ( SDL_Renderer* renderer, const Particle& particle );
 	static void RenderGamePiece  ( SDL_Renderer* renderer, const std::shared_ptr< GamePiece > &gamePiece );
 
