@@ -5,70 +5,16 @@
 
 #include <iostream>
 MenuList::MenuList( )
+	:	List()
 {
-	height = 0;
-}
-void MenuList::Init( SDL_Renderer* renderer, SDL_Rect mainRect_, const SDL_Color &backgroundColor  )
-{
-	mainArea.rect = mainRect_;
-	Rect r;
-	r.FromSDLRect( mainArea.rect );
-
-	mainArea.texture = RenderHelpers::InitSurface( r, backgroundColor, renderer );
-	SDL_SetTextureAlphaMod( mainArea.texture, 173 );
-
-	InitScrollBar();
-}
-void MenuList::InitScrollBar()
-{
-	scrollBar.x = mainArea.rect.x + mainArea.rect.w -20;
-	scrollBar.y = mainArea.rect.y + 10;
-	scrollBar.w = 10;
-	scrollBar.h = mainArea.rect.h - 20;
-
-	topArrow.x = scrollBar.x;
-	topArrow.y = scrollBar.y;
-	topArrow.w = scrollBar.w;
-	topArrow.h = 10;
-
-	bottomArrow.x = scrollBar.x;
-	bottomArrow.y = scrollBar.y + scrollBar.h - 10;
-	bottomArrow.w = scrollBar.w;
-	bottomArrow.h = 10;
-
-}
-void MenuList::InitClipRect()
-{
-	listClipRect.x = mainArea.rect.x;
-	listClipRect.y = caption.rect.y + caption.rect.h;
-
-	listClipRect.w = mainArea.rect.w;
-	listClipRect.h = ( mainArea.rect.y + mainArea.rect.h ) - listClipRect.y;
-}
-void MenuList::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor )
-{
-	caption.texture = RenderHelpers::RenderTextTexture_Solid
-	(
-		font,
-		text,
-		textColor,
-		caption.rect,
-		renderer
-	);
-
-	caption.rect.x = mainArea.rect.x + static_cast< int32_t > ( ( mainArea.rect.w * 0.5 ) - ( caption.rect.w * 0.5 ) );
-	caption.rect.y = mainArea.rect.y;
-	height = caption.rect.y + caption.rect.h + 10;
-
-	InitClipRect();
 }
 void MenuList::AddItem( GameInfo gameInfo, SDL_Renderer* renderer, TTF_Font* font, const SDL_Color &color )
 {
 	std::string gameLine = gameInfo.GetAsSrting();
 
 	SDL_Rect r;
-	r.x = mainArea.rect.x + 10;
-	r.y = height;
+	r.x = GetMainArea().rect.x + 10;
+	r.y = GetHeight();
 
 	SDL_Texture* text = RenderHelpers::RenderTextTexture_Solid
 	(
@@ -85,23 +31,23 @@ void MenuList::AddItem( GameInfo gameInfo, const std::string &gameLine,  SDL_Tex
 {
 	MenuItem item( gameLine  );
 
-	height += rect.h;
+	IncrementHeight( rect.h );
 
 	item.SetTexture( texture );
 	item.SetRect( rect );
-	gameList.emplace_back( item );
+	itemList .emplace_back( item );
 	hostInfoList.emplace_back( gameInfo );
 }
 void MenuList::ClearList()
 {
-	height = caption.rect.y + caption.rect.h + 10;
-	gameList.clear();
+	ResetHeight();
+	itemList .clear();
 	hostInfoList.clear();
 }
 int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y )
 {
 	int32_t index = -1;
-	for ( const auto &p : gameList )
+	for ( const auto &p : itemList )
 	{
 		++index;
 
@@ -113,56 +59,21 @@ int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y )
 
 	return -1;
 }
-void MenuList::CheckScrollBarIntersection( int32_t x, int32_t y )
-{
-	if ( RectHelpers::CheckMouseIntersection( x, y, bottomArrow ) )
-		ScrollDown();
-	else if ( RectHelpers::CheckMouseIntersection( x, y, topArrow ) )
-		ScrollUp();
-}
-void MenuList::ScrollDown( )
-{
-	for ( auto &item : gameList )
-		item.MoveUp( 10 );
-}
-void MenuList::ScrollUp( )
-{
-	for ( auto &item : gameList )
-		item.MoveDown( 10 );
-}
 GameInfo MenuList::GetGameInfoForIndex( int32_t index ) const
 {
 	return hostInfoList[index];
 }
-SDL_Rect MenuList::GetRect() const
-{
-	return mainArea.rect;
-}
 const std::vector< MenuItem >& MenuList::GetGameList() const
 {
-	return gameList;
+	return itemList;
 }
-const RenderingItem< uint64_t > & MenuList::GetMainArea() const
+void MenuList::ScrollUp()
 {
-	return mainArea;
+	for ( auto &item : itemList )
+		item.MoveDown( 10 );
 }
-const RenderingItem< uint64_t > & MenuList::GetCaption() const
+void MenuList::ScrollDown()
 {
-	return caption;
-}
-SDL_Rect MenuList::GetScrollBar() const
-{
-	return scrollBar;
-}
-SDL_Rect MenuList::GetTopArrow() const
-{
-	return topArrow;
-}
-SDL_Rect MenuList::GetBottomArrow() const
-{
-	return bottomArrow;
-}
-const SDL_Rect* MenuList::GetListClipRect() const
-{
-	return &listClipRect;
+	for ( auto &item : itemList )
+		item.MoveUp( 10 );
 }
