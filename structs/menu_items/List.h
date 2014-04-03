@@ -35,17 +35,21 @@ struct List
 
 	void CheckScrollBarIntersection( int32_t x, int32_t y );
 
-	void IncrementHeight( int32_t amount )
+	void IncrementItemsTop( int32_t amount )
 	{
-		height += amount;
+		itemsTop += amount;
 	}
-	void ResetHeight()
+	void ResetItemsTop()
 	{
-		height = caption.rect.y + caption.rect.h + 10;
+		itemsTop = caption.rect.y + caption.rect.h + 10;
 	}
-	int32_t GetHeight()
+	int32_t GetItemsTop()
 	{
-		return height;
+		return itemsTop;
+	}
+	int32_t GetItemsLeft()
+	{
+		return mainArea.rect.x + 10;
 	}
 	private:
 	virtual void ScrollDown() = 0;
@@ -55,7 +59,7 @@ struct List
 	SDL_Rect bottomArrow;
 	SDL_Rect listClipRect;
 
-	int32_t height;
+	int32_t itemsTop;
 
 	RenderingItem< uint64_t > mainArea;
 	RenderingItem< uint64_t > caption;

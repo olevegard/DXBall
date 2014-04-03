@@ -45,6 +45,10 @@ void MenuItem::MoveUp( int32_t y )
 {
     itemRect.y -= y;
 }
+void MenuItem::MoveRight( int32_t x )
+{
+    itemRect.x += x;
+}
 int MenuItem::GetRectX( ) const
 {
     return itemRect.x;

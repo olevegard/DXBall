@@ -403,9 +403,8 @@ void Renderer::RenderMenu()
 		RenderLobbyFooter();
 	else if ( gameState == GameState::Options )
 	{
+		RenderHelpers::RenderConfigList( renderer, *configList, background );
 		RenderHelpers::RenderMenuItem( renderer, backToMenuButton);
-		for ( const auto &p : configItems )
-			RenderHelpers::RenderOptionsItem( renderer, configItems[ p.first ] );
 	}
 	else
 		RenderMainMenuFooter();
@@ -720,17 +719,9 @@ std::shared_ptr< ConfigItem > Renderer::AddOptionsButtonHelper( std::string capt
 }
 void Renderer::PositionConfigItems()
 {
-	int32_t moveDown = 0;
-	int32_t vDistace = 0;
-	for ( const auto &p : configItems )
-	{
-		if ( vDistace == 0 )
-			vDistace = p.second->GetRect().h + 20;
-		else
-			p.second->MoveDown( moveDown );
+	configList->AddConfigItem( configItems[ ConfigValueType::BallSpeed ], ConfigValueType::BallSpeed );
+	configList->AddConfigItem( configItems[ ConfigValueType::BulletSpeed ], ConfigValueType::BulletSpeed );
 
-		moveDown += vDistace;
-	}
 }
 void Renderer::SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem )
 {
@@ -879,6 +870,12 @@ void Renderer::InitGameList()
 	gameList = std::make_shared< MenuList >();
 	gameList->Init( renderer, lobbyMenuListRect, colorConfig.GetBackgroundColor() );
 	gameList->InitTexture( renderer, "Available Games : ", font, colorConfig.GetTextColor() );
+}
+void Renderer::InitConfigList()
+{
+	configList = std::make_shared< ConfigList >();
+	configList->Init( renderer, lobbyMenuListRect, colorConfig.GetBackgroundColor() );
+	configList->InitTexture( renderer, "Options : ", font, colorConfig.GetTextColor() );
 }
 const std::shared_ptr< MenuList >  &Renderer::GetGameList()
 {

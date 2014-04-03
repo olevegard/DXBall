@@ -11,13 +11,14 @@ struct MenuItem
 
 	virtual ~MenuItem();
 
-	void SetRect( SDL_Rect r );
-	void SetRectXY( int x, int y );
-	void SetRectX( int x );
-	void SetRectY( int y );
+	virtual void SetRect( SDL_Rect r );
+	virtual void SetRectXY( int x, int y );
+	virtual void SetRectX( int x );
+	virtual void SetRectY( int y );
 
 	virtual void MoveDown( int32_t y );
 	virtual void MoveUp( int32_t y );
+	virtual void MoveRight( int32_t x );
 
 	int GetRectX( ) const;
 

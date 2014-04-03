@@ -38,7 +38,19 @@ struct ConfigItem : public MenuItem
 
 	bool HasChanged();
 
-    void MoveDown( int32_t amount );
+	void MoveDown( int32_t amount );
+	void MoveRight( int32_t amount );
+
+	void SetRectX( int32_t x );
+	void SetRectY( int32_t y );
+	int32_t GetTop()
+	{
+		return plussRect.y;
+	}
+	int32_t GetTotalHeight()
+	{
+		return ( minusRect.y + minusRect.h ) - plussRect.y;
+	}
 
 	private:
 	bool hasChanged;

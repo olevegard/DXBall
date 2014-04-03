@@ -18,6 +18,7 @@
 #include "structs/rendering/RenderingItem.h"
 
 #include "structs/menu_items/ConfigItem.h"
+#include "structs/menu_items/ConfigList.h"
 
 #include "ColorConfigLoader.h"
 #include "GameInfo.h"
@@ -123,6 +124,7 @@ public:
 	SDL_Color GetTileColor( uint64_t type ) const;
 	SDL_Color GetHardTileColor( uint64_t index ) const;
 
+	void InitConfigList();
 	std::shared_ptr< MenuItem > GetOptionsBackButton()
 	{
 		return backToMenuButton;
@@ -278,6 +280,7 @@ private:
 	// Options Mode
 	// =============================================
 	std::map< ConfigValueType, std::shared_ptr< ConfigItem > > configItems;
+	std::shared_ptr< ConfigList> configList;
 	std::shared_ptr< MenuItem > backToMenuButton;
 
 	// Pause menu mode

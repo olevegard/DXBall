@@ -6,7 +6,7 @@
 #include <iostream>
 List::List( )
 {
-	height = 0;
+	itemsTop = 0;
 }
 List::~List( )
 {
@@ -61,27 +61,10 @@ void List::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Fon
 
 	caption.rect.x = mainArea.rect.x + static_cast< int32_t > ( ( mainArea.rect.w * 0.5 ) - ( caption.rect.w * 0.5 ) );
 	caption.rect.y = mainArea.rect.y;
-	height = caption.rect.y + caption.rect.h + 10;
+	ResetItemsTop();
 
 	InitClipRect();
 }
-/*
-int32_t List::FindIntersectedItem( int32_t x, int32_t y )
-{
-	int32_t index = -1;
-	for ( const auto &p : gameList )
-	{
-		++index;
-
-		if ( RectHelpers::CheckMouseIntersection( x, y, p.GetRect() ) )
-			return index;
-	}
-
-	CheckScrollBarIntersection( x, y );
-
-	return -1;
-}
-*/
 void List::CheckScrollBarIntersection( int32_t x, int32_t y )
 {
 	if ( RectHelpers::CheckMouseIntersection( x, y, bottomArrow ) )

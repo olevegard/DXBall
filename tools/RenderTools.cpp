@@ -10,6 +10,7 @@
 #include "../structs/game_objects/GamePiece.h"
 
 #include "../structs/menu_items/MenuList.h"
+#include "../structs/menu_items/ConfigList.h"
 
 const int32_t RenderHelpers::SCREEN_BPP = 32;
 
@@ -206,6 +207,38 @@ void RenderHelpers::RenderMenuList( SDL_Renderer* renderer, const MenuList &menu
 	RenderScrollBar( renderer, menuList ); 
 	RenderMenuListItems( renderer, menuList, screenSize ); 
 }
+void RenderHelpers::RenderConfigList   ( SDL_Renderer* renderer, const ConfigList &menuList, const SDL_Rect &screenSize )
+{
+	RenderTextItem( renderer, menuList.GetMainArea() );
+	RenderTextItem( renderer, menuList.GetCaption() );
+
+	RenderScrollBar( renderer, menuList ); 
+	RenderMenuListItems( renderer, menuList, screenSize ); 
+}
+void RenderHelpers::RenderScrollBar    ( SDL_Renderer* renderer, const ConfigList &menuList )
+{
+	SDL_SetRenderDrawColor( renderer, 0,0,255,255 );
+	SDL_Rect r = menuList.GetScrollBar();
+	SDL_RenderFillRect( renderer, &r );
+
+	SDL_SetRenderDrawColor( renderer, 0,255,0,255 );
+	r = menuList.GetTopArrow();
+	SDL_RenderFillRect( renderer, &r );
+
+	SDL_SetRenderDrawColor( renderer, 255,0,0,255 );
+	r = menuList.GetBottomArrow();
+	SDL_RenderFillRect( renderer, &r);
+}
+void RenderHelpers::RenderMenuListItems( SDL_Renderer* renderer, const ConfigList &menuList, const SDL_Rect &screenSize )
+{
+	SDL_RenderSetClipRect( renderer, menuList.GetListClipRect()  );
+
+	const auto &configList  = menuList.GetConfigList();
+	for ( const auto &p : configList )
+		RenderOptionsItem( renderer, p.second );
+
+	SDL_RenderSetClipRect( renderer, &screenSize );
+}
 void RenderHelpers::RenderScrollBar  ( SDL_Renderer* renderer, const MenuList &menuList )
 {
 	SDL_SetRenderDrawColor( renderer, 0,0,255,255 );
@@ -219,7 +252,6 @@ void RenderHelpers::RenderScrollBar  ( SDL_Renderer* renderer, const MenuList &m
 	SDL_SetRenderDrawColor( renderer, 255,0,0,255 );
 	r = menuList.GetBottomArrow();
 	SDL_RenderFillRect( renderer, &r);
-
 }
 void RenderHelpers::RenderMenuListItems( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize )
 {

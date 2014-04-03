@@ -123,6 +123,7 @@ void GameManager::LoadConfig()
 void GameManager::CreateMenu()
 {
 	renderer.InitGameList();
+	renderer.InitConfigList();
 	menuManager.SetGameList( renderer.GetGameList() );
 
 	CreateMainMenu();

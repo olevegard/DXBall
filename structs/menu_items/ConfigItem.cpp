@@ -79,11 +79,29 @@ bool ConfigItem::HasChanged()
 {
     return hasChanged;
 }
-
 void ConfigItem::MoveDown( int32_t amount )
 {
     valueRect.y += amount;
     plussRect.y += amount;
     minusRect.y += amount;
     MenuItem::MoveDown( amount );
+}
+void ConfigItem::MoveRight( int32_t amount )
+{
+	valueRect.x += amount;
+	plussRect.x += amount;
+	minusRect.x += amount;
+	MenuItem::MoveRight( amount );
+}
+void ConfigItem::SetRectX( int32_t X )
+{
+	int32_t diff = X - GetRectX();
+	if ( diff > 0 )
+		MoveRight( diff );
+}
+void ConfigItem::SetRectY( int32_t y )
+{
+	int32_t diff = y - plussRect.y;
+	if ( diff > 0 )
+		MoveDown( diff );
 }
