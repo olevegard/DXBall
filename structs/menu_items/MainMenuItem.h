@@ -8,7 +8,7 @@ struct MainMenuItem : public MenuItem
 {
 	MainMenuItem( std::string name, MainMenuItemType mit);
 
-    virtual ~MainMenuItem();
+	virtual ~MainMenuItem();
 
 	private:
 	MainMenuItemType menuItemType;

@@ -1,9 +1,9 @@
 #include "PauseMenuItem.h"
 
 PauseMenuItem::PauseMenuItem ( std::string name, PauseMenuItemType pit)
-    :	MenuItem( name )
+	:	MenuItem( name )
 {
-    pauseItemType = pit;
+	pauseItemType = pit;
 }
 
 PauseMenuItem::~PauseMenuItem()
