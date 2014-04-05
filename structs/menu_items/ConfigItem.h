@@ -39,6 +39,7 @@ struct ConfigItem : public MenuItem
 	bool HasChanged();
 
 	void MoveDown( int32_t amount );
+	void MoveUp( int32_t amount );
 	void MoveRight( int32_t amount );
 
 	void SetRectX( int32_t x );

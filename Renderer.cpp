@@ -693,13 +693,13 @@ std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemS
 
 	return menuItem;
 }
-std::shared_ptr< ConfigItem > Renderer::AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font_ )
+void Renderer::AddOptionsButtonHelper( std::string caption, ConfigValueType type )
 {
-	SDL_Rect captionRect = rect;
+	SDL_Rect captionRect{ 0, 0, 0, 0 };
 	auto optionsItem = std::make_shared< ConfigItem >( caption );
 
 	// Caption
-	SDL_Texture* text = RenderHelpers::RenderTextTexture_Blended( font_, caption, colorConfig.textColor, captionRect, renderer );
+	SDL_Texture* text = RenderHelpers::RenderTextTexture_Blended( tinyFont, caption, colorConfig.textColor, captionRect, renderer );
 	captionRect.x += margin;
 	captionRect.y = greyArea.rect.y + margin;
 
@@ -708,20 +708,16 @@ std::shared_ptr< ConfigItem > Renderer::AddOptionsButtonHelper( std::string capt
 
 	// Value
 	SDL_Rect valueRect;
-	SDL_Texture* valueTexture = RenderHelpers::RenderTextTexture_Blended( font_, value, colorConfig.textColor, valueRect, renderer );
+	SDL_Texture* valueTexture = RenderHelpers::RenderTextTexture_Blended( tinyFont, "0", colorConfig.textColor, valueRect, renderer );
 	valueRect.x = captionRect.x + captionRect.w + ( margin / 2);
 	valueRect.y = captionRect.y;
 
 	optionsItem->SetValueRect( valueRect );
 	optionsItem->SetValueTexture( valueTexture );
 
-	return optionsItem;
-}
-void Renderer::PositionConfigItems()
-{
-	configList->AddConfigItem( configItems[ ConfigValueType::BallSpeed ], ConfigValueType::BallSpeed );
-	configList->AddConfigItem( configItems[ ConfigValueType::BulletSpeed ], ConfigValueType::BulletSpeed );
+	configList->AddConfigItem( optionsItem, type );
 
+	return;
 }
 void Renderer::SetUnderlineHelper( const std::shared_ptr< MenuItem > &menuItem )
 {
@@ -768,15 +764,14 @@ void Renderer::CenterMainMenuButtons( )
 	multiPlayerButton->SetRectX( singlePlayerButton->GetEndX() + margin );
 	optionsButton->SetRectX( multiPlayerButton->GetEndX() + margin );
 	quitButton->SetRectX( optionsButton->GetEndX() + margin );
-
 }
 void Renderer::CenterOptionsButtons( )
 {
-	configItems[ ConfigValueType::BallSpeed     ]= AddOptionsButtonHelper( "Ball Speed", "0", {0,0,0,0}, tinyFont );
-	configItems[ ConfigValueType::BulletSpeed   ]= AddOptionsButtonHelper( "Bullet Speed", "0", {0,0,0,0}, tinyFont );
-	configItems[ ConfigValueType::BonusBoxSpeed ]= AddOptionsButtonHelper( "Bonus Box Speed", "0", {0,0,0,0}, tinyFont );
-
-	PositionConfigItems();
+	AddOptionsButtonHelper( "Ball Speed", ConfigValueType::BallSpeed  );
+	AddOptionsButtonHelper( "Ball Speed FM", ConfigValueType::BallSpeed_FM  );
+	AddOptionsButtonHelper( "Bullet Speed", ConfigValueType::BulletSpeed  );
+	AddOptionsButtonHelper( "BonusBox Speed", ConfigValueType::BonusBoxSpeed  );
+	AddOptionsButtonHelper( "BonusBox Chance", ConfigValueType::BonusBoxChance  );
 
 	backToMenuButton = AddMenuButtonHelper( "Main Menu", {0,0,0,0}, mediumFont );
 	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetRectW() / 2 );
@@ -900,6 +895,7 @@ void Renderer::Update( double delta )
 			++p;
 	}
 
+	auto configItems = configList->GetConfigList();
 	for ( const auto &p : configItems )
 		UpdateConfigValue( configItems[ p.first ]);
 

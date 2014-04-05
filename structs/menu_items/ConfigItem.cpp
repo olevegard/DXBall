@@ -86,6 +86,13 @@ void ConfigItem::MoveDown( int32_t amount )
 	minusRect.y += amount;
 	MenuItem::MoveDown( amount );
 }
+void ConfigItem::MoveUp( int32_t amount )
+{
+	valueRect.y -= amount;
+	plussRect.y -= amount;
+	minusRect.y -= amount;
+	MenuItem::MoveUp( amount );
+}
 void ConfigItem::MoveRight( int32_t amount )
 {
 	valueRect.x += amount;
@@ -104,4 +111,5 @@ void ConfigItem::SetRectY( int32_t y )
 	int32_t diff = y - plussRect.y;
 	if ( diff > 0 )
 		MoveDown( diff );
+
 }

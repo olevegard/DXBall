@@ -117,9 +117,16 @@ public:
 	// GameList
 	void InitGameList();
 	const std::shared_ptr< MenuList >  &GetGameList();
+
 	void AddGameToList( GameInfo gameInfo );
 	void ClearGameList();
 
+
+
+	const std::shared_ptr< ConfigList> &GetConfigList()
+	{
+		return configList;
+	}
 	SDL_Color GetTileColor( std::shared_ptr< Tile > tile  ) const;
 	SDL_Color GetTileColor( uint64_t type ) const;
 	SDL_Color GetHardTileColor( uint64_t index ) const;
@@ -128,11 +135,6 @@ public:
 	std::shared_ptr< MenuItem > GetOptionsBackButton()
 	{
 		return backToMenuButton;
-	}
-
-	const std::shared_ptr< ConfigItem > &GetConfigItem( ConfigValueType type)
-	{
-		return configItems[type];
 	}
 private:
 	Renderer( const Renderer &renderer );
@@ -192,8 +194,7 @@ private:
 	void InitGreyAreaRect( );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
 	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &rect, TTF_Font* font );
-	std::shared_ptr< ConfigItem > AddOptionsButtonHelper( std::string caption, std::string value, const SDL_Rect &rect, TTF_Font* font );
-	void PositionConfigItems();
+	void AddOptionsButtonHelper( std::string caption, ConfigValueType type );
 
 	void CleanUp();
 	void CleanUpSurfaces();
@@ -279,7 +280,6 @@ private:
 
 	// Options Mode
 	// =============================================
-	std::map< ConfigValueType, std::shared_ptr< ConfigItem > > configItems;
 	std::shared_ptr< ConfigList> configList;
 	std::shared_ptr< MenuItem > backToMenuButton;
 

@@ -22,6 +22,15 @@ MenuManager::MenuManager( ConfigLoader &configLoader_ )
 {
 	logger = Logger::Instance();
 }
+void MenuManager::InitConfigList()
+{
+	auto &configItems = configList->GetConfigList();
+
+	for ( auto &item : configItems )
+	{
+		configList->Set( static_cast< uint32_t > ( configLoader.Get( item.first ) ) , item.first );
+	}
+}
 void MenuManager::CheckItemMouseOver( int x, int y )
 {
 	if ( currentGameState == GameState::Paused )
@@ -140,6 +149,7 @@ void MenuManager::CheckItemMouseClick( int x, int y)
 	}
 	else
 	{
+		configList->CheckScrollBarIntersection( x, y );
 		CheckOptionsIntersections( x, y );
 	}
 }
@@ -157,10 +167,11 @@ void MenuManager::CheckMenuItemIntersections( int32_t x, int32_t y )
 {
 	auto plussMin = PlussMin::Equal;
 	auto type     = ConfigValueType::BallSpeed;
+	auto &configItems = configList->GetConfigList();
 
-	for ( const auto &item : configItems )
+	for ( auto &item : configItems )
 	{
-		plussMin = CheckConfigItemsClick( x, y,  configItems[ item.first  ]);
+		plussMin = CheckConfigItemsClick( x, y,   item.second );
 		if ( plussMin != PlussMin::Equal)
 		{
 			type = item.first;
@@ -170,7 +181,7 @@ void MenuManager::CheckMenuItemIntersections( int32_t x, int32_t y )
 	if ( plussMin != PlussMin::Equal )
 	{
 		configLoader.ApplyChange( type, 10, plussMin );
-		configItems[ type ]->SetValue( static_cast< uint32_t > ( configLoader.Get( type) ) );
+		configList->Set( static_cast< uint32_t > ( configLoader.Get( type ) ) , type  );
 	}
 }
 MainMenuItemType MenuManager::CheckIntersections( int x, int y )
@@ -342,4 +353,21 @@ bool MenuManager::IsAnItemSelected() const
 GameInfo MenuManager::GetSelectedGameInfo() const
 {
 	return lobbyGameList->GetGameInfoForIndex( selectedGameID );
+}
+void MenuManager::SetGameList( const std::shared_ptr< MenuList >  gameList_ )
+{
+	lobbyGameList = gameList_;
+}
+void MenuManager::SetGameList( const std::shared_ptr< ConfigList >  configList_ )
+{
+	configList = configList_;
+}
+void MenuManager::SetOptionsMenuItem( const std::shared_ptr< MenuItem >  &button )
+{
+	backToMenuButton = button;
+}
+void MenuManager::SetConfigList( const std::shared_ptr < ConfigList > &configList_ )
+{
+	configList = configList_;
+	InitConfigList();
 }

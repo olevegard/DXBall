@@ -12,22 +12,13 @@ struct ConfigList : public List
 	public:
 
 	ConfigList( );
-	~ConfigList( )
-	{
-	}
+	~ConfigList( );
 
-	void AddConfigItem( std::shared_ptr< ConfigItem > item, const ConfigValueType &type )
-	{
-		item->SetRectY( GetItemsTop() );
-		item->SetRectX( GetItemsLeft() );
-		IncrementItemsTop( item->GetTotalHeight() );
-		configItems[ type ] = item;
-	}
+	void AddConfigItem( std::shared_ptr< ConfigItem > item, const ConfigValueType &type );
 
-	const std::map< ConfigValueType, std::shared_ptr< ConfigItem > > &GetConfigList() const
-	{
-		return configItems;
-	}
+	const std::map< ConfigValueType, std::shared_ptr< ConfigItem > > &GetConfigList() const;
+	void Set( uint32_t value, ConfigValueType type );
+
 	private:
 	void ScrollDown( );
 	void ScrollUp( );

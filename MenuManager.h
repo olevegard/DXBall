@@ -16,6 +16,7 @@
 
 //#include "structs/menu_items/ConfigChange.h"
 #include "structs/menu_items/ConfigItem.h"
+#include "structs/menu_items/ConfigList.h"
 
 #include "ConfigLoader.h"
 
@@ -61,20 +62,14 @@ public:
 	void SetMainMenuItem( const MainMenuItemType &type, const std::shared_ptr< MenuItem >& button );
 	void SetLobbyMenuItem( const LobbyMenuItem &type, const std::shared_ptr< MenuItem >  &button );
 	void SetPauseMenuItem( const PauseMenuItemType &type, const std::shared_ptr< MenuItem >  &button );
-	void SetGameList( const std::shared_ptr< MenuList >  gameList_ )
-	{
-		lobbyGameList = gameList_;
-	}
-	void SetOptionsMenuItem( const std::shared_ptr< MenuItem >  &button )
-	{
-		backToMenuButton = button;
-	}
-	void SetConfigItem( ConfigValueType type, const std::shared_ptr< ConfigItem >  &button )
-	{
-		configItems[ type ] = button;
-		configItems[ type ]->SetValue( static_cast< uint32_t > (configLoader.Get( type ) ) );
-	}
+	void SetGameList( const std::shared_ptr< MenuList >  gameList_ );
+	void SetGameList( const std::shared_ptr< ConfigList >  configList_ );
+	void SetOptionsMenuItem( const std::shared_ptr< MenuItem >  &button );
+	void SetConfigList( const std::shared_ptr < ConfigList > &configList_ );
+
 private:
+	void InitConfigList();
+
 	MainMenuItemType CheckIntersections( int x, int y );
 	PauseMenuItemType CheckIntersections_Pause( int x, int y );
 	LobbyMenuItem CheckIntersections_Lobby( int x, int y );
@@ -100,7 +95,7 @@ private:
 	std::shared_ptr <MenuList > lobbyGameList;
 
 	// Options
-	std::map< ConfigValueType, std::shared_ptr< ConfigItem > > configItems;
+	std::shared_ptr < ConfigList > configList;
 	std::shared_ptr< MenuItem > backToMenuButton;
 
 	int32_t selectedGameID;
