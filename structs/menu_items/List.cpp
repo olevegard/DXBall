@@ -68,9 +68,15 @@ void List::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Fon
 void List::CheckScrollBarIntersection( int32_t x, int32_t y )
 {
 	if ( RectHelpers::CheckMouseIntersection( x, y, bottomArrow ) )
-		ScrollDown();
+	{
+		if ( CanScrollDown() )
+			ScrollDown();
+	}
 	else if ( RectHelpers::CheckMouseIntersection( x, y, topArrow ) )
-		ScrollUp();
+	{
+		if ( CanScrollUp() )
+			ScrollUp();
+	}
 }
 SDL_Rect List::GetRect() const
 {
@@ -99,4 +105,12 @@ SDL_Rect List::GetBottomArrow() const
 const SDL_Rect* List::GetListClipRect() const
 {
 	return &listClipRect;
+}
+bool List::CanScrollDown() const
+{
+	return GetItemLisBottom() < FindBottomItem();
+}
+bool List::CanScrollUp() const
+{
+	return GetItemListTop() > FindTopItem();
 }

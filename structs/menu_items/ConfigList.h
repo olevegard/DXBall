@@ -22,7 +22,9 @@ struct ConfigList : public List
 	private:
 	void ScrollDown( );
 	void ScrollUp( );
+
+	int32_t FindTopItem() const;
+	int32_t FindBottomItem() const;
+
 	std::map< ConfigValueType, std::shared_ptr< ConfigItem > > configItems;
 };
-
-

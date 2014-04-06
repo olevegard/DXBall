@@ -14,7 +14,7 @@ void MenuList::AddItem( GameInfo gameInfo, SDL_Renderer* renderer, TTF_Font* fon
 
 	SDL_Rect r;
 	r.x = GetMainArea().rect.x + 10;
-	r.y = GetHeight();
+	r.y = GetItemsTop();
 
 	SDL_Texture* text = RenderHelpers::RenderTextTexture_Solid
 	(
@@ -31,7 +31,7 @@ void MenuList::AddItem( GameInfo gameInfo, const std::string &gameLine,  SDL_Tex
 {
 	MenuItem item( gameLine  );
 
-	IncrementHeight( rect.h );
+	IncrementItemsTop( rect.h );
 
 	item.SetTexture( texture );
 	item.SetRect( rect );
@@ -40,8 +40,8 @@ void MenuList::AddItem( GameInfo gameInfo, const std::string &gameLine,  SDL_Tex
 }
 void MenuList::ClearList()
 {
-	ResetHeight();
-	itemList .clear();
+	ResetItemsTop();
+	itemList.clear();
 	hostInfoList.clear();
 }
 int32_t MenuList::FindIntersectedItem( int32_t x, int32_t y )
@@ -76,4 +76,26 @@ void MenuList::ScrollDown()
 {
 	for ( auto &item : itemList )
 		item.MoveUp( 10 );
+}
+int32_t MenuList::FindTopItem() const
+{
+	int32_t topItem = 100000;
+	for ( const auto &item : itemList )
+	{
+		if ( item.GetTop() < topItem )
+			topItem = item.GetTop();
+	}
+
+	return topItem;
+}
+int32_t MenuList::FindBottomItem() const
+{
+	int32_t bottomItem = -1;
+	for ( const auto &item : itemList )
+	{
+		if ( item.GetBottom() > bottomItem )
+			bottomItem = item.GetBottom();
+	}
+
+	return bottomItem;
 }

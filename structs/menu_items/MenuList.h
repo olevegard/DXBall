@@ -23,7 +23,11 @@ struct MenuList : public List
 	void ScrollDown( );
 	void ScrollUp( );
 
+	int32_t FindTopItem() const;
+	int32_t FindBottomItem() const;
+
 	void AddItem( GameInfo info, const std::string &gameLine,  SDL_Texture* texture, const SDL_Rect &rect );
+
 	std::vector< MenuItem > itemList;
 	std::vector< GameInfo > hostInfoList;
 };

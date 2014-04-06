@@ -51,9 +51,25 @@ struct List
 	{
 		return mainArea.rect.x + 10;
 	}
+	int32_t GetItemListTop() const
+	{
+		return listClipRect.y;
+	}
+	int32_t GetItemLisBottom() const
+	{
+		return listClipRect.y + listClipRect.h;
+	}
+
 	private:
+	bool CanScrollUp() const;
+	bool CanScrollDown() const;
+
 	virtual void ScrollDown() = 0;
 	virtual void ScrollUp() = 0;
+
+	virtual int32_t FindTopItem() const = 0;
+	virtual int32_t FindBottomItem() const =0;
+
 	SDL_Rect scrollBar;
 	SDL_Rect topArrow;
 	SDL_Rect bottomArrow;

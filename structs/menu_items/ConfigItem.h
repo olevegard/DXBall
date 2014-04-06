@@ -48,6 +48,10 @@ struct ConfigItem : public MenuItem
 	{
 		return plussRect.y;
 	}
+	int32_t GetBottom()
+	{
+		return minusRect.y + minusRect.h;
+	}
 	int32_t GetTotalHeight()
 	{
 		return ( minusRect.y + minusRect.h ) - plussRect.y;

@@ -65,6 +65,14 @@ int MenuItem::GetRectH( ) const
 {
 	return itemRect.h;
 }
+int MenuItem::GetBottom( ) const
+{
+	return itemRect.y + itemRect.h;
+}
+int MenuItem::GetTop( ) const
+{
+	return itemRect.y;
+}
 int MenuItem::GetEndX() const
 {
 	return itemRect.x + itemRect.w;
