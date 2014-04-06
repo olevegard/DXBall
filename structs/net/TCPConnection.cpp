@@ -83,6 +83,7 @@ bool TCPConnection::OpenConnectionToHost( )
 		std::stringstream ss("");
 		ss	<<  hostName << " : " << portNr <<" Error : " << SDLNet_GetError();
 		logger->Log( __FILE__, __LINE__, "Failed to port to host : ", ss.str() );
+		return false;
 	}
 
 	std::stringstream ss("");
