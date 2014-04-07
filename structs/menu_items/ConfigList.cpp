@@ -12,7 +12,13 @@ void ConfigList::AddConfigItem( std::shared_ptr< ConfigItem > item, const Config
 	item->SetRectY( GetItemsTop() );
 	item->SetRectX( GetItemsLeft() );
 
-	IncrementItemsTop( item->GetTotalHeight() );
+	IncrementItemCount();
+	IncrementItemsTop( item->GetTotalHeight() + 10 );
+
+	if ( ( GetItemCount() % 2 ) != 0 )
+		item->SetBackgroundColor( GetItemColor1() );
+	else
+		item->SetBackgroundColor( GetItemColor2() );
 
 	configItems[ type ] = item;
 }

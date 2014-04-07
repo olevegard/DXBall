@@ -52,6 +52,14 @@ struct ConfigItem : public MenuItem
 	{
 		return minusRect.y + minusRect.h;
 	}
+	int32_t GetLeft()
+	{
+		return GetRectX();
+	}
+	int32_t GetRight()
+	{
+		return valueRect.x + valueRect.w;
+	}
 	int32_t GetTotalHeight()
 	{
 		return ( minusRect.y + minusRect.h ) - plussRect.y;
@@ -66,4 +74,3 @@ struct ConfigItem : public MenuItem
 	SDL_Rect plussRect;
 	SDL_Rect minusRect;
 };
-

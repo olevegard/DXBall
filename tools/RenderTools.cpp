@@ -153,7 +153,7 @@ void RenderHelpers::RenderMenuItem( SDL_Renderer* renderer, const std::shared_pt
 	if( item->GetTexture() != nullptr )
 		SDL_RenderCopy( renderer, item->GetTexture(), nullptr, item->GetRectPtr() );
 }
-void RenderHelpers::RenderOptionsItem( SDL_Renderer* renderer, const std::shared_ptr< ConfigItem > &item )
+void RenderHelpers::RenderConfigItem( SDL_Renderer* renderer, const std::shared_ptr< ConfigItem > &item )
 {
 	RenderMenuItem( renderer, item );
 
@@ -233,11 +233,30 @@ void RenderHelpers::RenderMenuListItems( SDL_Renderer* renderer, const ConfigLis
 {
 	SDL_RenderSetClipRect( renderer, menuList.GetListClipRect()  );
 
+	int32_t itemWidth = menuList.GetRect().w - menuList.GetScrollBar().w - 30;
+
 	const auto &configList  = menuList.GetConfigList();
 	for ( const auto &p : configList )
-		RenderOptionsItem( renderer, p.second );
+	{
+		RenderItemBackground( renderer, p.second, itemWidth );
+
+		RenderConfigItem( renderer, p.second );
+	}
 
 	SDL_RenderSetClipRect( renderer, &screenSize );
+}
+void RenderHelpers::RenderItemBackground( SDL_Renderer* renderer, const std::shared_ptr< ConfigItem > &item, int32_t width )
+{
+	SDL_Color color = item->GetBackgroundColor();
+	SDL_Rect r;
+	r.x = item->GetLeft(); 
+	r.y = item->GetTop(); 
+
+	r.w = width;
+	r.h = item->GetBottom() - item->GetTop(); 
+
+	SDL_SetRenderDrawColor( renderer, color.r, color.g, color.b, color.a );
+	SDL_RenderFillRect( renderer, &r);
 }
 void RenderHelpers::RenderScrollBar  ( SDL_Renderer* renderer, const MenuList &menuList )
 {

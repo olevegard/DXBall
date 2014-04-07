@@ -59,6 +59,22 @@ struct List
 	{
 		return listClipRect.y + listClipRect.h;
 	}
+	SDL_Color GetItemColor1()
+	{
+		return itemColor1;
+	}
+	SDL_Color GetItemColor2()
+	{
+		return itemColor2;
+	}
+	int32_t GetItemCount() const
+	{
+		return itemCount;
+	}
+	void IncrementItemCount()
+	{
+		++itemCount;
+	}
 
 	private:
 	bool CanScrollUp() const;
@@ -75,7 +91,11 @@ struct List
 	SDL_Rect bottomArrow;
 	SDL_Rect listClipRect;
 
+	SDL_Color itemColor1;
+	SDL_Color itemColor2;
+
 	int32_t itemsTop;
+	int32_t itemCount;
 
 	RenderingItem< uint64_t > mainArea;
 	RenderingItem< uint64_t > caption;

@@ -5,6 +5,9 @@
 
 #include <iostream>
 List::List( )
+	:	itemColor1({ 255, 255, 255, 255 })
+	,	itemColor2({ 64, 64, 64, 255 })
+	,	itemCount( 0 )
 {
 	itemsTop = 0;
 }
@@ -46,7 +49,7 @@ void List::InitClipRect()
 	listClipRect.y = caption.rect.y + caption.rect.h;
 
 	listClipRect.w = mainArea.rect.w;
-	listClipRect.h = ( mainArea.rect.y + mainArea.rect.h ) - listClipRect.y;
+	listClipRect.h = ( mainArea.rect.y + mainArea.rect.h ) - listClipRect.y - 10;
 }
 void List::InitTexture( SDL_Renderer* renderer, const std::string &text, TTF_Font* font, const SDL_Color &textColor )
 {

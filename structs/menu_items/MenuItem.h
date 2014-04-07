@@ -43,10 +43,21 @@ struct MenuItem
 	void SetName( std::string str );
 	std::string GetName( ) const;
 
+	void SetBackgroundColor( SDL_Color clr )
+	{
+		backgroundColor = clr;
+	}
+	SDL_Color GetBackgroundColor( ) const
+	{
+		return backgroundColor;
+	}
+
 	private:
 	std::string itemName;
 	SDL_Rect itemRect;
 	SDL_Texture* texture;
+	SDL_Color backgroundColor;
+
 	bool isSelected;
 	bool hasChanged;
 };
