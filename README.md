@@ -29,19 +29,19 @@ For instructions on how to run, scroll down to the Getting started part
 2. You will need SDL2.0, SDL2_image, SDL2_net and SDL2_ttf.
 	* If on Linux, you might be able to install it like you install most other programs ( sudo apt-get install SDL2 )
 	* Otherwise, you'll need to download the source code and compile it yourself
-	* SDL2 : http://libsdl.org/download-2.0.php
+		* SDL2 : http://libsdl.org/download-2.0.php
 		* SDL2_ttf : https://www.libsdl.org/projects/SDL_ttf/
 		* SDL2_net : https://www.libsdl.org/projects/SDL_net/
 		* SDL2_image : https://www.libsdl.org/projects/SDL_image/
-
-3. Crate a makefile based on DXBall.pro ( requires qmake )
-4. Build the makefile using the command 'make'
-5. Based on command line options
- * `-r` run the program using command line ards in buildDXB.sh
- * `-d` run the program with two cliens and server, making it possible to use multiplayer
- * `-D` run the aboce in GDB
- * `-g` run gdb also using the gdb and game args in buildDXB.sh
- * `-v` run valgrind using the valgrind and game ars stated in buildDXB.sh
+3. Run './builDXB.sh' to build the project
+	*	This will generate a makefile using qmake
+	*	Then it will compiile using clang
+4. Run './builDXB.sh' again with arguments to run the project
+	* `-r` run the program using command line ards in buildDXB.sh
+	* `-d` run the program with two cliens and server, making it possible to use multiplayer
+	* `-D` run the aboce in GDB
+	* `-g` run gdb also using the gdb and game args in buildDXB.sh
+	* `-v` run valgrind using the valgrind and game ars stated in buildDXB.sh
 
 Congratulations, against all odds DXBall is now running on your computer!
 
