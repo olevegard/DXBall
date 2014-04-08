@@ -239,7 +239,6 @@ void RenderHelpers::RenderMenuListItems( SDL_Renderer* renderer, const ConfigLis
 	for ( const auto &p : configList )
 	{
 		RenderItemBackground( renderer, p.second, itemWidth );
-
 		RenderConfigItem( renderer, p.second );
 	}
 

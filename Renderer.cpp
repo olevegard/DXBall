@@ -663,7 +663,7 @@ void Renderer::AddMainMenuButton( const std::string &menuItemString, const MainM
 			singlePlayerButton = AddMenuButtonHelper( menuItemString, { 0, 0, 0, 0 }, mediumFont  );
 			singlePlayerButton->SetRectXY(
 				margin / 2,
-				background.h - ( ( background.h - greyArea.rect.h ) / 2)  + ( singlePlayerButton->GetRectH( ))
+				background.h - ( ( background.h - greyArea.rect.h ) / 2)  + ( singlePlayerButton->GetHeight( ))
 			);
 			break;
 		case MainMenuItemType::MultiPlayer:
@@ -756,14 +756,14 @@ void Renderer::CenterMainMenuButtons( )
 	if ( singlePlayerButton == nullptr )
 		return;
 
-	int totoalWidth = quitButton->GetEndX() - singlePlayerButton->GetRectX();
+	int totoalWidth = quitButton->GetRight() - singlePlayerButton->GetLeft();
 	int freeSpace = background.w - totoalWidth;
 	int startingPoint = freeSpace / 2;
 
 	singlePlayerButton->SetRectX( startingPoint );
-	multiPlayerButton->SetRectX( singlePlayerButton->GetEndX() + margin );
-	optionsButton->SetRectX( multiPlayerButton->GetEndX() + margin );
-	quitButton->SetRectX( optionsButton->GetEndX() + margin );
+	multiPlayerButton->SetRectX( singlePlayerButton->GetRight() + margin );
+	optionsButton->SetRectX( multiPlayerButton->GetRight() + margin );
+	quitButton->SetRectX( optionsButton->GetRight() + margin );
 }
 void Renderer::CenterOptionsButtons( )
 {
@@ -774,8 +774,8 @@ void Renderer::CenterOptionsButtons( )
 	AddOptionsButtonHelper( "BonusBox Chance", ConfigValueType::BonusBoxChance  );
 
 	backToMenuButton = AddMenuButtonHelper( "Main Menu", {0,0,0,0}, mediumFont );
-	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetRectW() / 2 );
-	int32_t yPos = singlePlayerButton->GetRectY();
+	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetWidth() / 2 );
+	int32_t yPos = singlePlayerButton->GetTop();
 	backToMenuButton->SetRectXY( xPos, yPos );
 }
 void Renderer::InitGreyAreaRect( )
@@ -794,7 +794,7 @@ void Renderer::InitGreyAreaRect( )
 void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::string &mainMenuString, const std::string &quitString )
 {
 	pauseResumeButton = AddMenuButtonHelper( resumeString, { 0, 0, 0, 0 } , mediumFont );
-	pauseResumeButton->SetRectXY( margin / 2, background.h - pauseResumeButton->GetRectH() );
+	pauseResumeButton->SetRectXY( margin / 2, background.h - pauseResumeButton->GetHeight() );
 
 	pauseMainMenuButton = AddMenuButtonHelper( mainMenuString, pauseResumeButton->GetRect(), mediumFont  );
 
@@ -804,36 +804,36 @@ void Renderer::AddPauseMenuButtons( const std::string &resumeString, const std::
 }
 void Renderer::CenterPauseButtons( )
 {
-	int totalWidth = pauseQuitButton->GetEndX() - pauseResumeButton->GetRectX();
+	int totalWidth = pauseQuitButton->GetRight() - pauseResumeButton->GetLeft();
 	int freeSpace = background.w - totalWidth;
 	int startingPoint = freeSpace / 2;
 
 	pauseResumeButton->SetRectX( startingPoint );
-	pauseMainMenuButton->SetRectX( pauseResumeButton->GetEndX() + margin );
-	pauseQuitButton->SetRectX( pauseMainMenuButton->GetEndX() + margin );
+	pauseMainMenuButton->SetRectX( pauseResumeButton->GetRight() + margin );
+	pauseQuitButton->SetRectX( pauseMainMenuButton->GetRight() + margin );
 }
 void Renderer::AddLobbyMenuButtons( const std::string &newGame, const std::string &update, const std::string &back )
 {
 	int32_t xPos = 0;
-	int32_t yPos = singlePlayerButton->GetRectY();
+	int32_t yPos = singlePlayerButton->GetTop();
 
 	lobbyNewGameButton = AddMenuButtonHelper( newGame, { xPos, yPos, 0, 0 }, mediumFont );
-	xPos = lobbyNewGameButton->GetEndX()  + 20;
+	xPos = lobbyNewGameButton->GetRight()  + 20;
 	lobbyUpdateButton = AddMenuButtonHelper( update, { xPos, yPos, 0, 0 }, mediumFont );
-	xPos = lobbyUpdateButton->GetEndX() +  20;
+	xPos = lobbyUpdateButton->GetRight() +  20;
 	lobbyBackButton = AddMenuButtonHelper( back, { xPos, yPos, 0, 0 }, mediumFont );
 
 	CenterLobbyButtons();
 }
 void Renderer::CenterLobbyButtons( )
 {
-	int32_t width = 20 + lobbyBackButton->GetRectW() + lobbyNewGameButton->GetRectW() + lobbyUpdateButton->GetRectW();
+	int32_t width = 20 + lobbyBackButton->GetWidth() + lobbyNewGameButton->GetWidth() + lobbyUpdateButton->GetWidth();
 	int32_t newX = lobbyMenuListRect.x + static_cast< int32_t > ( ( lobbyMenuListRect.w * 0.5 ) - ( width * 0.5 ) );
 
 	lobbyNewGameButton->SetRectX( newX );
-	newX = lobbyNewGameButton->GetEndX() + 20;
+	newX = lobbyNewGameButton->GetRight() + 20;
 	lobbyUpdateButton->SetRectX( newX );
-	newX = lobbyUpdateButton->GetEndX() + 20;
+	newX = lobbyUpdateButton->GetRight() + 20;
 	lobbyBackButton->SetRectX( newX );
 }
 void Renderer::CalculateRemotePlayerTextureRects()

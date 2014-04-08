@@ -49,33 +49,29 @@ void MenuItem::MoveRight( int32_t x )
 {
 	itemRect.x += x;
 }
-int MenuItem::GetRectX( ) const
+int MenuItem::GetLeft( ) const
 {
 	return itemRect.x;
 }
-int MenuItem::GetRectY( ) const
+int MenuItem::GetRight() const
 {
-	return itemRect.y;
-}
-int MenuItem::GetRectW( ) const
-{
-	return itemRect.w;
-}
-int MenuItem::GetRectH( ) const
-{
-	return itemRect.h;
-}
-int MenuItem::GetBottom( ) const
-{
-	return itemRect.y + itemRect.h;
+	return itemRect.x + itemRect.w;
 }
 int MenuItem::GetTop( ) const
 {
 	return itemRect.y;
 }
-int MenuItem::GetEndX() const
+int MenuItem::GetBottom( ) const
 {
-	return itemRect.x + itemRect.w;
+	return itemRect.y + itemRect.h;
+}
+int MenuItem::GetWidth( ) const
+{
+	return itemRect.w;
+}
+int MenuItem::GetHeight( ) const
+{
+	return itemRect.h;
 }
 SDL_Rect MenuItem::GetRect() const
 {

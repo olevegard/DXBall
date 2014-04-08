@@ -102,7 +102,7 @@ void ConfigItem::MoveRight( int32_t amount )
 }
 void ConfigItem::SetRectX( int32_t X )
 {
-	int32_t diff = X - GetRectX();
+	int32_t diff = X - GetLeft();
 	if ( diff > 0 )
 		MoveRight( diff );
 }
@@ -111,5 +111,23 @@ void ConfigItem::SetRectY( int32_t y )
 	int32_t diff = y - plussRect.y;
 	if ( diff > 0 )
 		MoveDown( diff );
-
+}
+int32_t ConfigItem::GetLeft() const
+{
+	return MenuItem::GetLeft();
+}
+int32_t ConfigItem::GetRight() const
+{
+	return valueRect.x + valueRect.w;
+}int32_t ConfigItem::GetTop() const
+{
+	return plussRect.y;
+}
+int32_t ConfigItem::GetBottom() const
+{
+	return minusRect.y + minusRect.h;
+}
+int32_t ConfigItem::GetTotalHeight()
+{
+	return ( minusRect.y + minusRect.h ) - plussRect.y;
 }

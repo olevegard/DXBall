@@ -20,13 +20,12 @@ struct MenuItem
 	virtual void MoveUp( int32_t y );
 	virtual void MoveRight( int32_t x );
 
-	int GetRectX( ) const;
-	int GetRectY( ) const;
-	int GetRectW( ) const;
-	int GetRectH( ) const;
-	int GetBottom( ) const;
-	int GetTop( ) const;
-	int GetEndX() const;
+	virtual int32_t GetLeft( ) const;
+	virtual int32_t GetRight() const;
+	virtual int32_t GetTop( ) const;
+	virtual int32_t GetBottom( ) const;
+	virtual int32_t GetWidth( ) const;
+	virtual int32_t GetHeight( ) const;
 
 	SDL_Rect GetRect() const;
 	const SDL_Rect* GetRectPtr() const;

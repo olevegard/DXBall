@@ -44,26 +44,13 @@ struct ConfigItem : public MenuItem
 
 	void SetRectX( int32_t x );
 	void SetRectY( int32_t y );
-	int32_t GetTop()
-	{
-		return plussRect.y;
-	}
-	int32_t GetBottom()
-	{
-		return minusRect.y + minusRect.h;
-	}
-	int32_t GetLeft()
-	{
-		return GetRectX();
-	}
-	int32_t GetRight()
-	{
-		return valueRect.x + valueRect.w;
-	}
-	int32_t GetTotalHeight()
-	{
-		return ( minusRect.y + minusRect.h ) - plussRect.y;
-	}
+
+	int32_t GetLeft() const;
+	int32_t GetRight() const;
+	int32_t GetTop() const;
+	int32_t GetBottom() const;
+
+	int32_t GetTotalHeight();
 
 	private:
 	bool hasChanged;
