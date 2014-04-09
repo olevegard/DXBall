@@ -543,21 +543,12 @@ void Renderer::RenderPlayerCaption( const std::string textToRender, const Player
 		localPlayerCaption.value = textToRender;
 		localPlayerCaption.Reset( renderer, bigFont, colorConfig.localPlayerColor );
 
-		localPlayerLives.rect.x = 40;
-		localPlayerLives.rect.y =  localPlayerCaption.rect.h - 10;
-
-		localPlayerPoints.rect.x = localPlayerLives.rect.x;
-		localPlayerPoints.rect.y = localPlayerLives.rect.y + localPlayerLives.rect.h ;
-
-		localPlayerBalls.rect.x = localPlayerLives.rect.x;
+		CalculateLocalPlayerTextureRects();
 	}
 	else if ( player == Player::Remote && remotePlayerCaption.NeedsUpdate( textToRender ) )
 	{
 		remotePlayerCaption.value = textToRender;
-
 		remotePlayerCaption.Reset( renderer, bigFont, colorConfig.remotePlayerColor );
-
-		remotePlayerCaption.rect.x = background.w - remotePlayerCaption.rect.w;
 
 		CalculateRemotePlayerTextureRects();
 	}
@@ -616,9 +607,6 @@ void Renderer::RenderBallCount( uint64_t  ballCount, const Player &player )
 		ss << "Balls : " <<  ballCount;
 
 		localPlayerBalls.Reset( renderer, ss.str(), font, colorConfig.localPlayerColor );
-
-		localPlayerBalls.rect.x = localPlayerLives.rect.x;
-		localPlayerBalls.rect.y = localPlayerPoints.rect.y + localPlayerLives.rect.h ;
 	} else if ( player == Player::Remote && remotePlayerBalls.NeedsUpdate( ballCount ))
 	{
 		remotePlayerBalls.value =  ballCount;
@@ -836,9 +824,21 @@ void Renderer::CenterLobbyButtons( )
 	newX = lobbyUpdateButton->GetRight() + 20;
 	lobbyBackButton->SetRectX( newX );
 }
+void Renderer::CalculateLocalPlayerTextureRects()
+{
+	localPlayerLives.rect.x = 40;
+	localPlayerLives.rect.y =  localPlayerCaption.rect.h - 10;
+
+	localPlayerPoints.rect.x = localPlayerLives.rect.x;
+	localPlayerPoints.rect.y = localPlayerLives.rect.y + localPlayerLives.rect.h ;
+
+	localPlayerBalls.rect.x = localPlayerLives.rect.x;
+	localPlayerBalls.rect.y = localPlayerPoints.rect.y + localPlayerPoints.rect.h;
+}
 void Renderer::CalculateRemotePlayerTextureRects()
 {
-	// Set remaning text rects based on caption rect
+	remotePlayerCaption.rect.x = background.w - remotePlayerCaption.rect.w;
+
 	remotePlayerPoints.rect.x = background.w - remotePlayerPoints.rect.w - 20;
 	remotePlayerPoints.rect.y = localPlayerPoints.rect.y;
 

@@ -181,6 +181,7 @@ private:
 	TTF_Font* LoadFont( const std::string &fontname, int fontSize ) const;
 	bool LoadFontAndText();
 
+	void CalculateLocalPlayerTextureRects();
 	void CalculateRemotePlayerTextureRects();
 
 	SDL_Rect CalcMenuListRect();
