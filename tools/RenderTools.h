@@ -64,9 +64,10 @@ class RenderHelpers
 	static void RenderMenuItem     ( SDL_Renderer* renderer, const std::shared_ptr< MenuItem > &item );
 	static void RenderConfigItem   ( SDL_Renderer* renderer, const std::shared_ptr< ConfigItem > &item );
 
-	static void RenderMenuList     ( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize );
-	static void RenderScrollBar    ( SDL_Renderer* renderer, const MenuList &menuList );
-	static void RenderMenuListItems( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize );
+	static void RenderMenuList      ( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize );
+	static void RenderScrollBar     ( SDL_Renderer* renderer, const MenuList &menuList );
+	static void RenderMenuListItems ( SDL_Renderer* renderer, const MenuList &menuList, const SDL_Rect &screenSize );
+	static void RenderItemBackground( SDL_Renderer* renderer, const MenuItem &item, int32_t width );
 
 	static void RenderConfigList    ( SDL_Renderer* renderer, const ConfigList &menuList, const SDL_Rect &screenSize );
 	static void RenderScrollBar     ( SDL_Renderer* renderer, const ConfigList &menuList );

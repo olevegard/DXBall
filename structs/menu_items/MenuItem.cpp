@@ -7,15 +7,15 @@ MenuItem::MenuItem( std::string name)
 	,	itemRect( {0,0,0,0} )
 	,	texture( nullptr )
 	,	isSelected( false )
-,	hasChanged( true )
+	,	hasChanged( true )
 {
 }
 MenuItem::MenuItem( const MenuItem &item )
-	:   itemName( item.GetName() )
-	,   itemRect( item.GetRect() )
-	,   texture( item.GetTexture() )
+	:	itemName( item.GetName() )
+	,	itemRect( item.GetRect() )
+	,	texture( item.GetTexture() )
+	,	backgroundColor( item.GetBackgroundColor() )
 {
-
 }
 MenuItem::~MenuItem()
 {

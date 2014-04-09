@@ -275,13 +275,30 @@ void RenderHelpers::RenderMenuListItems( SDL_Renderer* renderer, const MenuList 
 {
 	SDL_RenderSetClipRect( renderer, menuList.GetListClipRect()  );
 
+	int32_t itemWidth = menuList.GetRect().w - menuList.GetScrollBar().w - 30;
+
 	const auto &gameList = menuList.GetGameList();
 	for ( const auto &p : gameList )
 	{
+		RenderItemBackground( renderer, p, itemWidth );
 		SDL_Rect r = p.GetRect();
 		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, &r  );
 	}
+
 	SDL_RenderSetClipRect( renderer, &screenSize );
+}
+void RenderHelpers::RenderItemBackground( SDL_Renderer* renderer, const MenuItem &item, int32_t width )
+{
+	SDL_Color color = item.GetBackgroundColor();
+	SDL_Rect r;
+	r.x = item.GetLeft(); 
+	r.y = item.GetTop(); 
+
+	r.w = width;
+	r.h = item.GetBottom() - item.GetTop(); 
+
+	SDL_SetRenderDrawColor( renderer, color.r, color.g, color.b, color.a );
+	SDL_RenderFillRect( renderer, &r);
 }
 void RenderHelpers::RenderParticle( SDL_Renderer* renderer, const Particle& particle )
 {

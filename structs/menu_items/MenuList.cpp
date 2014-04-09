@@ -32,10 +32,16 @@ void MenuList::AddItem( GameInfo gameInfo, const std::string &gameLine,  SDL_Tex
 	MenuItem item( gameLine  );
 
 	IncrementItemsTop( rect.h );
+	IncrementItemCount();
+
+	if ( ( GetItemCount() % 2 ) != 0 )
+		item.SetBackgroundColor( GetItemColor1() );
+	else
+		item.SetBackgroundColor( GetItemColor2() );
 
 	item.SetTexture( texture );
 	item.SetRect( rect );
-	itemList .emplace_back( item );
+	itemList.emplace_back( item );
 	hostInfoList.emplace_back( gameInfo );
 }
 void MenuList::ClearList()
