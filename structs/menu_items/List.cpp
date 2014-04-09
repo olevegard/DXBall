@@ -117,3 +117,19 @@ bool List::CanScrollUp() const
 {
 	return GetItemListTop() > FindTopItem();
 }
+SDL_Color List::GetItemColor1() const
+{
+	return itemColor1;
+}
+SDL_Color List::GetItemColor2() const
+{
+	return itemColor2;
+}
+void List::SetItemColor1( const SDL_Color &clr )
+{
+	itemColor1 = clr;
+}
+void List::SetItemColor2( const SDL_Color &clr )
+{
+	itemColor2 = clr;
+}

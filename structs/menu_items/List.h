@@ -59,14 +59,11 @@ struct List
 	{
 		return listClipRect.y + listClipRect.h;
 	}
-	SDL_Color GetItemColor1()
-	{
-		return itemColor1;
-	}
-	SDL_Color GetItemColor2()
-	{
-		return itemColor2;
-	}
+	SDL_Color GetItemColor1() const;
+	SDL_Color GetItemColor2() const;
+	void SetItemColor1( const SDL_Color &clr );
+	void SetItemColor2( const SDL_Color &clr );
+
 	int32_t GetItemCount() const
 	{
 		return itemCount;
