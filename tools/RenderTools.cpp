@@ -281,8 +281,7 @@ void RenderHelpers::RenderMenuListItems( SDL_Renderer* renderer, const MenuList 
 	for ( const auto &p : gameList )
 	{
 		RenderItemBackground( renderer, p, itemWidth );
-		SDL_Rect r = p.GetRect();
-		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, &r  );
+		SDL_RenderCopy( renderer, p.GetTexture(), nullptr, p.GetRectPtr()  );
 	}
 
 	SDL_RenderSetClipRect( renderer, &screenSize );
