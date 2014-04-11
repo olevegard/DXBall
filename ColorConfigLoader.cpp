@@ -34,6 +34,10 @@ void ColorConfigLoader::ApplyConfig( std::string str )
 		line >> textColor;
 	else if (  parameterName ==  "grey_area" )
 		line >> greyAreaColor;
+	else if (  parameterName ==  "list_highlight_top" )
+		line >> listHighlightTop;
+	else if (  parameterName ==  "list_highlight_bottom" )
+		line >> listHighlightBottom;
 	else if (  parameterName ==  "particle_fire_count" )
 		line >> particleFireCount;
 	else if (  parameterName ==  "particle_decay_min" )
@@ -120,6 +124,15 @@ SDL_Color ColorConfigLoader::GetTextColor() const
 SDL_Color ColorConfigLoader::GetGreyArea() const
 {
 	return greyAreaColor;
+}
+
+SDL_Color ColorConfigLoader::GetListHighlightTop() const
+{
+	return listHighlightTop;
+}
+SDL_Color ColorConfigLoader::GetListHighlightBottom() const
+{
+	return listHighlightBottom;
 }
 std::map< BonusType, SDL_Color > ColorConfigLoader::GetBonusColorMap()
 {

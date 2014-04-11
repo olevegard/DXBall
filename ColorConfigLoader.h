@@ -25,8 +25,11 @@ class ColorConfigLoader
 	SDL_Color GetTextColor() const;
 
 	SDL_Color GetGreyArea() const;
-	std::map< BonusType, SDL_Color > GetBonusColorMap();
 
+	SDL_Color GetListHighlightTop() const;
+	SDL_Color GetListHighlightBottom() const;
+
+	std::map< BonusType, SDL_Color > GetBonusColorMap();
 
 	std::vector< TileColor > colorConfig;
 
@@ -36,6 +39,9 @@ class ColorConfigLoader
 	SDL_Color textColor;
 
 	SDL_Color greyAreaColor;
+
+	SDL_Color listHighlightTop;
+	SDL_Color listHighlightBottom;
 
 	std::map< BonusType, SDL_Color > bonusTypeColors;
 

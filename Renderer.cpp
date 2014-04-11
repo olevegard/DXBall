@@ -865,12 +865,16 @@ void Renderer::InitGameList()
 	gameList = std::make_shared< MenuList >();
 	gameList->Init( renderer, lobbyMenuListRect, colorConfig.GetBackgroundColor() );
 	gameList->InitTexture( renderer, "Available Games : ", font, colorConfig.GetTextColor() );
+	gameList->SetItemColor1( colorConfig.GetListHighlightTop() );
+	gameList->SetItemColor2( colorConfig.GetListHighlightBottom() );
 }
 void Renderer::InitConfigList()
 {
 	configList = std::make_shared< ConfigList >();
 	configList->Init( renderer, lobbyMenuListRect, colorConfig.GetBackgroundColor() );
 	configList->InitTexture( renderer, "Options : ", font, colorConfig.GetTextColor() );
+	configList->SetItemColor1( colorConfig.GetListHighlightTop() );
+	configList->SetItemColor2( colorConfig.GetListHighlightBottom() );
 }
 const std::shared_ptr< MenuList >  &Renderer::GetGameList()
 {
