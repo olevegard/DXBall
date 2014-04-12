@@ -106,3 +106,7 @@ void NetManager::SetIsServer( bool isServer_ )
 {
 	isServer = isServer_;
 }
+bool NetManager::IsConnectedToGameServer() const
+{
+	return mainServer.IsConnected();
+}
