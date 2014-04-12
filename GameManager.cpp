@@ -782,19 +782,25 @@ void GameManager::Run()
 			HandleEvent( event );
 		}
 
-		HandleStatusChange();
+		CheckForGameStateChange();
 
 		Update( timer.GetDelta( ) );
 	}
 }
-void GameManager::HandleStatusChange( )
+void GameManager::CheckForGameStateChange( )
 {
 	if ( !menuManager.HasGameStateChanged() )
 		return;
 
-	messageSender.SendGameStateChangedMessage( menuManager.GetGameState() );
-	renderer.SetGameState( menuManager.GetGameState() );
+	if ( !CheckGameLobbyChange( ) )
+		return;
 
+	UpdateGameState();
+
+	HandleStatusChange();
+}
+void GameManager::HandleStatusChange()
+{
 	if ( menuManager.GetGameState() == GameState::Quit )
 	{
 		runGame = false;
@@ -813,6 +819,25 @@ void GameManager::HandleStatusChange( )
 	{
 		renderer.StartFade();
 	}
+}
+bool GameManager::CheckGameLobbyChange( )
+{
+	if ( menuManager.GetGameState() == GameState::Lobby )
+	{
+		if ( !netManager.IsConnectedToGameServer() )
+		{
+			menuManager.SetGameState( GameState::MainMenu );
+			SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "Connection Error", "Could not connect to main server", NULL );
+			return false;
+		}
+	}
+	return true;
+}
+void GameManager::UpdateGameState()
+{
+	messageSender.SendGameStateChangedMessage( menuManager.GetGameState() );
+	renderer.SetGameState( menuManager.GetGameState() );
+
 }
 void GameManager::HandleEvent( const SDL_Event &event )
 {

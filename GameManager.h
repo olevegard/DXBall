@@ -105,10 +105,13 @@ class GameManager
 
 		// Game status
 		// ==========================================
+		void CheckForGameStateChange( );
+		bool CheckGameLobbyChange( );
 		void HandleStatusChange( );
-		void Restart();
+		void UpdateGameState();
 		bool IsLevelDone();
 		void IsGameOVer();
+		void Restart();
 
 		// AI
 		// ==========================================
