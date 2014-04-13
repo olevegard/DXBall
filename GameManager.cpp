@@ -119,6 +119,9 @@ void GameManager::LoadConfig()
 
 	localPlayerInfo.ballSpeed = gameConfig.Get( ConfigValueType::BallSpeed );
 	remotePlayerInfo.ballSpeed = gameConfig.Get( ConfigValueType::BallSpeed );
+
+	localPlayerInfo.fastMode = gameConfig.GetFastMode();
+	remotePlayerInfo.fastMode = gameConfig.GetFastMode();
 }
 void GameManager::CreateMenu()
 {
@@ -416,9 +419,6 @@ void GameManager::HandleBulletTileIntersection( const std::shared_ptr< Bullet > 
 }
 bool GameManager::IsSuperBullet( const Player owner ) const
 {
-	if ( !gameConfig.IsFastMode() )
-		return false;
-
 	if ( owner == Player::Local && localPlayerInfo.IsBonusActive( BonusType::SuperBall ) )
 		return true;
 

@@ -31,7 +31,7 @@ struct PlayerInfo
 
 		 if ( bonusType == BonusType::SuperBall )
 		 {
-			 if ( isActive )
+			 if ( isActive && !fastMode )
 				 fireInterval = fireInterval_Slow;
 			 else
 				 fireInterval = fireInterval_Normal;
@@ -77,4 +77,5 @@ struct PlayerInfo
 	uint32_t fireInterval_Slow; // Fire speed when SuperBall and not fast mode
 	std::map< BonusType, bool > bonusMap;
 	double ballSpeed;
+	bool fastMode;
 };

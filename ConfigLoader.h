@@ -48,6 +48,11 @@ class ConfigLoader
 		configValues[config] = value;
 	}
 
+	bool GetFastMode( ) const
+	{
+		return isFastMode;
+	}
+
 	private:
 	void PrintColor( const std::string &colorName, const SDL_Color &color );
 	void PrintIndented( const std::string &colorName );
