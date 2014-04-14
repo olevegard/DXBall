@@ -52,9 +52,27 @@ struct ConfigItem : public MenuItem
 
 	int32_t GetTotalHeight();
 
+	bool IsBool() const
+	{
+		return isBool;
+	}
+	void SetIsBool( bool isBool_ )
+	{
+		 isBool = isBool_;
+	}
+
+	bool GetBool() const
+	{
+		return boolValue;
+	}
+
 	private:
 	bool hasChanged;
+	bool isBool;
+
 	uint32_t value;
+	bool boolValue;
+
 	SDL_Texture* valueTexture;
 
 	SDL_Rect valueRect;

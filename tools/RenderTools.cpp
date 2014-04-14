@@ -157,11 +157,22 @@ void RenderHelpers::RenderConfigItem( SDL_Renderer* renderer, const std::shared_
 {
 	RenderMenuItem( renderer, item );
 
+	if ( item->IsBool() )
+	{
+		if ( item->GetBool() )
+			SDL_SetRenderDrawColor( renderer, 0,255,0,255 );
+		else
+			SDL_SetRenderDrawColor( renderer, 255,0,0,255 );
+		SDL_RenderFillRect( renderer, item->GetValueRectPtr() );
+	}
+	else
+	{
+		RenderPluss( renderer, item->GetPlussRect() );
+		RenderMinus( renderer, item->GetMinusRect() );
+	}
+
 	if( item->GetValueTexture() != nullptr )
 		SDL_RenderCopy( renderer, item->GetValueTexture(), nullptr, item->GetValueRectPtr() );
-
-	RenderPluss( renderer, item->GetPlussRect() );
-	RenderMinus( renderer, item->GetMinusRect() );
 }
 void RenderHelpers::RenderMinus( SDL_Renderer* renderer, SDL_Rect square )
 {

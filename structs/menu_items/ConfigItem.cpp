@@ -4,6 +4,8 @@
 
 	ConfigItem::ConfigItem ( std::string name)
 	:	MenuItem( name )
+	,	isBool( false )
+	,	boolValue( false )
 {
 }
 
