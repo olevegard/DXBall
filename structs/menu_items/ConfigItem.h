@@ -33,6 +33,7 @@ struct ConfigItem : public MenuItem
 	void GeneratePlussMinus();
 
 	void SetValue( uint32_t value_ );
+	void SetValue( bool value_ );
 
 	uint32_t GetValue();
 
@@ -61,8 +62,9 @@ struct ConfigItem : public MenuItem
 		 isBool = isBool_;
 	}
 
-	bool GetBool() const
+	bool GetBool()
 	{
+		hasChanged = false;
 		return boolValue;
 	}
 

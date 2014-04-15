@@ -18,6 +18,7 @@ struct ConfigList : public List
 
 	const std::map< ConfigValueType, std::shared_ptr< ConfigItem > > &GetConfigList() const;
 	void Set( uint32_t value, ConfigValueType type );
+	void Set( bool value, ConfigValueType type );
 
 	private:
 	void ScrollDown( );

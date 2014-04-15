@@ -681,7 +681,7 @@ std::shared_ptr< MenuItem > Renderer::AddMenuButtonHelper( std::string menuItemS
 
 	return menuItem;
 }
-void Renderer::AddOptionsButtonHelper( std::string caption, ConfigValueType type )
+void Renderer::AddOptionsButtonHelper( std::string caption, ConfigValueType type, bool isBool )
 {
 	SDL_Rect captionRect{ 0, 0, 0, 0 };
 	auto optionsItem = std::make_shared< ConfigItem >( caption );
@@ -693,10 +693,15 @@ void Renderer::AddOptionsButtonHelper( std::string caption, ConfigValueType type
 
 	optionsItem->SetTexture( text );
 	optionsItem->SetRect( captionRect );
+	optionsItem->SetIsBool( isBool );
 
 	// Value
 	SDL_Rect valueRect;
-	SDL_Texture* valueTexture = RenderHelpers::RenderTextTexture_Blended( tinyFont, "0", colorConfig.textColor, valueRect, renderer );
+	std::string value = "0";
+	if ( isBool )
+		value = "FALSE";
+
+	SDL_Texture* valueTexture = RenderHelpers::RenderTextTexture_Blended( tinyFont, value, colorConfig.textColor, valueRect, renderer );
 	valueRect.x = captionRect.x + captionRect.w + ( margin / 2);
 	valueRect.y = captionRect.y;
 
@@ -732,7 +737,12 @@ void Renderer::UpdateConfigValue( const std::shared_ptr< ConfigItem > &item )
 
 	SDL_Rect r = item->GetValueRect();
 	std::stringstream ss("");
-	ss << item->GetValue();
+	
+	if ( item->IsBool() )
+		ss << std::boolalpha << item->GetBool();
+	else
+		ss << item->GetValue();
+
 	item->SetValueTexture
 	(
 		RenderHelpers::RenderTextTexture_Blended( tinyFont, ss.str(), colorConfig.GetTextColor(), r, renderer, 0 )
@@ -760,6 +770,7 @@ void Renderer::CenterOptionsButtons( )
 	AddOptionsButtonHelper( "Bullet Speed", ConfigValueType::BulletSpeed  );
 	AddOptionsButtonHelper( "BonusBox Speed", ConfigValueType::BonusBoxSpeed  );
 	AddOptionsButtonHelper( "BonusBox Chance", ConfigValueType::BonusBoxChance  );
+	AddOptionsButtonHelper( "Fast Mode?", ConfigValueType::FastMode, true  );
 
 	backToMenuButton = AddMenuButtonHelper( "Main Menu", {0,0,0,0}, mediumFont );
 	int32_t xPos = ( background.w / 2) - ( backToMenuButton->GetWidth() / 2 );
@@ -932,7 +943,8 @@ void Renderer::GenerateParticleEffect( std::shared_ptr< Tile > tile )
 	Vector2f pos = RectHelpers::CenterInRect( tile->rect, r );
 	SDL_Color color = GetTileColor( tile );
 
-	for ( int i = 0; i < colorConfig.particleFireCount ; ++i )
+	//for ( int i = 0; i < colorConfig.particleFireCount ; ++i )
+	for ( int i = 0; i < 1 ; ++i )
 	{
 		auto p = Particle( Rect( pos.x, pos.y, 10, 10 ), color  );
 		p.SetDecay( colorConfig.particleDecayMin, colorConfig.particleDecayMax );

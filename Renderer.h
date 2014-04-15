@@ -195,7 +195,7 @@ private:
 	void InitGreyAreaRect( );
 	void AddMainMenuButton( const std::string &singlePlayerString, const MainMenuItemType &mit );
 	std::shared_ptr< MenuItem > AddMenuButtonHelper( std::string menuItemString, const SDL_Rect &rect, TTF_Font* font );
-	void AddOptionsButtonHelper( std::string caption, ConfigValueType type );
+	void AddOptionsButtonHelper( std::string caption, ConfigValueType type, bool isBool = false );
 
 	void CleanUp();
 	void CleanUpSurfaces();

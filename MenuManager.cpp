@@ -28,7 +28,12 @@ void MenuManager::InitConfigList()
 
 	for ( auto &item : configItems )
 	{
-		configList->Set( static_cast< uint32_t > ( configLoader.Get( item.first ) ) , item.first );
+		if ( !item.second->IsBool() )
+			configList->Set( static_cast< uint32_t > ( configLoader.Get( item.first ) ) , item.first );
+		else
+		{
+			configList->Set( configLoader.GetFastMode( ), item.first );
+		}
 	}
 }
 void MenuManager::CheckItemMouseOver( int x, int y )
@@ -87,12 +92,19 @@ void MenuManager::CheckItemMouseOver_Options( int x, int y )
 }
 PlussMin MenuManager::CheckConfigItemsClick( int32_t x, int32_t y, const std::shared_ptr< ConfigItem > &item )
 {
-	if ( RectHelpers::CheckMouseIntersection( x, y, item->GetPlussRect() ) )
-		return PlussMin::Pluss;
+	if ( !item->IsBool() )
+	{
+		if ( RectHelpers::CheckMouseIntersection( x, y, item->GetPlussRect() ) )
+			return PlussMin::Pluss;
 
-	if ( RectHelpers::CheckMouseIntersection( x, y, item->GetMinusRect() ) )
-		return PlussMin::Minus;
-
+		if ( RectHelpers::CheckMouseIntersection( x, y, item->GetMinusRect() ) )
+			return PlussMin::Minus;
+	}
+	else
+	{
+		if ( RectHelpers::CheckMouseIntersection( x, y, item->GetValueRect() ) )
+			return PlussMin::Flip;
+	}
 	return PlussMin::Equal;
 }
 void MenuManager::CheckItemMouseClick( int x, int y)
@@ -178,7 +190,12 @@ void MenuManager::CheckMenuItemIntersections( int32_t x, int32_t y )
 			break;
 		}
 	}
-	if ( plussMin != PlussMin::Equal )
+	if ( plussMin == PlussMin::Flip )
+	{
+		configLoader.ApplyChange( type, 10, plussMin );
+		configList->Set(  configLoader.GetFastMode(), type  );
+	}
+	else if ( plussMin != PlussMin::Equal )
 	{
 		configLoader.ApplyChange( type, 10, plussMin );
 		configList->Set( static_cast< uint32_t > ( configLoader.Get( type ) ) , type  );

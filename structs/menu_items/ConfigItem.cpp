@@ -72,6 +72,13 @@ void ConfigItem::SetValue( uint32_t value_ )
 	value = value_;
 	hasChanged = true;
 }
+void ConfigItem::SetValue( bool value_ )
+{
+	//if ( value == boolValue ) return;
+
+	boolValue = value_;
+	hasChanged = true;
+}
 uint32_t ConfigItem::GetValue()
 {
 	hasChanged = false;

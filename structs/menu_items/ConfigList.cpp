@@ -30,6 +30,10 @@ void ConfigList::Set( uint32_t value, ConfigValueType type )
 {
 	configItems[ type ]->SetValue( value );
 }
+void ConfigList::Set( bool value, ConfigValueType type )
+{
+	configItems[ type ]->SetValue( value );
+}
 void ConfigList::ConfigList::ScrollDown( )
 {
 	for ( auto &item : configItems )

@@ -4,5 +4,6 @@ enum class PlussMin
 {
 	Pluss,
 	Equal,
-	Minus
+	Minus,
+	Flip
 };

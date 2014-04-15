@@ -38,6 +38,8 @@ class ConfigLoader
 			configValues[config] += value;
 		else if ( plussMin == PlussMin::Minus )
 			configValues[config] -= value;
+		else if ( plussMin == PlussMin::Flip )
+			isFastMode = !isFastMode;
 	}
 	double Get( ConfigValueType config ) const
 	{
