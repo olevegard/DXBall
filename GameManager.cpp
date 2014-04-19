@@ -313,11 +313,12 @@ bool GameManager::WasBonusBoxSpawned( int32_t tilesDestroyed ) const
 	double randMax = gameConfig.Get( ConfigValueType::BonusBoxChance );
 	if ( tilesDestroyed != 1 )
 	{
-		double probabilityOfBonus = 1.0 / tilesDestroyed;
+		double probabilityOfBonus = 1.0 / ( tilesDestroyed * 1000 );
 		randMax = static_cast< int > ( probabilityOfBonus * randMax );
 	}
 
-	return ( RandomHelper::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) == 1 );
+	int32_t rand = static_cast< int32_t > ( RandomHelper::GenRandomNumber( ( randMax > 0 ) ? randMax : 1 ) );
+	return (  rand == 1 );
 }
 void GameManager::RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb )
 {
