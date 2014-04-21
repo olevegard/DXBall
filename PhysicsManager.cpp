@@ -613,7 +613,7 @@ void PhysicsManager::UpdateScale()
 	boardSize.w = right  - left;
 	boardSize.h = bottom - top;
 
-	double minDistToBottom  = 100;
+	double minDistToBottom  = windowSize.h * 0.2;
 	double scaleeee= (  boardSize.h - ( ( minDistToBottom - top ) * 2 )) / boardSize.h;
 	logger->Log( __FILE__, __LINE__, "Board before scaling", boardSize );
 	logger->Log( __FILE__, __LINE__, "Scale", scaleeee);
