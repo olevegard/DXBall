@@ -1232,9 +1232,14 @@ void GameManager::ApplyBonus( const std::shared_ptr< BonusBox > &ptr )
 			{
 				++localPlayerInfo.lives;
 				renderer.RenderText( "Extra Life!", Player::Local, true );
+				renderer.RenderLives( localPlayerInfo.lives, Player::Local );
 			}
 			else
+			{
 				++remotePlayerInfo.lives;
+				renderer.RenderLives( remotePlayerInfo.lives, Player::Remote );
+			}
+
 			break;
 		case BonusType::Death:
 			ApplyBonus_Death( ptr->GetOwner() );
@@ -1267,12 +1272,17 @@ void GameManager::ApplyBonus( const std::shared_ptr< BonusBox > &ptr )
 void GameManager::ApplyBonus_Death( const Player &player )
 {
 	if ( player == Player::Remote )
+	{
+		renderer.RenderLives( remotePlayerInfo.lives, Player::Remote );
 		return;
+	}
 
 	renderer.RenderText( "Death!!", Player::Local, true );
 
 	if ( physicsManager.KillAllTilesWithOwner( player ) )
 		DeleteDeadBalls();
+
+	renderer.RenderLives( localPlayerInfo.lives, Player::Local );
 }
 void GameManager::RenderMainText( )
 {
