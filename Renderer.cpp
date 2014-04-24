@@ -499,13 +499,13 @@ void Renderer::RenderText()
 // ==============================================================================================
 bool Renderer::LoadFontAndText()
 {
-	tinyFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 22 );
-	font = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 28 );
-	mediumFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 41 );
-	bigFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 57 );
-	hugeFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", 100 );
+	tinyFont =   RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", background.h / 30 );
+	font =       RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", background.h / 18 );
+	mediumFont = RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", background.h / 14 );
+	bigFont =    RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", background.h / 10 );
+	hugeFont =   RenderHelpers::LoadFont( "media/fonts/sketchy.ttf", background.h / 7 );
 
-	if ( bigFont == nullptr || font == nullptr || mediumFont == nullptr || hugeFont == nullptr )
+	if ( tinyFont == nullptr || bigFont == nullptr || font == nullptr || mediumFont == nullptr || hugeFont == nullptr )
 	{
 		std::cout << "Loading failed" << std::endl;
 		std::cin.ignore();
