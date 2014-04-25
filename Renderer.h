@@ -121,7 +121,7 @@ public:
 	void AddGameToList( GameInfo gameInfo );
 	void ClearGameList();
 
-
+	void SetScale( double scale_ );
 
 	const std::shared_ptr< ConfigList> &GetConfigList()
 	{
@@ -261,9 +261,9 @@ private:
 	RenderingItem< uint64_t > remotePlayerBalls;
 
 	short margin;
+	double scale;
 
 	SDL_Texture*   mainMenuBackground;
-
 
 	// Menu / Options / Lobby
 	// =============================================

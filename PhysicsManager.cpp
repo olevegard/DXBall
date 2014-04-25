@@ -553,6 +553,10 @@ void PhysicsManager::SetScale( double scale_ )
 {
 	scale = scale_;
 }
+double PhysicsManager::GetScale() const
+{
+	return scale;
+}
 void PhysicsManager::SetBulletSpeed( double bulletSpeed_ )
 {
 	bulletSpeed = bulletSpeed_;

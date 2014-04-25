@@ -106,6 +106,7 @@ public:
 	void Clear();
 
 	void UpdateScale();
+	double GetScale() const;
 private:
 	std::vector< std::shared_ptr< Ball >  > ballList;
 	std::vector< std::shared_ptr< Tile >  > tileList;

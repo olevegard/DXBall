@@ -73,6 +73,7 @@
 	,	bigFont()
 
 	,	margin( 30 )
+	,	scale( 1.0 )
 
 	,	lobbyMenuListRect( { 0, 0, 0, 0 })
 {
@@ -316,6 +317,7 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 }
 SDL_Texture* Renderer::CreateBonusBoxTexture( const std::shared_ptr< BonusBox >  &bb )
 {
+	bb->rect.Scale( scale );
 	SDL_Rect bonusBoxRect = bb->rect.ToSDLRect( );
 
 	SDL_Color color;
@@ -1080,4 +1082,8 @@ const std::shared_ptr< MenuItem > &Renderer::GetPauseMenuItem( const PauseMenuIt
 		case PauseMenuItemType::Unknown:
 			return pauseQuitButton;
 	}
+}
+void Renderer::SetScale( double scale_ )
+{
+	scale = scale_;
 }
