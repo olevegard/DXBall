@@ -1341,7 +1341,7 @@ void GameManager::GenerateBoard()
 	logger->Log( __FILE__, __LINE__, "Loading of Board is done" );
 
 	physicsManager.UpdateScale();
-	renderer.SetScale( physicsManager.GetScale() );
+	//renderer.SetScale( physicsManager.GetScale() );
 }
 void GameManager::ClearBoard()
 {

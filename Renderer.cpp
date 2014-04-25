@@ -94,6 +94,8 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 	isFullscreen= startFS;
 	background = rect;
+	scale = 1080.0 / ( background.h );
+	scale /= scale;
 
 	if ( isFullscreen )
 		screenFlags = SDL_WINDOW_FULLSCREEN;
