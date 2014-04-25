@@ -52,6 +52,7 @@ class GameManager
 		std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID );
 		void ApplyBonus( const std::shared_ptr< BonusBox > &ptr );
 		void ApplyBonus_Death( const Player &player );
+		void ApplyBonus_Life( const Player &player );
 
 		// Ball
 		// ===========================================

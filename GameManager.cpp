@@ -1228,18 +1228,7 @@ void GameManager::ApplyBonus( const std::shared_ptr< BonusBox > &ptr )
 	switch  ( ptr->GetBonusType() )
 	{
 		case BonusType::ExtraLife:
-			if ( ptr->GetOwner() == Player::Local )
-			{
-				++localPlayerInfo.lives;
-				renderer.RenderText( "Extra Life!", Player::Local, true );
-				renderer.RenderLives( localPlayerInfo.lives, Player::Local );
-			}
-			else
-			{
-				++remotePlayerInfo.lives;
-				renderer.RenderLives( remotePlayerInfo.lives, Player::Remote );
-			}
-
+			ApplyBonus_Life( ptr->GetOwner() );
 			break;
 		case BonusType::Death:
 			ApplyBonus_Death( ptr->GetOwner() );
@@ -1268,6 +1257,20 @@ void GameManager::ApplyBonus( const std::shared_ptr< BonusBox > &ptr )
 	}
 
 	ptr->Kill();
+}
+void GameManager::ApplyBonus_Life( const Player &player )
+{
+	if ( player == Player::Local )
+	{
+		++localPlayerInfo.lives;
+		renderer.RenderText( "Extra Life!", Player::Local, true );
+		renderer.RenderLives( localPlayerInfo.lives, Player::Local );
+	}
+	else
+	{
+		++remotePlayerInfo.lives;
+		renderer.RenderLives( remotePlayerInfo.lives, Player::Remote );
+			}
 }
 void GameManager::ApplyBonus_Death( const Player &player )
 {
