@@ -128,3 +128,8 @@ void Rect::FromSDLRect( const SDL_Rect &r  )
 	w = r.w;
 	h = r.h;
 }
+void Rect::Scale( double scale )
+{
+	w *= scale;
+	h *= scale;
+}

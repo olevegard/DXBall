@@ -5,8 +5,8 @@ BonusBox::BonusBox( int32_t objectID_ )
 	SetObjectID( objectID_ );
 	rect.x = 100;
 	rect.y = 100;
-	rect.w =  40;
-	rect.h =  40;//84
+	rect.w =  30;
+	rect.h =  30;
 
 	SetSpeed( 0.15 );
 }

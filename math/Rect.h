@@ -32,6 +32,8 @@ struct Rect
 
 	void CombineRects( const Rect &other );
 
+	void Scale( double scale );
+
 	double x;
 	double y;
 	double w;
