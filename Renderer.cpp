@@ -94,8 +94,7 @@ bool Renderer::Init( const SDL_Rect &rect, bool startFS, bool server )
 
 	isFullscreen= startFS;
 	background = rect;
-	scale = 1080.0 / ( background.h );
-	scale /= scale;
+	scale = ( background.h ) / 1080.0;
 
 	if ( isFullscreen )
 		screenFlags = SDL_WINDOW_FULLSCREEN;
@@ -303,6 +302,7 @@ void Renderer::AddBall( const std::shared_ptr< Ball > &ball )
 	else
 		ball->SetTexture( remotePlayerBallTexture );
 
+	ball->SetScale( scale );
 	ballList.push_back( ball );
 }
 void Renderer::RemoveBall(  const std::shared_ptr< Ball > &ball )
@@ -314,12 +314,12 @@ void Renderer::AddBonusBox( const std::shared_ptr< BonusBox > &bonusBox )
 	auto texture = CreateBonusBoxTexture( bonusBox );
 
 	bonusBox->SetTexture( texture ) ;
+	bonusBox->SetScale( scale );
 
 	bonusBoxList.push_back( bonusBox );
 }
 SDL_Texture* Renderer::CreateBonusBoxTexture( const std::shared_ptr< BonusBox >  &bb )
 {
-	bb->rect.Scale( scale );
 	SDL_Rect bonusBoxRect = bb->rect.ToSDLRect( );
 
 	SDL_Color color;
@@ -342,6 +342,8 @@ void Renderer::AddBullet( const std::shared_ptr< Bullet > &bullet )
 		bullet->SetTexture( localPlayerBallTexture );
 	else
 		bullet->SetTexture( remotePlayerBallTexture );
+
+	bullet->SetScale( scale );
 
 	bulletList.push_back( bullet );
 }

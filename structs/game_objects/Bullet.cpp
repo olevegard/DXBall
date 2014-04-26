@@ -3,8 +3,8 @@
 
 Bullet::Bullet( int32_t objectID )
 {
-	rect.w = 5;
-	rect.h = 5;
+	rect.w = 10;
+	rect.h = 10;
 	SetObjectID( objectID );
 	SetSpeed( 0.9 );
 }
