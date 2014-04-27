@@ -43,20 +43,20 @@ class GameManager
 		// ===========================================
 		bool WasBonusBoxSpawned( int32_t tilesDestroyed ) const;
 
-		void AddBonusBox(const std::shared_ptr< Ball > &triggerBall, double x, double y, int tilesDestroyed = 1 );
+		void AddBonusBox(std::shared_ptr< Ball > triggerBall, double x, double y, int tilesDestroyed = 1 );
 		void AddBonusBox( const Player &owner, Vector2f dir,  const Vector2f &pos, int tilesDestroyed = 1 );
-		void RemoveBonusBox( const std::shared_ptr< BonusBox >  &bb );
+		void RemoveBonusBox( std::shared_ptr< BonusBox >  bb );
 		void DeleteAllBonusBoxes();
 		void RemoveDeadBonusBoxes();
 
 		std::shared_ptr< BonusBox > GetBonusBoxFromID( int32_t ID );
-		void ApplyBonus( const std::shared_ptr< BonusBox > &ptr );
+		void ApplyBonus( std::shared_ptr< BonusBox > ptr );
 		void ApplyBonus_Death( const Player &player );
 		void ApplyBonus_Life( const Player &player );
 
 		// Ball
 		// ===========================================
-		void UpdateTileHit( const std::shared_ptr< Ball > &ball, const std::shared_ptr< Tile > &tile );
+		void UpdateTileHit( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > tile );
 		void UpdateBallSpeed();
 		void IncreaseActiveBalls( const Player &player );
 		void ReduceActiveBalls( const Player &player, uint32_t ballID );
@@ -66,17 +66,17 @@ class GameManager
 		void DeleteDeadBalls();
 		void AddBall( );
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
-		void RemoveBall( const std::shared_ptr< Ball > &ball );
+		void RemoveBall( std::shared_ptr< Ball > ball );
 
-		bool IsSuperBall( const std::shared_ptr< Ball > &ball );
+		bool IsSuperBall( std::shared_ptr< Ball > ball );
 		double GetBallSpeed( const Player &player ) const;
 		bool CanPlayerFireBall( const Player &player ) const;
 
 		// Bullets
 		// ===========================================
-		void CheckBulletTileIntersections( const std::shared_ptr< Bullet > &bullet );
-		void CheckBulletOutOfBounds( const std::shared_ptr< Bullet > &bullet );
-		void HandleBulletTileIntersection( const std::shared_ptr< Bullet > &bullet, const std::shared_ptr< Tile > &tile );
+		void CheckBulletTileIntersections( std::shared_ptr< Bullet > bullet );
+		void CheckBulletOutOfBounds( std::shared_ptr< Bullet > bullet );
+		void HandleBulletTileIntersection( std::shared_ptr< Bullet > bullet, std::shared_ptr< Tile > tile );
 
 		void DeleteDeadBullets( );
 		void DeleteAllBullets();
@@ -89,11 +89,11 @@ class GameManager
 		// Tiles
 		// ==========================================
 		void AddTile( const Vector2f &pos, TileType tileType, int32_t tileID  );
-		void RemoveTile( const std::shared_ptr< Tile > &tile );
+		void RemoveTile( std::shared_ptr< Tile > tile );
 		void DeleteDeadTiles();
 
-		void CheckBallTileIntersection( const std::shared_ptr< Ball > &ball );
-		void RemoveClosestTile( const std::shared_ptr< Ball > &ball, const std::shared_ptr< Tile > &closestTile );
+		void CheckBallTileIntersection( std::shared_ptr< Ball > ball );
+		void RemoveClosestTile( std::shared_ptr< Ball > ball, std::shared_ptr< Tile > closestTile );
 
 		// Config
 		// ===========================================
@@ -132,7 +132,7 @@ class GameManager
 
 		// Explotion related
 		// ===========================================
-		int HandleExplosions( const std::shared_ptr< Tile > &explodingTile, Player ballOwner  );
+		int HandleExplosions( std::shared_ptr< Tile > explodingTile, Player ballOwner  );
 
 		// Board handling
 		// ===========================================
