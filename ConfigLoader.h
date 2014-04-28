@@ -37,7 +37,10 @@ class ConfigLoader
 		if ( plussMin == PlussMin::Pluss )
 			configValues[config] += value;
 		else if ( plussMin == PlussMin::Minus )
-			configValues[config] -= value;
+		{
+			if ( configValues[config] > value )
+				configValues[config] -= value;
+		}
 		else if ( plussMin == PlussMin::Flip )
 			isFastMode = !isFastMode;
 	}
