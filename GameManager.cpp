@@ -1280,10 +1280,12 @@ void GameManager::ApplyBonus_Death( const Player &player )
 	if ( player == Player::Remote )
 	{
 		renderer.RenderLives( remotePlayerInfo.lives, Player::Remote );
+		remotePlayerInfo.RemoveAllBonuses();
 		return;
 	}
 
 	renderer.RenderText( "Death!!", Player::Local, true );
+	localPlayerInfo.RemoveAllBonuses();
 
 	if ( physicsManager.KillAllTilesWithOwner( player ) )
 		DeleteDeadBalls();
