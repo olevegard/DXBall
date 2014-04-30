@@ -56,6 +56,9 @@ struct PlayerInfo
 	}
 	bool CanFireBullet()
 	{
+		if ( !IsBonusActive( BonusType::FireBullets ) )
+			return false;
+
 		bool canFire =  ( SDL_GetTicks() - lastBulletFired  ) > fireInterval;
 
 		if ( canFire )
