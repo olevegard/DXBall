@@ -357,6 +357,7 @@ void Renderer::SetLocalPaddle( std::shared_ptr< Paddle >  &paddle )
 
 	localPlayerPaddle = RenderHelpers::InitSurface( localPaddle->rect, colorConfig.localPlayerColor, renderer );
 	localPaddle->SetTexture( localPlayerPaddle  );
+	localPaddle->SetScale( scale );
 }
 void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 {
@@ -364,6 +365,7 @@ void Renderer::SetRemotePaddle( std::shared_ptr< Paddle >  &paddle )
 
 	remotePlayerPaddle = RenderHelpers::InitSurface( localPaddle->rect, colorConfig.remotePlayerColor, renderer );
 	remotePaddle->SetTexture( remotePlayerPaddle );
+	remotePaddle->SetScale( scale );
 }
 // ============================================================================================
 // ================================= Renderering ==============================================
