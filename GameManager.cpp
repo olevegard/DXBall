@@ -1267,34 +1267,10 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > ptr )
 	switch  ( ptr->GetBonusType() )
 	{
 		case BonusType::BallSplit:
-		{
-			// Get all local player's balls
-			std::vector< std::shared_ptr< Ball > > localBalls;
-			std::copy( std::begin( ballList ), std::end( ballList ), std::back_inserter( localBalls ) );
-
-			for ( const auto &p : localBalls )
-			{
-				auto dir = p->GetDirection();
-
-				dir.x *= -1;
-
-				auto newBall = physicsManager.CreateBall( Player::Local, 0, localPlayerInfo.ballSpeed );
-				newBall->SetDirection( dir );
-				newBall->SetSpeed( p->GetSpeed() );
-				newBall->SetPosition( p->GetPosition() );
-
-				ballList.push_back( newBall);
-				renderer.AddBall( newBall);
-				physicsManager.AddBall( newBall);
-				++localPlayerInfo.activeBalls;
-			}
-
-			renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
-		}
-
-		break;
+			ApplyBonus_BallSplit( );
+			break;
 		case BonusType::ExtraLife:
-		ApplyBonus_Life( ptr->GetOwner() );
+			ApplyBonus_Life( ptr->GetOwner() );
 			break;
 		case BonusType::Death:
 			ApplyBonus_Death( ptr->GetOwner() );
@@ -1337,6 +1313,40 @@ void GameManager::ApplyBonus_Life( const Player &player )
 		++remotePlayerInfo.lives;
 		renderer.RenderLives( remotePlayerInfo.lives, Player::Remote );
 			}
+}
+
+void GameManager::ApplyBonus_BallSplit( )
+{
+	// Get all local player's balls
+	auto isLocal =
+	[]
+	( const std::shared_ptr< Ball > &ball )
+	{
+		return ( ball->GetOwner() == Player::Local );
+	};
+
+	std::vector< std::shared_ptr< Ball > > localBalls;
+	std::copy_if( std::begin( ballList ), std::end( ballList ), std::back_inserter( localBalls ), isLocal );
+
+	for ( const auto &p : localBalls )
+	{
+		auto dir = p->GetDirection();
+
+		dir.x *= -1;
+
+		auto newBall = physicsManager.CreateBall( Player::Local, 0, localPlayerInfo.ballSpeed );
+		newBall->SetDirection( dir );
+		newBall->SetSpeed( p->GetSpeed() );
+		newBall->SetPosition( p->GetPosition() );
+
+		ballList.push_back( newBall);
+		renderer.AddBall( newBall);
+		physicsManager.AddBall( newBall);
+		++localPlayerInfo.activeBalls;
+	}
+
+	renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
+
 }
 void GameManager::ApplyBonus_Death( const Player &player )
 {
