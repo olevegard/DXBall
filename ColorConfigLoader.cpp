@@ -72,6 +72,12 @@ void ColorConfigLoader::ApplyConfig( std::string str )
 		line >> color;
 		bonusTypeColors.insert( std::make_pair( BonusType::FireBullets, color ) );
 	}
+	else if (  parameterName ==  "bonus_ball_split" )
+	{
+		SDL_Color color;
+		line >> color;
+		bonusTypeColors.insert( std::make_pair( BonusType::BallSplit, color ) );
+	}
 	else
 	{
 		str = RemoveCharacterFromString( str, '|' );

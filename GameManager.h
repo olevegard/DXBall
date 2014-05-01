@@ -64,6 +64,9 @@ class GameManager
 		void IncreaseBallSpeedFastMode( const Player &player, double delta );
 
 		void DeleteDeadBalls();
+		void DeleteAllBalls();
+
+
 		void AddBall( );
 		std::shared_ptr<Ball> AddBall( Player owner, unsigned int ballID );
 		void RemoveBall( std::shared_ptr< Ball > ball );
@@ -248,4 +251,5 @@ class GameManager
 		double frameDuration;
 
 		SDL_Joystick *stick;
+		bool respawnBalls;
 };

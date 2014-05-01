@@ -49,6 +49,7 @@
 	,	frameDuration( 1000.0 / 60.0 )
 
 	,	stick( nullptr )
+	,	respawnBalls( false )
 
 {
 	windowSize.x = 0;
@@ -181,11 +182,13 @@ void GameManager::Restart()
 
 	RenderMainText();
 	RendererScores();
+
+	respawnBalls = false;
 }
 void GameManager::AddBall( )
 {
-	if ( localPlayerInfo.activeBalls == 0 )
-		AddBall( Player::Local, 0 );
+	//if ( localPlayerInfo.activeBalls == 0 )
+	AddBall( Player::Local, 0 );
 }
 std::shared_ptr<Ball> GameManager::AddBall( Player owner, unsigned int ballID )
 {
@@ -719,6 +722,22 @@ void GameManager::DeleteDeadBullets()
 	// Remove item returned by remove_if
 	bulletList.erase( newEnd, bulletList.end( ) );
 }
+void GameManager::DeleteAllBalls()
+{
+	auto newEnd = std::remove_if(
+		ballList.begin(),
+		ballList.end(),
+	[=]( std::shared_ptr< Ball > &ball )
+	{
+		renderer.RemoveBall( ball );
+		physicsManager.RemoveBall( ball );
+
+		return true;
+	} );
+
+	// Remove item returned by remove_if
+	ballList.erase( newEnd, ballList.end( ) );
+}
 void GameManager::DeleteAllBullets()
 {
 	auto newEnd = std::remove_if(
@@ -871,7 +890,19 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 
 		if ( buttonEvent.type == SDL_MOUSEBUTTONDOWN )
 		{
-			AddBall( );
+			if ( respawnBalls )
+			{
+				respawnBalls = false;
+
+				uint32_t prevActiveBalls = localPlayerInfo.activeBalls;
+				localPlayerInfo.activeBalls = 0;
+
+				for ( uint32_t i = 0 ; i < prevActiveBalls ; ++i )
+					AddBall();
+			}
+
+			if ( localPlayerInfo.activeBalls == 0 )
+				AddBall( );
 			FireBullets();
 		}
 	}
@@ -1066,7 +1097,12 @@ void GameManager::UpdateBoard()
 	if ( menuManager.GetGameState() == GameState::GameOver )
 		return;
 
-	if ( IsLevelDone() && ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() ))
+	if ( !IsLevelDone() )
+		return;
+
+	respawnBalls = true;
+
+	if ( !menuManager.IsTwoPlayerMode()  || netManager.IsServer() )
 		GenerateBoard();
 }
 void GameManager::UpdateLobbyState()
@@ -1230,8 +1266,35 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > ptr )
 {
 	switch  ( ptr->GetBonusType() )
 	{
+		case BonusType::BallSplit:
+		{
+			// Get all local player's balls
+			std::vector< std::shared_ptr< Ball > > localBalls;
+			std::copy( std::begin( ballList ), std::end( ballList ), std::back_inserter( localBalls ) );
+
+			for ( const auto &p : localBalls )
+			{
+				auto dir = p->GetDirection();
+
+				dir.x *= -1;
+
+				auto newBall = physicsManager.CreateBall( Player::Local, 0, localPlayerInfo.ballSpeed );
+				newBall->SetDirection( dir );
+				newBall->SetSpeed( p->GetSpeed() );
+				newBall->SetPosition( p->GetPosition() );
+
+				ballList.push_back( newBall);
+				renderer.AddBall( newBall);
+				physicsManager.AddBall( newBall);
+				++localPlayerInfo.activeBalls;
+			}
+
+			renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
+		}
+
+		break;
 		case BonusType::ExtraLife:
-			ApplyBonus_Life( ptr->GetOwner() );
+		ApplyBonus_Life( ptr->GetOwner() );
 			break;
 		case BonusType::Death:
 			ApplyBonus_Death( ptr->GetOwner() );
@@ -1354,9 +1417,10 @@ void GameManager::ClearBoard()
 	ballList.clear();
 
 	DeleteAllBullets();
+	DeleteAllBalls();
 
-	localPlayerInfo.activeBalls = 0;
-	remotePlayerInfo.activeBalls = 0;
+	//localPlayerInfo.activeBalls = 0;
+	//remotePlayerInfo.activeBalls = 0;
 
 	physicsManager.Clear();
 	renderer.ClearBoard();

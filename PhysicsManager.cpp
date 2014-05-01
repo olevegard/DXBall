@@ -271,7 +271,9 @@ void PhysicsManager::SetBonusBoxDirection( const std::shared_ptr< BonusBox > &bo
 }
 BonusType PhysicsManager::GetRandomBonusType() const
 {
+/*
 	int rand = RandomHelper::GenRandomNumber( 1000 );
+
 	if ( rand < 250 )
 		return BonusType::FireBullets;
 	if ( rand < 500 )
@@ -280,6 +282,9 @@ BonusType PhysicsManager::GetRandomBonusType() const
 		return BonusType::ExtraLife;
 	else
 		return BonusType::Death;
+		*/
+
+	return BonusType::BallSplit;
 }
 // Bullets
 // =============================================================================================================

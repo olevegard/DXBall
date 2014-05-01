@@ -21,7 +21,7 @@ local_player_color 0 140 0 255
 remote_player_color 140 0 0 255
 
 # The midde line in Main Menu / Game Lobby and Game Options
-grey_area 0 0 0 255
+grey_area 128 128 128 255
 
 # Bonus Box colors
 # ================================================================================
@@ -32,6 +32,10 @@ bonus_death 0 0 0 255
 bonus_super_ball 0 0 255 255
 bonus_fire_bullets 255 0 255 255
 bonus_extra_life 255 255 255 255
+bonus_ball_split 128 128 128 255
+
+list_highlight_top 64 64 64 255
+list_highlight_bottom 192 192 192 255
 
 # Tile colors
 # ================================================================================
@@ -52,7 +56,7 @@ bonus_extra_life 255 255 255 255
 # ================================================================================
 
 # Exact number of particles spawned per tile hit
-particle_fire_count 32
+particle_fire_count 0
 
 # Particle decay
 # Higher value menas the particle fades quicker
