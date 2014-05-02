@@ -78,6 +78,12 @@ void ColorConfigLoader::ApplyConfig( std::string str )
 		line >> color;
 		bonusTypeColors.insert( std::make_pair( BonusType::BallSplit, color ) );
 	}
+	else if (  parameterName ==  "bonus_expand_paddle" )
+	{
+		SDL_Color color;
+		line >> color;
+		bonusTypeColors.insert( std::make_pair( BonusType::ExpandPaddle, color ) );
+	}
 	else
 	{
 		str = RemoveCharacterFromString( str, '|' );

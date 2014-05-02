@@ -7,9 +7,9 @@ enum class BonusType
 	Death, // Loose 1 life
 	SuperBall, // Ball goes trhough everything
 	FireBullets,
-
-
 	BallSplit, // Ball split into two
+
+	ExpandPaddle,
 
 	// Remote player bonus.
 	BallSteal, // Remote player looses a ball to local  player. ( Can be changed to 'looses all balls but one' )

@@ -1275,6 +1275,12 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > ptr )
 		case BonusType::Death:
 			ApplyBonus_Death( ptr->GetOwner() );
 			break;
+		case BonusType::ExpandPaddle:
+			if ( ptr->GetOwner() == Player::Local )
+				localPaddle->rect.w += ( windowSize.w * 0.025 );
+			else
+				remotePaddle->rect.w += ( windowSize.w * 0.025 );
+			break;
 		case BonusType::SuperBall:
 			if ( ptr->GetOwner() == Player::Local )
 			{
