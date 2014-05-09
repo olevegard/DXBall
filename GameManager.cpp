@@ -698,9 +698,6 @@ void GameManager::DeleteDeadTiles()
 	} );
 	// Remove item returned by remove_if
 	tileList.erase( newEnd, tileList.end( ) );
-
-	if ( deadTile )
-		UpdateBoard();
 }
 void GameManager::DeleteDeadBullets()
 {
@@ -1087,6 +1084,7 @@ void GameManager::Update( double delta )
 	AIMove();
 	UpdateGameObjects( delta );
 	renderer.Render( );
+	UpdateBoard();
 }
 void GameManager::UpdateGameObjects( double delta )
 {
