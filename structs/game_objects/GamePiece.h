@@ -14,6 +14,7 @@ struct GamePiece
 
 	Rect rect;
 	Rect oldRect;
+	Rect originalSize;
 
 	TextureType textureType;
 
@@ -31,6 +32,12 @@ struct GamePiece
 		rect.w *= scale;
 		rect.h *= scale;
 	}
+	void SetOriginalSize( const SDL_Rect &r );
+	void ResetSize( );
+	double GetScale( ) const
+	{
+		return scale;
+	}
 	void ResetScale()
 	{
 		//rect.w *= ( 1.0 / scale );
@@ -42,7 +49,6 @@ struct GamePiece
 	{
 		return objectID;
 	}
-
 	void SetObjectID( int32_t objectID_ )
 	{
 		objectID = objectID_;

@@ -175,6 +175,8 @@ void GameManager::Restart()
 	localPlayerInfo.Reset();
 	remotePlayerInfo.Reset();
 
+	localPaddle->ResetSize();
+
 	LoadConfig();
 
 	renderer.SetIsTwoPlayerMode( menuManager.IsTwoPlayerMode() );

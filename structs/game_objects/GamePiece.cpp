@@ -20,3 +20,13 @@ SDL_Texture* GamePiece::GetTexture( ) const
 {
 	return texture;
 }
+void GamePiece::SetOriginalSize( const SDL_Rect &r )
+{
+	originalSize.w = r.w;
+	originalSize.h = r.h;
+}
+void GamePiece::ResetSize( )
+{
+	rect.w = originalSize.w;
+	rect.h = originalSize.h;
+}
