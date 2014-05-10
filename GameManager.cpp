@@ -1280,9 +1280,31 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > ptr )
 			break;
 		case BonusType::ExpandPaddle:
 			if ( ptr->GetOwner() == Player::Local )
-				localPaddle->rect.w += ( windowSize.w * 0.025 );
+			{
+				renderer.RenderText( "Extension", Player::Local, true  );
+
+				if ( localPaddle->rect.w < ( windowSize.w * 0.45 ) )
+					localPaddle->rect.w += ( windowSize.w * 0.025 );
+			}
 			else
-				remotePaddle->rect.w += ( windowSize.w * 0.025 );
+			{
+				if ( remotePaddle->rect.w > ( windowSize.w * 0.45) )
+					remotePaddle->rect.w += ( windowSize.w * 0.025 );
+			}
+			break;
+		case BonusType::ShrinkPaddle:
+			if ( ptr->GetOwner() == Player::Local )
+			{
+				renderer.RenderText( "Shrink", Player::Local, true  );
+
+				if ( localPaddle->rect.w > ( windowSize.w * 0.04 ) )
+					localPaddle->rect.w -= ( windowSize.w * 0.025 );
+			}
+			else
+			{
+				if ( remotePaddle->rect.w > ( windowSize.w * 0.04 ) )
+					remotePaddle->rect.w -= ( windowSize.w * 0.025 );
+			}
 			break;
 		case BonusType::SuperBall:
 			if ( ptr->GetOwner() == Player::Local )
