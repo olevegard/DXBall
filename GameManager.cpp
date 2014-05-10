@@ -1268,6 +1268,9 @@ void GameManager::ApplyBonus( std::shared_ptr< BonusBox > ptr )
 	{
 		case BonusType::BallSplit:
 			ApplyBonus_BallSplit( );
+
+			if ( ptr->GetOwner() == Player::Local )
+				renderer.RenderText( "Balls to the walls!", Player::Local, true  );
 			break;
 		case BonusType::ExtraLife:
 			ApplyBonus_Life( ptr->GetOwner() );
