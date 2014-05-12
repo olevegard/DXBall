@@ -31,4 +31,6 @@ enum MessageType
 
 	BulletFire,			// Bullet was fired from oponent
 	BulletKilled,		// Bullet fired from opnent was killed
+
+	LevelName,			// Bullet fired from opnent was killed
 };

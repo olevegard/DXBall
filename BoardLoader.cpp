@@ -39,6 +39,8 @@ void BoardLoader::BuildLevelList()
 Board BoardLoader::LoadLevel( const std::string &textFile )
 {
 	Board board;
+	board.levelName = textFile;
+
 	TilePosition pos;
 	std::string line;
 

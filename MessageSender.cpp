@@ -234,6 +234,14 @@ void MessageSender::SendGetGameListMessage()
 
 	SendMessage( msg, MessageTarget::Server );;
 }
+void MessageSender::SendLevelNameMessage( const std::string levelName )
+{
+	TCPMessage msg;
+	msg.SetMessageType( MessageType::LevelName );
+	msg.SetLevelName( levelName );
+
+	SendMessage( msg, MessageTarget::Oponent );
+}
 void MessageSender::SendMessage( const TCPMessage &message, const MessageTarget &target, bool print )
 {
 	std::stringstream ss("");

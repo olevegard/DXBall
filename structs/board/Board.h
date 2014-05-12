@@ -46,6 +46,8 @@ struct Board
 	void CalcMaxScale( const SDL_Rect &rect );
 	void CenterAndFlip( const SDL_Rect &rect );
 
+	std::string levelName;
+
 	private:
 	Edges FindEdges( const SDL_Rect &rect );
 

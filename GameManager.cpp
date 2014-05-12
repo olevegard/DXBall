@@ -541,6 +541,10 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 		case MessageType::TileSpawned:
 			AddTile(  message.GetPos1(), message.GetTileType(), message.GetObjectID()  );
 			break;
+		case MessageType::LevelName:
+			logger->Log( __FILE__, __LINE__, "Setting level name", message.GetLevelName() );
+			renderer.RenderLevelName( message.GetLevelName() );
+			break;
 		case MessageType::LastTileSent:
 			logger->Log( __FILE__, __LINE__, "================================================================================");
 			physicsManager.UpdateScale();
@@ -1379,7 +1383,6 @@ void GameManager::ApplyBonus_BallSplit( )
 	}
 
 	renderer.RenderBallCount( localPlayerInfo.activeBalls, Player::Local );
-
 }
 void GameManager::ApplyBonus_Death( const Player &player )
 {
@@ -1401,7 +1404,10 @@ void GameManager::ApplyBonus_Death( const Player &player )
 void GameManager::RenderMainText( )
 {
 	if ( menuManager.GetGameState() == GameState::InGameWait )
+	{
 		renderer.RenderText( "InGame : Wait...", Player::Local  );
+		renderer.RenderLevelName( "-" );
+	}
 	else
 	if ( menuManager.GetGameState() == GameState::InGame )
 	{
@@ -1445,11 +1451,7 @@ void GameManager::GenerateBoard()
 	Board b = boardLoader.GenerateBoard( windowSize );
 	std::vector<TilePosition> vec = b.GetTiles();
 
-	std::string levelName = b.levelName;
-	levelName = levelName.substr( levelName.find_last_of( '/' ) + 1, levelName.size() );
-	levelName = levelName.substr( 0, levelName.size() - 4 );
-	renderer.RenderLevelName( levelName );
-	messageSender.SendLevelNameMessage( levelName );
+	SetLevelName( b.levelName );
 
 	for ( const auto &tile : vec )
 		AddTile( tile.tilePos, tile.type, -1 );
@@ -1483,6 +1485,20 @@ void GameManager::ClearBoard()
 	physicsManager.Clear();
 	renderer.ClearBoard();
 	tileList.erase( tileList.begin(), tileList.end() );
+}
+std::string GameManager::StripLevelName( std::string levelName )
+{
+	levelName = levelName.substr( levelName.find_last_of( '/' ) + 1, levelName.size() );
+	levelName = levelName.substr( 0, levelName.size() - 4 );
+
+	return levelName;
+}
+void GameManager::SetLevelName( const std::string &levelName_ )
+{
+	std::string levelName = StripLevelName( levelName_ );
+
+	renderer.RenderLevelName( levelName );
+	messageSender.SendLevelNameMessage( levelName );
 }
 void GameManager::IncrementPoints( const TileType &tileType, bool isDestroyed, const Player &ballOwner )
 {

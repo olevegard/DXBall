@@ -77,6 +77,7 @@ public:
 	// Ingame text
 	void RenderText( const std::string &textToRender, const Player &player, bool fade = false);
 
+	void RenderLevelName( const std::string &levelName );
 	void RenderPlayerCaption( const std::string textToRender, const Player &player  );
 	void RenderBallCount( uint64_t ballCount , const Player &player );
 	void RenderPoints   ( uint64_t pointCount, const Player &player );
@@ -243,6 +244,9 @@ private:
 
 	// Main info text...
 	RenderingItem< std::string > localPlayerText;
+
+	// Main info text...
+	RenderingItem< std::string > levelNameText;
 
 	// Player name
 	RenderingItem< std::string > localPlayerCaption;

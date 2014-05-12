@@ -143,6 +143,8 @@ class GameManager
 		void GenerateBoard();
 		bool CanGenerateNewBoard();
 		void ClearBoard();
+		std::string StripLevelName( std::string levelName );
+		void SetLevelName( const std::string &levelName );
 
 		// Points / Lives
 		// ===========================================

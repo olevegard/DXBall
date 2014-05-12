@@ -489,6 +489,7 @@ void Renderer::RenderText()
 {
 	RenderHelpers::RenderTextItem( renderer, localPlayerText );
 
+	RenderHelpers::RenderTextItem( renderer, levelNameText );
 	RenderHelpers::RenderTextItem( renderer, localPlayerCaption);
 	RenderHelpers::RenderTextItem( renderer, localPlayerPoints);
 	RenderHelpers::RenderTextItem( renderer, localPlayerLives );
@@ -543,6 +544,14 @@ void Renderer::RenderText( const std::string &textToRender, const Player &player
 		localPlayerText.Reset( renderer, bigFont, colorConfig.textColor );
 		localPlayerText.Rescale( background.w, background.h );
 	}
+}
+void Renderer::RenderLevelName( const std::string &levelName )
+{
+	levelNameText.value = levelName;
+	levelNameText.Reset( renderer, mediumFont, colorConfig.textColor );
+
+	levelNameText.rect.x = ( background.w / 2 ) - ( levelNameText.rect.w / 2);
+	levelNameText.rect.y = 10;
 }
 void Renderer::RenderPlayerCaption( const std::string textToRender, const Player &player  )
 {

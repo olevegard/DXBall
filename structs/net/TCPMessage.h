@@ -75,7 +75,18 @@ class TCPMessage
 
 		void SetDir( Vector2f dir_ );
 		void SetSize( Vector2f size_ );
+
+		void SetLevelName( std::string levelName_ )
+		{
+			levelName = levelName_;
+		}
+
+		std::string GetLevelName( ) const
+		{
+			return levelName;
+		}
 	private:
+		std::string levelName;
 		MessageType msgType;
 		unsigned int objectID;
 		unsigned int objectID2;
@@ -249,6 +260,14 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 
 				return is;
 			}
+		case LevelName:
+		{
+			std::string levelName_;
+			is >> levelName_;
+			msg.SetLevelName( levelName_ );
+
+			return is;
+		}
 		default:
 			{
 				std::cout << "Wrong message type : " << type << std::endl;
@@ -307,6 +326,11 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 
 				break;
 			}
+		case LevelName:
+		{
+			os << message.GetLevelName() << " ";
+			break;
+		}
 		case BallData:
 		case BonusSpawned:
 			os

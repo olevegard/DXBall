@@ -43,6 +43,9 @@ public:
 	void SendJoinGameMessage( int32_t gameID );
 	void SendEndGameMessage( int32_t gameID, const std::string &ip, uint16_t port );
 	void SendGetGameListMessage();
+
+	void SendLevelNameMessage( const std::string levelName );
+
 private:
 	void SendMessage( const TCPMessage &message, const MessageTarget &target, bool print = false );
 	void PrintSend( const TCPMessage &msg );
