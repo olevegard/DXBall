@@ -84,6 +84,12 @@ void ColorConfigLoader::ApplyConfig( std::string str )
 		line >> color;
 		bonusTypeColors.insert( std::make_pair( BonusType::ExpandPaddle, color ) );
 	}
+	else if (  parameterName ==  "bonus_shrink_paddle" )
+	{
+		SDL_Color color;
+		line >> color;
+		bonusTypeColors.insert( std::make_pair( BonusType::ShrinkPaddle, color ) );
+	}
 	else
 	{
 		str = RemoveCharacterFromString( str, '|' );

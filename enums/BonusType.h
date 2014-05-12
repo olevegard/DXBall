@@ -10,6 +10,7 @@ enum class BonusType
 	BallSplit, // Ball split into two
 
 	ExpandPaddle,
+	ShrinkPaddle,
 
 	// Remote player bonus.
 	BallSteal, // Remote player looses a ball to local  player. ( Can be changed to 'looses all balls but one' )

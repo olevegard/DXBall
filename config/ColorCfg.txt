@@ -33,6 +33,8 @@ bonus_super_ball 0 0 255 255
 bonus_fire_bullets 255 0 255 255
 bonus_extra_life 255 255 255 255
 bonus_ball_split 128 128 128 255
+bonus_expand_paddle 255 255 0 255
+bonus_shrink_paddle 255 128 128 255
 
 list_highlight_top 64 64 64 255
 list_highlight_bottom 192 192 192 255
