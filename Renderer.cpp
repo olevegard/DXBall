@@ -292,7 +292,6 @@ void Renderer::UpdateTileHit( const std::shared_ptr< Tile >  &tile ) const
 void Renderer::ClearBoard( )
 {
 	bulletList.erase( bulletList.begin(), bulletList.end() );
-	ballList.erase( ballList.begin(), ballList.end() );
 	tileList.erase( tileList.begin(), tileList.end() );
 }
 void Renderer::AddBall( const std::shared_ptr< Ball > &ball )

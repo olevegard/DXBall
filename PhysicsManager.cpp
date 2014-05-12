@@ -377,6 +377,14 @@ std::vector< std::shared_ptr< Tile > >  PhysicsManager::FindAllTilesOnBulletsPat
 
 	return tilesHitByBullet;
 }
+void PhysicsManager::RespawnBalls( const Player &owner, double ballSpeed )
+{
+	for ( const auto &ball : ballList )
+	{
+		if ( ball->GetOwner() == owner )
+			ball->SetSpeed ( ballSpeed  );
+	}
+}
 // Paddles
 // =============================================================================================================
 void PhysicsManager::SetPaddleData( )
@@ -535,12 +543,6 @@ void PhysicsManager::ApplyScale( double scale_ )
 		p->ResetScale();
 		p->SetScale( scale );
 	}
-
-	for ( const auto &p : ballList )
-	{
-		p->ResetScale();
-		p->SetScale( scale );
-	}
 }
 void PhysicsManager::KillBallsAndBonusBoxes( const Player &player )
 {
@@ -583,7 +585,6 @@ void PhysicsManager::SetPaddles( const std::shared_ptr < Paddle > &localPaddle_,
 void PhysicsManager::Clear()
 {
 	bulletList.erase( bulletList.begin(), bulletList.end() );
-	ballList.erase( ballList.begin(), ballList.end() );
 	tileList.erase( tileList.begin(), tileList.end() );
 }
 void PhysicsManager::UpdateScale()

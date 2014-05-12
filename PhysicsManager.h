@@ -59,6 +59,8 @@ public:
 
 	std::vector< std::shared_ptr< Tile > >  FindAllTilesOnBulletsPath( const std::shared_ptr< Bullet > &bullet );
 
+	void RespawnBalls( const Player &owner, double ballSpeed );
+
 	// Bonus Boxes
 	// =============================================================================================================
 	void AddBonusBox( const std::shared_ptr< BonusBox > &bb );

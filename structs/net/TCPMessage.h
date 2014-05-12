@@ -121,6 +121,7 @@ inline std::istream& operator>>( std::istream &is, TCPMessage &msg )
 		case GetGameList:
 		case BulletKilled:
 		case LastTileSent:
+		case BallRespawn:
 			return is;
 		case TileHit:
 			{
@@ -271,6 +272,7 @@ inline std::ostream& operator<<( std::ostream &os, const TCPMessage &message )
 		case LevelDone:
 		case GameJoined:
 		case BallKilled:
+		case BallRespawn:
 		case GetGameList:
 		case BonusPickup:
 		case BulletKilled:

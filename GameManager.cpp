@@ -171,6 +171,7 @@ void GameManager::Restart()
 
 	DeleteAllBonusBoxes();
 	DeleteAllBullets();
+	DeleteAllBalls();
 
 	localPlayerInfo.Reset();
 	remotePlayerInfo.Reset();
@@ -505,6 +506,10 @@ void GameManager::HandleRecieveMessage( const TCPMessage &message )
 			break;
 		case MessageType::BallKilled:
 			RecieveBallKillMessage( message );
+			break;
+
+		case MessageType::BallRespawn:
+			physicsManager.RespawnBalls( Player::Remote, remotePlayerInfo.ballSpeed );
 			break;
 		case MessageType::TileHit:
 			RecieveTileHitMessage( message );
@@ -891,15 +896,11 @@ void GameManager::HandleMouseEvent(  const SDL_MouseButtonEvent &buttonEvent )
 		{
 			if ( respawnBalls )
 			{
+				messageSender.SendBallRespawnMessage();
+				physicsManager.RespawnBalls( Player::Local, localPlayerInfo.ballSpeed );
 				respawnBalls = false;
-
-				uint32_t prevActiveBalls = localPlayerInfo.activeBalls;
-				localPlayerInfo.activeBalls = 0;
-
-				for ( uint32_t i = 0 ; i < prevActiveBalls ; ++i )
-					AddBall();
 			}
-
+			
 			if ( localPlayerInfo.activeBalls == 0 )
 				AddBall( );
 			FireBullets();
@@ -1369,6 +1370,7 @@ void GameManager::ApplyBonus_BallSplit( )
 		newBall->SetDirection( dir );
 		newBall->SetSpeed( p->GetSpeed() );
 		newBall->SetPosition( p->GetPosition() );
+		messageSender.SendBallSpawnMessage( newBall, windowSize.h );
 
 		ballList.push_back( newBall);
 		renderer.AddBall( newBall);
@@ -1443,26 +1445,41 @@ void GameManager::GenerateBoard()
 	Board b = boardLoader.GenerateBoard( windowSize );
 	std::vector<TilePosition> vec = b.GetTiles();
 
+	std::string levelName = b.levelName;
+	levelName = levelName.substr( levelName.find_last_of( '/' ) + 1, levelName.size() );
+	levelName = levelName.substr( 0, levelName.size() - 4 );
+	renderer.RenderLevelName( levelName );
+	messageSender.SendLevelNameMessage( levelName );
+
 	for ( const auto &tile : vec )
 		AddTile( tile.tilePos, tile.type, -1 );
 
 	messageSender.SendLastTileMessage();
 	logger->Log( __FILE__, __LINE__, "Loading of Board is done" );
 
+
 	physicsManager.UpdateScale();
-	//renderer.SetScale( physicsManager.GetScale() );
+	renderer.SetScale( physicsManager.GetScale() );
 }
 void GameManager::ClearBoard()
 {
 	logger->Log( __FILE__, __LINE__, "==================== Clear Board ====================");
-	ballList.clear();
+	//ballList.clear();
 
 	DeleteAllBullets();
-	DeleteAllBalls();
+	//DeleteAllBalls();
 
 	//localPlayerInfo.activeBalls = 0;
 	//remotePlayerInfo.activeBalls = 0;
 
+	for ( const auto &ball : ballList )
+	{
+		ball->SetSpeed( 0.0 );
+		if ( ball->GetOwner() == Player::Local )
+			ball->SetPosition( Vector2f( ( windowSize.w / 2 ) - ( ball->rect.w ), localPaddle->rect.y - ( ball->rect.h * 2 ) ) );
+		else
+			ball->SetPosition( Vector2f( ( windowSize.w / 2 ) - ( ball->rect.w ), remotePaddle->rect.y +  remotePaddle->rect.h + ( ball->rect.h * 2 ) ) );
+	}
 	physicsManager.Clear();
 	renderer.ClearBoard();
 	tileList.erase( tileList.begin(), tileList.end() );

@@ -8,6 +8,7 @@ enum MessageType
 	BallSpawned, 		// New ball spawned. Contains ID, position, speed and direction.
 	BallData,    		// ID, position, speed, direction
 	BallKilled,  		// ID of ball
+	BallRespawn, 		// When starting a new level, all balls are stopped and have to be re-released ( Respawned )
 
 	LastTileSent,		// The lat Tile has been sent, calculate and set scale
 	TileSpawned,		// A tile was spawned, this happens when a new game is started and when level is done.

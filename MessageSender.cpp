@@ -99,6 +99,14 @@ void MessageSender::SendBallDataMessage( const std::shared_ptr<Ball> &ball, doub
 
 	SendMessage( msg, MessageTarget::Oponent );
 }
+void MessageSender::SendBallRespawnMessage()
+{
+	TCPMessage msg;
+
+	msg.SetMessageType( MessageType::BallRespawn );
+
+	SendMessage( msg, MessageTarget::Oponent );
+}
 void MessageSender::SendTileSpawnMessage( const std::shared_ptr<Tile> &tile, double height )
 {
 	TCPMessage msg;
@@ -247,3 +255,4 @@ Vector2f MessageSender::FlipPosition( Rect originalPos, double height )
 {
 	return Vector2f( originalPos.x , height - originalPos.y  - originalPos.h );
 }
+

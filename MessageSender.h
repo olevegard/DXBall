@@ -28,6 +28,7 @@ public:
 	void SendBallKilledMessage( uint32_t ballID );
 	void SendBallSpawnMessage( const std::shared_ptr<Ball> &ball, double height );
 	void SendBallDataMessage( const std::shared_ptr<Ball> &ball, double height );
+	void SendBallRespawnMessage();
 	void SendLevelDoneMessage( );
 	void SendPaddlePosMessage( double xPos  );
 	void SendPlayerName( const std::string &playerName );
