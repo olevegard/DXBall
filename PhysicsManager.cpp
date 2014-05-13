@@ -141,7 +141,7 @@ std::shared_ptr< Ball >  PhysicsManager::CreateBall( const Player &owner, uint32
 
 	std::shared_ptr< Ball > ball = std::make_shared< Ball >( windowSize, owner, ballID );
 	ball->textureType = TextureType::e_Ball;
-	ball->SetScale( scale );
+
 	double scale_ = ( windowSize.h ) / 1080.0;
 	ball->SetSpeed( speed * scale_ );
 

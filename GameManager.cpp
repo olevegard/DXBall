@@ -1461,7 +1461,6 @@ void GameManager::GenerateBoard()
 
 
 	physicsManager.UpdateScale();
-	renderer.SetScale( physicsManager.GetScale() );
 }
 void GameManager::ClearBoard()
 {
