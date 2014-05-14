@@ -1396,7 +1396,7 @@ void GameManager::ApplyBonus_Death( const Player &player )
 	renderer.RenderText( "Death!!", Player::Local, true );
 	localPlayerInfo.RemoveAllBonuses();
 
-	if ( physicsManager.KillAllTilesWithOwner( player ) )
+	if ( physicsManager.KillAllBallsWithOwner( player ) )
 		DeleteDeadBalls();
 
 	renderer.RenderLives( localPlayerInfo.lives, Player::Local );

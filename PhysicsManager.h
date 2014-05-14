@@ -36,7 +36,7 @@ public:
 	std::shared_ptr< Tile > GetTileWithID( int32_t ID);
 
 	std::shared_ptr< Tile > FindClosestIntersectingTile( const std::shared_ptr< Ball > &ball );
-	bool KillAllTilesWithOwner( const Player &player );
+	//bool KillAllTilesWithOwner( const Player &player );
 
 	int32_t CountDestroyableTiles();
 	int32_t CountAllTiles();
@@ -48,6 +48,7 @@ public:
 	std::shared_ptr< Ball >  CreateBall( const Player &player, uint32_t ballID, double speed );
 	void RemoveBall( const std::shared_ptr< Ball >  &ball );
 	void RemoveBallWithID( int32_t ID, const Player &owner );
+	bool KillAllBallsWithOwner( const Player &player );
 
 	std::shared_ptr< Ball > GetBallWithID( int32_t ID, const Player &owner );
 	std::shared_ptr< Ball > FindHighestBall();

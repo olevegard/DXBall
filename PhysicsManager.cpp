@@ -86,19 +86,6 @@ std::shared_ptr< Tile > PhysicsManager::FindClosestIntersectingTile( const std::
 
 	return closestTile;
 }
-bool PhysicsManager::KillAllTilesWithOwner( const Player &player )
-{
-	bool tilesKilled = false;
-	for ( const auto &p : ballList )
-	{
-		if ( p->GetOwner() == player )
-		{
-			p->Kill();
-			tilesKilled = true;
-		}
-	}
-	return tilesKilled;
-}
 int32_t PhysicsManager::CountDestroyableTiles()
 {
 	auto IsTileDestroyable = []( const std::shared_ptr< Tile > &tile )
@@ -170,6 +157,19 @@ std::shared_ptr< Ball > PhysicsManager::GetBallWithID( int32_t ID, const Player 
 	raise ( SIGABRT );
 
 	return nullptr;
+}
+bool PhysicsManager::KillAllBallsWithOwner( const Player &player )
+{
+	bool tilesKilled = false;
+	for ( const auto &p : ballList )
+	{
+		if ( p->GetOwner() == player )
+		{
+			p->Kill();
+			tilesKilled = true;
+		}
+	}
+	return tilesKilled;
 }
 void PhysicsManager::UpdateBallSpeed( double localPlayerSpeed, double remotePlayerSpeed )
 {
@@ -383,6 +383,13 @@ void PhysicsManager::RespawnBalls( const Player &owner, double ballSpeed )
 	{
 		if ( ball->GetOwner() == owner )
 			ball->SetSpeed ( ballSpeed  );
+			auto dir = ball->GetDirection();
+			if ( dir.y > 0.0 )
+			{
+				dir.y *= -1.0;
+				ball->SetDirection( dir );
+				}
+
 	}
 }
 // Paddles
