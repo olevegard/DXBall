@@ -180,7 +180,6 @@ void PhysicsManager::UpdateBallSpeed( double localPlayerSpeed, double remotePlay
 		else
 			curr->SetSpeed( remotePlayerSpeed );
 	};
-
 	std::for_each( ballList.begin(), ballList.end(), setBallSpeed );
 }
 std::shared_ptr< Ball > PhysicsManager::FindHighestBall()
@@ -382,14 +381,15 @@ void PhysicsManager::RespawnBalls( const Player &owner, double ballSpeed )
 	for ( const auto &ball : ballList )
 	{
 		if ( ball->GetOwner() == owner )
-			ball->SetSpeed ( ballSpeed  );
+
+			ball->SetSpeed ( ballSpeed * ( ( windowSize.h ) / 1080.0 ));
 			auto dir = ball->GetDirection();
-			if ( dir.y > 0.0 )
+
+			if ( (owner == Player::Local && dir.y > 0.0 ) || (owner == Player::Remote && dir.y < 0.0 ) )
 			{
 				dir.y *= -1.0;
 				ball->SetDirection( dir );
-				}
-
+			}
 	}
 }
 // Paddles
