@@ -1353,6 +1353,9 @@ void GameManager::ApplyBonus_Life( const Player &player )
 
 void GameManager::ApplyBonus_BallSplit( )
 {
+	if ( localPlayerInfo.activeBalls > 64 )
+		return;
+
 	// Get all local player's balls
 	auto isLocal =
 	[]
